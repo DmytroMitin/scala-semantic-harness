@@ -1,0 +1,21 @@
+{
+  "id": "ambiguous-symbol-1",
+  "title": "Ambiguous display-name repair",
+  "description": "Repair a tiny Scala project where similar local names and wrapper types can tempt an agent to trust display names instead of scope and type evidence.",
+  "mode": "semantic-harness",
+  "initialProject": "examples/scala3-ambiguous-symbol",
+  "successCommand": "compile --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "symbol-at --file examples/scala3-ambiguous-symbol/src/main/scala/example/Main.scala --line 14 --col 35 --json",
+    "symbols --semanticdb ... --json",
+    "reconcile-symbol --file examples/scala3-ambiguous-symbol/src/main/scala/example/Main.scala --line 14 --col 35 --semanticdb ... --json"
+  ],
+  "expectedSignals": [
+    "type-mismatch",
+    "ambiguous-display-name",
+    "wrong-symbol-assumption"
+  ]
+}

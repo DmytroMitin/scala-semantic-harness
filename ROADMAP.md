@@ -1,0 +1,85 @@
+# Roadmap
+
+This roadmap is organized by public product outcomes. It is not an internal
+execution ledger and does not promise delivery dates.
+
+## Implemented foundation
+
+- Scala 3 multi-module build with structured CLI reports.
+- Compile, test, and diagnostic build-oracle commands.
+- SemanticDB inventory, coverage, symbols, and bounded usages.
+- Presentation Compiler symbol and rendered-type queries.
+- Static/dynamic symbol reconciliation.
+- A public semantic point-evidence composition that selects only one parsed
+  source artifact and preserves non-selection reasons.
+- Syntax-first FP effect summaries.
+- A CLI-backed stdio MCP server with exactly eight tools.
+- Public semantic-scala skill policy and repository wrappers.
+- Examples, CI, benchmark fixtures, and methodology.
+
+## Semantic evidence quality
+
+- Keep facts owned by the narrowest appropriate compiler, build, test,
+  Presentation Compiler, or SemanticDB surface.
+- Preserve provenance, freshness, coverage, disagreement, and uncertainty in
+  public results.
+- Add capabilities only after a decision-relevant gap is demonstrated against
+  strong ordinary tooling.
+- Keep resource and output bounds explicit and tested.
+
+## Composition and orchestration
+
+- Maintain the admitted CLI plus thin-MCP point-evidence shape and measure its
+  decision value against direct use of the same underlying operations.
+- Continue comparing coherent operations with direct use of the same compiler,
+  test, IDE/LSP, and MCP primitives.
+- Measure correctness, incorrect edits, tool turns, redundant calls, evidence
+  attribution, and human intervention.
+- Do not treat fewer commands or tool invocation alone as product value.
+
+## Agent skill and adoption
+
+- Maintain the generated Agent Plugins 1.0 package for the canonical skill and
+  exact-eight MCP server without making client wrappers canonical.
+- Test appropriate spontaneous selection, non-selection, and resistance to
+  misuse or overuse when a documented conformant client offers a safe
+  nonpersistent local-package route.
+- Separate capability value from the incremental effect of skill guidance.
+
+## Installation and packaging
+
+- Keep deterministic assembly, official-schema checks, canonical-skill byte
+  identity, and relocated CLI-backed MCP smoke reproducible.
+- Establish a clean external user walkthrough through a conformant client.
+- Add a supported packaged distribution and versioned release channel.
+- Validate CLI, MCP, and skill activation from a clean environment.
+- Keep the product independent of private control or orchestration material.
+
+## Reproducible benchmarking
+
+- Maintain the standalone allowlist of public protocols, fixtures, validators,
+  and bounded results under `benchmarks/`.
+- Keep raw client/controller evidence separate from claim-supporting public
+  data.
+- Re-run the deterministic evidence gate and full test suite when the allowlist
+  changes.
+- Require a separately designed controlled comparison before making stronger
+  effectiveness or superiority claims.
+
+## Public-alpha readiness
+
+- Keep the current product tree and external agent contract free of private
+  controller chronology and machine-specific workflow dependencies.
+- Maintain the selected Apache-2.0 license and the focused contribution,
+  security, changelog, and release/versioning policies.
+- Re-run current-tree and clean-history privacy review whenever candidate bytes
+  change.
+- Preserve the original mixed history privately and expose only audited public
+  refs if repository visibility changes later.
+- Preserve the verified clean-candidate construction and validation gates for
+  any separately authorized publication; never expose the mixed historical
+  repository as the public source history.
+
+Public-alpha readiness, external installation, semantic utility, composition
+utility, skill adoption, benchmark reproducibility, and publication safety are
+independent gates. See [`docs/project-status.md`](docs/project-status.md).

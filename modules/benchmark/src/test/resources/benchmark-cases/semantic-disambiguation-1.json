@@ -1,0 +1,20 @@
+{
+  "id": "semantic-disambiguation-1",
+  "title": "Semantic disambiguation of wrapper identifiers",
+  "description": "Repair a tiny Scala project where similarly named wrapper types require choosing the correct symbol based on type evidence.",
+  "mode": "semantic-harness",
+  "initialProject": "examples/scala3-semantic-disambiguation",
+  "successCommand": "compile --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "symbol-at --file examples/scala3-semantic-disambiguation/src/main/scala/example/Main.scala --line 13 --col 23 --json",
+    "symbols --semanticdb ... --json",
+    "reconcile-symbol --file examples/scala3-semantic-disambiguation/src/main/scala/example/Main.scala --line 13 --col 23 --semanticdb ... --json"
+  ],
+  "expectedSignals": [
+    "type-mismatch",
+    "wrong-symbol-assumption"
+  ]
+}

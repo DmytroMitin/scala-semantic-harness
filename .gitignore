@@ -1,0 +1,63 @@
+# Build output
+target/
+out/
+project/target/
+project/project/
+
+# Scala build tools
+.bsp/
+.metals/
+.scala-build/
+.bloop/
+.ammonite/
+.cache/
+.coursier/
+metals.sbt
+
+# JVM artifacts
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+
+# Logs and local runtime output
+*.log
+logs/
+tmp/
+temp/
+.semantic-scala-sbt/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# AI
+.codex
+.agents/
+.claude/
+.mcp.json
+
+# Project-owned skill wrappers
+!.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/semantic-scala/
+.agents/skills/semantic-scala/*
+!.agents/skills/semantic-scala/SKILL.md
+!.claude/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/semantic-scala/
+.claude/skills/semantic-scala/*
+!.claude/skills/semantic-scala/SKILL.md

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+STAGED_CLI="$REPO_ROOT/modules/cli/target/stage/bin/semantic-scala"
+
+if [[ ! -x "$STAGED_CLI" ]]; then
+  cat >&2 <<EOF
+Packaged semantic-scala CLI is missing: $STAGED_CLI
+
+Build it before running benchmark automation:
+  sbt cli/stage
+EOF
+  exit 127
+fi
+
+exec "$STAGED_CLI" "$@"

@@ -1,0 +1,17 @@
+{
+  "id": "compile-error-1",
+  "title": "Simple compile error repair",
+  "description": "Repair a tiny Scala project with a missing identifier using compile/test feedback.",
+  "mode": "compile-test-only",
+  "initialProject": "examples/scala3-compile-failure",
+  "successCommand": "compile --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json"
+  ],
+  "expectedSignals": [
+    "compile-failure",
+    "missing-identifier"
+  ]
+}

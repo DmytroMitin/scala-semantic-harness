@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:usages-failure:v1",
+  "title": "semantic-scala usages operational failure v1 design candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "failureKind", "message"],
+  "properties": {
+    "schemaVersion": {
+      "const": "semantic-scala.usages-failure.v1"
+    },
+    "failureKind": {
+      "enum": [
+        "InvalidInput",
+        "UnsafeFilesystem",
+        "IoFailure",
+        "ParseFailure",
+        "TimeoutBeforeTargetResolution",
+        "InternalInvariant"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    }
+  }
+}

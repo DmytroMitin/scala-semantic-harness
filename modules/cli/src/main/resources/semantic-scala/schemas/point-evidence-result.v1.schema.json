@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:point-evidence-result:v1",
+  "title": "semantic-scala point evidence result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "position", "discovery", "selection", "livePoint", "reconciliation"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.point-evidence-result.v1" },
+    "workspace": { "type": "string" },
+    "sourceFile": { "type": "string" },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line", "column", "encoding"],
+      "properties": {
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "encoding": { "const": "UTF-16" }
+      }
+    },
+    "discovery": { "$ref": "#/$defs/discovery" },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "artifact", "reason"],
+      "properties": {
+        "status": { "enum": ["SelectedUniqueParsed", "NotSelectedNoCandidate", "NotSelectedAmbiguous", "NotSelectedPartialOrUnparseable", "NotSelectedUnavailable"] },
+        "artifact": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "SelectedUniqueParsed" } } }, "then": { "properties": { "artifact": { "$ref": "#/$defs/artifact" } } } },
+        { "if": { "properties": { "status": { "not": { "const": "SelectedUniqueParsed" } } } }, "then": { "properties": { "artifact": { "type": "null" } } } }
+      ]
+    },
+    "livePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "result", "reason"],
+      "properties": {
+        "status": { "enum": ["Resolved", "Unresolved", "Unavailable"] },
+        "result": { "oneOf": [{ "$ref": "#/$defs/liveResult" }, { "type": "null" }] },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "Unavailable" } } }, "then": { "properties": { "result": { "type": "null" }, "reason": { "type": "string", "minLength": 1 } } } },
+        { "if": { "properties": { "status": { "enum": ["Resolved", "Unresolved"] } } }, "then": { "properties": { "result": { "$ref": "#/$defs/liveResult" }, "reason": { "type": "null" } } } }
+      ]
+    },
+    "reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "result", "notAttemptedReason", "detail"],
+      "properties": {
+        "status": { "enum": ["Completed", "NotAttempted"] },
+        "result": { "oneOf": [{ "$ref": "#/$defs/reconciliationResult" }, { "type": "null" }] },
+        "notAttemptedReason": { "type": ["string", "null"], "enum": ["NoArtifactCandidate", "AmbiguousArtifactCandidates", "PartialOrUnparseableArtifactEvidence", "ArtifactEvidenceUnavailable", "LivePointUnavailable", "SelectedArtifactUnreadable", null] },
+        "detail": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "Completed" } } }, "then": { "properties": { "result": { "$ref": "#/$defs/reconciliationResult" }, "notAttemptedReason": { "type": "null" }, "detail": { "type": "null" } } } },
+        { "if": { "properties": { "status": { "const": "NotAttempted" } } }, "then": { "properties": { "result": { "type": "null" }, "notAttemptedReason": { "type": "string" }, "detail": { "type": "string", "minLength": 1 } } } }
+      ]
+    }
+  },
+  "$defs": {
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startLine", "startCharacter", "endLine", "endCharacter"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 0 },
+        "startCharacter": { "type": "integer", "minimum": 0 },
+        "endLine": { "type": "integer", "minimum": 0 },
+        "endCharacter": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semanticdb", "uri", "parseStatus", "matchKind", "symbols", "occurrences", "mtimeMillis", "error"],
+      "properties": {
+        "semanticdb": { "type": "string" },
+        "uri": { "type": ["string", "null"] },
+        "parseStatus": { "type": "string" },
+        "matchKind": { "type": "string" },
+        "symbols": { "type": ["integer", "null"], "minimum": 0 },
+        "occurrences": { "type": ["integer", "null"], "minimum": 0 },
+        "mtimeMillis": { "type": "integer" },
+        "error": { "type": ["string", "null"] }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "workspace", "sourceFile", "sourceRelativePath", "status", "semanticdbFiles", "parseableFiles", "unparseableFiles", "matches", "candidatesConsidered", "warnings", "errors"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.semanticdb-for-source.v1" },
+        "workspace": { "type": "string" },
+        "sourceFile": { "type": "string" },
+        "sourceRelativePath": { "type": ["string", "null"] },
+        "status": { "enum": ["UniqueMatch", "NoMatch", "Ambiguous", "Unavailable", "Unparseable", "Partial"] },
+        "semanticdbFiles": { "type": "integer", "minimum": 0 },
+        "parseableFiles": { "type": "integer", "minimum": 0 },
+        "unparseableFiles": { "type": "integer", "minimum": 0 },
+        "matches": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+        "candidatesConsidered": { "type": "integer", "minimum": 0 },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "errors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "liveResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "symbol", "displayName", "range", "source"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.symbol-at-result.v1" },
+        "symbol": { "type": ["string", "null"] },
+        "displayName": { "type": ["string", "null"] },
+        "range": { "oneOf": [{ "$ref": "#/$defs/range" }, { "type": "null" }] },
+        "source": { "type": "string" }
+      }
+    },
+    "reconciliationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "file", "queryPosition", "result"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.reconcile-symbol-result.v1" },
+        "file": { "type": "string" },
+        "queryPosition": { "$ref": "#/$defs/range" },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["semanticdbSymbol", "compilerSymbol", "displayName", "range", "status"],
+          "properties": {
+            "semanticdbSymbol": { "type": ["string", "null"] },
+            "compilerSymbol": { "type": ["string", "null"] },
+            "displayName": { "type": ["string", "null"] },
+            "range": { "oneOf": [{ "$ref": "#/$defs/range" }, { "type": "null" }] },
+            "status": { "enum": ["ExactMatch", "RangeMatchOnly", "SymbolMismatch", "NoMatch"] }
+          }
+        }
+      }
+    }
+  }
+}

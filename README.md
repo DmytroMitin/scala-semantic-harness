@@ -1,0 +1,202 @@
+# scala-semantic-harness
+
+Experimental semantic tooling for Scala and functional-programming projects
+used by coding agents.
+
+The harness is a bounded semantic evidence layer, not a replacement for the
+Scala compiler, sbt, tests, Metals, or other IDE/LSP tooling. Compiler, build,
+and test results remain the final correctness oracle. See
+[`docs/project-status.md`](docs/project-status.md) for current evidence and
+readiness limits and
+[`docs/semantic-tooling-positioning.md`](docs/semantic-tooling-positioning.md)
+for the product boundary.
+
+The current tree is maintained as a standalone experimental public-alpha
+product contract under the [Apache-2.0 license](LICENSE). That does not
+authorize publication of the existing mixed-history repository. An
+independently constructed clean candidate has passed dedicated privacy,
+clean-clone, and public-ref gates, but publishing it still requires a separate
+explicit action that keeps the mixed historical repository private.
+
+## What is included
+
+- structured compile, test, and diagnostic reports;
+- SemanticDB inventory, coverage, symbol, and exact-symbol usage evidence;
+- bounded Presentation Compiler symbol and type queries;
+- reconciliation of dynamic compiler evidence with an explicit SemanticDB
+  artifact;
+- a public point-evidence composition that preserves source-artifact discovery,
+  safe selection, live symbol evidence, and conditional reconciliation;
+- conservative syntax-first FP effect summaries;
+- a stdio MCP server exposing exactly eight public tools;
+- small external example projects and benchmark infrastructure; and
+- a client-neutral `semantic-scala` agent skill with thin Codex and Claude Code
+  wrappers;
+- source templates and a deterministic assembler for a self-contained Agent
+  Plugins 1.0 package containing that skill and the exact-eight MCP server.
+
+## Modules
+
+- `modules/core`: shared JSON models and codecs.
+- `modules/cli`: the `semantic-scala` command entry point.
+- `modules/sbt-runner`: sbt compile/test subprocess integration.
+- `modules/semanticdb-reader`: SemanticDB inventory and usage evidence.
+- `modules/presentation-compiler`: bounded dynamic semantic queries.
+- `modules/semantic-reconciliation`: static/dynamic symbol comparison and the
+  point-evidence composition and reconciliation contracts.
+- `modules/fp-analyzers`: syntax-first effect summaries.
+- `modules/mcp-server`: CLI-backed MCP stdio adapter.
+- `modules/benchmark`: benchmark models and fixtures.
+
+## Build and test
+
+The project uses Scala 3 and sbt. CI uses Temurin JDK 21.
+
+```bash
+sbt -batch test
+sbt cli/stage
+sbt mcpServer/stage
+```
+
+The source-checkout wrapper runs the CLI through sbt:
+
+```bash
+./semantic-scala --help
+./semantic-scala version
+./semantic-scala compile --json
+./semantic-scala test --json
+./semantic-scala errors --json
+```
+
+For repeated use, prefer the staged launcher at
+`modules/cli/target/stage/bin/semantic-scala`.
+
+## Semantic commands
+
+```bash
+./semantic-scala semanticdb-status --workspace . --json
+./semantic-scala semanticdb-coverage --workspace . --json
+./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --json
+./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --json
+./semantic-scala symbols --semanticdb path/to/Main.scala.semanticdb --json
+./semantic-scala usages --workspace . --manifest semantic-usages.json --symbol 'example/Foo#bar().' --json
+./semantic-scala symbol-at --file path/to/Main.scala --line 6 --col 16 --json
+./semantic-scala infer-type --file path/to/Main.scala --line 6 --col 16 --json
+./semantic-scala infer-type-batch --requests batch-request.json --workspace . --sbt-project core --sbt-configuration Compile --json
+./semantic-scala reconcile-symbol --file path/to/Main.scala --line 6 --col 16 --semanticdb path/to/Main.scala.semanticdb --json
+./semantic-scala effect-summary --file path/to/UserRepo.scala --json
+```
+
+All machine-facing commands have JSON output. Build-oracle command exit code
+`0` means the CLI operation completed; inspect the JSON `success` field for the
+compile or test domain result. Semantic results preserve their scope and
+uncertainty: rendered hover text is not canonical identity, artifact presence
+is not complete source coverage, and only `ExactMatch` is exact reconciliation.
+
+Detailed contracts:
+
+- [`docs/semantic-api.md`](docs/semantic-api.md)
+- [`docs/usages.md`](docs/usages.md)
+- [`docs/point-evidence.md`](docs/point-evidence.md)
+- [`docs/architecture.md`](docs/architecture.md)
+
+## MCP server
+
+The stdio server exposes exactly these tools:
+
+```text
+semantic_compile
+semantic_errors
+semantic_test
+semantic_effect_summary
+semantic_symbol_at
+semantic_symbols
+semantic_reconcile_symbol
+semantic_point_evidence
+```
+
+Build and validate it with:
+
+```bash
+sbt cli/stage
+sbt mcpServer/stage
+scripts/mcp/smoke-mcp-tools.py
+```
+
+Copy [`.mcp.example.json`](.mcp.example.json) and replace its placeholder
+checkout path for project-scoped client configuration. See
+[`docs/mcp-client-validation.md`](docs/mcp-client-validation.md) for the public
+configuration and protocol checks.
+
+## Agent skill
+
+The canonical client-neutral policy is
+[`skills/semantic-scala/SKILL.md`](skills/semantic-scala/SKILL.md). Thin
+repository wrappers live at:
+
+- [`.agents/skills/semantic-scala/SKILL.md`](.agents/skills/semantic-scala/SKILL.md)
+- [`.claude/skills/semantic-scala/SKILL.md`](.claude/skills/semantic-scala/SKILL.md)
+
+The skill is policy and documentation. It does not add commands, background
+services, or automatic invocation. Packaging and maintenance guidance is in
+[`docs/agent-skill-semantic-scala.md`](docs/agent-skill-semantic-scala.md).
+
+## Agent Plugin package
+
+After staging the CLI and MCP server, generate a fresh relocatable package:
+
+```bash
+sbt cli/stage mcpServer/stage
+python3 scripts/package-agent-plugin.py assemble \
+  --output target/agent-plugin/semantic-scala
+python3 scripts/package-agent-plugin.py validate \
+  --plugin-root target/agent-plugin/semantic-scala
+```
+
+The output is ignored build material, not a checked-in binary distribution or
+release. It targets the Agent Plugins 1.0.0 working draft and bundles the
+canonical skill, complete staged CLI, and complete staged exact-eight MCP
+server. See [`docs/agent-plugin.md`](docs/agent-plugin.md) for the package
+contract, validation level, relocation smoke, and current client-support
+limits.
+
+## Examples and benchmarks
+
+Projects under `examples/` are external CLI fixtures rather than members of
+the root sbt build. The normal test suite exercises the compile-success and
+compile-failure examples through the CLI.
+
+The repository contains a standalone public benchmark subset with methodology,
+portable prompts, test-coupled fixtures, deterministic validation, and a
+bounded aggregate. Start at [`benchmarks/README.md`](benchmarks/README.md).
+Historical raw transcripts and controller automation are not part of that
+subset. The admitted evidence does not establish broad superiority or general
+benchmark reproducibility beyond its stated small-sample gate.
+
+## Current limitations
+
+- A generated self-contained Agent Plugins package has bounded structural,
+  official-schema, determinism, and relocated-runtime evidence, but no
+  supported release channel or conformant installed-client adoption proof.
+- The MCP surface remains the documented eight-tool stdio adapter.
+- Point evidence is bounded to one contained source position and existing
+  artifacts; it does not assess freshness or replace compilation and tests.
+- SemanticDB commands inspect existing artifacts; they do not establish that
+  every source is covered or fresh.
+- Presentation Compiler renderings are bounded evidence, not whole-project
+  compile proof.
+- Public-alpha source-candidate readiness is separate from binary distribution,
+  installation usability, semantic utility, and skill-adoption evidence.
+- The clean candidate is suitable only for a separate explicit source
+  publication action. The existing mixed Git history has not been cleared for
+  public exposure and must remain private.
+
+See [`ROADMAP.md`](ROADMAP.md) for product-oriented next steps.
+
+## Project policies
+
+- [Contributing](CONTRIBUTING.md)
+- [Security reporting](SECURITY.md)
+- [Changelog](CHANGELOG.md)
+- [Release and versioning](RELEASE.md)
+- [Apache-2.0 license](LICENSE)

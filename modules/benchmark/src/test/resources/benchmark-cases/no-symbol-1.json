@@ -1,0 +1,20 @@
+{
+  "id": "no-symbol-1",
+  "title": "No-symbol semantic query",
+  "description": "Repair a tiny Scala project while treating a symbol-at query on whitespace or literal syntax as a valid no-symbol observation. SemanticDB and reconciliation are listed for mode consistency but are not expected to be useful until generated SemanticDB fixtures exist for this project.",
+  "mode": "semantic-harness",
+  "initialProject": "examples/scala3-no-symbol",
+  "successCommand": "compile --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "symbol-at --file examples/scala3-no-symbol/src/main/scala/example/Main.scala --line 6 --col 1 --json",
+    "symbols --semanticdb ... --json",
+    "reconcile-symbol --file examples/scala3-no-symbol/src/main/scala/example/Main.scala --line 6 --col 1 --semanticdb ... --json"
+  ],
+  "expectedSignals": [
+    "NoMatch",
+    "compile-failure"
+  ]
+}

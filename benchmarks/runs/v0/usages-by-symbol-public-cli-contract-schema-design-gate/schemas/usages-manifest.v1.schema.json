@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:usages-manifest:v1",
+  "title": "semantic-scala usages manifest v1 design candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "inventoryClosed", "sources", "artifacts"],
+  "properties": {
+    "schemaVersion": {
+      "const": "semantic-scala.usages-manifest.v1"
+    },
+    "inventoryClosed": {
+      "type": "boolean"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50000,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sourceEntry"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/artifactEntry"
+      }
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.(?:/|$))(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*//).+$"
+    },
+    "sourcePath": {
+      "allOf": [
+        { "$ref": "#/$defs/relativePath" },
+        { "pattern": "\\.(?:scala|java)$" }
+      ]
+    },
+    "artifactPath": {
+      "allOf": [
+        { "$ref": "#/$defs/relativePath" },
+        { "pattern": "\\.semanticdb$" }
+      ]
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "sourceEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "module", "sourceSet", "generated"],
+      "properties": {
+        "path": { "$ref": "#/$defs/sourcePath" },
+        "module": { "$ref": "#/$defs/identifier" },
+        "sourceSet": { "$ref": "#/$defs/identifier" },
+        "generated": { "type": "boolean" }
+      }
+    },
+    "artifactEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "module", "sourceSet", "generated"],
+      "properties": {
+        "path": { "$ref": "#/$defs/artifactPath" },
+        "module": { "$ref": "#/$defs/identifier" },
+        "sourceSet": { "$ref": "#/$defs/identifier" },
+        "generated": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "semantic-scala": {
+      "type": "stdio",
+      "command": "/path/to/scala-semantic-harness/modules/mcp-server/target/stage/bin/semantic-scala-mcp",
+      "args": [
+        "--cli",
+        "/path/to/scala-semantic-harness/modules/cli/target/stage/bin/semantic-scala"
+      ],
+      "env": {}
+    }
+  }
+}

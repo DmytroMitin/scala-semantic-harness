@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CALLER_DIR="$(pwd)"
+SEMANTIC_SCALA_SANDBOX_DIR="${SEMANTIC_SCALA_SANDBOX_DIR:-/tmp/semantic-scala-sbt}"
+
+mkdir -p "$SEMANTIC_SCALA_SANDBOX_DIR" "$SEMANTIC_SCALA_SANDBOX_DIR/ivy2"
+
+if [[ -z "${XDG_RUNTIME_DIR:-}" || ! -w "$XDG_RUNTIME_DIR" ]]; then
+  export XDG_RUNTIME_DIR="$SEMANTIC_SCALA_SANDBOX_DIR/runtime"
+  mkdir -p "$XDG_RUNTIME_DIR"
+fi
+
+if [[ -n "${HOME:-}" && ! -d "$SEMANTIC_SCALA_SANDBOX_DIR/boot" && -d "$HOME/.sbt/boot" ]]; then
+  cp -R "$HOME/.sbt/boot" "$SEMANTIC_SCALA_SANDBOX_DIR/boot"
+fi
+
+if [[ -n "${HOME:-}" && -d "$HOME/.ivy2/cache" && ! -e "$SEMANTIC_SCALA_SANDBOX_DIR/ivy2/cache" ]]; then
+  ln -s "$HOME/.ivy2/cache" "$SEMANTIC_SCALA_SANDBOX_DIR/ivy2/cache"
+fi
+
+if [[ -n "${HOME:-}" && -d "$HOME/.ivy2/local" && ! -e "$SEMANTIC_SCALA_SANDBOX_DIR/ivy2/local" ]]; then
+  ln -s "$HOME/.ivy2/local" "$SEMANTIC_SCALA_SANDBOX_DIR/ivy2/local"
+fi
+
+export SBT_OPTS="${SBT_OPTS:-} -Dsbt.boot.directory=$SEMANTIC_SCALA_SANDBOX_DIR/boot -Dsbt.global.base=$SEMANTIC_SCALA_SANDBOX_DIR/global -Dsbt.ivy.home=$SEMANTIC_SCALA_SANDBOX_DIR/ivy2 -Dsbt.server.forcestart=true"
+
+cd "$SCRIPT_DIR"
+SEMANTIC_SCALA_CWD="$CALLER_DIR" sbt --error "cli/run $*"

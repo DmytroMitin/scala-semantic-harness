@@ -1,0 +1,20 @@
+{
+  "id": "semantic-required-1",
+  "title": "Semantic-required missing identifier repair",
+  "description": "Repair a tiny Scala project where the compiler reports a missing identifier and semantic inspection can help find the intended imported helper symbol.",
+  "mode": "semantic-harness",
+  "initialProject": "examples/scala3-semantic-required",
+  "successCommand": "compile --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "symbol-at --file examples/scala3-semantic-required/src/main/scala/example/Main.scala --line 10 --col 5 --json",
+    "symbols --semanticdb ... --json",
+    "reconcile-symbol --file examples/scala3-semantic-required/src/main/scala/example/Main.scala --line 10 --col 5 --semanticdb ... --json"
+  ],
+  "expectedSignals": [
+    "missing-identifier",
+    "symbol-suggestion"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "fp-effect-generic-wrapper-1",
+  "title": "Preserve generic effect wrapper",
+  "description": "Repair a tiny Scala project where a method incorrectly treats F[Option[User]] as Option[User].",
+  "mode": "effect-summary-harness",
+  "initialProject": "examples/scala3-fp-effect-generic-wrapper",
+  "successCommand": "test --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "effect-summary --file examples/scala3-fp-effect-generic-wrapper/src/main/scala/example/Main.scala --json"
+  ],
+  "expectedSignals": [
+    "F[Option[User]]",
+    "effectCategory:generic-effect"
+  ],
+  "expectedIntent": "Preserve the outer F effect wrapper and inner Option while extracting the User name.",
+  "acceptablePatchFamilies": [
+    "add a MapK context bound to getName and return F[Option[String]] using mapK over repo.find(id)",
+    "use the local MapK capability to transform inside F without erasing F or Option"
+  ],
+  "intentNotes": [
+    "Treating F[Option[User]] as Option[User] changes the intended effect semantics.",
+    "Specializing Main.getName to Box instead of keeping it generic changes the benchmark intent.",
+    "Unwrapping Box.value in generic code is not intent-preserving.",
+    "Dropping Option or using unsafe .get changes the intended absence semantics."
+  ]
+}

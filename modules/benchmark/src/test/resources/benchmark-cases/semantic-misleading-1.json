@@ -1,0 +1,28 @@
+{
+  "id": "semantic-misleading-1",
+  "title": "Misleading same-name semantic evidence",
+  "description": "Repair a tiny Scala project where a visible convert symbol exists but its return type is misleading for the expected result type.",
+  "mode": "semantic-harness",
+  "initialProject": "examples/scala3-semantic-misleading",
+  "successCommand": "compile --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "symbol-at --file examples/scala3-semantic-misleading/src/main/scala/example/Main.scala --line 12 --col 21 --json",
+    "symbols --semanticdb ... --json",
+    "reconcile-symbol --file examples/scala3-semantic-misleading/src/main/scala/example/Main.scala --line 12 --col 21 --semanticdb ... --json"
+  ],
+  "expectedSignals": [
+    "SymbolMismatch",
+    "ambiguous-display-name"
+  ],
+  "expectedIntent": "Preserve the declared Int result intent by selecting the Int-returning conversion.",
+  "acceptablePatchFamilies": [
+    "change import A.* to import B.*",
+    "replace convert(1) with B.convert(1)"
+  ],
+  "intentNotes": [
+    "Changing result type to String is compile-valid but changes the intended semantic direction."
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "scala-semantic-harness.public-benchmark-screening.v1",
+  "evidenceType": "curated-aggregate",
+  "scope": {
+    "historicalInventoryEntries": 52,
+    "usableRuns": 46,
+    "invalidEnvironmentOrCaptureRuns": 6,
+    "sampleCharacter": [
+      "small",
+      "prompted",
+      "heterogeneous",
+      "qualitatively interpreted"
+    ]
+  },
+  "observations": [
+    {
+      "caseFamily": "compile-error",
+      "assessment": "compiler-sufficient",
+      "claim": "In the screened simple compile-error cases, compiler and test feedback was sufficient; semantic evidence was not shown to add decision value."
+    },
+    {
+      "caseFamily": "fp-wrapper-preservation",
+      "assessment": "helpful-in-prompted-small-cases",
+      "claim": "Effect summaries exposed wrapper shapes that agents used while preserving Either and generic F[Option[...]] contracts in small prompted repairs."
+    },
+    {
+      "caseFamily": "fp-misleading",
+      "assessment": "mixed",
+      "claim": "Correct effect summaries were insufficient to choose between competing local APIs; the public method contract and tests remained decisive."
+    },
+    {
+      "caseFamily": "reconciliation-uncertainty",
+      "assessment": "uncertainty-preserving",
+      "claim": "In small prompted cases, non-exact reconciliation states were treated as evidence rather than exact symbol-identity proof."
+    },
+    {
+      "caseFamily": "spontaneous-selection",
+      "assessment": "inconsistent",
+      "claim": "Tool availability did not reliably cause spontaneous semantic-tool selection across the screened sessions."
+    }
+  ],
+  "limitations": [
+    "No randomized assignment or statistical power analysis.",
+    "Prompt wording, client behavior, and environment varied across the inventory.",
+    "Human interpretation was used for semantic and intent assessments.",
+    "The aggregate does not prove superiority over compiler/test or IDE/LSP baselines.",
+    "Historical raw transcripts and controller captures are not part of the public subset."
+  ],
+  "reproduction": {
+    "deterministicGate": "python3 benchmarks/validate-public-evidence.py",
+    "buildTruthGate": "sbt -batch test",
+    "liveModelSessionsRequired": false
+  }
+}

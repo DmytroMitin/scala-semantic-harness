@@ -1,0 +1,91 @@
+[
+  {
+    "args": [
+      "usages",
+      "--workspace",
+      ".",
+      "--manifest",
+      "semantic-usages.json",
+      "--symbol",
+      "example/Foo#bar().",
+      "--json"
+    ],
+    "name": "explicit",
+    "valid": true
+  },
+  {
+    "args": [
+      "usages",
+      "--workspace",
+      ".",
+      "--manifest",
+      "semantic-usages.json",
+      "--file",
+      "src/Foo.scala",
+      "--line",
+      "3",
+      "--col",
+      "5",
+      "--semanticdb",
+      "out/Foo.scala.semanticdb",
+      "--json"
+    ],
+    "name": "point",
+    "valid": true
+  },
+  {
+    "args": [
+      "usages",
+      "--workspace",
+      ".",
+      "--manifest",
+      "semantic-usages.json",
+      "--symbol",
+      "example/Foo#bar().",
+      "--file",
+      "src/Foo.scala",
+      "--line",
+      "3",
+      "--col",
+      "5",
+      "--semanticdb",
+      "out/Foo.scala.semanticdb"
+    ],
+    "name": "mixed",
+    "valid": false
+  },
+  {
+    "args": [
+      "usages",
+      "--workspace",
+      ".",
+      "--manifest",
+      "semantic-usages.json",
+      "--file",
+      "src/Foo.scala",
+      "--line",
+      "3"
+    ],
+    "name": "partial-point",
+    "valid": false
+  },
+  {
+    "args": [
+      "usages",
+      "--workspace",
+      ".",
+      "--manifest",
+      "semantic-usages.json",
+      "--file",
+      "src/Foo.scala",
+      "--line",
+      "2147483648",
+      "--col",
+      "1",
+      "--semanticdb",
+      "out/Foo.scala.semanticdb"
+    ],
+    "name": "coordinate-overflow",
+    "valid": false
+  }
+]

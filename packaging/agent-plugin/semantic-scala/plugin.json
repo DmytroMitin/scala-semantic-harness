@@ -1,0 +1,6 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "semantic-scala",
+  "description": "Bounded Scala compiler, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
+  "repository": "https://github.com/DmytroMitin/scala-semantic-harness"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "fp-effect-either-preservation-1",
+  "title": "Preserve Either failure channel",
+  "description": "Repair a tiny Scala project where a method incorrectly treats Either[String, User] as User.",
+  "mode": "effect-summary-harness",
+  "initialProject": "examples/scala3-fp-effect-either-preservation",
+  "successCommand": "test --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "effect-summary --file examples/scala3-fp-effect-either-preservation/src/main/scala/example/Main.scala --json"
+  ],
+  "expectedSignals": [
+    "Either[String, User]",
+    "effectCategory:either"
+  ],
+  "expectedIntent": "Preserve the Either failure channel while extracting the User name.",
+  "acceptablePatchFamilies": [
+    "change userName return type to Either[String, String] and map over Parser.parse(raw)",
+    "introduce a new method that returns Either[String, String] without throwing"
+  ],
+  "intentNotes": [
+    "Throwing on Left or using .toOption.get may compile but changes the intended failure semantics.",
+    "Changing Parser.parse to return User erases the benchmark's typed failure intent."
+  ]
+}

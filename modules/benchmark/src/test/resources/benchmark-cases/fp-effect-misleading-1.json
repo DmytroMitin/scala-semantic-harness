@@ -1,0 +1,30 @@
+{
+  "id": "fp-effect-misleading-1",
+  "title": "Avoid over-trusting convenient Option evidence",
+  "description": "Repair a tiny Scala project where a method promises Either[String, String] but uses a locally convenient Option-returning parser.",
+  "mode": "effect-summary-harness",
+  "initialProject": "examples/scala3-fp-effect-misleading",
+  "successCommand": "test --json",
+  "allowedCommands": [
+    "compile --json",
+    "test --json",
+    "errors --json",
+    "effect-summary --file examples/scala3-fp-effect-misleading/src/main/scala/example/Main.scala --json"
+  ],
+  "expectedSignals": [
+    "Option[User]",
+    "Either[String, User]",
+    "effectCategory:option",
+    "effectCategory:either"
+  ],
+  "expectedIntent": "Preserve the Either failure channel rather than downgrading to Option or plain String.",
+  "acceptablePatchFamilies": [
+    "use Parser.parseEither(raw).map(_.name) and return Either[String, String]"
+  ],
+  "intentNotes": [
+    "Changing userName to return Option[String] loses the explicit String failure channel.",
+    "Using parseOption preserves absence but loses typed failure information.",
+    "Using .get, throwing, or returning defaults changes the intended semantics.",
+    "Changing parser methods to erase Either changes the benchmark intent."
+  ]
+}

@@ -1,0 +1,675 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:usages-result:v1",
+  "title": "semantic-scala usages result v1 design candidate",
+  "oneOf": [
+    { "$ref": "#/$defs/evidenceFound" },
+    { "$ref": "#/$defs/noUsagesObserved" },
+    { "$ref": "#/$defs/coverageIncomplete" },
+    { "$ref": "#/$defs/targetAmbiguous" },
+    { "$ref": "#/$defs/targetUnresolved" },
+    { "$ref": "#/$defs/artifactStaleOrInconsistent" },
+    { "$ref": "#/$defs/truncated" },
+    { "$ref": "#/$defs/unsupportedConstruct" }
+  ],
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.(?:/|$))(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*//).+$"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "stableSymbol": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startLine", "startCharacter", "endLine", "endCharacter", "encoding", "base"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 0 },
+        "startCharacter": { "type": "integer", "minimum": 0 },
+        "endLine": { "type": "integer", "minimum": 0 },
+        "endCharacter": { "type": "integer", "minimum": 0 },
+        "encoding": { "const": "UTF-16" },
+        "base": { "const": 0 }
+      }
+    },
+    "explicitGlobalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "identityKind", "stableSymbol", "localSymbolMarker", "source", "range", "documentEvidenceId"],
+      "properties": {
+        "mode": { "const": "ExplicitGlobal" },
+        "identityKind": { "const": "Global" },
+        "stableSymbol": { "$ref": "#/$defs/stableSymbol" },
+        "localSymbolMarker": { "type": "null" },
+        "source": { "type": "null" },
+        "range": { "type": "null" },
+        "documentEvidenceId": { "type": "null" }
+      }
+    },
+    "pointGlobalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "identityKind", "stableSymbol", "localSymbolMarker", "source", "range", "documentEvidenceId"],
+      "properties": {
+        "mode": { "const": "PointSelected" },
+        "identityKind": { "const": "Global" },
+        "stableSymbol": { "$ref": "#/$defs/stableSymbol" },
+        "localSymbolMarker": { "type": "null" },
+        "source": { "$ref": "#/$defs/relativePath" },
+        "range": { "$ref": "#/$defs/range" },
+        "documentEvidenceId": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}#document-[0-9]+$"
+        }
+      }
+    },
+    "pointLocalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "identityKind", "stableSymbol", "localSymbolMarker", "source", "range", "documentEvidenceId"],
+      "properties": {
+        "mode": { "const": "PointSelected" },
+        "identityKind": { "const": "LocalDocumentOnly" },
+        "stableSymbol": { "type": "null" },
+        "localSymbolMarker": { "const": "DocumentLocal" },
+        "source": { "$ref": "#/$defs/relativePath" },
+        "range": { "$ref": "#/$defs/range" },
+        "documentEvidenceId": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}#document-[0-9]+$"
+        }
+      }
+    },
+    "targetEvidence": {
+      "oneOf": [
+        { "$ref": "#/$defs/explicitGlobalTarget" },
+        { "$ref": "#/$defs/pointGlobalTarget" },
+        { "$ref": "#/$defs/pointLocalTarget" }
+      ]
+    },
+    "selectors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["includeDefinitions", "modules", "sourceSets", "includeGenerated"],
+      "properties": {
+        "includeDefinitions": { "type": "boolean" },
+        "modules": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "sourceSets": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "includeGenerated": { "type": "boolean" }
+      }
+    },
+    "occurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stableSymbol", "localSymbolMarker", "role", "source", "safeUri", "range", "module", "sourceSet", "generated", "freshness", "artifactGroupId", "documentIndex"],
+      "properties": {
+        "stableSymbol": {
+          "oneOf": [
+            { "$ref": "#/$defs/stableSymbol" },
+            { "type": "null" }
+          ]
+        },
+        "localSymbolMarker": {
+          "oneOf": [
+            { "const": "DocumentLocal" },
+            { "type": "null" }
+          ]
+        },
+        "role": { "enum": ["Definition", "Reference"] },
+        "source": {
+          "oneOf": [
+            { "$ref": "#/$defs/relativePath" },
+            { "type": "null" }
+          ]
+        },
+        "safeUri": {
+          "oneOf": [
+            { "$ref": "#/$defs/relativePath" },
+            { "type": "null" }
+          ]
+        },
+        "range": { "$ref": "#/$defs/range" },
+        "module": { "$ref": "#/$defs/identifier" },
+        "sourceSet": { "$ref": "#/$defs/identifier" },
+        "generated": { "type": "boolean" },
+        "freshness": { "enum": ["Fresh", "Stale", "MissingDigest", "Unmapped", "AmbiguousMapping"] },
+        "artifactGroupId": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "documentIndex": { "type": "integer", "minimum": 0, "maximum": 4095 }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "stableSymbol": { "$ref": "#/$defs/stableSymbol" },
+            "localSymbolMarker": { "type": "null" }
+          }
+        },
+        {
+          "properties": {
+            "stableSymbol": { "type": "null" },
+            "localSymbolMarker": { "const": "DocumentLocal" }
+          }
+        }
+      ]
+    },
+    "duplicateGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["groupId", "sizeBytes", "copyCount", "representative", "samplePaths", "pathsTruncated"],
+      "properties": {
+        "groupId": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "sizeBytes": { "type": "integer", "minimum": 0, "maximum": 16777216 },
+        "copyCount": { "type": "integer", "minimum": 2, "maximum": 256 },
+        "representative": { "$ref": "#/$defs/relativePath" },
+        "samplePaths": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/relativePath" }
+        },
+        "pathsTruncated": { "type": "boolean" }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventoryBasis", "declaredSources", "selectedSources", "excludedSources", "declaredArtifacts", "selectedArtifacts", "excludedArtifacts", "rawArtifactBytes", "uniqueArtifactContents", "duplicateCopies", "parsedDocuments", "mappedDocuments", "unmappedDocuments", "ambiguousDocuments", "freshDocuments", "staleDocuments", "missingDigestDocuments", "documentsWithoutOccurrences", "documentsWithSynthetics", "scannedOrdinaryOccurrences", "matchingOccurrences", "returnedOccurrences", "totalWarnings", "returnedWarnings"],
+      "properties": {
+        "inventoryBasis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "manifestSchemaVersion", "inventoryClosed"],
+          "properties": {
+            "kind": { "const": "ExplicitManifest" },
+            "manifestSchemaVersion": { "const": "semantic-scala.usages-manifest.v1" },
+            "inventoryClosed": { "type": "boolean" }
+          }
+        },
+        "declaredSources": { "type": "integer", "minimum": 0, "maximum": 50000 },
+        "selectedSources": { "type": "integer", "minimum": 0, "maximum": 50000 },
+        "excludedSources": { "type": "integer", "minimum": 0, "maximum": 50000 },
+        "declaredArtifacts": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "selectedArtifacts": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "excludedArtifacts": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "rawArtifactBytes": { "type": "integer", "minimum": 0, "maximum": 268435456 },
+        "uniqueArtifactContents": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "duplicateCopies": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "parsedDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "mappedDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "unmappedDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "ambiguousDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "freshDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "staleDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "missingDigestDocuments": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "documentsWithoutOccurrences": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "documentsWithSynthetics": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "scannedOrdinaryOccurrences": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "matchingOccurrences": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "returnedOccurrences": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "totalWarnings": { "type": "integer", "minimum": 0 },
+        "returnedWarnings": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "limitHit": {
+      "enum": [
+        "TargetResolutionOccurrenceLimit",
+        "DocumentLimit",
+        "ScannedOccurrenceLimit",
+        "ReturnedOccurrenceLimit",
+        "DuplicateGroupLimit",
+        "DuplicatePathSampleLimit",
+        "WarningLimit",
+        "ResultEvidenceByteLimit",
+        "Deadline"
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactLimit", "documentLimit", "sourceLimit", "manifestByteLimit", "aggregateArtifactByteLimit", "perArtifactByteLimit", "perSourceByteLimit", "stringByteLimit", "pathByteLimit", "uriByteLimit", "scannedOccurrenceLimit", "returnedOccurrenceLimit", "resultEvidenceByteLimit", "warningLimit", "duplicateGroupLimit", "duplicatePathSampleLimit", "selectorValueLimit", "deadlineNanos", "hits"],
+      "properties": {
+        "artifactLimit": { "const": 256 },
+        "documentLimit": { "const": 4096 },
+        "sourceLimit": { "const": 50000 },
+        "manifestByteLimit": { "const": 16777216 },
+        "aggregateArtifactByteLimit": { "const": 268435456 },
+        "perArtifactByteLimit": { "const": 16777216 },
+        "perSourceByteLimit": { "const": 8388608 },
+        "stringByteLimit": { "const": 1024 },
+        "pathByteLimit": { "const": 4096 },
+        "uriByteLimit": { "const": 4096 },
+        "scannedOccurrenceLimit": { "const": 1000000 },
+        "returnedOccurrenceLimit": { "type": "integer", "minimum": 1, "maximum": 500 },
+        "resultEvidenceByteLimit": { "const": 1048576 },
+        "warningLimit": { "const": 100 },
+        "duplicateGroupLimit": { "const": 100 },
+        "duplicatePathSampleLimit": { "const": 20 },
+        "selectorValueLimit": { "const": 256 },
+        "deadlineNanos": { "const": 30000000000 },
+        "hits": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/limitHit" }
+        }
+      }
+    },
+    "reason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code"],
+      "properties": {
+        "code": {
+          "enum": [
+            "OpenInventory",
+            "SelectorExcludedScope",
+            "UnmappedDocument",
+            "AmbiguousDocumentMapping",
+            "UncoveredDeclaredSource",
+            "MissingDigest",
+            "MissingOccurrenceSection",
+            "MatchingOccurrenceHasNoRange",
+            "UnsafeDocumentUri",
+            "SyntheticsExcluded",
+            "StaleSourceDigest",
+            "ConflictingDuplicateMetadata",
+            "ArtifactSourceMetadataConflict",
+            "MultipleDistinctDocumentsForSource",
+            "InvalidMatchingRange",
+            "ExplicitLocalSymbolUnsupported",
+            "PointTargetAmbiguous",
+            "PointTargetUnresolved"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      }
+    },
+    "limitationReason": {
+      "allOf": [
+        { "$ref": "#/$defs/reason" },
+        { "properties": { "code": { "const": "SyntheticsExcluded" } } }
+      ]
+    },
+    "incompleteReason": {
+      "allOf": [
+        { "$ref": "#/$defs/reason" },
+        {
+          "properties": {
+            "code": {
+              "enum": [
+                "OpenInventory",
+                "SelectorExcludedScope",
+                "UnmappedDocument",
+                "AmbiguousDocumentMapping",
+                "UncoveredDeclaredSource",
+                "MissingDigest",
+                "MissingOccurrenceSection",
+                "MatchingOccurrenceHasNoRange",
+                "UnsafeDocumentUri"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "inconsistentReason": {
+      "allOf": [
+        { "$ref": "#/$defs/reason" },
+        {
+          "properties": {
+            "code": {
+              "enum": [
+                "StaleSourceDigest",
+                "ConflictingDuplicateMetadata",
+                "ArtifactSourceMetadataConflict",
+                "MultipleDistinctDocumentsForSource",
+                "InvalidMatchingRange"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "base": {
+      "type": "object",
+      "required": ["schemaVersion", "state", "targetMode", "target", "selectors", "occurrences", "duplicateGroups", "coverage", "limits", "reasons", "warnings"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.usages-result.v1" },
+        "state": {
+          "enum": ["EvidenceFound", "NoUsagesObserved", "CoverageIncomplete", "TargetAmbiguous", "TargetUnresolved", "ArtifactStaleOrInconsistent", "Truncated", "UnsupportedConstruct"]
+        },
+        "targetMode": { "enum": ["ExplicitGlobal", "PointSelected"] },
+        "target": {
+          "oneOf": [
+            { "$ref": "#/$defs/targetEvidence" },
+            { "type": "null" }
+          ]
+        },
+        "selectors": { "$ref": "#/$defs/selectors" },
+        "occurrences": {
+          "type": "array",
+          "maxItems": 500,
+          "items": { "$ref": "#/$defs/occurrence" }
+        },
+        "duplicateGroups": {
+          "type": "array",
+          "maxItems": 100,
+          "items": { "$ref": "#/$defs/duplicateGroup" }
+        },
+        "coverage": { "$ref": "#/$defs/coverage" },
+        "limits": { "$ref": "#/$defs/limits" },
+        "reasons": {
+          "type": "array",
+          "maxItems": 100,
+          "items": { "$ref": "#/$defs/reason" }
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 100,
+          "items": { "type": "string", "minLength": 1, "maxLength": 1024 }
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "targetMode": { "const": "ExplicitGlobal" },
+            "target": { "$ref": "#/$defs/explicitGlobalTarget" }
+          }
+        },
+        {
+          "properties": {
+            "targetMode": { "const": "PointSelected" },
+            "target": {
+              "oneOf": [
+                { "$ref": "#/$defs/pointGlobalTarget" },
+                { "$ref": "#/$defs/pointLocalTarget" }
+              ]
+            }
+          }
+        },
+        {
+          "properties": {
+            "targetMode": { "const": "ExplicitGlobal" },
+            "target": { "type": "null" }
+          }
+        },
+        {
+          "properties": {
+            "targetMode": { "const": "PointSelected" },
+            "target": { "type": "null" }
+          }
+        }
+      ]
+    },
+    "completeCoverage": {
+      "properties": {
+        "inventoryBasis": {
+          "properties": { "inventoryClosed": { "const": true } }
+        },
+        "excludedSources": { "const": 0 },
+        "excludedArtifacts": { "const": 0 },
+        "unmappedDocuments": { "const": 0 },
+        "ambiguousDocuments": { "const": 0 },
+        "staleDocuments": { "const": 0 },
+        "missingDigestDocuments": { "const": 0 },
+        "documentsWithoutOccurrences": { "const": 0 }
+      }
+    },
+    "targetTerminalCoverage": {
+      "properties": {
+        "uniqueArtifactContents": { "const": 0 },
+        "duplicateCopies": { "const": 0 },
+        "parsedDocuments": { "const": 0 },
+        "mappedDocuments": { "const": 0 },
+        "unmappedDocuments": { "const": 0 },
+        "ambiguousDocuments": { "const": 0 },
+        "freshDocuments": { "const": 0 },
+        "staleDocuments": { "const": 0 },
+        "missingDigestDocuments": { "const": 0 },
+        "documentsWithoutOccurrences": { "const": 0 },
+        "documentsWithSynthetics": { "const": 0 },
+        "scannedOrdinaryOccurrences": { "const": 0 },
+        "matchingOccurrences": { "const": 0 },
+        "returnedOccurrences": { "const": 0 }
+      }
+    },
+    "evidenceFound": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "EvidenceFound" },
+            "target": { "$ref": "#/$defs/targetEvidence" },
+            "occurrences": { "minItems": 1 },
+            "coverage": {
+              "allOf": [
+                { "$ref": "#/$defs/coverage" },
+                { "$ref": "#/$defs/completeCoverage" },
+                { "properties": { "matchingOccurrences": { "minimum": 1 }, "returnedOccurrences": { "minimum": 1 } } }
+              ]
+            },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": { "items": { "$ref": "#/$defs/limitationReason" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "noUsagesObserved": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "NoUsagesObserved" },
+            "target": { "$ref": "#/$defs/targetEvidence" },
+            "occurrences": { "maxItems": 0 },
+            "coverage": {
+              "allOf": [
+                { "$ref": "#/$defs/coverage" },
+                { "$ref": "#/$defs/completeCoverage" },
+                { "properties": { "matchingOccurrences": { "const": 0 }, "returnedOccurrences": { "const": 0 } } }
+              ]
+            },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": { "items": { "$ref": "#/$defs/limitationReason" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "coverageIncomplete": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "CoverageIncomplete" },
+            "target": { "$ref": "#/$defs/targetEvidence" },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": {
+              "items": { "oneOf": [{ "$ref": "#/$defs/limitationReason" }, { "$ref": "#/$defs/incompleteReason" }] },
+              "contains": { "$ref": "#/$defs/incompleteReason" },
+              "minContains": 1
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "artifactStaleOrInconsistent": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "ArtifactStaleOrInconsistent" },
+            "target": { "$ref": "#/$defs/targetEvidence" },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": {
+              "items": { "oneOf": [{ "$ref": "#/$defs/limitationReason" }, { "$ref": "#/$defs/incompleteReason" }, { "$ref": "#/$defs/inconsistentReason" }] },
+              "contains": { "$ref": "#/$defs/inconsistentReason" },
+              "minContains": 1
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "truncated": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "Truncated" },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "minItems": 1 } } }] }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "target": { "$ref": "#/$defs/targetEvidence" },
+                "limits": {
+                  "allOf": [
+                    { "$ref": "#/$defs/limits" },
+                    {
+                      "properties": {
+                        "hits": {
+                          "not": {
+                            "contains": { "const": "TargetResolutionOccurrenceLimit" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "targetMode": { "const": "PointSelected" },
+                "target": { "type": "null" },
+                "occurrences": { "maxItems": 0 },
+                "duplicateGroups": { "maxItems": 0 },
+                "coverage": {
+                  "allOf": [
+                    { "$ref": "#/$defs/coverage" },
+                    { "$ref": "#/$defs/targetTerminalCoverage" }
+                  ]
+                },
+                "limits": {
+                  "allOf": [
+                    { "$ref": "#/$defs/limits" },
+                    {
+                      "properties": {
+                        "hits": {
+                          "contains": { "const": "TargetResolutionOccurrenceLimit" },
+                          "minContains": 1
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "targetAmbiguous": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "TargetAmbiguous" },
+            "targetMode": { "const": "PointSelected" },
+            "target": { "type": "null" },
+            "occurrences": { "maxItems": 0 },
+            "duplicateGroups": { "maxItems": 0 },
+            "coverage": { "allOf": [{ "$ref": "#/$defs/coverage" }, { "$ref": "#/$defs/targetTerminalCoverage" }] },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": {
+              "minItems": 1,
+              "maxItems": 1,
+              "items": { "allOf": [{ "$ref": "#/$defs/reason" }, { "properties": { "code": { "const": "PointTargetAmbiguous" } } }] }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "targetUnresolved": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "TargetUnresolved" },
+            "targetMode": { "const": "PointSelected" },
+            "target": { "type": "null" },
+            "occurrences": { "maxItems": 0 },
+            "duplicateGroups": { "maxItems": 0 },
+            "coverage": { "allOf": [{ "$ref": "#/$defs/coverage" }, { "$ref": "#/$defs/targetTerminalCoverage" }] },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": {
+              "minItems": 1,
+              "maxItems": 1,
+              "items": { "allOf": [{ "$ref": "#/$defs/reason" }, { "properties": { "code": { "const": "PointTargetUnresolved" } } }] }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "unsupportedConstruct": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "properties": {
+            "state": { "const": "UnsupportedConstruct" },
+            "targetMode": { "const": "ExplicitGlobal" },
+            "target": { "type": "null" },
+            "occurrences": { "maxItems": 0 },
+            "duplicateGroups": { "maxItems": 0 },
+            "coverage": { "allOf": [{ "$ref": "#/$defs/coverage" }, { "$ref": "#/$defs/targetTerminalCoverage" }] },
+            "limits": { "allOf": [{ "$ref": "#/$defs/limits" }, { "properties": { "hits": { "maxItems": 0 } } }] },
+            "reasons": {
+              "minItems": 1,
+              "maxItems": 1,
+              "items": { "allOf": [{ "$ref": "#/$defs/reason" }, { "properties": { "code": { "const": "ExplicitLocalSymbolUnsupported" } } }] }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}
