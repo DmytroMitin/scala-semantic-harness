@@ -50,7 +50,10 @@ execution ledger and does not promise delivery dates.
 
 - Keep deterministic assembly, official-schema checks, canonical-skill byte
   identity, and relocated CLI-backed MCP smoke reproducible.
-- Establish a clean external user walkthrough through a conformant client.
+- Maintain a clean external source-installation walkthrough through a
+  documented project-local or session-local MCP client route.
+- Establish a separate conformant Agent Plugins package-load route when an
+  installed client documents safe local or disposable loading.
 - Add a supported packaged distribution and versioned release channel.
 - Validate CLI, MCP, and skill activation from a clean environment.
 - Keep the product independent of private control or orchestration material.
@@ -74,11 +77,10 @@ execution ledger and does not promise delivery dates.
   security, changelog, and release/versioning policies.
 - Re-run current-tree and clean-history privacy review whenever candidate bytes
   change.
-- Preserve the original mixed history privately and expose only audited public
-  refs if repository visibility changes later.
-- Preserve the verified clean-candidate construction and validation gates for
-  any separately authorized publication; never expose the mixed historical
-  repository as the public source history.
+- Preserve the original mixed history privately and keep only audited clean
+  refs in the public product repository.
+- Reuse the verified clean-history validation gates for future public source
+  changes; never attach the mixed historical object graph to public refs.
 
 Public-alpha readiness, external installation, semantic utility, composition
 utility, skill adoption, benchmark reproducibility, and publication safety are

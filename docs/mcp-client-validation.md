@@ -3,6 +3,10 @@
 The packaged stdio server delegates to the packaged `semantic-scala` CLI and
 exposes exactly eight tools.
 
+The supported baseline for a source checkout is JDK 21, sbt, Git, and Python
+3. The walkthrough below also assumes an already-installed Claude Code client;
+it does not install or configure a client globally.
+
 ## Build the launchers
 
 ```bash
@@ -28,6 +32,36 @@ For project-scoped client configuration, copy [`.mcp.example.json`](../.mcp.exam
 and replace `/path/to/scala-semantic-harness` with the absolute path to your
 checkout. Client approval and trust behavior varies; review the command before
 approving build or test execution.
+
+## Bounded Claude Code first use
+
+Claude Code 2.1.220 provides a session-only `--mcp-config` route. To avoid a
+persisted project-server approval while evaluating the source alpha, copy
+`.mcp.example.json` to a temporary path outside the checkout, replace both
+placeholder checkout paths with the absolute result of `pwd -P`, and run:
+
+```bash
+claude -p \
+  "List the semantic-scala MCP tools, then call only semantic_effect_summary with workspace . and file examples/scala3-fp-effect-generic-wrapper/src/main/scala/example/Main.scala." \
+  --mcp-config /tmp/semantic-scala.mcp.json \
+  --strict-mcp-config \
+  --setting-sources project \
+  --no-session-persistence \
+  --permission-mode dontAsk \
+  --allowedTools mcp__semantic-scala__semantic_effect_summary
+```
+
+The repository-local Claude wrapper makes the `semantic-scala` skill
+discoverable. Skill discovery is not proof of autonomous selection or
+effectiveness. The expected call has adapter `ok: true`, schema
+`semantic-scala.effect-summary.v1`, and syntax-first method summaries. It does
+not compile the fixture or prove inferred effect semantics.
+
+Delete `/tmp/semantic-scala.mcp.json` after the session. For ordinary
+project-scoped use instead, place the edited copy at `.mcp.json`; Claude Code
+will show that shared project server as pending until the user explicitly
+approves it. Do not treat MCP discovery as approval to run the build-executing
+compile, errors, or test tools.
 
 ## Expected registry
 

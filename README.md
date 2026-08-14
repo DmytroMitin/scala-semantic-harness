@@ -11,12 +11,11 @@ readiness limits and
 [`docs/semantic-tooling-positioning.md`](docs/semantic-tooling-positioning.md)
 for the product boundary.
 
-The current tree is maintained as a standalone experimental public-alpha
-product contract under the [Apache-2.0 license](LICENSE). That does not
-authorize publication of the existing mixed-history repository. An
-independently constructed clean candidate has passed dedicated privacy,
-clean-clone, and public-ref gates, but publishing it still requires a separate
-explicit action that keeps the mixed historical repository private.
+The current tree is the standalone experimental public-alpha source product
+under the [Apache-2.0 license](LICENSE). It was published from an independently
+constructed, audited one-commit history. The earlier mixed development history
+is retained separately in a private archive and is not part of this public
+repository.
 
 ## What is included
 
@@ -50,7 +49,9 @@ explicit action that keeps the mixed historical repository private.
 
 ## Build and test
 
-The project uses Scala 3 and sbt. CI uses Temurin JDK 21.
+The project uses Scala 3 and sbt. A fresh source setup requires JDK 21, sbt,
+Git, and Python 3; CI uses Temurin JDK 21. A newer local JDK may work, but it is
+not the documented baseline.
 
 ```bash
 sbt -batch test
@@ -185,11 +186,11 @@ benchmark reproducibility beyond its stated small-sample gate.
   every source is covered or fresh.
 - Presentation Compiler renderings are bounded evidence, not whole-project
   compile proof.
-- Public-alpha source-candidate readiness is separate from binary distribution,
+- Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
-- The clean candidate is suitable only for a separate explicit source
-  publication action. The existing mixed Git history has not been cleared for
-  public exposure and must remain private.
+- The public repository contains only the audited clean source history. The
+  separate mixed development history remains private and is not a release or
+  installation channel.
 
 See [`ROADMAP.md`](ROADMAP.md) for product-oriented next steps.
 
