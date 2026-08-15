@@ -45,7 +45,8 @@ score.
 | Public alpha product readiness | `READY` | Apache-2.0, focused newcomer/release policies, a 244-file allowlist, an independently initialized one-commit candidate, current-tree and reachable-history scans, fresh-clone validation, and public-ref/object proof pass for an experimental source alpha. This is not a supported binary/package release. |
 | External installation usability | `READY` | An anonymous public HTTPS clone was staged from the documented JDK 21/sbt/Python/Git source contract, then Claude Code 2.1.220 used an explicit session-local MCP configuration to discover exactly eight tools and return a bounded `semantic_effect_summary` result. The temporary configuration was removable and no supported binary, package-manager, marketplace, or conformant Agent Plugins client route is implied. |
 | Semantic primitive marginal utility | `EVIDENCE_PARTIAL` | Bounded evidence identifies useful symbol, provenance, usage, and reconciliation behavior, but no general advantage over a strong direct-tool baseline is established. |
-| Composition/orchestration marginal utility | `EVIDENCE_PARTIAL` | A bounded public CLI plus thin-MCP point-evidence composition preserves the direct discovery and reconciliation facts while removing caller-controlled candidate selection and route branching for exact, mismatch, no-match, ambiguous, partial/unparseable, and live-unavailable cases. Live-agent decision-quality benefit remains unestablished. |
+| Composition/orchestration marginal utility | `READY` | Deterministic contract evidence plus independent real-project trials on `quasiquotes-scala3` and Cats Effect show that point evidence preserves direct discovery, live, reconciliation, selection, routing, and typed non-attempt facts while materially reducing caller merge and unsafe-selection risk. This does not establish live-agent decision-quality, latency, broad IDE/LSP superiority, primitive marginal utility, Scala 2 compatibility, or skill/adoption benefit. |
+| Scala target compatibility | `EVIDENCE_PARTIAL` | One parallel JDK 21 matrix verifies compile/test/error delegation, SemanticDB discovery/symbol/usages, syntax-first effect summaries, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8. Shared-syntax Scala 2 symbol/type points also resolved and reconciled exactly, but through the pinned Scala 3.3 presentation compiler; broad Scala 2 dialect, macro, compiler-plugin, classpath, and real-project compatibility remain untested. |
 | Agent skill adoption effectiveness | `NOT_ASSESSED` | The canonical skill, wrappers, and portable package source exist. No installed client documented a safe nonpersistent Agent Plugins 1.0 package-load route, so no valid spontaneous selection/non-selection case ran; misuse resistance and incremental decision value remain unproven. |
 | Benchmark reproducibility | `READY` | The admitted public subset contains portable prompts, test-coupled fixtures, a bounded aggregate, and deterministic validation; it passed manifest, link, full-test, staged CLI, wrapper, and MCP smoke gates in a history-free disposable tree. This does not reproduce private historical sessions or establish general effectiveness. |
 | Publication safety | `READY` | The public product is an audited one-commit clean history. The separate mixed-history archive and private control repository remain private; their refs and object graphs are not part of the public product. |
@@ -55,9 +56,9 @@ generic semantic tooling, or proven to improve every Scala task.
 
 ## Next evidence milestone
 
-The source-installation lane is now demonstrated for one real client. The next
-separate experiment should compare the public point-evidence composition with
-direct use of the same discovery and reconciliation operations on one small
-real project. That comparison must measure decision-relevant evidence rather
-than command count. Agent Plugins package loading and skill-adoption
+The source-installation lane, point-evidence composition value, and bounded
+two-version fixture matrix are now recorded independently. A later compatibility
+task should start from a concrete Scala-2-specific syntax, macro/plugin,
+classpath, or real-project failure rather than extrapolating from the
+shared-syntax fixture. Agent Plugins package loading and skill-adoption
 effectiveness remain separate gates.

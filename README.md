@@ -53,6 +53,16 @@ The project uses Scala 3 and sbt. A fresh source setup requires JDK 21, sbt,
 Git, and Python 3; CI uses Temurin JDK 21. A newer local JDK may work, but it is
 not the documented baseline.
 
+Scala 3 describes the harness implementation, not a blanket target-language
+promise. A bounded JDK 21 matrix has verified build/test/error delegation,
+SemanticDB discovery/symbol/usages, and syntax-first effect summaries on Scala
+2.13.18 and Scala 3.3.8 fixtures. Presentation Compiler operations still use
+the pinned Scala 3.3 compiler: they resolved the matrix's shared-syntax Scala 2
+points, but this is not general Scala 2 dialect or compiler support.
+Reconciliation and point evidence inherit that dynamic-source limitation. See
+[`docs/project-status.md`](docs/project-status.md) and
+[`docs/semantic-api.md`](docs/semantic-api.md) for the exact boundary.
+
 ```bash
 sbt -batch test
 sbt cli/stage

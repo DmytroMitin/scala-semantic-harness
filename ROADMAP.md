@@ -37,6 +37,17 @@ execution ledger and does not promise delivery dates.
   attribution, and human intervention.
 - Do not treat fewer commands or tool invocation alone as product value.
 
+## Target-language compatibility
+
+- Preserve the command-class boundary established by the Scala 2.13.18 / Scala
+  3.3.8 JDK 21 fixture matrix.
+- Keep build/test delegation, SemanticDB, syntax-first, Presentation Compiler,
+  reconciliation/composition, and MCP compatibility claims separate.
+- Treat common-syntax Scala 2 success through the pinned Scala 3.3 presentation
+  compiler as bounded evidence, not general Scala 2 compiler support.
+- Admit broader compatibility only from concrete version-specific fixtures or
+  real projects; do not infer it from the harness implementation language.
+
 ## Agent skill and adoption
 
 - Maintain the generated Agent Plugins 1.0 package for the canonical skill and
@@ -83,5 +94,6 @@ execution ledger and does not promise delivery dates.
   changes; never attach the mixed historical object graph to public refs.
 
 Public-alpha readiness, external installation, semantic utility, composition
-utility, skill adoption, benchmark reproducibility, and publication safety are
-independent gates. See [`docs/project-status.md`](docs/project-status.md).
+utility, target compatibility, skill adoption, benchmark reproducibility, and
+publication safety are independent gates. See
+[`docs/project-status.md`](docs/project-status.md).

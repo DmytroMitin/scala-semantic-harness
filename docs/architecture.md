@@ -25,6 +25,22 @@ eight tools; CLI-only capabilities do not become MCP tools implicitly.
 The product has no build, test, release, skill, MCP, or user-flow dependency on
 private control repositories or controller history.
 
+## Target-language compatibility boundary
+
+The harness is implemented in Scala 3, while target compatibility is
+capability-specific. Build/test commands delegate to the target's own build.
+SemanticDB readers consume explicit version-appropriate artifacts. Syntax-first
+analysis depends on accepted source syntax. Dynamic symbol/type operations use
+the harness's pinned Scala 3.3 presentation compiler rather than a native Scala
+2 compiler.
+
+A bounded JDK 21 fixture matrix verified build/test/error, SemanticDB,
+effect-summary, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8.
+The common-syntax Scala 2 points also resolved dynamically and reconciled
+exactly, but that narrow result does not establish general Scala 2 syntax,
+classpath, macro, compiler-plugin, or project compatibility. Composition
+inherits the limits of every evidence source it uses.
+
 ## Packaging boundary
 
 The Agent Plugins source templates and assembler package existing policy and

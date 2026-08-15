@@ -780,7 +780,9 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
   Git/Bloop/BSP metadata enrichment is deferred. Current status, coverage, and
   mapping schemas do not expose or select by hints. Freshness/selection, public
   hint fields, `semanticdb-for-source.v2`, and higher-level source selection
-  remain deferred. Scala-version compatibility testing is separate future work.
+  remain deferred. A bounded compatibility matrix has tested Scala 2.13.18 and
+  Scala 3.3.8 artifacts; target-version claims remain command-specific rather
+  than inferred from artifact availability.
 - `symbols --semanticdb` and `reconcile-symbol --semanticdb` still require
   explicit SemanticDB paths.
 - It does not generate SemanticDB dynamically.
@@ -791,6 +793,10 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
 ## Dynamic Semantic Query Limits
 
 - Dynamic point queries use the Scala 3 presentation compiler directly.
+- The pinned Scala 3.3 presentation compiler resolved the shared-syntax points
+  in one Scala 2.13.18 fixture, but it is not a native Scala 2 presentation
+  compiler. That result does not establish support for Scala-2-specific syntax,
+  macros, compiler plugins, or arbitrary project classpaths.
 - The CLI accepts one explicit `.scala` source file path.
 - CLI line and column inputs are one-based.
 - No Metals, BSP, LSP, TASTy, MCP, graph storage, vector search, or FP analyzer
