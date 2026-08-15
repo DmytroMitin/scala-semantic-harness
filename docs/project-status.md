@@ -51,10 +51,15 @@ score.
 | Benchmark reproducibility | `READY` | The admitted public subset contains portable prompts, test-coupled fixtures, a bounded aggregate, and deterministic validation; it passed manifest, link, full-test, staged CLI, wrapper, and MCP smoke gates in a history-free disposable tree. This does not reproduce private historical sessions or establish general effectiveness. |
 | Publication safety | `READY` | The public product has an audited clean root followed only by reviewed public-product commits. The separate mixed-history archive and private control repository remain private; their refs and object graphs are not part of the public product. |
 
-`0.1.0-alpha.1` is prepared as a source-only tagged-alpha candidate; its tag
-and GitHub Release do not exist yet. Binary/package/client distribution,
-Agent Plugin adoption, and broader effectiveness or superiority claims remain
-separate and unproven.
+`0.1.0-alpha.1` is a published source-only prerelease. Its tag and GitHub
+Release point to immutable commit
+`e2c6eef57124b79c0062b25f48a719685c63905e`, tree
+`281bb7600701d8c93fff2739a7fdb8d781ce8554`. Current `main` is post-release
+development and reports `0.1.0-alpha.2-SNAPSHOT`; that development identity is
+not a commitment to publish `0.1.0-alpha.2`. Project-built binary, package, and
+client distribution remains unestablished. Agent Plugin adoption effectiveness,
+broader semantic superiority, complete Scala 2 support, and 1.0 stability
+remain unproven.
 
 ## Next evidence milestone
 

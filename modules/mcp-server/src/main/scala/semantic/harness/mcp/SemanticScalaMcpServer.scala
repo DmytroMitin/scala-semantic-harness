@@ -230,7 +230,7 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
 object SemanticScalaMcpServer:
   val ProtocolVersion: String = "2025-06-18"
   val ServerName: String = "semantic-harness-mcp-server"
-  val ServerVersion: String = "0.1.0-alpha.1"
+  val ServerVersion: String = "0.1.0-alpha.2-SNAPSHOT"
   val SemanticCompileToolName: String = "semantic_compile"
   val SemanticErrorsToolName: String = "semantic_errors"
   val SemanticTestToolName: String = "semantic_test"
