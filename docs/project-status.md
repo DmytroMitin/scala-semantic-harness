@@ -51,8 +51,10 @@ score.
 | Benchmark reproducibility | `READY` | The admitted public subset contains portable prompts, test-coupled fixtures, a bounded aggregate, and deterministic validation; it passed manifest, link, full-test, staged CLI, wrapper, and MCP smoke gates in a history-free disposable tree. This does not reproduce private historical sessions or establish general effectiveness. |
 | Publication safety | `READY` | The public product has an audited clean root followed only by reviewed public-product commits. The separate mixed-history archive and private control repository remain private; their refs and object graphs are not part of the public product. |
 
-The project is not presented as public-release-ready, generally superior to
-generic semantic tooling, or proven to improve every Scala task.
+`0.1.0-alpha.1` is prepared as a source-only tagged-alpha candidate; its tag
+and GitHub Release do not exist yet. Binary/package/client distribution,
+Agent Plugin adoption, and broader effectiveness or superiority claims remain
+separate and unproven.
 
 ## Next evidence milestone
 

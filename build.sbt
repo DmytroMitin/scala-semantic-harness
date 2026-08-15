@@ -1,6 +1,6 @@
 ThisBuild / organization := "io.github.dmytromitin"
 ThisBuild / scalaVersion := "3.3.3"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.0-alpha.1"
 
 lazy val circeVersion = "0.14.9"
 lazy val munitVersion = "1.0.0"
