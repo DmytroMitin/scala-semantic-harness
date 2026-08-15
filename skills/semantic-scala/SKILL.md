@@ -195,9 +195,30 @@ the status.
 
 ### SemanticDB absent or uncertain
 
-Run `semanticdb-status --workspace . --json` and, if artifacts exist,
-`semanticdb-coverage --workspace . --json` before attempting `symbols` or
-reconciliation. Do not infer coverage from availability alone.
+Run `semanticdb-status --workspace . --json` and
+`semanticdb-for-source --workspace . --file <scala> --json` first. If matching
+static evidence is absent and the user has approved build execution, one
+explicit `semantic-scala compile --json` may be used to run the project's
+ordinary root compile. That build can execute project/plugin code, resolve
+dependencies, populate caches, and write build outputs. It emits SemanticDB
+only when the checked-in target build is already configured to do so.
+
+After a successful compile, repeat the same status/source lookup or
+`point-evidence` query. Preserve these outcomes separately:
+
+- a matching artifact appeared: report its actual unique, ambiguous, or
+  partial state; availability still does not establish coverage or freshness;
+- compile succeeded but no matching artifact appeared: do not infer missing
+  source, unsupported Scala, or that SemanticDB is impossible; stop rather
+  than injecting compiler flags/plugins or mutating the build, and ask the
+  project owner to select or enable an appropriate SemanticDB-producing build;
+- compile failed: report build failure separately from SemanticDB absence.
+
+The current compile surface does not select an sbt project/configuration. If
+the ordinary root compile is too broad or does not cover the source, keep that
+scope uncertainty explicit instead of substituting a private shell build.
+When artifacts do exist, use `semanticdb-coverage --workspace . --json` before
+making inventory-scoped coverage statements.
 
 ### Explicit no-tool case
 

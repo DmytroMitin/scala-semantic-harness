@@ -786,6 +786,26 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
 - `symbols --semanticdb` and `reconcile-symbol --semanticdb` still require
   explicit SemanticDB paths.
 - It does not generate SemanticDB dynamically.
+- The existing explicit acquisition recipe is observational rather than a
+  generation contract: first run `semanticdb-status` and
+  `semanticdb-for-source` (or `point-evidence`), then, only with approval for
+  its build side effects, run one ordinary root `semantic-scala compile
+  --json` and repeat the same SemanticDB query. `compile` can execute target
+  build/plugin code, resolve dependencies, populate caches, and write build
+  outputs. It produces SemanticDB only when the target's checked-in build is
+  already configured to do so.
+- A successful compile followed by a matching artifact demonstrates
+  acquisition only for the observed build scope; preserve unique, ambiguous,
+  partial, coverage, and freshness states. A successful compile followed by
+  no matching artifact does not prove source absence, unsupported Scala, or
+  that SemanticDB cannot be generated. Stop rather than inserting compiler
+  flags/plugins or mutating the build, and ask the project owner to select or
+  enable an appropriate SemanticDB-producing build. Build failure remains a
+  separate result.
+- The current compile surface runs the ordinary root build and has no sbt
+  project/configuration selector. When that scope is too broad or does not
+  cover the source, report the scope uncertainty; do not replace the public
+  recipe with a hidden shell build.
 - It does not parse TASTy or use Metals/BSP/presentation compiler APIs.
 - Canonical `symbol` values are preserved for tools; `displayName` is for
   humans and may be ambiguous.
