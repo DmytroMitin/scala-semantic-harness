@@ -13,9 +13,9 @@ for the product boundary.
 
 The current tree is the standalone experimental public-alpha source product
 under the [Apache-2.0 license](LICENSE). It was published from an independently
-constructed, audited one-commit history. The earlier mixed development history
-is retained separately in a private archive and is not part of this public
-repository.
+constructed, audited clean root followed only by reviewed public-product
+commits. The earlier mixed development history is retained separately in a
+private archive and is not part of this public repository.
 
 ## What is included
 

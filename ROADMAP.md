@@ -17,6 +17,23 @@ execution ledger and does not promise delivery dates.
 - Public semantic-scala skill policy and repository wrappers.
 - Examples, CI, benchmark fixtures, and methodology.
 
+## Near-term priorities
+
+1. Make CLI and MCP installation substantially easier through a supported
+   one-command or near-one-command runtime distribution. The current verified
+   source-build route remains available, but it is not packaged-distribution
+   readiness.
+2. Improve skill and plugin discoverability, then test whether agents select
+   and use the installed harness appropriately. Invocation alone is not
+   adoption value.
+3. Invite early technical feedback on the experimental source alpha and use
+   real installation and project cases to guide maintenance.
+4. Validate compatibility on a maintained, reproducible real Scala 2.13
+   project before moving to harder legacy macro/plugin targets.
+5. Admit new semantic capabilities only from concrete user, adoption,
+   compatibility, or benchmark gaps that strong ordinary tooling does not
+   already address adequately.
+
 ## Semantic evidence quality
 
 - Keep facts owned by the narrowest appropriate compiler, build, test,
@@ -45,6 +62,10 @@ execution ledger and does not promise delivery dates.
   reconciliation/composition, and MCP compatibility claims separate.
 - Treat common-syntax Scala 2 success through the pinned Scala 3.3 presentation
   compiler as bounded evidence, not general Scala 2 compiler support.
+- Next validate the capability classes separately on a maintained,
+  reproducible real Scala 2.13 project. Treat older macro/plugin-heavy projects
+  as later stress targets so dependency or build bitrot is not mistaken for a
+  harness defect.
 - Admit broader compatibility only from concrete version-specific fixtures or
   real projects; do not infer it from the harness implementation language.
 
@@ -53,8 +74,11 @@ execution ledger and does not promise delivery dates.
 - Maintain the generated Agent Plugins 1.0 package for the canonical skill and
   exact-eight MCP server without making client wrappers canonical.
 - Test appropriate spontaneous selection, non-selection, and resistance to
-  misuse or overuse when a documented conformant client offers a safe
-  nonpersistent local-package route.
+  misuse or overuse once the runtime is cleanly installable and a documented
+  client integration route is available.
+- Investigate current cross-agent skill directories and current Codex/OpenAI
+  and Claude packaging mechanisms while keeping one canonical skill with thin
+  integration wrappers.
 - Separate capability value from the incremental effect of skill guidance.
 
 ## Installation and packaging
@@ -65,7 +89,12 @@ execution ledger and does not promise delivery dates.
   documented project-local or session-local MCP client route.
 - Establish a separate conformant Agent Plugins package-load route when an
   installed client documents safe local or disposable loading.
-- Add a supported packaged distribution and versioned release channel.
+- Evaluate current JVM application publication plus launcher/package-manager
+  metadata alongside release bundles, MCP ecosystem packaging, native
+  executables, containers, and justified ecosystem wrappers; select the
+  smallest supportable route before implementation.
+- Add a supported packaged distribution and versioned release channel without
+  turning the application into a promised embeddable library API.
 - Validate CLI, MCP, and skill activation from a clean environment.
 - Keep the product independent of private control or orchestration material.
 
