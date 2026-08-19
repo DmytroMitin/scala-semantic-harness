@@ -23,22 +23,21 @@ eight tools. It does not expose the rest of the CLI command suite.
 
 ## Setup
 
-Build the packaged CLI before using the default local path:
+The server's default resolves a regular executable named `semantic-scala`
+through a bounded PATH search. A Coursier-installed server therefore finds its
+installed CLI sibling when the shared install directory is on PATH. It never
+falls back to a checkout-relative stage tree or sbt runner.
+
+For source-checkout development, build the packaged CLI and add it to PATH:
 
 ```bash
 sbt cli/stage
 ```
 
-Default local CLI path:
-
-```text
-modules/cli/target/stage/bin/semantic-scala
-```
-
 Run the server during local development:
 
 ```bash
-sbt --error "mcpServer/run"
+PATH="$PWD/modules/cli/target/stage/bin:$PATH" sbt --error "mcpServer/run"
 ```
 
 For MCP clients, prefer the packaged launcher so sbt does not sit between the
@@ -60,6 +59,10 @@ or:
 ```bash
 modules/mcp-server/target/stage/bin/semantic-scala-mcp --cli /path/to/semantic-scala
 ```
+
+Explicit `--cli` wins over `SEMANTIC_SCALA_CLI`, which wins over PATH. Every
+selected target must be a launchable regular non-symlink file; startup errors
+and reported tool commands are sanitized.
 
 The server reads newline-delimited JSON-RPC messages from stdin and writes only
 JSON-RPC messages to stdout. It may write startup argument errors to stderr

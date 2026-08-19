@@ -32,7 +32,9 @@ private archive and is not part of this public repository.
 - a client-neutral `semantic-scala` agent skill with thin Codex and Claude Code
   wrappers;
 - source templates and a deterministic assembler for a self-contained Agent
-  Plugins 1.0 package containing that skill and the exact-eight MCP server.
+  Plugins 1.0 package containing that skill and the exact-eight MCP server; and
+- an implemented, locally validated exact-eight Maven/Coursier runtime
+  candidate that is not externally published or supported yet.
 
 ## Modules
 
@@ -81,6 +83,26 @@ The source-checkout wrapper runs the CLI through sbt:
 
 For repeated use, prefer the staged launcher at
 `modules/cli/target/stage/bin/semantic-scala`.
+
+## Maven/Coursier distribution candidate
+
+The source-build route above remains the currently supported and externally
+verified route. A production-shaped modular Maven/Coursier candidate is now
+implemented and passes a disposable local proof, but no project artifact or
+Coursier channel has been published externally. Do not use the intended
+coordinates as though they existed on Maven Central.
+
+The candidate publishes exactly the eight implementation modules, never the
+root aggregate or benchmark, and generates exact-version descriptors for the
+distinct `semantic-scala` CLI and `semantic-scala-mcp` server applications.
+JDK 21 and Coursier are runtime/install prerequisites. Target-workspace sbt is
+needed by build-oracle commands such as `compile`, `errors`, and `test`; it is
+not required merely to install the applications or for every read-only
+semantic command. The Maven modules are application implementation artifacts,
+not a supported embeddable-library API or binary-compatibility promise.
+
+See [`docs/distribution.md`](docs/distribution.md) for the exact graph, local
+proof, update/uninstall intent, provenance gate, and publication boundary.
 
 ## Semantic commands
 
@@ -198,6 +220,10 @@ benchmark reproducibility beyond its stated small-sample gate.
   compile proof.
 - Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
+- The Maven/Coursier route has local implementation evidence only. It has no
+  public namespace acceptance, external artifact, published channel, or
+  independent public install, and its flagged license/NOTICE metadata still
+  requires human prepublication review.
 - The public repository contains only the audited clean source history. The
   separate mixed development history remains private and is not a release or
   installation channel.

@@ -19,10 +19,10 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Make CLI and MCP installation substantially easier through a supported
-   one-command or near-one-command runtime distribution. The current verified
-   source-build route remains available, but it is not packaged-distribution
-   readiness.
+1. Close the exact Maven dependency license/NOTICE human-review gate, then
+   separately authorize and validate external publication of the implemented
+   CLI/MCP Coursier route. The current verified source-build route remains
+   available, and the local candidate is not packaged-distribution readiness.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.
@@ -83,17 +83,19 @@ execution ledger and does not promise delivery dates.
 
 ## Installation and packaging
 
+- Maintain the exact-eight modular Maven graph, current Central publishing
+  architecture, exact-version two-application Coursier source, and disposable
+  install/update/uninstall/reproducibility proof.
+- Resolve every flagged multiple-license, EPL-family, missing/ambiguous
+  license, and possible NOTICE/attribution item through human prepublication
+  review before an externally authorized release.
 - Keep deterministic assembly, official-schema checks, canonical-skill byte
   identity, and relocated CLI-backed MCP smoke reproducible.
 - Maintain a clean external source-installation walkthrough through a
   documented project-local or session-local MCP client route.
 - Establish a separate conformant Agent Plugins package-load route when an
   installed client documents safe local or disposable loading.
-- Evaluate current JVM application publication plus launcher/package-manager
-  metadata alongside release bundles, MCP ecosystem packaging, native
-  executables, containers, and justified ecosystem wrappers; select the
-  smallest supportable route before implementation.
-- Add a supported packaged distribution and versioned release channel without
+- Add the separately authorized public Maven/Coursier release channel without
   turning the application into a promised embeddable library API.
 - Validate CLI, MCP, and skill activation from a clean environment.
 - Keep the product independent of private control or orchestration material.

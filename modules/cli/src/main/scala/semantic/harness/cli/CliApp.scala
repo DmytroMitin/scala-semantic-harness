@@ -57,7 +57,7 @@ import semantic.harness.semanticdb_reader.UsagesPublicFailureKind
 import semantic.harness.semanticdb_reader.UsagesPublicResult
 
 object CliApp:
-  val Version = "0.1.0-alpha.2-SNAPSHOT"
+  val Version = BuildVersion.value
 
   def run(args: List[String]): CliResult =
     val acquirer = SbtClasspathAcquirer.default

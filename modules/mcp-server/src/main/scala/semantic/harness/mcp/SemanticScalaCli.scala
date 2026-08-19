@@ -337,7 +337,7 @@ final case class SemanticScalaCli(
               case Some(`expectedSchemaVersion`) =>
                 McpToolResult(
                   ok = true,
-                  command = command,
+                  command = publicCommand(command),
                   workspace = workspace.toString,
                   exitCode = Some(result.exitCode),
                   schemaVersion = Some(expectedSchemaVersion),
@@ -424,7 +424,7 @@ final case class SemanticScalaCli(
     )
 
   private def publicCommand(command: List[String]): List[String] =
-    "semantic-scala" :: command.drop(1).headOption.toList
+    "semantic-scala" :: command.drop(1)
 
   private def sanitize(message: String, workspace: Path): String =
     message
@@ -443,7 +443,7 @@ object SemanticScalaCli:
   val SymbolsSchemaVersion: String = SemanticFileSummary.SchemaVersion
   val ReconcileSymbolSchemaVersion: String = ReconciliationResult.SchemaVersion
   val PointEvidenceSchemaVersion: String = PointEvidenceReport.SchemaVersion
-  val DefaultCliPath: Path = Path.of("modules/cli/target/stage/bin/semantic-scala")
+  val DefaultCliPath: Path = Path.of("semantic-scala")
 
   def effectSummaryArgs(file: String): List[String] =
     List("effect-summary", "--file", file, "--json")

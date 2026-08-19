@@ -43,5 +43,14 @@ marketplace upload.
 Future binary and package channels still require separate reproducibility,
 dependency-attribution and license, installation, and runtime gates.
 
+The exact-eight Maven/Coursier candidate now implements those gates locally,
+including source/doc/signature/checksum shape, byte-identical two-build output,
+and disposable install/update/uninstall. It remains unpublished. Its automated
+runtime inventory flags multiple-license, EPL-family, missing/ambiguous
+license, and NOTICE evidence for human review; no external release may proceed
+until that exact-graph review and separate publication authorization are
+recorded. Published Central coordinates are immutable: corrections roll
+forward to a new reviewed version and are never overwritten or deleted.
+
 Release readiness remains separate from evidence that the harness improves an
 agent decision or outperforms mature IDE/LSP tooling.

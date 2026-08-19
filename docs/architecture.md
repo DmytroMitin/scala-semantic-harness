@@ -43,12 +43,20 @@ inherits the limits of every evidence source it uses.
 
 ## Packaging boundary
 
+The primary runtime candidate is an exact eight-module thin Maven dependency
+graph plus two exact-version Coursier applications. Root and benchmark cannot
+publish. The CLI and MCP applications remain distinct; the MCP server resolves
+and delegates to an installed `semantic-scala` sibling through a bounded,
+validated PATH contract. These modules are application implementation
+artifacts, not a public embeddable-library API.
+
 The Agent Plugins source templates and assembler package existing policy and
 capability; they do not own semantic behavior. A generated plugin copies the
 canonical skill byte-for-byte and the complete relocatable CLI/MCP stage trees.
 Its MCP configuration still delegates every tool call to the bundled CLI and
 does not widen the exact-eight registry.
 
+The Maven/Coursier candidate is locally implemented, not externally published.
 Generated distributions are ignored build outputs. Root `plugin.json`, root
 `mcp.json`, `${PLUGIN_ROOT}` expansion, and `skills/*/SKILL.md` discovery are
 the portable core. Repository `.agents` and `.claude` wrappers remain separate

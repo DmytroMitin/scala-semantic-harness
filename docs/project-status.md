@@ -44,7 +44,7 @@ score.
 | --- | --- | --- |
 | Public alpha product readiness | `READY` | Apache-2.0, focused newcomer/release policies, a 244-file allowlist, an independently initialized one-commit candidate, current-tree and reachable-history scans, fresh-clone validation, and public-ref/object proof pass for an experimental source alpha. This is not a supported binary/package release. |
 | External installation usability | `READY` | An anonymous public HTTPS clone was staged from the documented JDK 21/sbt/Python/Git source contract, then Claude Code 2.1.220 used an explicit session-local MCP configuration to discover exactly eight tools and return a bounded `semantic_effect_summary` result. The temporary configuration was removable and no supported binary, package-manager, marketplace, or conformant Agent Plugins client route is implied. |
-| Supported distribution usability | `NOT_ASSESSED` | No supported one-command or near-one-command runtime installation channel exists yet. Current work will compare supportable application-distribution routes before selecting and implementing one; source-build usability remains a separate, historically valid result. |
+| Supported distribution usability | `NOT_ASSESSED` | An exact-eight modular Maven graph, current sbt/Central release architecture, exact-version two-application Coursier source, and disposable JDK 21 local install/update/uninstall proof are implemented. Nothing is externally published, the intended public route has no independent install, and flagged license/NOTICE metadata still requires human prepublication review; source-build usability remains separate. |
 | Semantic primitive marginal utility | `EVIDENCE_PARTIAL` | Bounded evidence identifies useful symbol, provenance, usage, and reconciliation behavior, but no general advantage over a strong direct-tool baseline is established. |
 | Composition/orchestration marginal utility | `READY` | Deterministic contract evidence plus independent real-project trials on `quasiquotes-scala3` and Cats Effect show that point evidence preserves direct discovery, live, reconciliation, selection, routing, and typed non-attempt facts while materially reducing caller merge and unsafe-selection risk. This does not establish live-agent decision-quality, latency, broad IDE/LSP superiority, primitive marginal utility, Scala 2 compatibility, or skill/adoption benefit. |
 | Scala target compatibility | `EVIDENCE_PARTIAL` | One parallel JDK 21 matrix verifies compile/test/error delegation, SemanticDB discovery/symbol/usages, syntax-first effect summaries, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8. Shared-syntax Scala 2 symbol/type points also resolved and reconciled exactly, but through the pinned Scala 3.3 presentation compiler; broad Scala 2 dialect, macro, compiler-plugin, classpath, and real-project compatibility remain untested. |
@@ -57,17 +57,18 @@ Release point to immutable commit
 `e2c6eef57124b79c0062b25f48a719685c63905e`, tree
 `281bb7600701d8c93fff2739a7fdb8d781ce8554`. Current `main` is post-release
 development and reports `0.1.0-alpha.2-SNAPSHOT`; that development identity is
-not a commitment to publish `0.1.0-alpha.2`. Project-built binary, package, and
-client distribution remains unestablished. Agent Plugin adoption effectiveness,
+not a commitment to publish `0.1.0-alpha.2`. A project-built Maven/Coursier
+candidate is locally validated but no public binary, package, or client
+distribution is established. Agent Plugin adoption effectiveness,
 broader semantic superiority, complete Scala 2 support, and 1.0 stability
 remain unproven.
 
 ## Next evidence milestone
 
-The next milestone is an implementation-independent distribution study that
-compares current application-delivery routes and selects the smallest
-supportable plan for near-one-command CLI and MCP installation. Packaged
-distribution must remain separate from the already verified source-build lane.
+The next distribution milestone is human review of the exact resolver graph's
+license/NOTICE flags, followed only by separately authorized external namespace,
+publication, and independent public-install validation. Packaged distribution
+must remain separate from the already verified source-build lane.
 
 After that foundation, adoption work should test appropriate agent selection
 with and without the canonical skill, compatibility work should exercise a

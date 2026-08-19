@@ -1,6 +1,28 @@
 ThisBuild / organization := "io.github.dmytromitin"
 ThisBuild / scalaVersion := "3.3.3"
 ThisBuild / version := "0.1.0-alpha.2-SNAPSHOT"
+ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/scala-semantic-harness"))
+ThisBuild / licenses := List(
+  "Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")
+)
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    browseUrl = url("https://github.com/DmytroMitin/scala-semantic-harness"),
+    connection = "scm:git:https://github.com/DmytroMitin/scala-semantic-harness.git",
+    devConnection = Some("scm:git:git@github.com:DmytroMitin/scala-semantic-harness.git")
+  )
+)
+ThisBuild / developers := List(
+  Developer(
+    id = "dmytromitin",
+    name = "Dmytro Mitin",
+    email = "",
+    url = url("https://github.com/DmytroMitin")
+  )
+)
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / publishMavenStyle := true
+ThisBuild / pomIncludeRepository := (_ => false)
 
 lazy val circeVersion = "0.14.9"
 lazy val munitVersion = "1.0.0"
@@ -9,12 +31,32 @@ lazy val presentationCompilerVersion = "3.3.3"
 
 lazy val stage = taskKey[File]("Stage the semantic-scala CLI launcher")
 
+def generatedVersionSettings(packageName: String) = Seq(
+  Compile / sourceGenerators += Def.task {
+    val output = (Compile / sourceManaged).value / packageName.replace('.', '/') / "BuildVersion.scala"
+    val packageScope = packageName.split('.').last
+    IO.write(
+      output,
+      s"""package $packageName
+         |
+         |private[$packageScope] object BuildVersion:
+         |  val value: String = "${version.value}"
+         |""".stripMargin
+    )
+    Seq(output)
+  }.taskValue
+)
+
 lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
     "-unchecked"
-  )
+  ),
+  publish / skip := false,
+  Test / publishArtifact := false,
+  Compile / packageSrc / publishArtifact := true,
+  Compile / packageDoc / publishArtifact := true
 )
 
 lazy val root = (project in file("."))
@@ -38,6 +80,7 @@ lazy val core = (project in file("modules/core"))
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-core",
+    description := "Internal core models for the semantic-scala applications",
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
@@ -49,8 +92,10 @@ lazy val core = (project in file("modules/core"))
 lazy val cli = (project in file("modules/cli"))
   .dependsOn(core, sbtRunner, semanticdbReader, presentationCompiler, semanticReconciliation, fpAnalyzers)
   .settings(commonSettings)
+  .settings(generatedVersionSettings("semantic.harness.cli"))
   .settings(
     name := "semantic-scala-cli",
+    description := "Command-line application for the semantic-scala evidence harness",
     Compile / mainClass := Some("semantic.harness.cli.Main"),
     libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test,
     stage := {
@@ -103,6 +148,7 @@ lazy val sbtRunner = (project in file("modules/sbt-runner"))
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-sbt-runner",
+    description := "Internal sbt process integration for the semantic-scala applications",
     libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test
   )
 
@@ -111,6 +157,7 @@ lazy val semanticdbReader = (project in file("modules/semanticdb-reader"))
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-semanticdb-reader",
+    description := "Internal SemanticDB evidence reader for the semantic-scala applications",
     libraryDependencies ++= Seq(
       "org.scalameta" %% "semanticdb-shared" % semanticdbVersion cross CrossVersion.for3Use2_13,
       "io.circe" %% "circe-core" % circeVersion,
@@ -125,6 +172,7 @@ lazy val presentationCompiler = (project in file("modules/presentation-compiler"
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-presentation-compiler",
+    description := "Internal Presentation Compiler integration for the semantic-scala applications",
     libraryDependencies ++= Seq(
       "org.scala-lang" %% "scala3-presentation-compiler" % presentationCompilerVersion,
       "io.circe" %% "circe-core" % circeVersion,
@@ -139,6 +187,7 @@ lazy val semanticReconciliation = (project in file("modules/semantic-reconciliat
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-semantic-reconciliation",
+    description := "Internal static and dynamic evidence reconciliation for the semantic-scala applications",
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
@@ -150,8 +199,10 @@ lazy val semanticReconciliation = (project in file("modules/semantic-reconciliat
 lazy val mcpServer = (project in file("modules/mcp-server"))
   .dependsOn(core, fpAnalyzers, presentationCompiler, semanticdbReader, semanticReconciliation)
   .settings(commonSettings)
+  .settings(generatedVersionSettings("semantic.harness.mcp"))
   .settings(
     name := "semantic-harness-mcp-server",
+    description := "Thin stdio MCP application backed by the semantic-scala CLI",
     Compile / mainClass := Some("semantic.harness.mcp.Main"),
     stage := {
       val outputDir = target.value / "stage"
@@ -204,6 +255,7 @@ lazy val fpAnalyzers = (project in file("modules/fp-analyzers"))
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-fp-analyzers",
+    description := "Internal functional-programming analyzers for the semantic-scala applications",
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
@@ -217,6 +269,8 @@ lazy val benchmark = (project in file("modules/benchmark"))
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-benchmark",
+    description := "Non-published benchmark support for semantic-scala",
+    publish / skip := true,
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,

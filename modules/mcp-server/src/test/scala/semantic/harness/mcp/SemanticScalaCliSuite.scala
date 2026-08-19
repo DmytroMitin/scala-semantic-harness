@@ -20,7 +20,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
 
       assert(result.ok)
       assertEquals(runner.calls, List((List("/tmp/semantic-scala", "compile", "--json"), workspace.toAbsolutePath.normalize())))
-      assertEquals(result.command, List("/tmp/semantic-scala", "compile", "--json"))
+      assertEquals(result.command, List("semantic-scala", "compile", "--json"))
     }
 
   test("semantic_errors constructs argv and runs in workspace"):
@@ -32,7 +32,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
 
       assert(result.ok)
       assertEquals(runner.calls, List((List("/tmp/semantic-scala", "errors", "--json"), workspace.toAbsolutePath.normalize())))
-      assertEquals(result.command, List("/tmp/semantic-scala", "errors", "--json"))
+      assertEquals(result.command, List("semantic-scala", "errors", "--json"))
     }
 
   test("semantic_test constructs argv and runs in workspace"):
@@ -44,7 +44,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
 
       assert(result.ok)
       assertEquals(runner.calls, List((List("/tmp/semantic-scala", "test", "--json"), workspace.toAbsolutePath.normalize())))
-      assertEquals(result.command, List("/tmp/semantic-scala", "test", "--json"))
+      assertEquals(result.command, List("semantic-scala", "test", "--json"))
     }
 
   test("semantic_effect_summary constructs argv and runs in workspace"):
@@ -59,7 +59,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
         runner.calls,
         List((List("/tmp/semantic-scala", "effect-summary", "--file", file, "--json"), workspace.toAbsolutePath.normalize()))
       )
-      assertEquals(result.command, List("/tmp/semantic-scala", "effect-summary", "--file", file, "--json"))
+      assertEquals(result.command, List("semantic-scala", "effect-summary", "--file", file, "--json"))
     }
 
   test("semantic_symbol_at constructs argv and runs in workspace"):
@@ -74,7 +74,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
         runner.calls,
         List((List("/tmp/semantic-scala", "symbol-at", "--file", file, "--line", "6", "--col", "16", "--json"), workspace.toAbsolutePath.normalize()))
       )
-      assertEquals(result.command, List("/tmp/semantic-scala", "symbol-at", "--file", file, "--line", "6", "--col", "16", "--json"))
+      assertEquals(result.command, List("semantic-scala", "symbol-at", "--file", file, "--line", "6", "--col", "16", "--json"))
     }
 
   test("semantic_symbols constructs argv and runs in workspace"):
@@ -89,7 +89,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
         runner.calls,
         List((List("/tmp/semantic-scala", "symbols", "--semanticdb", semanticdb, "--json"), workspace.toAbsolutePath.normalize()))
       )
-      assertEquals(result.command, List("/tmp/semantic-scala", "symbols", "--semanticdb", semanticdb, "--json"))
+      assertEquals(result.command, List("semantic-scala", "symbols", "--semanticdb", semanticdb, "--json"))
     }
 
   test("semantic_reconcile_symbol constructs argv and runs in workspace"):
@@ -123,7 +123,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
       )
       assertEquals(
         result.command,
-        List("/tmp/semantic-scala", "reconcile-symbol", "--file", file, "--line", "6", "--col", "16", "--semanticdb", semanticdb, "--json")
+        List("semantic-scala", "reconcile-symbol", "--file", file, "--line", "6", "--col", "16", "--semanticdb", semanticdb, "--json")
       )
     }
 
@@ -149,7 +149,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
         "--json"
       )
       assertEquals(runner.calls, List((expected, workspace.toAbsolutePath.normalize())))
-      assertEquals(result.command, expected)
+      assertEquals(result.command, "semantic-scala" :: expected.drop(1))
       assertEquals(result.schemaVersion, Some(PointEvidenceReport.SchemaVersion))
     }
 
