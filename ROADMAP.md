@@ -19,13 +19,12 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Review the locally frozen exact `0.1.0-alpha.2` Maven/Coursier candidate,
-   whose 16 flagged runtime-license rows are technically dispositioned with
-   the owner-selected Apache-2.0 path for JNA 5.14.0. Then separately
-   authorize validate-before-publish Central work for the
-   `com.github.dmytromitin` CLI/MCP Coursier route. The current verified
-   source-build route remains available, and the local candidate is not
-   packaged-distribution readiness.
+1. Preserve the exact `0.1.0-alpha.2` Maven/Coursier candidate, whose 16
+   flagged runtime-license rows are technically dispositioned and whose
+   `USER_MANAGED` Central deployment is `VALIDATED` but unpublished. Treat any
+   publication decision and subsequent public Coursier/install validation as
+   separate gates. The current verified source-build route remains available,
+   and remote candidate validation is not packaged-distribution readiness.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.

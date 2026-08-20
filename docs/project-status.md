@@ -65,11 +65,11 @@ remain unproven.
 
 ## Next evidence milestone
 
-The next distribution milestone is separate explicit authorization for a
-validate-before-publish Central attempt against the reviewed exact candidate.
-Publication and independent public-install validation remain later, separately
-authorized gates. Packaged distribution must remain separate from the already
-verified source-build lane.
+The reviewed exact candidate has reached `VALIDATED` in a `USER_MANAGED`
+Central deployment and remains unpublished. Publication and independent public-
+install validation are the next separate, explicitly authorized gates.
+Packaged distribution must remain separate from the already verified source-
+build lane.
 
 After that foundation, adoption work should test appropriate agent selection
 with and without the canonical skill, compatibility work should exercise a

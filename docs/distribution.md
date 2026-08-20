@@ -2,16 +2,17 @@
 
 ## Current state
 
-The modular Maven/Coursier primary runtime candidate is implemented and locally
-validated. It is not externally published or a supported package channel.
+The modular Maven/Coursier primary runtime candidate is implemented, locally
+validated, and remotely `VALIDATED` in a `USER_MANAGED` Central deployment. It
+is not published or a supported package channel.
 The supported and externally verified route remains a JDK 21 source build.
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
 current `main` remains development version `0.1.0-alpha.2-SNAPSHOT`.
 
-No harness Sonatype deployment, public Coursier channel,
-Coursier contrib entry, MCPB package, MCP Registry entry, native binary,
-container, npm/PyPI wrapper, Agent Plugin runtime distribution, or skill
-distribution is claimed by this work.
+No harness artifact is published on Maven Central, and no public Coursier
+channel, Coursier contrib entry, MCPB package, MCP Registry entry, native
+binary, container, npm/PyPI wrapper, Agent Plugin runtime distribution, or
+skill distribution is claimed by this work.
 
 ## Exact implementation graph
 
@@ -22,9 +23,9 @@ distinguishes newly provisioned personal GitHub groups such as
 `io.github.<username>` from existing OSSRH namespaces, which
 [were migrated into the Central Publisher Portal](https://central.sonatype.org/pages/ossrh-eol/)
 after OSSRH shut down.
-This local alignment does not claim that a harness deployment has been remotely
-validated. Exactly these Scala 3 application implementation artifacts are
-publishable:
+The exact candidate under this group has passed remote Central validation in
+`USER_MANAGED` mode; validation does not publish it. Exactly these Scala 3
+application implementation artifacts are publishable:
 
 ```text
 semantic-harness-core_3

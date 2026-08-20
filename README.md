@@ -89,9 +89,10 @@ For repeated use, prefer the staged launcher at
 The source-build route above remains the currently supported and externally
 verified route. A production-shaped modular Maven/Coursier candidate is now
 implemented under final group `com.github.dmytromitin` and passes a disposable
-local proof, but no harness deployment, project artifact, or Coursier channel
-has been published externally. Do not use the intended coordinates as though
-they existed on Maven Central.
+local proof. The exact candidate has also reached `VALIDATED` in a
+`USER_MANAGED` Central deployment, but that deployment remains unpublished and
+no project artifact or Coursier channel is publicly available. Do not use the
+intended coordinates as though they existed on Maven Central.
 
 The candidate publishes exactly the eight implementation modules, never the
 root aggregate or benchmark, and generates exact-version descriptors for the
@@ -222,11 +223,11 @@ benchmark reproducibility beyond its stated small-sample gate.
 - Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
 - The Maven/Coursier route has a locally frozen exact `0.1.0-alpha.2`
-  candidate only. It has no harness deployment validation, external artifact,
-  published channel, or independent public install. All 16 formerly flagged
-  license/NOTICE rows are technically dispositioned; the owner selected
-  Apache-2.0 for resolver-fetched JNA 5.14.0. This is not legal advice or
-  publication authority.
+  candidate whose `USER_MANAGED` Central deployment is remotely `VALIDATED`
+  but not published. It has no public external artifact, published channel, or
+  independent public install. All 16 formerly flagged license/NOTICE rows are
+  technically dispositioned; the owner selected Apache-2.0 for resolver-
+  fetched JNA 5.14.0. This is not legal advice or publication authority.
 - The public repository contains only the audited clean source history. The
   separate mixed development history remains private and is not a release or
   installation channel.
