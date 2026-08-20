@@ -56,20 +56,19 @@ score.
 Release point to immutable commit
 `e2c6eef57124b79c0062b25f48a719685c63905e`, tree
 `281bb7600701d8c93fff2739a7fdb8d781ce8554`. Current `main` is post-release
-development and reports `0.1.0-alpha.2-SNAPSHOT`; that development identity is
-not a commitment to publish `0.1.0-alpha.2`. A project-built Maven/Coursier
-candidate is locally validated but no public binary, package, or client
-distribution is established. Agent Plugin adoption effectiveness,
-broader semantic superiority, complete Scala 2 support, and 1.0 stability
-remain unproven.
+development and reports `0.1.0-alpha.2-SNAPSHOT`; that mutable identity remains
+distinct from the immutable exact `0.1.0-alpha.2` Maven artifacts now published
+on Central. No public project-owned Coursier channel or independent supported
+client install is established. Agent Plugin adoption effectiveness, broader
+semantic superiority, complete Scala 2 support, and 1.0 stability remain
+unproven.
 
 ## Next evidence milestone
 
-The reviewed exact candidate has reached `VALIDATED` in a `USER_MANAGED`
-Central deployment and remains unpublished. Publication and independent public-
-install validation are the next separate, explicitly authorized gates.
-Packaged distribution must remain separate from the already verified source-
-build lane.
+The reviewed exact candidate is published on Maven Central. A public project-
+owned exact-version Coursier channel and an independent public-install/runtime
+qualification are the next separate, explicitly authorized gates. Packaged
+distribution must remain separate from the already verified source-build lane.
 
 After that foundation, adoption work should test appropriate agent selection
 with and without the canonical skill, compatibility work should exercise a

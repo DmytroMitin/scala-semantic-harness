@@ -3,16 +3,17 @@
 ## Current state
 
 The modular Maven/Coursier primary runtime candidate is implemented, locally
-validated, and remotely `VALIDATED` in a `USER_MANAGED` Central deployment. It
-is not published or a supported package channel.
+validated, and published on Maven Central at exact version `0.1.0-alpha.2`.
+All eight public module POM/main/source/documentation artifacts, signatures,
+and checksum sidecars were verified against the reviewed release bytes. This
+does not yet establish a supported application package channel.
 The supported and externally verified route remains a JDK 21 source build.
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
 current `main` remains development version `0.1.0-alpha.2-SNAPSHOT`.
 
-No harness artifact is published on Maven Central, and no public Coursier
-channel, Coursier contrib entry, MCPB package, MCP Registry entry, native
-binary, container, npm/PyPI wrapper, Agent Plugin runtime distribution, or
-skill distribution is claimed by this work.
+No public project-owned Coursier channel, Coursier contrib entry, MCPB package,
+MCP Registry entry, native binary, container, npm/PyPI wrapper, Agent Plugin
+runtime distribution, or skill distribution is claimed by this work.
 
 ## Exact implementation graph
 
@@ -23,9 +24,8 @@ distinguishes newly provisioned personal GitHub groups such as
 `io.github.<username>` from existing OSSRH namespaces, which
 [were migrated into the Central Publisher Portal](https://central.sonatype.org/pages/ossrh-eol/)
 after OSSRH shut down.
-The exact candidate under this group has passed remote Central validation in
-`USER_MANAGED` mode; validation does not publish it. Exactly these Scala 3
-application implementation artifacts are publishable:
+The exact candidate under this group has been published on Maven Central.
+Exactly these Scala 3 application implementation artifacts are public:
 
 ```text
 semantic-harness-core_3
@@ -54,9 +54,9 @@ internal modules.
 
 ## Intended future install shape
 
-After an exact version has been separately released to Maven Central and the
-project-owned descriptors have been made available through an admitted public
-channel, the intended applications are:
+The exact Maven version is now public. After the project-owned descriptors
+have been made available through an admitted public channel, the intended
+applications are:
 
 ```text
 semantic-scala

@@ -48,13 +48,14 @@ those gates locally, including explicit provisional-group rejection,
 source/doc/signature/checksum shape, byte-identical two-build output, and
 disposable install/update/uninstall. The exact non-SNAPSHOT local candidate is
 `0.1.0-alpha.2`; mutable `main` remains `0.1.0-alpha.2-SNAPSHOT`. It remains
-unpublished after reaching `VALIDATED` in an explicitly authorized
-`USER_MANAGED` Central deployment. Technical review dispositioned all 16
-unique flagged runtime rows without establishing a bundled NOTICE action, and
-the owner selected Apache-2.0 for resolver-fetched JNA 5.14.0. Publication and
-later public-install work require separate explicit authorization. Published
-Central coordinates are immutable: corrections roll forward to a new reviewed
-version and are never overwritten or deleted.
+distinct from the immutable `0.1.0-alpha.2` artifacts now published on Maven
+Central from the explicitly authorized `USER_MANAGED` deployment. No
+`0.1.0-alpha.2` Git tag or GitHub Release was created. Technical review
+dispositioned all 16 unique flagged runtime rows without establishing a
+bundled NOTICE action, and the owner selected Apache-2.0 for resolver-fetched
+JNA 5.14.0. Later public-channel/install work requires separate explicit
+authorization. Published Central coordinates are immutable: corrections roll
+forward to a new reviewed version and are never overwritten or deleted.
 
 Release readiness remains separate from evidence that the harness improves an
 agent decision or outperforms mature IDE/LSP tooling.

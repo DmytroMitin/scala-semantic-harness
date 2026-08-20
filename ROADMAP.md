@@ -20,11 +20,12 @@ execution ledger and does not promise delivery dates.
 ## Near-term priorities
 
 1. Preserve the exact `0.1.0-alpha.2` Maven/Coursier candidate, whose 16
-   flagged runtime-license rows are technically dispositioned and whose
-   `USER_MANAGED` Central deployment is `VALIDATED` but unpublished. Treat any
-   publication decision and subsequent public Coursier/install validation as
-   separate gates. The current verified source-build route remains available,
-   and remote candidate validation is not packaged-distribution readiness.
+   flagged runtime-license rows are technically dispositioned and whose exact
+   eight Maven artifacts are now public on Central. Separately authorize and
+   qualify a public project-owned Coursier channel plus a fresh independent
+   install/runtime check. The current verified source-build route remains
+   available, and Maven publication alone is not supported-distribution
+   readiness.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.
