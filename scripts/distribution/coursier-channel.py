@@ -67,6 +67,13 @@ def expected_descriptor(name: str, version: str, repository: str) -> dict[str, o
     }
 
 
+def expected_url_channel(version: str) -> dict[str, object]:
+    return {
+        name: expected_descriptor(name, version, "central")
+        for name in APPLICATIONS
+    }
+
+
 def validate_templates() -> None:
     actual_names = sorted(path.name for path in TEMPLATE_ROOT.glob("*.json"))
     expected_names = sorted(f"{name}.json" for name in APPLICATIONS)
@@ -118,6 +125,30 @@ def generate(output: Path, version: str, repository: str) -> None:
     validate_generated(output, version, repository)
 
 
+def validate_url(channel: Path, version: str) -> None:
+    validate_version(version)
+    actual = load_json(channel)
+    if actual != expected_url_channel(version):
+        raise ChannelError("URL channel must match the exact two-application contract")
+
+
+def generate_url(output: Path, version: str) -> None:
+    validate_templates()
+    validate_version(version)
+    if output.exists() or output.is_symlink():
+        raise ChannelError("output must be absent")
+    if output.parent.is_symlink() or not output.parent.is_dir():
+        raise ChannelError("output parent must be an existing regular directory")
+    try:
+        with output.open("x", encoding="utf-8") as destination:
+            destination.write(
+                json.dumps(expected_url_channel(version), indent=2, sort_keys=True) + "\n"
+            )
+    except OSError as error:
+        raise ChannelError("unable to create URL channel output safely") from error
+    validate_url(output, version)
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser()
     subcommands = result.add_subparsers(dest="command", required=True)
@@ -130,6 +161,12 @@ def parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("--version", required=True)
     validate_parser.add_argument("--repository", required=True)
     validate_parser.add_argument("--channel", required=True, type=Path)
+    generate_url_parser = subcommands.add_parser("generate-url")
+    generate_url_parser.add_argument("--version", required=True)
+    generate_url_parser.add_argument("--output", required=True, type=Path)
+    validate_url_parser = subcommands.add_parser("validate-url")
+    validate_url_parser.add_argument("--version", required=True)
+    validate_url_parser.add_argument("--channel", required=True, type=Path)
     return result
 
 
@@ -140,8 +177,12 @@ def main() -> int:
             validate_templates()
         elif args.command == "generate":
             generate(args.output, args.version, args.repository)
-        else:
+        elif args.command == "validate-generated":
             validate_generated(args.channel, args.version, args.repository)
+        elif args.command == "generate-url":
+            generate_url(args.output, args.version)
+        else:
+            validate_url(args.channel, args.version)
         print("validated Coursier applications: semantic-scala, semantic-scala-mcp")
         return 0
     except ChannelError as error:

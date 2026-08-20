@@ -11,9 +11,12 @@ The supported and externally verified route remains a JDK 21 source build.
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
 current `main` remains development version `0.1.0-alpha.2-SNAPSHOT`.
 
-No public project-owned Coursier channel, Coursier contrib entry, MCPB package,
-MCP Registry entry, native binary, container, npm/PyPI wrapper, Agent Plugin
-runtime distribution, or skill distribution is claimed by this work.
+A project-owned single-file Coursier URL-channel candidate is checked in and
+locally qualified, but it is not available from public `main` until these
+repository changes are published. No independent public-URL install, Coursier
+contrib entry, MCPB package, MCP Registry entry, native binary, container,
+npm/PyPI wrapper, Agent Plugin runtime distribution, or skill distribution is
+claimed by this work.
 
 ## Exact implementation graph
 
@@ -52,19 +55,43 @@ These coordinates package application implementation. They do not define a
 supported embeddable-library API or promise binary compatibility among the
 internal modules.
 
-## Intended future install shape
+## Prepared URL channel and install shape
 
-The exact Maven version is now public. After the project-owned descriptors
-have been made available through an admitted public channel, the intended
-applications are:
+The exact Maven version is public. `distribution/coursier/channel.json` is the
+canonical deterministic URL channel with exactly these two applications:
 
 ```text
 semantic-scala
 semantic-scala-mcp
 ```
 
-JDK 21 and Coursier are prerequisites for this route. `semantic-scala-mcp`
-delegates to the installed `semantic-scala` command. With no `--cli` or
+The baseline is JDK 21. Install Coursier by following its
+[authoritative installation guidance](https://get-coursier.io/docs/cli-installation),
+then, once this channel file is present on public `main`, install only the CLI:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  semantic-scala
+```
+
+Or install the CLI and MCP server together:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  semantic-scala semantic-scala-mcp
+```
+
+This syntax follows Coursier's
+[URL-channel contract](https://get-coursier.io/docs/cli-appdescriptors): a
+single JSON object maps application names to descriptors, and the raw URL is
+passed with `--channel`. Disabling default channels isolates application-name
+attribution to this project-owned file.
+
+`semantic-scala-mcp` is the generic stdio MCP command. Start it with the target
+workspace as the process working directory. It delegates to the installed
+`semantic-scala` command. With no `--cli` or
 `SEMANTIC_SCALA_CLI` override, it performs a bounded PATH search and accepts
 only a regular executable without following symbolic links. Explicit CLI and
 environment overrides retain precedence and receive the same early validation.
@@ -74,19 +101,43 @@ Target-workspace sbt remains a separate prerequisite for build-oracle commands
 such as `compile`, `errors`, and `test`. Installation and syntax-first/read-only
 operations do not inherently require target-workspace sbt.
 
-Coursier update is intended to use `cs update semantic-scala
-semantic-scala-mcp`; uninstall uses `cs uninstall semantic-scala
-semantic-scala-mcp`. Immutable published coordinates must never be overwritten
-or deleted. A correction rolls forward to a newly reviewed version.
+Update both installed applications with:
+
+```bash
+cs update semantic-scala semantic-scala-mcp
+```
+
+Uninstall both with:
+
+```bash
+cs uninstall semantic-scala semantic-scala-mcp
+```
+
+The `main` URL may advance to a later separately reviewed release. For an
+auditable historical channel, replace `main` with the full commit SHA that
+published the desired bytes:
+
+```text
+https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/<published-commit-sha>/distribution/coursier/channel.json
+```
+
+The alpha channel names exact `0.1.0-alpha.2` dependencies. Published Maven
+coordinates are immutable and must never be overwritten or deleted; a
+correction rolls forward to a newly reviewed version.
 
 ## Maintained local gates
 
-`distribution/coursier/templates/` contains exact-version application
-descriptor source for the two commands. The generator rejects snapshots,
-moving version selectors, descriptor drift, extra applications, and nonempty
-output directories. A local repository can be injected without editing the
-templates; Maven Central remains the explicit fallback for third-party
-dependencies.
+`distribution/coursier/channel.json` is generated and validated by
+`scripts/distribution/coursier-channel.py`. Its URL-channel mode requires the
+exact two keys and exact Central-only descriptors, rejects unknown fields,
+moving or wrong versions, wrong namespaces/artifacts/main classes, extra or
+missing applications, non-Central repositories, and unsafe output reuse. The
+focused suite reproduces and byte-compares the checked file as a drift gate.
+
+`distribution/coursier/templates/` and the directory generator remain only for
+isolated local Maven proofs. A local repository can be injected into that
+debugging shape without editing templates; it is not the public URL-channel
+contract.
 
 `scripts/distribution/prove-local-maven-coursier.sh` is a fail-closed disposable
 proof. Given a clean source tree and JDK 21, it:
@@ -115,8 +166,18 @@ The admitted local proof used Coursier 2.1.25-M25 and exact candidate version
 byte-identical two-build manifest digest of
 `a9d1e1ff0aabb7596b82aff27036fe63b345838200b6665ba226b43eb5f92028`.
 It also verified 32 detached test-only signatures and the complete 192-file
-artifact/signature/checksum shape. Those hashes describe a locally frozen
-candidate, not a published release.
+artifact/signature/checksum shape. Those hashes describe the locally frozen
+candidate; a later public verification proved the published release bytes.
+
+The URL-channel preparation proof used JDK 21.0.12 and Coursier 2.1.25-M25.
+A disposable loopback HTTP server served bytes identical to the canonical
+channel while a fresh outside-checkout cache resolved only the channel URL and
+public Maven Central. Initial install and update both passed exact CLI version,
+no-override MCP initialization, ordered eight-tool registry, and bounded
+`semantic_effect_summary` schema checks. Both applications uninstalled, no
+checkout path appeared in launchers or cache, and all disposable state was
+deleted. This qualifies the soon-to-be-public bytes, not the unavailable public
+GitHub URL.
 
 ## Dependency and attribution review
 
@@ -139,6 +200,6 @@ weakened to infer legal clearance or publication authority.
 ## Readiness boundary
 
 `SUPPORTED_DISTRIBUTION_USABILITY` remains `NOT_ASSESSED`. Local installation
-proves implementation shape and cleanup behavior; it does not prove an
-available public package, independent installation through the intended public
-route, long-term support, discovery, or user adoption.
+through a loopback-served copy proves the checked channel semantics and cleanup
+behavior. It does not prove independent installation from the actually public
+project URL, long-term support, discovery, or user adoption.

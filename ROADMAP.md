@@ -21,11 +21,12 @@ execution ledger and does not promise delivery dates.
 
 1. Preserve the exact `0.1.0-alpha.2` Maven/Coursier candidate, whose 16
    flagged runtime-license rows are technically dispositioned and whose exact
-   eight Maven artifacts are now public on Central. Separately authorize and
-   qualify a public project-owned Coursier channel plus a fresh independent
-   install/runtime check. The current verified source-build route remains
-   available, and Maven publication alone is not supported-distribution
-   readiness.
+   eight Maven artifacts are now public on Central. The deterministic public
+   URL-channel candidate is prepared and locally qualified against those
+   artifacts; publish it through the normal repository workflow, then run a
+   fresh independent install/runtime check from the actual public URL. The
+   current verified source-build route remains available, and Maven/channel
+   preparation alone is not supported-distribution readiness.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.

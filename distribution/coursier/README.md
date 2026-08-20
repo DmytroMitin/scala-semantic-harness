@@ -1,26 +1,34 @@
-# Coursier application source
+# Coursier application channel
 
-This directory is the maintained source for the future `semantic-scala` and
-`semantic-scala-mcp` Coursier applications. The descriptors deliberately name
-the `_3` implementation artifacts and require an exact released version. They
-do not assert that the current development snapshot exists on Maven Central.
+`channel.json` is the deterministic public URL-channel candidate for
+`semantic-scala` and `semantic-scala-mcp`. It points only to the immutable
+`com.github.dmytromitin:*:0.1.0-alpha.2` Maven Central artifacts. The `_3`
+modules are application implementation artifacts, not a stable embeddable API.
 
-Generate a production-shaped directory channel after choosing an externally
-published exact version:
+Validate the checked release channel with:
 
 ```text
-python3 scripts/distribution/coursier-channel.py generate \
-  --version <exact-version> \
-  --repository central \
-  --output <empty-output-directory>
+python3 scripts/distribution/coursier-channel.py validate-url \
+  --version 0.1.0-alpha.2 \
+  --channel distribution/coursier/channel.json
 ```
 
-For the disposable local proof, pass the URI of its isolated Maven repository
-instead of `central`; templates are never edited by the proof. The supported
-runtime baseline is JDK 21 and Coursier is required for this installation
-route. Target-workspace sbt is separate: build-oracle commands such as
-`compile`, `errors`, and `test` require it, while installation and every
-read-only semantic operation do not inherently require target-workspace sbt.
+`generate-url --version <exact-version> --output <absent-file>` reproduces the
+single-file shape and refuses to overwrite an existing file or follow a
+symbolic-link output. The focused test suite compares fresh generation with
+the checked bytes, so the release channel is not hand-maintained without a
+drift gate.
 
-These Maven coordinates are application implementation artifacts, not a
-supported embeddable-library API or a binary-compatibility promise.
+`templates/` and the `generate` / `validate-generated` commands preserve the
+directory-channel mode used by isolated local Maven proofs. Official Coursier
+guidance treats directory channels as local/debugging surfaces; they are not
+the public channel contract.
+
+The runtime baseline is JDK 21 and Coursier is required. Target-workspace sbt
+is separate: build-oracle commands such as `compile`, `errors`, and `test`
+require it, while installation and syntax-first/read-only operations do not
+inherently require target-workspace sbt.
+
+Independent installation from the actual public raw GitHub URL remains a
+separate qualification gate. Preparing and locally serving these exact bytes
+does not make `SUPPORTED_DISTRIBUTION_USABILITY` ready.

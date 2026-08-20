@@ -57,7 +57,9 @@ canonical skill byte-for-byte and the complete relocatable CLI/MCP stage trees.
 Its MCP configuration still delegates every tool call to the bundled CLI and
 does not widen the exact-eight registry.
 
-The Maven/Coursier candidate is locally implemented, not externally published.
+The exact Maven artifacts are public on Central. The project-owned Coursier
+URL-channel candidate is locally qualified but not yet published on public
+`main` or independently qualified from that public URL.
 Generated distributions are ignored build outputs. Root `plugin.json`, root
 `mcp.json`, `${PLUGIN_ROOT}` expansion, and `skills/*/SKILL.md` discovery are
 the portable core. Repository `.agents` and `.claude` wrappers remain separate

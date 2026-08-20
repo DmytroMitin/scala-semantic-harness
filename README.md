@@ -84,16 +84,17 @@ The source-checkout wrapper runs the CLI through sbt:
 For repeated use, prefer the staged launcher at
 `modules/cli/target/stage/bin/semantic-scala`.
 
-## Maven/Coursier distribution candidate
+## Maven/Coursier distribution
 
 The source-build route above remains the currently supported and externally
 verified route. A production-shaped modular Maven/Coursier candidate is now
 implemented under final group `com.github.dmytromitin` and passes a disposable
-local proof. The exact eight-module `0.1.0-alpha.2` candidate is now published
-on Maven Central and its complete public repository shape has been verified
-against the reviewed bytes. No public project-owned Coursier channel or
-independent supported install has been qualified yet, so the source-build route
-above remains the supported application route.
+local proof. The exact eight-module `0.1.0-alpha.2` candidate is published on
+Maven Central and its complete public repository shape has been verified
+against the reviewed bytes. A deterministic project-owned URL-channel file is
+now prepared and locally qualified, but independent installation from its
+actual public GitHub URL remains pending. The source-build route above remains
+the supported application route.
 
 The candidate publishes exactly the eight implementation modules, never the
 root aggregate or benchmark, and generates exact-version descriptors for the
@@ -104,8 +105,27 @@ not required merely to install the applications or for every read-only
 semantic command. The Maven modules are application implementation artifacts,
 not a supported embeddable-library API or binary-compatibility promise.
 
-See [`docs/distribution.md`](docs/distribution.md) for the exact graph, local
-proof, update/uninstall intent, provenance gate, and publication boundary.
+Once this channel file is published on public `main`, install only the CLI:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  semantic-scala
+```
+
+Or install the CLI and stdio MCP server together:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  semantic-scala semantic-scala-mcp
+```
+
+Use `semantic-scala-mcp` as the generic stdio MCP command with the target
+workspace as its working directory. See
+[`docs/distribution.md`](docs/distribution.md) for Coursier setup, updates,
+uninstall, commit-pinned channel reproduction, and the current qualification
+boundary.
 
 ## Semantic commands
 
@@ -225,7 +245,9 @@ benchmark reproducibility beyond its stated small-sample gate.
   installation usability, semantic utility, and skill-adoption evidence.
 - The Maven/Coursier route has a locally frozen exact `0.1.0-alpha.2`
   candidate whose exact eight Maven artifacts are published on Central. It has
-  no public project-owned Coursier channel or independent supported install.
+  a checked project-owned URL-channel candidate with a passing local HTTP-to-
+  Central runtime proof, but no independent install from the actual public
+  GitHub URL yet.
   All 16 formerly flagged license/NOTICE rows are technically dispositioned;
   the owner selected Apache-2.0 for resolver-fetched JNA 5.14.0. This is not
   legal advice or authority for another publication action.

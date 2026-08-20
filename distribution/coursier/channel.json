@@ -1,0 +1,28 @@
+{
+  "semantic-scala": {
+    "dependencies": [
+      "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.2"
+    ],
+    "javaOptions": [
+      "-XX:+PerfDisableSharedMem"
+    ],
+    "launcherType": "bootstrap",
+    "mainClass": "semantic.harness.cli.Main",
+    "repositories": [
+      "central"
+    ]
+  },
+  "semantic-scala-mcp": {
+    "dependencies": [
+      "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.2"
+    ],
+    "javaOptions": [
+      "-XX:+PerfDisableSharedMem"
+    ],
+    "launcherType": "bootstrap",
+    "mainClass": "semantic.harness.mcp.Main",
+    "repositories": [
+      "central"
+    ]
+  }
+}

@@ -58,17 +58,20 @@ Release point to immutable commit
 `281bb7600701d8c93fff2739a7fdb8d781ce8554`. Current `main` is post-release
 development and reports `0.1.0-alpha.2-SNAPSHOT`; that mutable identity remains
 distinct from the immutable exact `0.1.0-alpha.2` Maven artifacts now published
-on Central. No public project-owned Coursier channel or independent supported
-client install is established. Agent Plugin adoption effectiveness, broader
+on Central. A deterministic project-owned Coursier URL-channel candidate has a
+passing local HTTP-to-Central runtime proof, but it is not available on public
+`main` and no independent supported public-URL client install is established.
+Agent Plugin adoption effectiveness, broader
 semantic superiority, complete Scala 2 support, and 1.0 stability remain
 unproven.
 
 ## Next evidence milestone
 
-The reviewed exact candidate is published on Maven Central. A public project-
-owned exact-version Coursier channel and an independent public-install/runtime
-qualification are the next separate, explicitly authorized gates. Packaged
-distribution must remain separate from the already verified source-build lane.
+The reviewed exact candidate is published on Maven Central and its project-
+owned exact-version Coursier URL-channel bytes are prepared. Publication of
+these repository changes, followed by an independent public-URL install/runtime
+qualification, is the next separate gate. Packaged distribution remains
+separate from the already verified source-build lane.
 
 After that foundation, adoption work should test appropriate agent selection
 with and without the canonical skill, compatibility work should exercise a
