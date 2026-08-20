@@ -43,12 +43,14 @@ marketplace upload.
 Future binary and package channels still require separate reproducibility,
 dependency-attribution and license, installation, and runtime gates.
 
-The exact-eight Maven/Coursier candidate now implements those gates locally,
-including source/doc/signature/checksum shape, byte-identical two-build output,
-and disposable install/update/uninstall. It remains unpublished. Its automated
-runtime inventory flags multiple-license, EPL-family, missing/ambiguous
-license, and NOTICE evidence for human review; no external release may proceed
-until that exact-graph review and separate publication authorization are
+The `com.github.dmytromitin` exact-eight Maven/Coursier candidate now implements
+those gates locally, including explicit provisional-group rejection,
+source/doc/signature/checksum shape, byte-identical two-build output, and
+disposable install/update/uninstall. It remains unpublished. Technical review
+resolved 15 of 16 unique flagged runtime rows without establishing a bundled
+NOTICE action. JNA 5.14.0's `Apache-2.0 OR LGPL-2.1-or-later` compliance path
+still requires owner/legal selection; no external validation or release may
+proceed until that decision and separate publication authorization are
 recorded. Published Central coordinates are immutable: corrections roll
 forward to a new reviewed version and are never overwritten or deleted.
 

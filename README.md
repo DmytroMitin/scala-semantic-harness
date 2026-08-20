@@ -88,9 +88,10 @@ For repeated use, prefer the staged launcher at
 
 The source-build route above remains the currently supported and externally
 verified route. A production-shaped modular Maven/Coursier candidate is now
-implemented and passes a disposable local proof, but no project artifact or
-Coursier channel has been published externally. Do not use the intended
-coordinates as though they existed on Maven Central.
+implemented under final group `com.github.dmytromitin` and passes a disposable
+local proof, but no harness deployment, project artifact, or Coursier channel
+has been published externally. Do not use the intended coordinates as though
+they existed on Maven Central.
 
 The candidate publishes exactly the eight implementation modules, never the
 root aggregate or benchmark, and generates exact-version descriptors for the
@@ -221,9 +222,10 @@ benchmark reproducibility beyond its stated small-sample gate.
 - Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
 - The Maven/Coursier route has local implementation evidence only. It has no
-  public namespace acceptance, external artifact, published channel, or
-  independent public install, and its flagged license/NOTICE metadata still
-  requires human prepublication review.
+  harness deployment validation, external artifact, published channel, or
+  independent public install. Technical review resolved 15 of 16 unique
+  flagged license/NOTICE rows; owner/legal selection of JNA 5.14.0's
+  `Apache-2.0 OR LGPL-2.1-or-later` path remains a prepublication gate.
 - The public repository contains only the audited clean source history. The
   separate mixed development history remains private and is not a release or
   installation channel.

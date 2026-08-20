@@ -8,16 +8,23 @@ The supported and externally verified route remains a JDK 21 source build.
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
 current `main` remains development version `0.1.0-alpha.2-SNAPSHOT`.
 
-No Maven Central namespace, Sonatype deployment, public Coursier channel,
+No harness Sonatype deployment, public Coursier channel,
 Coursier contrib entry, MCPB package, MCP Registry entry, native binary,
 container, npm/PyPI wrapper, Agent Plugin runtime distribution, or skill
 distribution is claimed by this work.
 
 ## Exact implementation graph
 
-The candidate group metadata is `io.github.dmytromitin`, pending any separately
-authorized external namespace verification. Exactly these Scala 3 application
-implementation artifacts are publishable:
+The owner-selected candidate group metadata is `com.github.dmytromitin`, the
+historical Maven Central publisher identity already used for the owner's JVM
+artifacts. [Current Sonatype namespace guidance](https://central.sonatype.org/register/namespace/)
+distinguishes newly provisioned personal GitHub groups such as
+`io.github.<username>` from existing OSSRH namespaces, which
+[were migrated into the Central Publisher Portal](https://central.sonatype.org/pages/ossrh-eol/)
+after OSSRH shut down.
+This local alignment does not claim that a harness deployment has been remotely
+validated. Exactly these Scala 3 application implementation artifacts are
+publishable:
 
 ```text
 semantic-harness-core_3
@@ -36,6 +43,9 @@ developer, description, source JAR, and documentation JAR configuration. The
 build uses sbt 1.12.14 and sbt-ci-release 1.11.2, which provides the maintained
 release/signing architecture without affecting credential-free developer
 builds. No legacy OSSRH/Nexus staging endpoint is configured.
+
+The local candidate validator rejects any `io.github.dmytromitin` Maven
+subtree, so a provisional coordinate cannot coexist with the selected group.
 
 These coordinates package application implementation. They do not define a
 supported embeddable-library API or promise binary compatibility among the
@@ -102,7 +112,7 @@ proof. Given a clean source tree and JDK 21, it:
 The admitted local proof used Coursier 2.1.25-M25. It produced 32
 primary files across eight modules and a byte-identical two-build manifest
 digest of
-`c9b94da5303e63418a7396ac568f9bd1fc042dbd30e7ef4ba0b55fef2c470a82`.
+`9a3999b18c30bbe88d70fb51f0887fa69c135617657b7a0e59fa83b2fdbef59e`.
 Those hashes describe a disposable local version, not a published release.
 
 ## Dependency and attribution review
@@ -116,11 +126,13 @@ attribution obligations and is not a legal conclusion.
 The admitted local inventory contained 57 runtime components. Automated review
 flagged six EPL-family records, one multiple-license record, nine
 missing/ambiguous POM-license records, and zero packaged NOTICE-name hits.
-These are human prepublication review items. Before any Central release, a
-reviewer must resolve each flag against authoritative upstream license and
-NOTICE sources, decide required attribution, confirm the exact release graph,
-and record approval. The automated gate must not be weakened to infer legal
-clearance.
+Technical review against authoritative upstream sources resolved 15 of the 16
+unique flagged component rows without requiring project-bundled NOTICE text in
+the current resolver-fetched packaging model. The remaining row is JNA 5.14.0:
+upstream offers Apache-2.0 or LGPL-2.1-or-later, so the project owner or legal
+reviewer must select and record the intended license path before any Central
+release. The review is technical evidence, not legal advice; the automated
+gate must not be weakened to infer legal clearance.
 
 ## Readiness boundary
 

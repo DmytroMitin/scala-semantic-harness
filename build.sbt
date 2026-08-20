@@ -1,4 +1,4 @@
-ThisBuild / organization := "io.github.dmytromitin"
+ThisBuild / organization := "com.github.dmytromitin"
 ThisBuild / scalaVersion := "3.3.3"
 ThisBuild / version := "0.1.0-alpha.2-SNAPSHOT"
 ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/scala-semantic-harness"))

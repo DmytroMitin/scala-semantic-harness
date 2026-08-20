@@ -7,6 +7,11 @@ supported binary, package-manager, marketplace, or client-installation release.
 
 ## Unreleased
 
+- Align the unpublished Maven/Coursier candidate to final group
+  `com.github.dmytromitin`, reject the provisional group, and record the
+  remaining JNA dual-license owner/legal gate without claiming publication or
+  supported package installation.
+
 ## 0.1.0-alpha.1
 
 This is the first experimental, source-only alpha. It does not publish

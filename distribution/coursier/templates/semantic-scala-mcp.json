@@ -4,7 +4,7 @@
     "central"
   ],
   "dependencies": [
-    "io.github.dmytromitin:semantic-harness-mcp-server_3:${VERSION}"
+    "com.github.dmytromitin:semantic-harness-mcp-server_3:${VERSION}"
   ],
   "mainClass": "semantic.harness.mcp.Main",
   "launcherType": "bootstrap",

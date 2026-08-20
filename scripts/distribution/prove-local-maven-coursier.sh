@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SOURCE="$ROOT"
-VERSION="0.1.0-alpha.2-task146.local"
+VERSION="0.1.0-alpha.2-task147.local"
 CS="${CS:-$(command -v cs || true)}"
 JAVA21_HOME="${JAVA21_HOME:-${JAVA_HOME:-}}"
 
@@ -42,7 +42,7 @@ else
   }
 fi
 
-PROOF_ROOT="$(mktemp -d -t semantic-scala-task146-proof-XXXXXXXX)"
+PROOF_ROOT="$(mktemp -d -t semantic-scala-task147-proof-XXXXXXXX)"
 cleanup() {
   rm -rf -- "$PROOF_ROOT"
 }
@@ -56,12 +56,12 @@ CHANNEL="$PROOF_ROOT/channel"
 INSTALL="$PROOF_ROOT/install"
 CACHE="$PROOF_ROOT/coursier-cache"
 FIXTURE="$PROOF_ROOT/outside-workspace"
-GNUPGHOME_TASK146="$PROOF_ROOT/gnupg"
+GNUPGHOME_TASK147="$PROOF_ROOT/gnupg"
 
 cp -a -- "$SOURCE" "$FIRST"
 cp -a -- "$SOURCE" "$SECOND"
-mkdir -p "$REPOSITORY_ONE" "$REPOSITORY_TWO" "$FIXTURE/src" "$GNUPGHOME_TASK146"
-chmod 700 "$GNUPGHOME_TASK146"
+mkdir -p "$REPOSITORY_ONE" "$REPOSITORY_TWO" "$FIXTURE/src" "$GNUPGHOME_TASK147"
+chmod 700 "$GNUPGHOME_TASK147"
 cp -- "$FIRST/modules/fp-analyzers/src/test/resources/effect-fixtures/simple/UserRepo.scala" "$FIXTURE/src/UserRepo.scala"
 
 export JAVA_HOME="$JAVA21_HOME"
@@ -73,7 +73,7 @@ publish_candidate() {
   local include_tests="$3"
   local commands=(
     "set ThisBuild / version := \"$VERSION\""
-    "set ThisBuild / publishTo := Some(Resolver.file(\"task146-local\", file(\"$repository\"))(Resolver.mavenStylePatterns))"
+    "set ThisBuild / publishTo := Some(Resolver.file(\"task147-local\", file(\"$repository\"))(Resolver.mavenStylePatterns))"
   )
   if [[ "$include_tests" == true ]]; then
     commands+=("test")
@@ -94,16 +94,16 @@ publish_candidate() {
 publish_candidate "$FIRST" "$REPOSITORY_ONE" true
 publish_candidate "$SECOND" "$REPOSITORY_TWO" false
 
-GNUPGHOME="$GNUPGHOME_TASK146" gpg --batch --pinentry-mode loopback --passphrase '' \
-  --quick-generate-key "semantic-scala Task 146 synthetic local proof" rsa2048 sign 1d >/dev/null 2>&1
+GNUPGHOME="$GNUPGHOME_TASK147" gpg --batch --pinentry-mode loopback --passphrase '' \
+  --quick-generate-key "semantic-scala Task 147 synthetic local proof" rsa2048 sign 1d >/dev/null 2>&1
 
 while IFS= read -r -d '' artifact; do
-  GNUPGHOME="$GNUPGHOME_TASK146" gpg --batch --yes --armor --detach-sign "$artifact"
+  GNUPGHOME="$GNUPGHOME_TASK147" gpg --batch --yes --armor --detach-sign "$artifact"
   sha256sum "$artifact" >"$artifact.sha256"
   sha512sum "$artifact" >"$artifact.sha512"
-  GNUPGHOME="$GNUPGHOME_TASK146" gpg --batch --verify "$artifact.asc" "$artifact" >/dev/null 2>&1
+  GNUPGHOME="$GNUPGHOME_TASK147" gpg --batch --verify "$artifact.asc" "$artifact" >/dev/null 2>&1
 done < <(
-  find "$REPOSITORY_ONE/io/github/dmytromitin" -type f \
+  find "$REPOSITORY_ONE/com/github/dmytromitin" -type f \
     \( -name '*.pom' -o -name '*.jar' \) \
     ! -name '*.asc' ! -name '*.sha256' ! -name '*.sha512' -print0
 )
@@ -115,7 +115,7 @@ primary_manifest() {
   local repository="$1"
   (
     cd "$repository"
-    find io/github/dmytromitin -type f \( -name '*.pom' -o -name '*.jar' \) \
+    find com/github/dmytromitin -type f \( -name '*.pom' -o -name '*.jar' \) \
       ! -name '*.asc' ! -name '*.sha256' ! -name '*.sha512' -print0 \
       | sort -z | xargs -0 sha256sum
   )

@@ -12,8 +12,9 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 
-GROUP = "io.github.dmytromitin"
-GROUP_PATH = Path("io/github/dmytromitin")
+GROUP = "com.github.dmytromitin"
+GROUP_PATH = Path("com/github/dmytromitin")
+LEGACY_GROUP_PATH = Path("io/github/dmytromitin")
 MODULE_EDGES = {
     "semantic-harness-core_3": [],
     "semantic-harness-sbt-runner_3": ["semantic-harness-core_3"],
@@ -108,6 +109,9 @@ def validate_metadata(root: ElementTree.Element, module: str, version: str) -> N
 def repository_report(repository: Path, version: str) -> dict[str, object]:
     if repository.is_symlink() or not repository.is_dir():
         raise CandidateError("repository must be a regular directory")
+    legacy_group_root = repository / LEGACY_GROUP_PATH
+    if legacy_group_root.exists() or legacy_group_root.is_symlink():
+        raise CandidateError("legacy Maven namespace present: io.github.dmytromitin")
     group_root = repository / GROUP_PATH
     if group_root.is_symlink() or not group_root.is_dir():
         raise CandidateError("candidate group is missing")
@@ -153,6 +157,7 @@ def repository_report(repository: Path, version: str) -> dict[str, object]:
         "version": version,
         "moduleCount": len(MODULE_EDGES),
         "modules": MODULE_EDGES,
+        "legacyNamespaceAbsent": True,
         "artifacts": sorted(artifacts, key=lambda item: (item["gav"], item["file"])),
         "releaseShape": {
             "sources": True,

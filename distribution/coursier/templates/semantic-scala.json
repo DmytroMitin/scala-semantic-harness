@@ -4,7 +4,7 @@
     "central"
   ],
   "dependencies": [
-    "io.github.dmytromitin:semantic-scala-cli_3:${VERSION}"
+    "com.github.dmytromitin:semantic-scala-cli_3:${VERSION}"
   ],
   "mainClass": "semantic.harness.cli.Main",
   "launcherType": "bootstrap",

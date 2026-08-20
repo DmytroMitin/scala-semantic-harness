@@ -44,7 +44,8 @@ inherits the limits of every evidence source it uses.
 ## Packaging boundary
 
 The primary runtime candidate is an exact eight-module thin Maven dependency
-graph plus two exact-version Coursier applications. Root and benchmark cannot
+graph under final group `com.github.dmytromitin` plus two exact-version Coursier
+applications. The provisional group is rejected. Root and benchmark cannot
 publish. The CLI and MCP applications remain distinct; the MCP server resolves
 and delegates to an installed `semantic-scala` sibling through a bounded,
 validated PATH contract. These modules are application implementation

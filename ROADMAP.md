@@ -19,10 +19,12 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Close the exact Maven dependency license/NOTICE human-review gate, then
-   separately authorize and validate external publication of the implemented
-   CLI/MCP Coursier route. The current verified source-build route remains
-   available, and the local candidate is not packaged-distribution readiness.
+1. Record the owner/legal selection of JNA 5.14.0's
+   `Apache-2.0 OR LGPL-2.1-or-later` compliance path, the one remaining exact
+   Maven dependency review gate. Then separately authorize and validate
+   external publication of the `com.github.dmytromitin` CLI/MCP Coursier
+   route. The current verified source-build route remains available, and the
+   local candidate is not packaged-distribution readiness.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.
@@ -84,11 +86,12 @@ execution ledger and does not promise delivery dates.
 ## Installation and packaging
 
 - Maintain the exact-eight modular Maven graph, current Central publishing
-  architecture, exact-version two-application Coursier source, and disposable
-  install/update/uninstall/reproducibility proof.
-- Resolve every flagged multiple-license, EPL-family, missing/ambiguous
-  license, and possible NOTICE/attribution item through human prepublication
-  review before an externally authorized release.
+  architecture, final group `com.github.dmytromitin`, exact-version
+  two-application Coursier source, explicit legacy-group rejection, and
+  disposable install/update/uninstall/reproducibility proof.
+- Preserve the technical dispositions for 15 of 16 unique flagged runtime
+  rows; require owner/legal selection of JNA 5.14.0's dual-license path before
+  an externally authorized validation or release.
 - Keep deterministic assembly, official-schema checks, canonical-skill byte
   identity, and relocated CLI-backed MCP smoke reproducible.
 - Maintain a clean external source-installation walkthrough through a

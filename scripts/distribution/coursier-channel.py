@@ -59,7 +59,7 @@ def expected_descriptor(name: str, version: str, repository: str) -> dict[str, o
     return {
         "repositories": repositories,
         "dependencies": [
-            f"io.github.dmytromitin:{application['artifact']}:{version}"
+            f"com.github.dmytromitin:{application['artifact']}:{version}"
         ],
         "mainClass": application["mainClass"],
         "launcherType": "bootstrap",

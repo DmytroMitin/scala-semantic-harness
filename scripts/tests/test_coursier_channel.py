@@ -49,14 +49,15 @@ class CoursierChannelTest(unittest.TestCase):
             self.assertEqual(cli["repositories"], ["file:/tmp/task146-repository", "central"])
             self.assertEqual(
                 cli["dependencies"],
-                ["io.github.dmytromitin:semantic-scala-cli_3:0.1.0-task146.local"],
+                ["com.github.dmytromitin:semantic-scala-cli_3:0.1.0-task146.local"],
             )
             self.assertEqual(cli["mainClass"], "semantic.harness.cli.Main")
             self.assertEqual(
                 mcp["dependencies"],
-                ["io.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-task146.local"],
+                ["com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-task146.local"],
             )
             self.assertEqual(mcp["mainClass"], "semantic.harness.mcp.Main")
+            self.assertNotIn("io.github.dmytromitin", json.dumps([cli, mcp]))
 
             validation = self.run_tool(
                 "validate-generated",
