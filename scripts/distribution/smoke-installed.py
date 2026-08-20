@@ -93,7 +93,7 @@ def run(install: Path, fixture: Path, version: str) -> dict[str, object]:
                 "params": {
                     "protocolVersion": "2025-06-18",
                     "capabilities": {},
-                    "clientInfo": {"name": "task146-local-proof", "version": "1"},
+                    "clientInfo": {"name": "task148-local-proof", "version": "1"},
                 },
             },
         )

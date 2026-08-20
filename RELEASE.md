@@ -46,13 +46,14 @@ dependency-attribution and license, installation, and runtime gates.
 The `com.github.dmytromitin` exact-eight Maven/Coursier candidate now implements
 those gates locally, including explicit provisional-group rejection,
 source/doc/signature/checksum shape, byte-identical two-build output, and
-disposable install/update/uninstall. It remains unpublished. Technical review
-resolved 15 of 16 unique flagged runtime rows without establishing a bundled
-NOTICE action. JNA 5.14.0's `Apache-2.0 OR LGPL-2.1-or-later` compliance path
-still requires owner/legal selection; no external validation or release may
-proceed until that decision and separate publication authorization are
-recorded. Published Central coordinates are immutable: corrections roll
-forward to a new reviewed version and are never overwritten or deleted.
+disposable install/update/uninstall. The exact non-SNAPSHOT local candidate is
+`0.1.0-alpha.2`; mutable `main` remains `0.1.0-alpha.2-SNAPSHOT`. It remains
+unpublished. Technical review dispositioned all 16 unique flagged runtime rows
+without establishing a bundled NOTICE action, and the owner selected
+Apache-2.0 for resolver-fetched JNA 5.14.0. No external validation or release
+may proceed without separate explicit authorization. Published Central
+coordinates are immutable: corrections roll forward to a new reviewed version
+and are never overwritten or deleted.
 
 Release readiness remains separate from evidence that the harness improves an
 agent decision or outperforms mature IDE/LSP tooling.

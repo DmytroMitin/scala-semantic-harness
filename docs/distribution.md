@@ -109,11 +109,13 @@ proof. Given a clean source tree and JDK 21, it:
 8. deletes repositories, channel, cache, install root, fixture, reports, logs,
    and synthetic keyring through its temporary-root cleanup.
 
-The admitted local proof used Coursier 2.1.25-M25. It produced 32
-primary files across eight modules and a byte-identical two-build manifest
-digest of
-`9a3999b18c30bbe88d70fb51f0887fa69c135617657b7a0e59fa83b2fdbef59e`.
-Those hashes describe a disposable local version, not a published release.
+The admitted local proof used Coursier 2.1.25-M25 and exact candidate version
+`0.1.0-alpha.2`. It produced 32 primary files across eight modules and a
+byte-identical two-build manifest digest of
+`a9d1e1ff0aabb7596b82aff27036fe63b345838200b6665ba226b43eb5f92028`.
+It also verified 32 detached test-only signatures and the complete 192-file
+artifact/signature/checksum shape. Those hashes describe a locally frozen
+candidate, not a published release.
 
 ## Dependency and attribution review
 
@@ -126,13 +128,12 @@ attribution obligations and is not a legal conclusion.
 The admitted local inventory contained 57 runtime components. Automated review
 flagged six EPL-family records, one multiple-license record, nine
 missing/ambiguous POM-license records, and zero packaged NOTICE-name hits.
-Technical review against authoritative upstream sources resolved 15 of the 16
+Technical review against authoritative upstream sources dispositioned all 16
 unique flagged component rows without requiring project-bundled NOTICE text in
-the current resolver-fetched packaging model. The remaining row is JNA 5.14.0:
-upstream offers Apache-2.0 or LGPL-2.1-or-later, so the project owner or legal
-reviewer must select and record the intended license path before any Central
-release. The review is technical evidence, not legal advice; the automated
-gate must not be weakened to infer legal clearance.
+the current resolver-fetched packaging model. For JNA 5.14.0, upstream offers
+Apache-2.0 or LGPL-2.1-or-later and the project owner selected Apache-2.0. The
+review is technical evidence, not legal advice; the automated gate must not be
+weakened to infer legal clearance or publication authority.
 
 ## Readiness boundary
 

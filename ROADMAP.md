@@ -19,12 +19,13 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Record the owner/legal selection of JNA 5.14.0's
-   `Apache-2.0 OR LGPL-2.1-or-later` compliance path, the one remaining exact
-   Maven dependency review gate. Then separately authorize and validate
-   external publication of the `com.github.dmytromitin` CLI/MCP Coursier
-   route. The current verified source-build route remains available, and the
-   local candidate is not packaged-distribution readiness.
+1. Review the locally frozen exact `0.1.0-alpha.2` Maven/Coursier candidate,
+   whose 16 flagged runtime-license rows are technically dispositioned with
+   the owner-selected Apache-2.0 path for JNA 5.14.0. Then separately
+   authorize validate-before-publish Central work for the
+   `com.github.dmytromitin` CLI/MCP Coursier route. The current verified
+   source-build route remains available, and the local candidate is not
+   packaged-distribution readiness.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.
@@ -89,9 +90,9 @@ execution ledger and does not promise delivery dates.
   architecture, final group `com.github.dmytromitin`, exact-version
   two-application Coursier source, explicit legacy-group rejection, and
   disposable install/update/uninstall/reproducibility proof.
-- Preserve the technical dispositions for 15 of 16 unique flagged runtime
-  rows; require owner/legal selection of JNA 5.14.0's dual-license path before
-  an externally authorized validation or release.
+- Preserve the technical dispositions for all 16 unique flagged runtime rows,
+  including the owner-selected Apache-2.0 path for JNA 5.14.0; keep external
+  validation and release under separate explicit authority.
 - Keep deterministic assembly, official-schema checks, canonical-skill byte
   identity, and relocated CLI-backed MCP smoke reproducible.
 - Maintain a clean external source-installation walkthrough through a

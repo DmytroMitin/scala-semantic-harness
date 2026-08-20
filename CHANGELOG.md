@@ -9,8 +9,9 @@ supported binary, package-manager, marketplace, or client-installation release.
 
 - Align the unpublished Maven/Coursier candidate to final group
   `com.github.dmytromitin`, reject the provisional group, and record the
-  remaining JNA dual-license owner/legal gate without claiming publication or
-  supported package installation.
+  owner-selected Apache-2.0 path for JNA 5.14.0. Freeze and locally prove exact
+  candidate `0.1.0-alpha.2` without claiming publication or supported package
+  installation.
 
 ## 0.1.0-alpha.1
 

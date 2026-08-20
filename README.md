@@ -221,11 +221,12 @@ benchmark reproducibility beyond its stated small-sample gate.
   compile proof.
 - Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
-- The Maven/Coursier route has local implementation evidence only. It has no
-  harness deployment validation, external artifact, published channel, or
-  independent public install. Technical review resolved 15 of 16 unique
-  flagged license/NOTICE rows; owner/legal selection of JNA 5.14.0's
-  `Apache-2.0 OR LGPL-2.1-or-later` path remains a prepublication gate.
+- The Maven/Coursier route has a locally frozen exact `0.1.0-alpha.2`
+  candidate only. It has no harness deployment validation, external artifact,
+  published channel, or independent public install. All 16 formerly flagged
+  license/NOTICE rows are technically dispositioned; the owner selected
+  Apache-2.0 for resolver-fetched JNA 5.14.0. This is not legal advice or
+  publication authority.
 - The public repository contains only the audited clean source history. The
   separate mixed development history remains private and is not a release or
   installation channel.
