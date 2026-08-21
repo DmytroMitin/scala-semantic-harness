@@ -1,22 +1,21 @@
-# Maven and Coursier distribution candidate
+# Maven and Coursier distribution
 
 ## Current state
 
-The modular Maven/Coursier primary runtime candidate is implemented, locally
-validated, and published on Maven Central at exact version `0.1.0-alpha.2`.
+The modular Maven/Coursier primary runtime is implemented, locally validated,
+and published on Maven Central at exact version `0.1.0-alpha.2`.
 All eight public module POM/main/source/documentation artifacts, signatures,
-and checksum sidecars were verified against the reviewed release bytes. This
-does not yet establish a supported application package channel.
-The supported and externally verified route remains a JDK 21 source build.
+and checksum sidecars were verified against the reviewed release bytes. The
+project-owned public Coursier URL channel has also passed an independent fresh
+JDK 21 install/runtime/update/uninstall qualification, so this exact
+application route is supported alongside the source build.
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
 current `main` remains development version `0.1.0-alpha.2-SNAPSHOT`.
 
-A project-owned single-file Coursier URL-channel candidate is checked in and
-locally qualified, but it is not available from public `main` until these
-repository changes are published. No independent public-URL install, Coursier
-contrib entry, MCPB package, MCP Registry entry, native binary, container,
-npm/PyPI wrapper, Agent Plugin runtime distribution, or skill distribution is
-claimed by this work.
+A project-owned single-file Coursier URL channel is available from public
+`main`. No Coursier contrib entry, MCPB package, MCP Registry entry, native
+binary, container, npm/PyPI wrapper, Agent Plugin runtime distribution, or
+skill distribution is claimed by this support result.
 
 ## Exact implementation graph
 
@@ -55,7 +54,7 @@ These coordinates package application implementation. They do not define a
 supported embeddable-library API or promise binary compatibility among the
 internal modules.
 
-## Prepared URL channel and install shape
+## Public URL channel and install shape
 
 The exact Maven version is public. `distribution/coursier/channel.json` is the
 canonical deterministic URL channel with exactly these two applications:
@@ -67,7 +66,7 @@ semantic-scala-mcp
 
 The baseline is JDK 21. Install Coursier by following its
 [authoritative installation guidance](https://get-coursier.io/docs/cli-installation),
-then, once this channel file is present on public `main`, install only the CLI:
+then install only the CLI:
 
 ```bash
 cs install --default-channels=false \
@@ -176,8 +175,18 @@ public Maven Central. Initial install and update both passed exact CLI version,
 no-override MCP initialization, ordered eight-tool registry, and bounded
 `semantic_effect_summary` schema checks. Both applications uninstalled, no
 checkout path appeared in launchers or cache, and all disposable state was
-deleted. This qualifies the soon-to-be-public bytes, not the unavailable public
-GitHub URL.
+deleted.
+
+The independent public qualification then fetched both live `main` and commit-
+pinned channel URLs at SHA-256
+`f5d3d638ee46107f11f0e288462440a6017d89bc667c910f1df63a44cdcaa453`.
+Two separate empty Coursier caches resolved the channel only from
+`raw.githubusercontent.com` and the application graph only from Maven Central.
+The live-main lane passed exact CLI version, no-override ordered eight-tool MCP,
+one bounded `semantic_effect_summary`, retained-channel update, repeated smoke,
+and uninstall. The commit-pinned lane independently repeated install, CLI/MCP
+runtime, read-only smoke, and uninstall. Neither lane required credentials,
+local Maven state, a checkout launcher, or private/control material.
 
 ## Dependency and attribution review
 
@@ -199,7 +208,12 @@ weakened to infer legal clearance or publication authority.
 
 ## Readiness boundary
 
-`SUPPORTED_DISTRIBUTION_USABILITY` remains `NOT_ASSESSED`. Local installation
-through a loopback-served copy proves the checked channel semantics and cleanup
-behavior. It does not prove independent installation from the actually public
-project URL, long-term support, discovery, or user adoption.
+`SUPPORTED_DISTRIBUTION_USABILITY = READY` for the exact
+`com.github.dmytromitin:*:0.1.0-alpha.2` Maven Central plus project-owned public
+Coursier URL route under JDK 21. This means the CLI and generic stdio MCP
+applications install, run, update, and uninstall independently through that
+route. It does not imply Coursier contrib or registry discovery, MCPB/MCP
+Registry availability, native/container/npm/PyPI packaging, Agent Plugin or
+skill adoption, a stable embeddable-library API, broad Scala compatibility,
+semantic superiority, `0.1.0-alpha.2` Git tag/GitHub Release coherence, or 1.0
+stability.

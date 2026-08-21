@@ -33,8 +33,8 @@ private archive and is not part of this public repository.
   wrappers;
 - source templates and a deterministic assembler for a self-contained Agent
   Plugins 1.0 package containing that skill and the exact-eight MCP server; and
-- an implemented, locally validated exact-eight Maven/Coursier runtime
-  candidate that is not externally published or supported yet.
+- a supported, independently qualified exact-eight Maven/Coursier application
+  route for exact version `0.1.0-alpha.2`.
 
 ## Modules
 
@@ -86,15 +86,14 @@ For repeated use, prefer the staged launcher at
 
 ## Maven/Coursier distribution
 
-The source-build route above remains the currently supported and externally
-verified route. A production-shaped modular Maven/Coursier candidate is now
-implemented under final group `com.github.dmytromitin` and passes a disposable
-local proof. The exact eight-module `0.1.0-alpha.2` candidate is published on
-Maven Central and its complete public repository shape has been verified
-against the reviewed bytes. A deterministic project-owned URL-channel file is
-now prepared and locally qualified, but independent installation from its
-actual public GitHub URL remains pending. The source-build route above remains
-the supported application route.
+The source-build route above remains supported and externally verified. The
+exact eight-module `0.1.0-alpha.2` runtime is also published under final group
+`com.github.dmytromitin` on Maven Central, and its complete public repository
+shape has been verified against the reviewed bytes. A fresh outsider-like JDK
+21 environment independently installed both applications from the actual
+project-owned raw GitHub URL, exercised the CLI and generic stdio MCP runtime,
+updated through retained public-channel metadata, and uninstalled cleanly.
+That exact Maven Central plus Coursier URL route is therefore supported.
 
 The candidate publishes exactly the eight implementation modules, never the
 root aggregate or benchmark, and generates exact-version descriptors for the
@@ -105,7 +104,7 @@ not required merely to install the applications or for every read-only
 semantic command. The Maven modules are application implementation artifacts,
 not a supported embeddable-library API or binary-compatibility promise.
 
-Once this channel file is published on public `main`, install only the CLI:
+Install only the CLI:
 
 ```bash
 cs install --default-channels=false \
@@ -243,11 +242,12 @@ benchmark reproducibility beyond its stated small-sample gate.
   compile proof.
 - Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
-- The Maven/Coursier route has a locally frozen exact `0.1.0-alpha.2`
-  candidate whose exact eight Maven artifacts are published on Central. It has
-  a checked project-owned URL-channel candidate with a passing local HTTP-to-
-  Central runtime proof, but no independent install from the actual public
-  GitHub URL yet.
+- The exact `0.1.0-alpha.2` Maven/Coursier application route is independently
+  qualified from the actual project-owned public channel URL and Maven
+  Central under JDK 21. This does not establish Coursier contrib, MCP Registry,
+  MCPB, native/container/npm/PyPI packaging, a stable embeddable-library API,
+  broad Scala compatibility, skill adoption, semantic superiority, tag/Release
+  coherence, or 1.0 stability.
   All 16 formerly flagged license/NOTICE rows are technically dispositioned;
   the owner selected Apache-2.0 for resolver-fetched JNA 5.14.0. This is not
   legal advice or authority for another publication action.

@@ -53,10 +53,12 @@ Central from the explicitly authorized `USER_MANAGED` deployment. No
 `0.1.0-alpha.2` Git tag or GitHub Release was created. Technical review
 dispositioned all 16 unique flagged runtime rows without establishing a
 bundled NOTICE action, and the owner selected Apache-2.0 for resolver-fetched
-JNA 5.14.0. The deterministic project-owned Coursier URL-channel candidate is
-prepared and locally qualified against these Central artifacts; publication
-of the product changes and a later independent public-URL install remain
-separate gates. Published Central coordinates are immutable: corrections roll
+JNA 5.14.0. The deterministic project-owned Coursier URL channel is public and
+independently qualified from both live-main and commit-pinned URLs in fresh JDK
+21 states against Maven Central only. Exact CLI version, no-override MCP,
+ordered eight tools, bounded read-only runtime, retained-channel update, and
+uninstall passed. This does not create or imply an `0.1.0-alpha.2` Git tag or
+GitHub Release. Published Central coordinates are immutable: corrections roll
 forward to a new reviewed version and are never overwritten or deleted.
 
 Release readiness remains separate from evidence that the harness improves an

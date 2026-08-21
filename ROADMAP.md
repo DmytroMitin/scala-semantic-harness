@@ -19,14 +19,11 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Preserve the exact `0.1.0-alpha.2` Maven/Coursier candidate, whose 16
-   flagged runtime-license rows are technically dispositioned and whose exact
-   eight Maven artifacts are now public on Central. The deterministic public
-   URL-channel candidate is prepared and locally qualified against those
-   artifacts; publish it through the normal repository workflow, then run a
-   fresh independent install/runtime check from the actual public URL. The
-   current verified source-build route remains available, and Maven/channel
-   preparation alone is not supported-distribution readiness.
+1. Preserve the independently qualified exact `0.1.0-alpha.2` Maven/Coursier
+   application route: eight immutable Central artifacts, the deterministic
+   two-application public URL channel, JDK 21, no-override CLI/MCP runtime,
+   retained-channel update, and clean uninstall. Requalify any later version
+   or channel change rather than generalizing this bounded support result.
 2. Improve skill and plugin discoverability, then test whether agents select
    and use the installed harness appropriately. Invocation alone is not
    adoption value.
@@ -100,9 +97,10 @@ execution ledger and does not promise delivery dates.
   documented project-local or session-local MCP client route.
 - Establish a separate conformant Agent Plugins package-load route when an
   installed client documents safe local or disposable loading.
-- Add the separately authorized public Maven/Coursier release channel without
+- Keep the public Maven/Coursier route independently reproducible without
   turning the application into a promised embeddable library API.
-- Validate CLI, MCP, and skill activation from a clean environment.
+- Preserve clean-environment CLI and generic stdio MCP validation; skill
+  activation remains a separate adoption dimension.
 - Keep the product independent of private control or orchestration material.
 
 ## Reproducible benchmarking

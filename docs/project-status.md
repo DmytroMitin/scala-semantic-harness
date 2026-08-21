@@ -44,7 +44,7 @@ score.
 | --- | --- | --- |
 | Public alpha product readiness | `READY` | Apache-2.0, focused newcomer/release policies, a 244-file allowlist, an independently initialized one-commit candidate, current-tree and reachable-history scans, fresh-clone validation, and public-ref/object proof pass for an experimental source alpha. This is not a supported binary/package release. |
 | External installation usability | `READY` | An anonymous public HTTPS clone was staged from the documented JDK 21/sbt/Python/Git source contract, then Claude Code 2.1.220 used an explicit session-local MCP configuration to discover exactly eight tools and return a bounded `semantic_effect_summary` result. The temporary configuration was removable and no supported binary, package-manager, marketplace, or conformant Agent Plugins client route is implied. |
-| Supported distribution usability | `NOT_ASSESSED` | The exact-eight modular Maven graph uses final group `com.github.dmytromitin`, explicitly rejects the provisional group, and has a locally frozen exact `0.1.0-alpha.2` candidate backed by two-build and disposable JDK 21 install/update/uninstall proof. All 16 formerly flagged license/NOTICE rows are technically dispositioned, including the owner-selected Apache-2.0 path for JNA 5.14.0. Nothing is externally published and the intended public route has no independent install; source-build usability stays separate. |
+| Supported distribution usability | `READY` | Two fresh outsider-like JDK 21 states consumed the actual public `main` and commit-pinned project channel URLs plus public Maven Central only. Exact `0.1.0-alpha.2` CLI version, no-override ordered eight-tool MCP, bounded read-only schema, retained-channel update, uninstall, anonymous access, and checkout/private-path independence all passed. This state is limited to that exact application route and does not imply discovery, adoption, embeddable-library stability, broad Scala compatibility, tag/Release coherence, or other package formats. |
 | Semantic primitive marginal utility | `EVIDENCE_PARTIAL` | Bounded evidence identifies useful symbol, provenance, usage, and reconciliation behavior, but no general advantage over a strong direct-tool baseline is established. |
 | Composition/orchestration marginal utility | `READY` | Deterministic contract evidence plus independent real-project trials on `quasiquotes-scala3` and Cats Effect show that point evidence preserves direct discovery, live, reconciliation, selection, routing, and typed non-attempt facts while materially reducing caller merge and unsafe-selection risk. This does not establish live-agent decision-quality, latency, broad IDE/LSP superiority, primitive marginal utility, Scala 2 compatibility, or skill/adoption benefit. |
 | Scala target compatibility | `EVIDENCE_PARTIAL` | One parallel JDK 21 matrix verifies compile/test/error delegation, SemanticDB discovery/symbol/usages, syntax-first effect summaries, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8. Shared-syntax Scala 2 symbol/type points also resolved and reconciled exactly, but through the pinned Scala 3.3 presentation compiler; broad Scala 2 dialect, macro, compiler-plugin, classpath, and real-project compatibility remain untested. |
@@ -58,22 +58,17 @@ Release point to immutable commit
 `281bb7600701d8c93fff2739a7fdb8d781ce8554`. Current `main` is post-release
 development and reports `0.1.0-alpha.2-SNAPSHOT`; that mutable identity remains
 distinct from the immutable exact `0.1.0-alpha.2` Maven artifacts now published
-on Central. A deterministic project-owned Coursier URL-channel candidate has a
-passing local HTTP-to-Central runtime proof, but it is not available on public
-`main` and no independent supported public-URL client install is established.
+on Central. The deterministic project-owned Coursier URL channel is public and
+has passed independent live-main and commit-pinned fresh-cache installation,
+CLI/MCP runtime, update, read-only, and uninstall checks under JDK 21.
 Agent Plugin adoption effectiveness, broader
 semantic superiority, complete Scala 2 support, and 1.0 stability remain
 unproven.
 
 ## Next evidence milestone
 
-The reviewed exact candidate is published on Maven Central and its project-
-owned exact-version Coursier URL-channel bytes are prepared. Publication of
-these repository changes, followed by an independent public-URL install/runtime
-qualification, is the next separate gate. Packaged distribution remains
-separate from the already verified source-build lane.
-
-After that foundation, adoption work should test appropriate agent selection
+The exact alpha-2 Maven/Coursier application route is now independently
+qualified. Adoption work should next test appropriate agent selection
 with and without the canonical skill, compatibility work should exercise a
 maintained real Scala 2.13 project before harder legacy targets, and new
 semantic capabilities should originate from concrete user, adoption,
