@@ -48,7 +48,7 @@ score.
 | Semantic primitive marginal utility | `EVIDENCE_PARTIAL` | Bounded evidence identifies useful symbol, provenance, usage, and reconciliation behavior, but no general advantage over a strong direct-tool baseline is established. |
 | Composition/orchestration marginal utility | `READY` | Deterministic contract evidence plus independent real-project trials on `quasiquotes-scala3` and Cats Effect show that point evidence preserves direct discovery, live, reconciliation, selection, routing, and typed non-attempt facts while materially reducing caller merge and unsafe-selection risk. This does not establish live-agent decision-quality, latency, broad IDE/LSP superiority, primitive marginal utility, Scala 2 compatibility, or skill/adoption benefit. |
 | Scala target compatibility | `EVIDENCE_PARTIAL` | One parallel JDK 21 matrix verifies compile/test/error delegation, SemanticDB discovery/symbol/usages, syntax-first effect summaries, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8. Shared-syntax Scala 2 symbol/type points also resolved and reconciled exactly, but through the pinned Scala 3.3 presentation compiler; broad Scala 2 dialect, macro, compiler-plugin, classpath, and real-project compatibility remain untested. |
-| Agent skill adoption effectiveness | `NOT_ASSESSED` | The canonical skill, wrappers, and portable package source exist. No installed client documented a safe nonpersistent Agent Plugins 1.0 package-load route, so no valid spontaneous selection/non-selection case ran; misuse resistance and incremental decision value remain unproven. |
+| Agent skill adoption effectiveness | `EVIDENCE_PARTIAL` | Current `skills` CLI discovery exposes exactly one canonical `semantic-scala` candidate and installs self-contained byte-identical policy for Codex and Claude Code. In one isolated Codex CLI 0.147.0 / `gpt-5.4`-low three-case A/B/C comparison, all final answers were correct and all conditions correctly avoided semantic tools on a documentation-only case, but the aggregate appropriate selection/non-selection score changed from B `2/3` to C `1/3`: C chose broader point evidence instead of the warranted symbol query on P and missed the warranted effect summary on S. This bounded result is not READY and does not generalize to other clients, models, prompts, or a revised skill. |
 | Benchmark reproducibility | `READY` | The admitted public subset contains portable prompts, test-coupled fixtures, a bounded aggregate, and deterministic validation; it passed manifest, link, full-test, staged CLI, wrapper, and MCP smoke gates in a history-free disposable tree. This does not reproduce private historical sessions or establish general effectiveness. |
 | Publication safety | `READY` | The public product has an audited clean root followed only by reviewed public-product commits. The separate mixed-history archive and private control repository remain private; their refs and object graphs are not part of the public product. |
 
@@ -61,15 +61,15 @@ distinct from the immutable exact `0.1.0-alpha.2` Maven artifacts now published
 on Central. The deterministic project-owned Coursier URL channel is public and
 has passed independent live-main and commit-pinned fresh-cache installation,
 CLI/MCP runtime, update, read-only, and uninstall checks under JDK 21.
-Agent Plugin adoption effectiveness, broader
-semantic superiority, complete Scala 2 support, and 1.0 stability remain
-unproven.
+General agent-skill adoption effectiveness, broader semantic superiority,
+complete Scala 2 support, and 1.0 stability remain unproven.
 
 ## Next evidence milestone
 
-The exact alpha-2 Maven/Coursier application route is now independently
-qualified. Adoption work should next test appropriate agent selection
-with and without the canonical skill, compatibility work should exercise a
+The exact alpha-2 Maven/Coursier application route and canonical-skill
+installability are now independently qualified. Adoption work should next make
+the narrow-tool selection guidance more discriminating and replicate it on new
+frozen cases before any READY claim. Compatibility work should exercise a
 maintained real Scala 2.13 project before harder legacy targets, and new
 semantic capabilities should originate from concrete user, adoption,
 compatibility, or benchmark gaps rather than generic feature exploration.

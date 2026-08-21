@@ -24,9 +24,9 @@ execution ledger and does not promise delivery dates.
    two-application public URL channel, JDK 21, no-override CLI/MCP runtime,
    retained-channel update, and clean uninstall. Requalify any later version
    or channel change rather than generalizing this bounded support result.
-2. Improve skill and plugin discoverability, then test whether agents select
-   and use the installed harness appropriately. Invocation alone is not
-   adoption value.
+2. Preserve the qualified canonical-skill install route, refine narrow-tool
+   selection guidance from the bounded Codex A/B/C regression, and replicate
+   on independent frozen cases. Invocation alone is not adoption value.
 3. Invite early technical feedback on the experimental source alpha and use
    real installation and project cases to guide maintenance.
 4. Validate compatibility on a maintained, reproducible real Scala 2.13
@@ -74,12 +74,14 @@ execution ledger and does not promise delivery dates.
 
 - Maintain the generated Agent Plugins 1.0 package for the canonical skill and
   exact-eight MCP server without making client wrappers canonical.
-- Test appropriate spontaneous selection, non-selection, and resistance to
-  misuse or overuse once the runtime is cleanly installable and a documented
-  client integration route is available.
-- Investigate current cross-agent skill directories and current Codex/OpenAI
-  and Claude packaging mechanisms while keeping one canonical skill with thin
-  integration wrappers.
+- Preserve the verified one-candidate public shorthand/direct-path install into
+  Codex and Claude project skill directories while keeping thin native wrappers
+  non-canonical.
+- Use the bounded Codex result as correction evidence: the skill-guided lane
+  retained no-tool restraint but selected broader point evidence instead of a
+  narrow symbol query and did not select effect summary on the wrapper case.
+- Refine and independently replicate appropriate narrow-tool selection,
+  non-selection, and resistance to misuse or overuse before any READY claim.
 - Separate capability value from the incremental effect of skill guidance.
 
 ## Installation and packaging
