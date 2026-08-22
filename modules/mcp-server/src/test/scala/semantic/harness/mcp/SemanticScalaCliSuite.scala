@@ -47,6 +47,50 @@ class SemanticScalaCliSuite extends munit.FunSuite:
       assertEquals(result.command, List("semantic-scala", "test", "--json"))
     }
 
+  test("build-oracle tools append one validated sbt project before json"):
+    withTempWorkspace { workspace =>
+      val compileRunner = RecordingRunner(successPayload(success = true))
+      val errorsRunner = RecordingRunner(
+        successPayload(success = true, schemaVersion = SemanticScalaCli.ErrorsSchemaVersion)
+      )
+      val testRunner = RecordingRunner(testPayload(success = true))
+
+      val compile = SemanticScalaCli(Path.of("/tmp/semantic-scala"), compileRunner)
+        .semanticCompile(workspace, Some("core2_13"))
+      val errors = SemanticScalaCli(Path.of("/tmp/semantic-scala"), errorsRunner)
+        .semanticErrors(workspace, Some("core2_13"))
+      val test = SemanticScalaCli(Path.of("/tmp/semantic-scala"), testRunner)
+        .semanticTest(workspace, Some("tests_2"))
+
+      assert(compile.ok)
+      assert(errors.ok)
+      assert(test.ok)
+      assertEquals(
+        compileRunner.calls.map(_._1),
+        List(List("/tmp/semantic-scala", "compile", "--sbt-project", "core2_13", "--json"))
+      )
+      assertEquals(
+        errorsRunner.calls.map(_._1),
+        List(List("/tmp/semantic-scala", "errors", "--sbt-project", "core2_13", "--json"))
+      )
+      assertEquals(
+        testRunner.calls.map(_._1),
+        List(List("/tmp/semantic-scala", "test", "--sbt-project", "tests_2", "--json"))
+      )
+    }
+
+  test("build-oracle tools reject invalid sbt projects before process launch"):
+    withTempWorkspace { workspace =>
+      val runner = RecordingRunner(successPayload(success = true))
+      val result = SemanticScalaCli(Path.of("/tmp/semantic-scala"), runner)
+        .semanticCompile(workspace, Some("core2_13;test"))
+
+      assert(!result.ok)
+      assertEquals(runner.calls, Nil)
+      assert(result.error.exists(_.contains("sbt project ID must start with a letter")))
+      assert(!result.error.exists(_.contains(workspace.toString)))
+    }
+
   test("semantic_effect_summary constructs argv and runs in workspace"):
     withScalaWorkspace { (workspace, file) =>
       val runner = RecordingRunner(effectSummaryPayload(methods = List("example.UserRepo.find")))

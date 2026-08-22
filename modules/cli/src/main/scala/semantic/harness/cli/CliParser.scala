@@ -17,11 +17,11 @@ object CliParser:
       case "help" :: topic :: Nil =>
         ParseResult.Parsed(CliCommand.Help(Some(topic)))
       case "compile" :: rest =>
-        parseJsonCommand("compile", rest, CliCommand.Compile.apply)
+        parseBuildCommand("compile", rest, CliCommand.Compile.apply)
       case "test" :: rest =>
-        parseJsonCommand("test", rest, CliCommand.Test.apply)
+        parseBuildCommand("test", rest, CliCommand.Test.apply)
       case "errors" :: rest =>
-        parseJsonCommand("errors", rest, CliCommand.Errors.apply)
+        parseBuildCommand("errors", rest, CliCommand.Errors.apply)
       case "semanticdb-status" :: rest =>
         parseSemanticdbStatus(rest)
       case "semanticdb-coverage" :: rest =>
@@ -183,18 +183,37 @@ object CliParser:
           case Right(command) => ParseResult.Parsed(command)
           case Left(message)  => invalid(message)
 
-  private def parseJsonCommand(
+  private def parseBuildCommand(
     commandName: String,
     args: List[String],
-    build: Boolean => CliCommand
+    build: (Option[SbtProjectId], Boolean) => CliCommand
   ): ParseResult =
-    args match
-      case Nil =>
-        ParseResult.Parsed(build(false))
-      case "--json" :: Nil =>
-        ParseResult.Parsed(build(true))
-      case other =>
-        ParseResult.Invalid(s"Invalid arguments for $commandName: ${other.mkString(" ")}")
+    final case class Options(
+      sbtProject: Option[SbtProjectId] = None,
+      json: Boolean = false,
+      jsonSeen: Boolean = false
+    )
+
+    def loop(rest: List[String], options: Options): Either[String, Options] =
+      rest match
+        case Nil => Right(options)
+        case "--json" :: tail =>
+          if options.jsonSeen then Left(s"Option may only be supplied once for $commandName: --json")
+          else loop(tail, options.copy(json = true, jsonSeen = true))
+        case "--sbt-project" :: value :: tail if !value.startsWith("--") =>
+          if options.sbtProject.nonEmpty then
+            Left(s"Option may only be supplied once for $commandName: --sbt-project")
+          else
+            SbtProjectId
+              .parse(value)
+              .left
+              .map(message => s"Invalid --sbt-project for $commandName: $message")
+              .flatMap(project => loop(tail, options.copy(sbtProject = Some(project))))
+        case other => Left(s"Invalid arguments for $commandName: ${other.mkString(" ")}")
+
+    loop(args, Options()) match
+      case Right(options) => ParseResult.Parsed(build(options.sbtProject, options.json))
+      case Left(message)  => ParseResult.Invalid(message)
 
   private def parseSymbols(args: List[String]): ParseResult =
     args match

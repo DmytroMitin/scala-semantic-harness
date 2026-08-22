@@ -31,10 +31,10 @@ execution ledger and does not promise delivery dates.
    alone is not adoption value.
 3. Invite early technical feedback on the experimental source alpha and use
    real installation and project cases to guide maintenance.
-4. Preserve the two maintained real Scala 2.13 project matrices. Before moving
-   to harder legacy macro/plugin targets, assess the material alpha-2 usability
-   gap exposed by a multi-project build whose bounded row cannot be selected by
-   the build-oracle interface.
+4. Preserve the two maintained real Scala 2.13 project matrices and the narrow
+   alpha-3 SNAPSHOT project selector admitted from their evidence. Continue to
+   treat a selected row as bounded build evidence, not whole-workspace success
+   or automatic project-matrix discovery.
 5. Admit new semantic capabilities only from concrete user, adoption,
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.
@@ -77,11 +77,12 @@ execution ledger and does not promise delivery dates.
   `core2_13` production row produced target-owned SemanticDB and passed static
   symbols, syntax-first analysis, bounded dynamic lookup, exact reconciliation,
   complete point evidence, and exact-eight MCP projection. Its direct row
-  compile passed, but alpha-2 build-oracle routing is partial because the
-  public interface invokes the aggregate root build and cannot select the row.
-- Treat both projects as bounded partial evidence. Assess that concrete routing
-  gap before older macro/plugin-heavy stress targets so build shape or ecosystem
-  bitrot is not mistaken for semantic compatibility.
+  compile passed. Current alpha-3 SNAPSHOT development can now select that row
+  through the CLI and exact-eight MCP adapter; immutable alpha-2 cannot.
+- Treat both projects as bounded partial evidence. The concrete routing gap is
+  closed in current development, but older macro/plugin-heavy stress targets
+  still need separate evidence so build shape or ecosystem bitrot is not
+  mistaken for semantic compatibility.
 - Admit broader compatibility only from concrete version-specific fixtures or
   real projects; do not infer it from the harness implementation language.
 

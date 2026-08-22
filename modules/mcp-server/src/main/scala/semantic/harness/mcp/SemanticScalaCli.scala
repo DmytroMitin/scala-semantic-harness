@@ -9,6 +9,7 @@ import scala.util.control.NonFatal
 import io.circe.Json
 import io.circe.parser.parse
 import semantic.harness.core.CompileReport
+import semantic.harness.core.SbtProjectIdSyntax
 import semantic.harness.core.TestReport
 import semantic.harness.fp.EffectSummaryReport
 import semantic.harness.presentation.SymbolAtResult
@@ -23,22 +24,70 @@ final case class SemanticScalaCli(
   private val buildPermit = Semaphore(1, true)
 
   def semanticCompile(workspace: Path): McpToolResult =
-    semanticCompile(workspace, ProcessExecution.default)
+    semanticCompile(workspace, None, ProcessExecution.default)
 
   def semanticCompile(workspace: Path, execution: ProcessExecution): McpToolResult =
-    runBuildJsonTool(workspace, SemanticScalaCli.CompileArgs, SemanticScalaCli.CompileSchemaVersion, execution)
+    semanticCompile(workspace, None, execution)
+
+  def semanticCompile(workspace: Path, sbtProject: Option[String]): McpToolResult =
+    semanticCompile(workspace, sbtProject, ProcessExecution.default)
+
+  def semanticCompile(
+      workspace: Path,
+      sbtProject: Option[String],
+      execution: ProcessExecution
+  ): McpToolResult =
+    runSelectedBuildJsonTool(
+      workspace,
+      "compile",
+      sbtProject,
+      SemanticScalaCli.CompileSchemaVersion,
+      execution
+    )
 
   def semanticErrors(workspace: Path): McpToolResult =
-    semanticErrors(workspace, ProcessExecution.default)
+    semanticErrors(workspace, None, ProcessExecution.default)
 
   def semanticErrors(workspace: Path, execution: ProcessExecution): McpToolResult =
-    runBuildJsonTool(workspace, SemanticScalaCli.ErrorsArgs, SemanticScalaCli.ErrorsSchemaVersion, execution)
+    semanticErrors(workspace, None, execution)
+
+  def semanticErrors(workspace: Path, sbtProject: Option[String]): McpToolResult =
+    semanticErrors(workspace, sbtProject, ProcessExecution.default)
+
+  def semanticErrors(
+      workspace: Path,
+      sbtProject: Option[String],
+      execution: ProcessExecution
+  ): McpToolResult =
+    runSelectedBuildJsonTool(
+      workspace,
+      "errors",
+      sbtProject,
+      SemanticScalaCli.ErrorsSchemaVersion,
+      execution
+    )
 
   def semanticTest(workspace: Path): McpToolResult =
-    semanticTest(workspace, ProcessExecution.default)
+    semanticTest(workspace, None, ProcessExecution.default)
 
   def semanticTest(workspace: Path, execution: ProcessExecution): McpToolResult =
-    runBuildJsonTool(workspace, SemanticScalaCli.TestArgs, SemanticScalaCli.TestSchemaVersion, execution)
+    semanticTest(workspace, None, execution)
+
+  def semanticTest(workspace: Path, sbtProject: Option[String]): McpToolResult =
+    semanticTest(workspace, sbtProject, ProcessExecution.default)
+
+  def semanticTest(
+      workspace: Path,
+      sbtProject: Option[String],
+      execution: ProcessExecution
+  ): McpToolResult =
+    runSelectedBuildJsonTool(
+      workspace,
+      "test",
+      sbtProject,
+      SemanticScalaCli.TestSchemaVersion,
+      execution
+    )
 
   def semanticEffectSummary(workspace: Path, file: String): McpToolResult =
     semanticEffectSummary(workspace, file, ProcessExecution.default)
@@ -261,6 +310,37 @@ final case class SemanticScalaCli(
     finally
       if acquired then buildPermit.release()
 
+  private def runSelectedBuildJsonTool(
+      workspace: Path,
+      commandName: String,
+      sbtProject: Option[String],
+      expectedSchemaVersion: String,
+      execution: ProcessExecution
+  ): McpToolResult =
+    sbtProject match
+      case None =>
+        runBuildJsonTool(
+          workspace,
+          SemanticScalaCli.buildArgs(commandName, None),
+          expectedSchemaVersion,
+          execution
+        )
+      case Some(value) =>
+        SbtProjectIdSyntax.validate(value) match
+          case Left(message) =>
+            validationFailure(
+              cliCommand(SemanticScalaCli.buildArgs(commandName, None)),
+              workspace.toAbsolutePath.normalize(),
+              message
+            )
+          case Right(validated) =>
+            runBuildJsonTool(
+              workspace,
+              SemanticScalaCli.buildArgs(commandName, Some(validated)),
+              expectedSchemaVersion,
+              execution
+            )
+
   private def cliCommand(args: List[String]): List[String] =
     cliPath.toString :: args
 
@@ -432,11 +512,11 @@ final case class SemanticScalaCli(
       .replace(cliPath.toString, "semantic-scala")
 
 object SemanticScalaCli:
-  val CompileArgs: List[String] = List("compile", "--json")
+  val CompileArgs: List[String] = buildArgs("compile", None)
   val CompileSchemaVersion: String = CompileReport.SchemaVersion
-  val ErrorsArgs: List[String] = List("errors", "--json")
+  val ErrorsArgs: List[String] = buildArgs("errors", None)
   val ErrorsSchemaVersion: String = CompileReport.ErrorsSchemaVersion
-  val TestArgs: List[String] = List("test", "--json")
+  val TestArgs: List[String] = buildArgs("test", None)
   val TestSchemaVersion: String = TestReport.SchemaVersion
   val EffectSummarySchemaVersion: String = EffectSummaryReport.SchemaVersion
   val SymbolAtSchemaVersion: String = SymbolAtResult.SchemaVersion
@@ -444,6 +524,9 @@ object SemanticScalaCli:
   val ReconcileSymbolSchemaVersion: String = ReconciliationResult.SchemaVersion
   val PointEvidenceSchemaVersion: String = PointEvidenceReport.SchemaVersion
   val DefaultCliPath: Path = Path.of("semantic-scala")
+
+  def buildArgs(commandName: String, sbtProject: Option[String]): List[String] =
+    List(commandName) ++ sbtProject.toList.flatMap(value => List("--sbt-project", value)) ++ List("--json")
 
   def effectSummaryArgs(file: String): List[String] =
     List("effect-summary", "--file", file, "--json")

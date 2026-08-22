@@ -154,12 +154,12 @@ object CliApp:
         help(topic)
       case CliCommand.Version =>
         CliResult(Some(Version), None, 0)
-      case CliCommand.Compile(json) =>
-        compile(json, runner, projectDir)
-      case CliCommand.Test(json) =>
-        test(json, runner, projectDir)
-      case CliCommand.Errors(json) =>
-        errors(json, runner, projectDir)
+      case CliCommand.Compile(sbtProject, json) =>
+        compile(sbtProject, json, runner, projectDir)
+      case CliCommand.Test(sbtProject, json) =>
+        test(sbtProject, json, runner, projectDir)
+      case CliCommand.Errors(sbtProject, json) =>
+        errors(sbtProject, json, runner, projectDir)
       case CliCommand.SemanticdbStatus(workspace, schemaVersion, json) =>
         semanticdbStatus(workspace, schemaVersion, json, projectDir)
       case CliCommand.SemanticdbCoverage(workspace, json) =>
@@ -235,9 +235,14 @@ object CliApp:
               exitCode = 1
             )
 
-  private def compile(json: Boolean, runner: SbtRunner, projectDir: Path): CliResult =
+  private def compile(
+      sbtProject: Option[SbtProjectId],
+      json: Boolean,
+      runner: SbtRunner,
+      projectDir: Path
+  ): CliResult =
     try
-      val report = ReportConverter.compileReport(runner.compile(projectDir))
+      val report = ReportConverter.compileReport(runner.compile(projectDir, sbtProject))
       if json then
         CliResult(Some(report.asJson.noSpaces), None, 0)
       else
@@ -246,9 +251,14 @@ object CliApp:
       case exception: Exception =>
         CliResult(None, Some(s"Unable to run sbt compile: ${exception.getMessage}"), 1)
 
-  private def test(json: Boolean, runner: SbtRunner, projectDir: Path): CliResult =
+  private def test(
+      sbtProject: Option[SbtProjectId],
+      json: Boolean,
+      runner: SbtRunner,
+      projectDir: Path
+  ): CliResult =
     try
-      val report = ReportConverter.testReport(runner.test(projectDir))
+      val report = ReportConverter.testReport(runner.test(projectDir, sbtProject))
       if json then
         CliResult(Some(report.asJson.noSpaces), None, 0)
       else
@@ -257,10 +267,15 @@ object CliApp:
       case exception: Exception =>
         CliResult(None, Some(s"Unable to run sbt test: ${exception.getMessage}"), 1)
 
-  private def errors(json: Boolean, runner: SbtRunner, projectDir: Path): CliResult =
+  private def errors(
+      sbtProject: Option[SbtProjectId],
+      json: Boolean,
+      runner: SbtRunner,
+      projectDir: Path
+  ): CliResult =
     try
       val report = ReportConverter
-        .compileReport(runner.compile(projectDir))
+        .compileReport(runner.compile(projectDir, sbtProject))
         .copy(schemaVersion = CompileReport.ErrorsSchemaVersion)
       if json then
         CliResult(Some(report.asJson.noSpaces), None, 0)
@@ -727,9 +742,9 @@ object CliApp:
       |Usage:
       |  semantic-scala help [command]
       |  semantic-scala version
-      |  semantic-scala compile [--json]
-      |  semantic-scala test [--json]
-      |  semantic-scala errors [--json]
+      |  semantic-scala compile [--sbt-project <id>] [--json]
+      |  semantic-scala test [--sbt-project <id>] [--json]
+      |  semantic-scala errors [--sbt-project <id>] [--json]
       |  semantic-scala semanticdb-status --workspace <path> [--schema-version v1|v2] [--json]
       |  semantic-scala semanticdb-coverage --workspace <path> [--json]
       |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--json]
@@ -782,25 +797,34 @@ object CliApp:
       case "compile" =>
         Some(
           """Usage:
-            |  semantic-scala compile [--json]
+            |  semantic-scala compile [--sbt-project <id>] [--json]
             |
-            |Runs sbt compile in the current working directory.
+            |Without a selector, runs root sbt compile in the current working directory.
+            |With --sbt-project, selects one validated sbt project ID matching
+            |[A-Za-z][A-Za-z0-9_-]* and runs its fixed Compile / compile scope.
+            |A selected-project result proves that bounded invocation, not whole-workspace correctness.
             |""".stripMargin.trim
         )
       case "test" =>
         Some(
           """Usage:
-            |  semantic-scala test [--json]
+            |  semantic-scala test [--sbt-project <id>] [--json]
             |
-            |Runs sbt test in the current working directory.
+            |Without a selector, runs root sbt test in the current working directory.
+            |With --sbt-project, selects one validated sbt project ID matching
+            |[A-Za-z][A-Za-z0-9_-]* and runs its fixed Test / test scope.
+            |A selected-project result proves that bounded invocation, not whole-workspace correctness.
             |""".stripMargin.trim
         )
       case "errors" =>
         Some(
           """Usage:
-            |  semantic-scala errors [--json]
+            |  semantic-scala errors [--sbt-project <id>] [--json]
             |
-            |Temporary behavior: reruns compile and reports compile diagnostics.
+            |Temporary behavior: reruns root compile and reports compile diagnostics.
+            |With --sbt-project, selects one validated sbt project ID matching
+            |[A-Za-z][A-Za-z0-9_-]* and reruns its fixed Compile / compile scope.
+            |A selected-project result proves that bounded invocation, not whole-workspace correctness.
             |""".stripMargin.trim
         )
       case "semanticdb-status" =>

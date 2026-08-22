@@ -104,6 +104,47 @@ class CliJsonSuite extends munit.FunSuite:
     assertEquals(decoded.map(_.schemaVersion), Right(CompileReport.ErrorsSchemaVersion))
     assert(decoded.isRight)
 
+  test("build-oracle commands forward the optional validated sbt project"):
+    val runner = FakeSbtRunner()
+
+    val rootCompile = CliApp.run(List("compile", "--json"), runner, Path.of("."))
+    val selectedCompile = CliApp.run(
+      List("compile", "--sbt-project", "core2_13", "--json"),
+      runner,
+      Path.of(".")
+    )
+    val selectedErrors = CliApp.run(
+      List("errors", "--sbt-project", "core2_13", "--json"),
+      runner,
+      Path.of(".")
+    )
+    val selectedTest = CliApp.run(
+      List("test", "--sbt-project", "tests_2", "--json"),
+      runner,
+      Path.of(".")
+    )
+
+    assertEquals(List(rootCompile, selectedCompile, selectedErrors, selectedTest).map(_.exitCode), List(0, 0, 0, 0))
+    assertEquals(
+      runner.compileProjects,
+      List(None, Some(project("core2_13")), Some(project("core2_13")))
+    )
+    assertEquals(runner.testProjects, List(Some(project("tests_2"))))
+
+  test("invalid build-oracle sbt project is rejected before the runner"):
+    val runner = FakeSbtRunner()
+
+    val result = CliApp.run(
+      List("compile", "--sbt-project", "core2_13;test", "--json"),
+      runner,
+      Path.of(".")
+    )
+
+    assertEquals(result.exitCode, 1)
+    assert(result.stderr.exists(_.contains("sbt project ID must start with a letter")))
+    assertEquals(runner.compileProjects, Nil)
+    assertEquals(runner.testProjects, Nil)
+
   test("point-evidence --json returns the versioned composed report for a contained source"):
     val workspace = Files.createTempDirectory("cli-point-evidence")
     val source = workspace.resolve("src/main/scala/example/Main.scala")
@@ -1171,8 +1212,16 @@ class CliJsonSuite extends munit.FunSuite:
     compileResult: SbtRunResult = SbtRunResult("compile", 0, "", ""),
     testResult: SbtRunResult = SbtRunResult("test", 0, "", "")
   ) extends SbtRunner:
-    override def compile(projectDir: Path): SbtRunResult = compileResult
-    override def test(projectDir: Path): SbtRunResult = testResult
+    var compileProjects = List.empty[Option[SbtProjectId]]
+    var testProjects = List.empty[Option[SbtProjectId]]
+
+    override def compile(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
+      compileProjects = compileProjects :+ project
+      compileResult
+
+    override def test(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
+      testProjects = testProjects :+ project
+      testResult
 
   private final case class FakeSbtClasspathAcquirer(
       result: Either[SbtClasspathFailure, SbtClasspathResult]

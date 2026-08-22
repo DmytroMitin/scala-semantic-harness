@@ -9,9 +9,9 @@ import semantic.harness.semanticdb_reader.UsagesPublicSelectors
 enum CliCommand:
   case Help(topic: Option[String])
   case Version
-  case Compile(json: Boolean)
-  case Test(json: Boolean)
-  case Errors(json: Boolean)
+  case Compile(sbtProject: Option[SbtProjectId], json: Boolean)
+  case Test(sbtProject: Option[SbtProjectId], json: Boolean)
+  case Errors(sbtProject: Option[SbtProjectId], json: Boolean)
   case SemanticdbStatus(workspace: String, schemaVersion: SemanticdbStatusVersion, json: Boolean)
   case SemanticdbCoverage(workspace: String, json: Boolean)
   case SemanticdbForSource(file: String, workspace: String, json: Boolean)

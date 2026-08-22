@@ -41,15 +41,57 @@ class CliParserSuite extends munit.FunSuite:
     assert(coverage.stdout.exists(_.contains("does not imply freshness or build-target completeness")))
     assert(coverage.stdout.exists(_.contains("Does not generate SemanticDB or run sbt")))
 
+  test("build-oracle help documents optional bounded sbt project selection"):
+    List(
+      "compile" -> "Compile / compile",
+      "errors" -> "Compile / compile",
+      "test" -> "Test / test"
+    ).foreach { case (command, scope) =>
+      val result = CliApp.run(List("help", command))
+      assertEquals(result.exitCode, 0)
+      val text = result.stdout.getOrElse(fail(s"missing help for $command"))
+      assert(text.contains(s"semantic-scala $command [--sbt-project <id>] [--json]"), clue(text))
+      assert(text.contains(scope), clue(text))
+      assert(text.contains("validated sbt project ID"), clue(text))
+      assert(text.contains("not whole-workspace correctness"), clue(text))
+    }
+
   test("parses version shortcuts"):
     assertEquals(CliParser.parse(List("version")), ParseResult.Parsed(CliCommand.Version))
     assertEquals(CliParser.parse(List("--version")), ParseResult.Parsed(CliCommand.Version))
 
   test("parses task 002 commands with optional json flag"):
-    assertEquals(CliParser.parse(List("compile")), ParseResult.Parsed(CliCommand.Compile(false)))
-    assertEquals(CliParser.parse(List("compile", "--json")), ParseResult.Parsed(CliCommand.Compile(true)))
-    assertEquals(CliParser.parse(List("test", "--json")), ParseResult.Parsed(CliCommand.Test(true)))
-    assertEquals(CliParser.parse(List("errors", "--json")), ParseResult.Parsed(CliCommand.Errors(true)))
+    assertEquals(CliParser.parse(List("compile")), ParseResult.Parsed(CliCommand.Compile(None, false)))
+    assertEquals(CliParser.parse(List("compile", "--json")), ParseResult.Parsed(CliCommand.Compile(None, true)))
+    assertEquals(CliParser.parse(List("test", "--json")), ParseResult.Parsed(CliCommand.Test(None, true)))
+    assertEquals(CliParser.parse(List("errors", "--json")), ParseResult.Parsed(CliCommand.Errors(None, true)))
+
+  test("parses one optional safe sbt project for build-oracle commands"):
+    assertEquals(
+      CliParser.parse(List("compile", "--sbt-project", "core2_13", "--json")),
+      ParseResult.Parsed(CliCommand.Compile(Some(project("core2_13")), true))
+    )
+    assertEquals(
+      CliParser.parse(List("errors", "--json", "--sbt-project", "app-2")),
+      ParseResult.Parsed(CliCommand.Errors(Some(project("app-2")), true))
+    )
+    assertEquals(
+      CliParser.parse(List("test", "--sbt-project", "tests_2")),
+      ParseResult.Parsed(CliCommand.Test(Some(project("tests_2")), false))
+    )
+
+  test("rejects invalid and duplicate sbt projects for build-oracle commands"):
+    List("compile", "errors", "test").foreach { command =>
+      val invalid = CliParser.parse(List(command, "--sbt-project", "bad;test", "--json"))
+      assert(invalid.isInstanceOf[ParseResult.Invalid], clue(invalid))
+      assert(invalid.toString.contains("sbt project ID must start with a letter"), clue(invalid))
+
+      val duplicate = CliParser.parse(
+        List(command, "--sbt-project", "core2_13", "--sbt-project", "other")
+      )
+      assert(duplicate.isInstanceOf[ParseResult.Invalid], clue(duplicate))
+      assert(duplicate.toString.contains("may only be supplied once"), clue(duplicate))
+    }
 
   test("parses symbols command with semanticdb path and optional json flag"):
     assertEquals(

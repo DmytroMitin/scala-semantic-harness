@@ -85,7 +85,8 @@ Tool input:
 
 ```json
 {
-  "workspace": "/path/to/project"
+  "workspace": "/path/to/project",
+  "sbtProject": "core2_13"
 }
 ```
 
@@ -96,7 +97,10 @@ Behavior:
 - validates that `workspace` exists and is a directory in the adapter;
 - runs the configured CLI as argv, not through a shell;
 - uses `workspace` as the process working directory;
-- runs exactly `semantic-scala compile --json`;
+- accepts optional `sbtProject` matching `^[A-Za-z][A-Za-z0-9_-]*$`;
+- without it, runs exactly `semantic-scala compile --json`;
+- with it, runs `semantic-scala compile --sbt-project <id> --json`, which
+  selects the project's fixed ordinary `Compile` scope;
 - captures stdout, stderr, and exit code;
 - parses stdout as a JSON object when the process exits `0`;
 - requires `schemaVersion = semantic-scala.compile-result.v1`.
@@ -107,7 +111,8 @@ Tool input:
 
 ```json
 {
-  "workspace": "/path/to/project"
+  "workspace": "/path/to/project",
+  "sbtProject": "core2_13"
 }
 ```
 
@@ -118,7 +123,10 @@ Behavior:
 - validates that `workspace` exists and is a directory in the adapter;
 - runs the configured CLI as argv, not through a shell;
 - uses `workspace` as the process working directory;
-- runs exactly `semantic-scala errors --json`;
+- accepts optional `sbtProject` matching `^[A-Za-z][A-Za-z0-9_-]*$`;
+- without it, runs exactly `semantic-scala errors --json`;
+- with it, runs `semantic-scala errors --sbt-project <id> --json`, which
+  reruns the project's fixed ordinary `Compile` scope;
 - captures stdout, stderr, and exit code;
 - parses stdout as a JSON object when the process exits `0`;
 - requires `schemaVersion = semantic-scala.errors-result.v1`.
@@ -129,7 +137,8 @@ Tool input:
 
 ```json
 {
-  "workspace": "/path/to/project"
+  "workspace": "/path/to/project",
+  "sbtProject": "someProject"
 }
 ```
 
@@ -140,7 +149,10 @@ Behavior:
 - validates that `workspace` exists and is a directory in the adapter;
 - runs the configured CLI as argv, not through a shell;
 - uses `workspace` as the process working directory;
-- runs exactly `semantic-scala test --json`;
+- accepts optional `sbtProject` matching `^[A-Za-z][A-Za-z0-9_-]*$`;
+- without it, runs exactly `semantic-scala test --json`;
+- with it, runs `semantic-scala test --sbt-project <id> --json`, which selects
+  the project's fixed ordinary `Test` scope;
 - captures stdout, stderr, and exit code;
 - parses stdout as a JSON object when the process exits `0`;
 - requires `schemaVersion = semantic-scala.test-result.v1`.
@@ -321,14 +333,20 @@ malformed, duplicate, and late cancellations are ignored. If cancellation wins
 the terminal race, owned work is cleaned and no response for that ID is sent.
 
 `tools/list` returns `semantic_compile`, `semantic_errors`, `semantic_test`,
-`semantic_effect_summary`, `semantic_symbol_at`, `semantic_symbols`, and
-`semantic_reconcile_symbol`.
-The build-oracle tools require `workspace`; `semantic_effect_summary` requires
+`semantic_effect_summary`, `semantic_symbol_at`, `semantic_symbols`,
+`semantic_reconcile_symbol`, and `semantic_point_evidence` in that order.
+The build-oracle tools require `workspace` and alone accept optional validated
+`sbtProject`; `semantic_effect_summary` requires
 `workspace` and `file`; `semantic_symbol_at` requires `workspace`, `file`,
 `line`, and `col`; `semantic_symbols` requires `workspace` and `semanticdb`;
 `semantic_reconcile_symbol` requires `workspace`, `file`, `line`, `col`, and
 `semanticdb`; `semantic_point_evidence` requires `workspace`, `file`, `line`,
 and `col`. `tools/call` accepts only those eight tools.
+
+`sbtProject` is a project ID, not arbitrary sbt syntax. Invalid IDs are
+rejected at the adapter boundary before process launch. An unknown valid ID
+fails within the selected bounded operation without root fallback. A selected
+build result does not claim whole-workspace correctness.
 
 ## Response Wrapper
 

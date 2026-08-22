@@ -30,4 +30,4 @@ scripts/benchmark/prompts/semantic-misleading-1.semantic-harness.md	1237	22fe298
 scripts/benchmark/prompts/semantic-required-1.semantic-harness.md	1314	01d1dd39dfa6b1c03dc7c7ecdbb1cd216f47da3cedff79b24aac4348c5d82155	portable-condition-prompt
 scripts/benchmark/semantic-scala-packaged	420	51444d94515b9018ad959256d26f61af02c2328743b406bd99b8a7203c575510	packaged-cli-wrapper
 scripts/mcp/smoke-mcp-tools.py	34221	e8b34e286e38dede43184f97021d8d818242a357a706b502c2adad58b17d7c47	deterministic-mcp-smoke-validator
-skills/semantic-scala/SKILL.md	14500	fe63e2d8edb2917e46e3e1d4544c9dcce3bc0d97117e04d57b5c5e60766efb36	canonical-agent-policy
+skills/semantic-scala/SKILL.md	14960	49cf14ada4dcc54ecbf8a5de5f4c16680051614bd7fa1860fff17ded92846289	canonical-agent-policy

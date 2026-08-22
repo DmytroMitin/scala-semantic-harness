@@ -3,19 +3,13 @@ package semantic.harness.sbt_runner
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Locale
+import semantic.harness.core.SbtProjectIdSyntax
 
 final case class SbtProjectId private (value: String)
 
 object SbtProjectId:
-  private val SafeProjectId = "^[A-Za-z][A-Za-z0-9_-]*$".r
-
   def parse(value: String): Either[String, SbtProjectId] =
-    value match
-      case SafeProjectId() => Right(SbtProjectId(value))
-      case _ =>
-        Left(
-          "sbt project ID must start with a letter and contain only letters, digits, '-' or '_'"
-        )
+    SbtProjectIdSyntax.validate(value).map(SbtProjectId.apply)
 
 enum SbtClasspathConfiguration:
   case Compile

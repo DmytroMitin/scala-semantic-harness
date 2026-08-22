@@ -5,6 +5,7 @@ import java.nio.file.Path
 import io.circe.Json
 import io.circe.parser.parse
 import io.circe.syntax.*
+import semantic.harness.core.SbtProjectIdSyntax
 
 final class SemanticScalaMcpServer(cli: SemanticScalaCli):
   import SemanticScalaMcpServer.*
@@ -47,11 +48,11 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
     val params = message.hcursor.downField("params")
     params.downField("name").as[String] match
       case Right(SemanticCompileToolName) =>
-        handleWorkspaceToolCall(id, params, SemanticCompileToolName, workspace => cli.semanticCompile(workspace, execution))
+        handleBuildToolCall(id, params, SemanticCompileToolName, (workspace, project) => cli.semanticCompile(workspace, project, execution))
       case Right(SemanticErrorsToolName) =>
-        handleWorkspaceToolCall(id, params, SemanticErrorsToolName, workspace => cli.semanticErrors(workspace, execution))
+        handleBuildToolCall(id, params, SemanticErrorsToolName, (workspace, project) => cli.semanticErrors(workspace, project, execution))
       case Right(SemanticTestToolName) =>
-        handleWorkspaceToolCall(id, params, SemanticTestToolName, workspace => cli.semanticTest(workspace, execution))
+        handleBuildToolCall(id, params, SemanticTestToolName, (workspace, project) => cli.semanticTest(workspace, project, execution))
       case Right(SemanticEffectSummaryToolName) =>
         handleEffectSummaryToolCall(id, params, execution)
       case Right(SemanticSymbolAtToolName) =>
@@ -67,21 +68,40 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
       case Left(_) =>
         jsonRpcError(id, JsonRpcErrors.InvalidParams, "Missing tool name")
 
-  private def handleWorkspaceToolCall(
+  private def handleBuildToolCall(
     id: Json,
     params: io.circe.ACursor,
     toolName: String,
-    run: Path => McpToolResult
+    run: (Path, Option[String]) => McpToolResult
   ): Json =
     params.downField("arguments").focus match
       case Some(arguments) =>
-        workspaceArgument(arguments) match
+        buildArguments(arguments) match
           case Left(message) =>
             jsonRpcError(id, JsonRpcErrors.InvalidParams, message)
-          case Right(workspace) =>
-            jsonRpcResponse(id, toolResult(run(workspace)))
+          case Right((workspace, sbtProject)) =>
+            jsonRpcResponse(id, toolResult(run(workspace, sbtProject)))
       case None =>
         jsonRpcError(id, JsonRpcErrors.InvalidParams, s"Missing arguments for $toolName")
+
+  private def buildArguments(arguments: Json): Either[String, (Path, Option[String])] =
+    for
+      workspace <- workspaceArgument(arguments)
+      sbtProject <- optionalSbtProjectArgument(arguments)
+    yield (workspace, sbtProject)
+
+  private def optionalSbtProjectArgument(arguments: Json): Either[String, Option[String]] =
+    arguments.hcursor.downField("sbtProject").focus match
+      case None => Right(None)
+      case Some(value) =>
+        value.asString match
+          case None => Left("Invalid sbtProject: expected string field")
+          case Some(text) =>
+            SbtProjectIdSyntax
+              .validate(text)
+              .left
+              .map(message => s"Invalid sbtProject: $message")
+              .map(Some.apply)
 
   private def handleEffectSummaryToolCall(
     id: Json,
@@ -437,6 +457,13 @@ object SemanticScalaMcpServer:
           "workspace" -> Json.obj(
             "type" -> Json.fromString("string"),
             "description" -> Json.fromString(workspaceDescription)
+          ),
+          "sbtProject" -> Json.obj(
+            "type" -> Json.fromString("string"),
+            "pattern" -> Json.fromString(SbtProjectIdSyntax.Pattern),
+            "description" -> Json.fromString(
+              "Optional validated sbt project ID; compile/errors use Compile and test uses Test."
+            )
           )
         ),
         "required" -> Json.arr(Json.fromString("workspace"))

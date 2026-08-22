@@ -3,6 +3,15 @@
 Process integration for the build/test JSON oracle and deterministic
 project-classpath acquisition.
 
+The build-oracle runner preserves ordinary root `compile`/`test` behavior when
+no project is selected. An optional `SbtProjectId` uses the shared strict
+`[A-Za-z][A-Za-z0-9_-]*` policy, then supplies two fixed sbt argv commands:
+`project <id>` followed by `Compile / compile` or `Test / test`. It does not use
+a shell or accept caller-provided tasks, configurations, scopes, separators,
+or command fragments. Unknown valid projects fail as that bounded invocation;
+they never fall back to the root. A successful selected run is not a
+whole-workspace result.
+
 `SbtClasspathAcquirer` accepts an existing workspace, a project ID matching
 `[A-Za-z][A-Za-z0-9_-]*`, and exact configuration `Compile` or `Test`. It
 creates an isolated temporary sbt global base, injects a private task, selects

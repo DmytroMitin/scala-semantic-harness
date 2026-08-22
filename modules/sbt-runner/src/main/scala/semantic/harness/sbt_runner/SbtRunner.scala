@@ -13,26 +13,34 @@ final case class SbtRunResult(
 )
 
 trait SbtRunner:
-  def compile(projectDir: Path): SbtRunResult
-  def test(projectDir: Path): SbtRunResult
+  def compile(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult
+  def test(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult
 
 object SbtRunner:
   val default: SbtRunner = ProcessSbtRunner()
 
 final case class ProcessSbtRunner() extends SbtRunner:
-  override def compile(projectDir: Path): SbtRunResult =
-    run(projectDir, "compile")
+  override def compile(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
+    run(projectDir, project, "Compile", "compile")
 
-  override def test(projectDir: Path): SbtRunResult =
-    run(projectDir, "test")
+  override def test(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
+    run(projectDir, project, "Test", "test")
 
-  private def run(projectDir: Path, command: String): SbtRunResult =
-    val builder = ProcessBuilder(
+  private def run(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      configuration: String,
+      task: String
+  ): SbtRunResult =
+    val commands = project match
+      case None => List(task)
+      case Some(selected) =>
+        List(s"project ${selected.value}", s"$configuration / $task")
+    val builder = ProcessBuilder((List(
       "sbt",
       "-batch",
-      "-Dsbt.log.noformat=true",
-      command
-    )
+      "-Dsbt.log.noformat=true"
+    ) ++ commands)*)
       .directory(projectDir.toFile)
       .redirectErrorStream(false)
 
@@ -50,7 +58,7 @@ final case class ProcessSbtRunner() extends SbtRunner:
     stderrThread.join()
 
     SbtRunResult(
-      command = command,
+      command = commands.mkString("; "),
       exitCode = exitCode,
       stdout = stdoutThread.result,
       stderr = stderrThread.result

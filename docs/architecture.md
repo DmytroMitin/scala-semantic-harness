@@ -109,7 +109,7 @@ is not a hard JVM wall-clock or memory guarantee.
 
 - `core`: shared data models and JSON codecs.
 - `cli`: command parsing, orchestration, and JSON rendering.
-- `sbt-runner`: compile/test subprocess integration.
+- `sbt-runner`: root or validated-project compile/test subprocess integration.
 - `semanticdb-reader`: artifact inventory, symbols, coverage, and usages.
 - `presentation-compiler`: bounded point and rendered-type queries.
 - `semantic-reconciliation`: dynamic/static symbol comparison.

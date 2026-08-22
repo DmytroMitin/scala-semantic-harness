@@ -14,10 +14,13 @@ semantic-scala version
 semantic-scala --version
 semantic-scala compile
 semantic-scala compile --json
+semantic-scala compile --sbt-project <id> --json
 semantic-scala test
 semantic-scala test --json
+semantic-scala test --sbt-project <id> --json
 semantic-scala errors
 semantic-scala errors --json
+semantic-scala errors --sbt-project <id> --json
 semantic-scala semanticdb-status --workspace <path>
 semantic-scala semanticdb-status --workspace <path> --json
 semantic-scala semanticdb-status --workspace <path> --schema-version v1 --json
@@ -44,6 +47,15 @@ semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb 
 semantic-scala effect-summary --file <path>
 semantic-scala effect-summary --file <path> --json
 ```
+
+The optional build-oracle selector accepts one sbt project ID matching
+`[A-Za-z][A-Za-z0-9_-]*`. Without it, `compile`, `errors`, and `test` preserve
+their ordinary root behavior and existing v1 payloads. With it, `compile` and
+`errors` select that project and run fixed `Compile / compile`; `test` selects
+it and runs fixed `Test / test`. The ID is not an sbt command, task,
+configuration, or scope expression. Invalid IDs are rejected before sbt;
+unknown valid IDs fail without root fallback. Success describes only the
+selected bounded invocation, not the aggregate workspace.
 
 `compile` and `test` run `sbt -batch` in the current working directory.
 `errors` temporarily reruns compile and returns the resulting compile report.
@@ -616,6 +628,11 @@ semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb 
 semantic-scala point-evidence --workspace . --file <path> --line <n> --col <n> --json
 ```
 
+For the first three tools, optional MCP string input `sbtProject` maps to CLI
+`--sbt-project`. It uses the same strict project-ID policy and fixed scopes.
+The field is absent from tools 4-8, and the ordered registry remains exactly
+eight tools.
+
 The adapter parses stdout as the authoritative CLI JSON payload. It requires
 `semantic-scala.compile-result.v1` for `semantic_compile` and
 `semantic-scala.errors-result.v1` for `semantic_errors`, and
@@ -789,8 +806,9 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
 - The existing explicit acquisition recipe is observational rather than a
   generation contract: first run `semanticdb-status` and
   `semanticdb-for-source` (or `point-evidence`), then, only with approval for
-  its build side effects, run one ordinary root `semantic-scala compile
-  --json` and repeat the same SemanticDB query. `compile` can execute target
+  its build side effects, run `semantic-scala compile --json` for the ordinary
+  root or `semantic-scala compile --sbt-project <id> --json` for one known
+  validated project and repeat the same SemanticDB query. `compile` can execute target
   build/plugin code, resolve dependencies, populate caches, and write build
   outputs. It produces SemanticDB only when the target's checked-in build is
   already configured to do so.
@@ -802,10 +820,10 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
   flags/plugins or mutating the build, and ask the project owner to select or
   enable an appropriate SemanticDB-producing build. Build failure remains a
   separate result.
-- The current compile surface runs the ordinary root build and has no sbt
-  project/configuration selector. When that scope is too broad or does not
-  cover the source, report the scope uncertainty; do not replace the public
-  recipe with a hidden shell build.
+- The optional build-oracle project selector does not discover projects or
+  accept arbitrary configuration/scope syntax. When root or selected scope
+  does not cover the source, report the scope uncertainty; do not replace the
+  public recipe with a hidden shell build.
 - It does not parse TASTy or use Metals/BSP/presentation compiler APIs.
 - Canonical `symbol` values are preserved for tools; `displayName` is for
   humans and may be ambiguous.

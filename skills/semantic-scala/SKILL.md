@@ -56,9 +56,9 @@ adapter. The MCP surface is exactly the eight tools named below.
 
 | Question | CLI command | MCP tool | Evidence and limits |
 | --- | --- | --- | --- |
-| Does the project compile? | `compile --json` | `semantic_compile` | Whole selected build invocation; domain `success: false` is a valid compile result. |
-| Do relevant tests pass? | `test --json` | `semantic_test` | Whole selected test invocation; can execute project test code. |
-| What compiler diagnostics should guide repair? | `errors --json` | `semantic_errors` | Structured diagnostics; may rerun compilation. |
+| Does the project compile? | `compile [--sbt-project <id>] --json` | `semantic_compile` | Root or one validated selected-project invocation; domain `success: false` is a valid compile result. |
+| Do relevant tests pass? | `test [--sbt-project <id>] --json` | `semantic_test` | Root or one validated selected-project test invocation; can execute project test code. |
+| What compiler diagnostics should guide repair? | `errors [--sbt-project <id>] --json` | `semantic_errors` | Structured root or selected-project diagnostics; may rerun compilation. |
 | What return wrapper is declared in this file? | `effect-summary --file <scala> --json` | `semantic_effect_summary` | Syntax-first declared return shape and conservative category, not inferred semantics. |
 | What does the presentation compiler report at a point? | `symbol-at --file <scala> --line <n> --col <n> --json` | `semantic_symbol_at` | Dynamic point evidence; rendered or hover-like output is not canonical identity. |
 | What symbols occur in an explicit SemanticDB file? | `symbols --semanticdb <file> --json` | `semantic_symbols` | Static canonical symbol strings and ranges from that file only. |
@@ -206,7 +206,11 @@ Run `semanticdb-status --workspace . --json` and
 `semanticdb-for-source --workspace . --file <scala> --json` first. If matching
 static evidence is absent and the user has approved build execution, one
 explicit `semantic-scala compile --json` may be used to run the project's
-ordinary root compile. That build can execute project/plugin code, resolve
+ordinary root compile. If the user or build metadata already identifies one
+project ID, `semantic-scala compile --sbt-project <id> --json` may instead run
+that project's fixed ordinary `Compile` scope. The ID must match
+`[A-Za-z][A-Za-z0-9_-]*`; it is not arbitrary sbt syntax or discovery. Either
+build can execute project/plugin code, resolve
 dependencies, populate caches, and write build outputs. It emits SemanticDB
 only when the checked-in target build is already configured to do so.
 
@@ -221,9 +225,10 @@ After a successful compile, repeat the same status/source lookup or
   project owner to select or enable an appropriate SemanticDB-producing build;
 - compile failed: report build failure separately from SemanticDB absence.
 
-The current compile surface does not select an sbt project/configuration. If
-the ordinary root compile is too broad or does not cover the source, keep that
-scope uncertainty explicit instead of substituting a private shell build.
+If the ordinary root compile is too broad and no project is already known,
+keep that scope uncertainty explicit rather than guessing a project or
+substituting a private shell build. A successful selected compile proves only
+that bounded project invocation, not whole-workspace correctness.
 When artifacts do exist, use `semanticdb-coverage --workspace . --json` before
 making inventory-scoped coverage statements.
 

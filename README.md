@@ -79,10 +79,11 @@ degraded point evidence. A bounded production row of `scalacenter/scalafix`
 produced target-owned SemanticDB; static symbol discovery, bounded dynamic
 lookup, exact static/dynamic reconciliation, complete point evidence, and the
 ordered exact-eight MCP projection passed. Scalafix's aggregated sbt build also
-exposed that the alpha-2 build oracle cannot select one project row, so its
-build lane used direct bounded sbt evidence and remains partial through the
-public harness route. These two projects are complementary bounded evidence,
-not general Scala 2 support or semantic superiority.
+exposed that the alpha-2 build oracle cannot select one project row. Current
+alpha-3 SNAPSHOT development closes that routing gap with an optional validated
+project selector; the immutable alpha-2 distribution remains unchanged. These
+two projects are complementary bounded evidence, not general Scala 2 support or
+semantic superiority.
 
 ```bash
 sbt -batch test
@@ -96,9 +97,17 @@ The source-checkout wrapper runs the CLI through sbt:
 ./semantic-scala --help
 ./semantic-scala version
 ./semantic-scala compile --json
+./semantic-scala compile --sbt-project core2_13 --json
 ./semantic-scala test --json
 ./semantic-scala errors --json
 ```
+
+`compile`, `errors`, and `test` accept an optional `--sbt-project <id>` where
+the ID matches `[A-Za-z][A-Za-z0-9_-]*`. Without it they preserve ordinary root
+behavior. With it, compile/errors run that project's fixed `Compile` scope and
+test runs its fixed `Test` scope. The selector is not arbitrary sbt syntax, and
+a successful selected invocation proves only that bounded project operation,
+not whole-workspace correctness.
 
 For repeated use, prefer the staged launcher at
 `modules/cli/target/stage/bin/semantic-scala`.

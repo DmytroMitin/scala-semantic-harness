@@ -64,6 +64,18 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
         tool.hcursor.downField("inputSchema").downField("properties").downField("workspace").downField("type").as[String].toOption,
         Some("string")
       )
+      assertEquals(
+        tool.hcursor.downField("inputSchema").downField("properties").downField("sbtProject").downField("type").as[String].toOption,
+        Some("string")
+      )
+    }
+
+    tools.drop(3).foreach { tool =>
+      assertEquals(
+        tool.hcursor.downField("inputSchema").downField("properties").downField("sbtProject").focus,
+        None,
+        clue(tool)
+      )
     }
 
     val effectSummary = tools.find(_.hcursor.downField("name").as[String].toOption.contains("semantic_effect_summary")).getOrElse(fail("Missing semantic_effect_summary"))
@@ -535,6 +547,39 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
 
     assertEquals(response.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
     assert(response.hcursor.downField("error").downField("message").as[String].toOption.exists(_.contains("workspace")))
+
+  test("tools/call build oracles accept one optional safe sbt project"):
+    withTempWorkspace { workspace =>
+      val runner = RecordingRunner(successPayload(success = true))
+      val server = SemanticScalaMcpServer(SemanticScalaCli(Path.of("semantic-scala"), runner))
+
+      val response = responseJson(
+        server,
+        s"""{"jsonrpc":"2.0","id":31,"method":"tools/call","params":{"name":"semantic_compile","arguments":{"workspace":"${workspace.toString}","sbtProject":"core2_13"}}}"""
+      )
+      val wrapper = structuredContent(response)
+
+      assertEquals(wrapper.hcursor.downField("ok").as[Boolean].toOption, Some(true))
+      assertEquals(
+        runner.calls.map(_._1),
+        List(List("semantic-scala", "compile", "--sbt-project", "core2_13", "--json"))
+      )
+    }
+
+  test("tools/call build oracles reject invalid sbt projects at the adapter boundary"):
+    withTempWorkspace { workspace =>
+      val runner = RecordingRunner(successPayload(success = true))
+      val server = SemanticScalaMcpServer(SemanticScalaCli(Path.of("semantic-scala"), runner))
+
+      val response = responseJson(
+        server,
+        s"""{"jsonrpc":"2.0","id":32,"method":"tools/call","params":{"name":"semantic_compile","arguments":{"workspace":"${workspace.toString}","sbtProject":"core2_13;test"}}}"""
+      )
+
+      assertEquals(response.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
+      assert(response.hcursor.downField("error").downField("message").as[String].toOption.exists(_.contains("sbt project ID must start with a letter")))
+      assertEquals(runner.calls, Nil)
+    }
 
   test("tools/call semantic_effect_summary returns protocol error for missing file"):
     withTempWorkspace { workspace =>
