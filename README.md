@@ -72,15 +72,17 @@ Reconciliation and point evidence inherit that dynamic-source limitation. See
 [`docs/project-status.md`](docs/project-status.md) and
 [`docs/semantic-api.md`](docs/semantic-api.md) for the exact boundary.
 
-A first maintained real-project Stage-A check now covers
-`scala/scala-java8-compat` at commit
-`a95da8c799baf6a9aea1ef539de8120ee0fbbbed`, using its default Scala 2.13.18
-root build without source or build changes. Under JDK 21, the exact public
-alpha-2 applications passed compile, errors, 116-test, syntax-first, bounded
-dynamic point, truthful degraded point-evidence, and exact-eight MCP checks.
-The checked-in build produced no SemanticDB, so static evidence remained
-unavailable by target configuration. This replaces fixture-only uncertainty
-with one-project evidence; it does not establish general Scala 2 support.
+Two maintained real-project Stage-A checks now cover frozen Scala 2.13.18
+revisions without source or build changes. `scala/scala-java8-compat` produced
+no SemanticDB, so its otherwise-passing alpha-2 matrix preserved truthful
+degraded point evidence. A bounded production row of `scalacenter/scalafix`
+produced target-owned SemanticDB; static symbol discovery, bounded dynamic
+lookup, exact static/dynamic reconciliation, complete point evidence, and the
+ordered exact-eight MCP projection passed. Scalafix's aggregated sbt build also
+exposed that the alpha-2 build oracle cannot select one project row, so its
+build lane used direct bounded sbt evidence and remains partial through the
+public harness route. These two projects are complementary bounded evidence,
+not general Scala 2 support or semantic superiority.
 
 ```bash
 sbt -batch test
