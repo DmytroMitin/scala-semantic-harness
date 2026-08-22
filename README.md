@@ -72,6 +72,16 @@ Reconciliation and point evidence inherit that dynamic-source limitation. See
 [`docs/project-status.md`](docs/project-status.md) and
 [`docs/semantic-api.md`](docs/semantic-api.md) for the exact boundary.
 
+A first maintained real-project Stage-A check now covers
+`scala/scala-java8-compat` at commit
+`a95da8c799baf6a9aea1ef539de8120ee0fbbbed`, using its default Scala 2.13.18
+root build without source or build changes. Under JDK 21, the exact public
+alpha-2 applications passed compile, errors, 116-test, syntax-first, bounded
+dynamic point, truthful degraded point-evidence, and exact-eight MCP checks.
+The checked-in build produced no SemanticDB, so static evidence remained
+unavailable by target configuration. This replaces fixture-only uncertainty
+with one-project evidence; it does not establish general Scala 2 support.
+
 ```bash
 sbt -batch test
 sbt cli/stage
@@ -270,6 +280,13 @@ benchmark reproducibility beyond its stated small-sample gate.
   installation channel.
 
 See [`ROADMAP.md`](ROADMAP.md) for product-oriented next steps.
+
+Current development is validation-first: test real Scala projects, preserve
+compatibility boundaries, and admit features only from concrete gaps. Real
+project reports are welcome, especially missing decision-relevant evidence and
+comparisons with compiler, build/test, and strong IDE/LSP tooling. Alpha-2
+remains the supported packaged release while `main` is alpha-3 SNAPSHOT
+development; no alpha-3 date or publication is promised.
 
 ## Project policies
 

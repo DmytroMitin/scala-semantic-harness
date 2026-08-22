@@ -31,8 +31,9 @@ execution ledger and does not promise delivery dates.
    alone is not adoption value.
 3. Invite early technical feedback on the experimental source alpha and use
    real installation and project cases to guide maintenance.
-4. Validate compatibility on a maintained, reproducible real Scala 2.13
-   project before moving to harder legacy macro/plugin targets.
+4. Preserve the first maintained real Scala 2.13 project matrix and validate a
+   second independent real project before moving to harder legacy macro/plugin
+   targets.
 5. Admit new semantic capabilities only from concrete user, adoption,
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.
@@ -65,10 +66,14 @@ execution ledger and does not promise delivery dates.
   reconciliation/composition, and MCP compatibility claims separate.
 - Treat common-syntax Scala 2 success through the pinned Scala 3.3 presentation
   compiler as bounded evidence, not general Scala 2 compiler support.
-- Next validate the capability classes separately on a maintained,
-  reproducible real Scala 2.13 project. Treat older macro/plugin-heavy projects
-  as later stress targets so dependency or build bitrot is not mistaken for a
-  harness defect.
+- Preserve the first real-project Stage-A matrix on
+  `scala/scala-java8-compat` at exact commit
+  `a95da8c799baf6a9aea1ef539de8120ee0fbbbed`: its unchanged Scala 2.13.18 root
+  passed build-oracle, syntax-first, bounded dynamic, degraded point-evidence,
+  and exact-eight MCP lanes, while its checked-in build produced no SemanticDB.
+- Next repeat the separated capability classes on an independent maintained
+  Scala 2.13 project. Treat older macro/plugin-heavy projects as later stress
+  targets so dependency or build bitrot is not mistaken for a harness defect.
 - Admit broader compatibility only from concrete version-specific fixtures or
   real projects; do not infer it from the harness implementation language.
 
