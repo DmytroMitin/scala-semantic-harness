@@ -8,6 +8,10 @@ release.
 
 ## Unreleased
 
+- Resume mutable `main` development at `0.1.0-alpha.3-SNAPSHOT` after the
+  alpha-2 release. This does not publish or promise an alpha-3 artifact,
+  channel, tag, or GitHub Release.
+
 ## 0.1.0-alpha.2
 
 - Publish the exact eight application implementation modules under final group
@@ -17,9 +21,10 @@ release.
 - Add and independently qualify the exact-version project-owned Coursier URL
   route under JDK 21 for CLI and generic stdio MCP installation, runtime,
   update, and uninstall.
-- Prepare exact `0.1.0-alpha.2` source-release identity after reproducing all
-  32 public Maven Central primary files byte-for-byte. No Git tag or GitHub
-  Release is created by this preparation.
+- Publish lightweight Git tag and non-draft GitHub prerelease
+  `0.1.0-alpha.2` at the exact source identity that reproduced all 32 public
+  Maven Central primary files byte-for-byte. The Release contains normal
+  GitHub-generated source archives and zero uploaded project assets.
 
 ## 0.1.0-alpha.1
 

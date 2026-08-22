@@ -17,10 +17,12 @@ constructed, audited clean root followed only by reviewed public-product
 commits. The earlier mixed development history is retained separately in a
 private archive and is not part of this public repository.
 
-This tree reports exact version `0.1.0-alpha.2` and is prepared as the source
-candidate for a separately authorized Git tag and GitHub Release. A clean JDK
-21 build reproduced all 32 primary files already published on Maven Central
-byte-for-byte. No `0.1.0-alpha.2` tag or GitHub Release exists yet.
+Mutable `main` reports post-release development version
+`0.1.0-alpha.3-SNAPSHOT`. The immutable `0.1.0-alpha.2` lightweight Git tag and
+GitHub prerelease identify the source that reproduced all 32 primary files
+already published on Maven Central byte-for-byte. The supported packaged route
+remains the exact alpha-2 Maven/Coursier application route; no alpha-3 artifact,
+channel, tag, or GitHub Release exists.
 
 ## What is included
 
@@ -257,8 +259,9 @@ benchmark reproducibility beyond its stated small-sample gate.
   Central under JDK 21. This does not establish Coursier contrib, MCP Registry,
   MCPB, native/container/npm/PyPI packaging, a stable embeddable-library API,
   broad Scala compatibility, skill adoption, semantic superiority, or 1.0
-  stability. The exact source candidate reproduces the published Maven bytes,
-  but does not itself create or authorize a Git tag or GitHub Release.
+  stability. The exact alpha-2 source identity is published as a lightweight
+  tag and GitHub prerelease with normal generated source archives and zero
+  uploaded project assets.
   All 16 formerly flagged license/NOTICE rows are technically dispositioned;
   the owner selected Apache-2.0 for resolver-fetched JNA 5.14.0. This is not
   legal advice or authority for another publication action.

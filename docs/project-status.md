@@ -52,25 +52,25 @@ score.
 | Benchmark reproducibility | `READY` | The admitted public subset contains portable prompts, test-coupled fixtures, a bounded aggregate, and deterministic validation; it passed manifest, link, full-test, staged CLI, wrapper, and MCP smoke gates in a history-free disposable tree. This does not reproduce private historical sessions or establish general effectiveness. |
 | Publication safety | `READY` | The public product has an audited clean root followed only by reviewed public-product commits. The separate mixed-history archive and private control repository remain private; their refs and object graphs are not part of the public product. |
 
-`0.1.0-alpha.1` is a published source-only prerelease. Its tag and GitHub
-Release point to immutable commit
+`0.1.0-alpha.1` remains a published source-only prerelease at immutable commit
 `e2c6eef57124b79c0062b25f48a719685c63905e`, tree
-`281bb7600701d8c93fff2739a7fdb8d781ce8554`. Current source reports exact
-`0.1.0-alpha.2` and is prepared for a separately authorized Git tag and GitHub
-Release after reproducing all 32 immutable Maven Central primary files
-byte-for-byte. No alpha-2 tag or Release exists yet. The deterministic
-project-owned Coursier URL channel is public and
-has passed independent live-main and commit-pinned fresh-cache installation,
-CLI/MCP runtime, update, read-only, and uninstall checks under JDK 21.
-General agent-skill adoption effectiveness, broader semantic superiority,
-complete Scala 2 support, and 1.0 stability remain unproven.
+`281bb7600701d8c93fff2739a7fdb8d781ce8554`. The lightweight
+`0.1.0-alpha.2` tag and GitHub prerelease point to immutable commit
+`4a384cce0553815bf33d5d72fc0379c4d18e0d59`, tree
+`2c260f1f07c938435b7a76b085bd2b8f3c4dbbb8`, whose source reproduces all 32
+immutable Maven Central primary files byte-for-byte. Mutable `main` now reports
+`0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact, channel, tag, or Release exists.
+The deterministic project-owned Coursier URL channel remains pinned to alpha-2
+and has passed independent live-main and commit-pinned fresh-cache installation,
+CLI/MCP runtime, update, read-only, and uninstall checks under JDK 21. General
+agent-skill adoption effectiveness, broader semantic superiority, complete
+Scala 2 support, and 1.0 stability remain unproven.
 
 ## Next evidence milestone
 
-The exact alpha-2 Maven/Coursier application route, source/Maven byte coherence,
-and canonical-skill installability are now independently qualified. A Git tag
-and GitHub Release require separate authorization. Feedback should focus on
-real Scala project cases, installation and maintenance issues, missing
-decision-relevant semantic evidence, and comparison with strong compiler,
-IDE/LSP, and build/test tooling. Skill adoption and Scala 2 compatibility
-remain partial rather than READY.
+The exact alpha-2 Maven/Coursier application route, immutable source identity,
+source/Maven byte coherence, and canonical-skill installability are now
+independently qualified. Feedback should focus on real Scala project cases,
+installation and maintenance issues, missing decision-relevant semantic
+evidence, and comparison with strong compiler, IDE/LSP, and build/test tooling.
+Skill adoption and Scala 2 compatibility remain partial rather than READY.

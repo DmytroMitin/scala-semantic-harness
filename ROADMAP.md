@@ -19,10 +19,11 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Preserve exact `0.1.0-alpha.2` release coherence: the prepared source
-   candidate reproduces all 32 immutable Maven Central primaries, while the
-   deterministic two-application public URL channel remains pinned to those
-   bytes. A Git tag or GitHub Release remains a separate authorization.
+1. Preserve exact `0.1.0-alpha.2` release coherence: its lightweight tag and
+   GitHub prerelease identify the source that reproduces all 32 immutable Maven
+   Central primaries, while the deterministic two-application public URL
+   channel remains pinned to alpha-2. Mutable `main` is
+   `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
 2. Preserve the qualified canonical-skill install route and corrected
    `symbol-at` versus `point-evidence` boundary. The independent frozen
    replication preserved no-tool restraint and composition selection but left

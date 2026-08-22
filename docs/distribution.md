@@ -9,15 +9,15 @@ and checksum sidecars were verified against the reviewed release bytes. The
 project-owned public Coursier URL channel has also passed an independent fresh
 JDK 21 install/runtime/update/uninstall qualification, so this exact
 application route is supported alongside the source build.
-The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
-current source reports exact `0.1.0-alpha.2` and has reproduced all 32 Maven
-Central primaries byte-for-byte as a release candidate. No `0.1.0-alpha.2` Git
-tag or GitHub Release exists yet.
+The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged. The
+immutable `0.1.0-alpha.2` lightweight tag and GitHub prerelease identify the
+source that reproduced all 32 Maven Central primaries byte-for-byte. Mutable
+`main` reports `0.1.0-alpha.3-SNAPSHOT`, but no alpha-3 artifact, channel, tag,
+or GitHub Release exists; alpha-2 remains the supported packaged route.
 
-If separately authorized, a GitHub Release should provide source identity,
-release notes, and normal GitHub-generated source archives. It should not
-duplicate Maven implementation artifacts as uploaded binary assets; Maven
-Central is the immutable channel for those signed files.
+The alpha-2 GitHub Release provides source identity, release notes, and normal
+GitHub-generated source archives with zero uploaded project assets. Maven
+Central remains the immutable channel for the signed implementation files.
 
 A project-owned single-file Coursier URL channel is available from public
 `main`. No Coursier contrib entry, MCPB package, MCP Registry entry, native
@@ -229,5 +229,6 @@ route. It does not imply Coursier contrib or registry discovery, MCPB/MCP
 Registry availability, native/container/npm/PyPI packaging, Agent Plugin or
 skill adoption, a stable embeddable-library API, broad Scala compatibility,
 semantic superiority, or 1.0 stability. Source/Maven byte coherence is proven,
-but this preparation does not create or authorize a `0.1.0-alpha.2` Git tag or
-GitHub Release.
+and the exact source identity is published as the lightweight alpha-2 tag and
+GitHub prerelease. Mutable alpha-3 SNAPSHOT development does not alter or
+replace this supported route.
