@@ -24,9 +24,11 @@ execution ledger and does not promise delivery dates.
    two-application public URL channel, JDK 21, no-override CLI/MCP runtime,
    retained-channel update, and clean uninstall. Requalify any later version
    or channel change rather than generalizing this bounded support result.
-2. Preserve the qualified canonical-skill install route, refine narrow-tool
-   selection guidance from the bounded Codex A/B/C regression, and replicate
-   on independent frozen cases. Invocation alone is not adoption value.
+2. Preserve the qualified canonical-skill install route and corrected
+   `symbol-at` versus `point-evidence` boundary. The independent frozen
+   replication preserved no-tool restraint and composition selection but left
+   a client-mediated narrow-symbol execution gap; invocation or stated intent
+   alone is not adoption value.
 3. Invite early technical feedback on the experimental source alpha and use
    real installation and project cases to guide maintenance.
 4. Validate compatibility on a maintained, reproducible real Scala 2.13
@@ -77,11 +79,14 @@ execution ledger and does not promise delivery dates.
 - Preserve the verified one-candidate public shorthand/direct-path install into
   Codex and Claude project skill directories while keeping thin native wrappers
   non-canonical.
-- Use the bounded Codex result as correction evidence: the skill-guided lane
-  retained no-tool restraint but selected broader point evidence instead of a
-  narrow symbol query and did not select effect summary on the wrapper case.
-- Refine and independently replicate appropriate narrow-tool selection,
-  non-selection, and resistance to misuse or overuse before any READY claim.
+- The historical wrapper case was source-sufficient under the policy, so its
+  former mandatory effect-summary oracle is not maintained as a miss. The
+  historical regression is the broader point-evidence choice on the narrow
+  symbol case.
+- Preserve the corrected selection boundary. In the independent replication,
+  C stated the narrow `symbol-at` choice but did not complete its configured
+  MCP call; B and C therefore both scored `2/3` on appropriate selection or
+  non-selection. Require broader independent execution evidence before READY.
 - Separate capability value from the incremental effect of skill guidance.
 
 ## Installation and packaging

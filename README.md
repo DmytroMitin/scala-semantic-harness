@@ -240,6 +240,10 @@ benchmark reproducibility beyond its stated small-sample gate.
   every source is covered or fresh.
 - Presentation Compiler renderings are bounded evidence, not whole-project
   compile proof.
+- The canonical skill selects `symbol-at` for one exact Presentation Compiler
+  declaration question and reserves `point-evidence` for questions where
+  artifact discovery/selection and reconciliation are themselves relevant.
+  Source-sufficient questions still require no semantic query.
 - Public-alpha source readiness is separate from binary distribution,
   installation usability, semantic utility, and skill-adoption evidence.
 - The exact `0.1.0-alpha.2` Maven/Coursier application route is independently

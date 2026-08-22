@@ -33,10 +33,17 @@ whole-project validation.
 3. If inspection and build evidence leave a concrete semantic uncertainty,
    state that uncertainty before querying.
 4. Choose the narrowest command that answers it.
-5. Prefer a configured, functioning MCP tool when that exact capability exists.
-6. Do not repeat an expensive query unless inputs changed or the report records
+5. When the question is specifically which declaration the Presentation
+   Compiler selects at one exact source position, use `symbol-at`; do not
+   escalate to `point-evidence` merely because it is more comprehensive.
+6. Use `point-evidence` when source-artifact discovery and unique selection,
+   live point evidence, and conditional reconciliation are themselves
+   decision-relevant, especially when caller-selected artifact routing is the
+   uncertainty.
+7. Prefer a configured, functioning MCP tool when that exact capability exists.
+8. Do not repeat an expensive query unless inputs changed or the report records
    a specific reason.
-7. Record the actual tool, bounded inputs, result, side effects, and uncertainty.
+9. Record the actual tool, bounded inputs, result, side effects, and uncertainty.
 
 No semantic query is needed when source and existing tests already answer the
 question or when only formatting, prose, file movement, or another non-semantic

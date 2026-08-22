@@ -21,5 +21,12 @@ and approvals, result interpretation, fallback, benchmark evidence, privacy,
 reproducibility, and bounded examples. Update the core first; change a wrapper
 only when its client's supported discovery or invocation convention changes.
 
+For one exact Presentation Compiler declaration-selection question, the core
+chooses `symbol-at`. It reserves `point-evidence` for questions where coherent
+artifact discovery/selection, live evidence, and conditional reconciliation
+are themselves decision-relevant. Neither rule overrides the source-sufficient
+boundary: if ordinary inspection already answers the question, no semantic
+query is warranted.
+
 This package is documentation and client policy only. It adds no command, MCP
 tool, hook, service, session state, or automatic invocation.
