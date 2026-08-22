@@ -19,11 +19,10 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Preserve the independently qualified exact `0.1.0-alpha.2` Maven/Coursier
-   application route: eight immutable Central artifacts, the deterministic
-   two-application public URL channel, JDK 21, no-override CLI/MCP runtime,
-   retained-channel update, and clean uninstall. Requalify any later version
-   or channel change rather than generalizing this bounded support result.
+1. Preserve exact `0.1.0-alpha.2` release coherence: the prepared source
+   candidate reproduces all 32 immutable Maven Central primaries, while the
+   deterministic two-application public URL channel remains pinned to those
+   bytes. A Git tag or GitHub Release remains a separate authorization.
 2. Preserve the qualified canonical-skill install route and corrected
    `symbol-at` versus `point-evidence` boundary. The independent frozen
    replication preserved no-tool restraint and composition selection but left
@@ -97,7 +96,7 @@ execution ledger and does not promise delivery dates.
   disposable install/update/uninstall/reproducibility proof.
 - Preserve the technical dispositions for all 16 unique flagged runtime rows,
   including the owner-selected Apache-2.0 path for JNA 5.14.0; keep external
-  validation and release under separate explicit authority.
+  publication, tag, and Release actions under separate explicit authority.
 - Keep deterministic assembly, official-schema checks, canonical-skill byte
   identity, and relocated CLI-backed MCP smoke reproducible.
 - Maintain a clean external source-installation walkthrough through a
@@ -133,6 +132,8 @@ execution ledger and does not promise delivery dates.
   refs in the public product repository.
 - Reuse the verified clean-history validation gates for future public source
   changes; never attach the mixed historical object graph to public refs.
+- Keep exact source-release identity reproducible against the immutable Maven
+  primary manifest before any separately authorized tag or GitHub Release.
 
 Public-alpha readiness, external installation, semantic utility, composition
 utility, target compatibility, skill adoption, benchmark reproducibility, and

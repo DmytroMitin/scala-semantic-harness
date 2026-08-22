@@ -10,7 +10,14 @@ project-owned public Coursier URL channel has also passed an independent fresh
 JDK 21 install/runtime/update/uninstall qualification, so this exact
 application route is supported alongside the source build.
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged;
-current `main` remains development version `0.1.0-alpha.2-SNAPSHOT`.
+current source reports exact `0.1.0-alpha.2` and has reproduced all 32 Maven
+Central primaries byte-for-byte as a release candidate. No `0.1.0-alpha.2` Git
+tag or GitHub Release exists yet.
+
+If separately authorized, a GitHub Release should provide source identity,
+release notes, and normal GitHub-generated source archives. It should not
+duplicate Maven implementation artifacts as uploaded binary assets; Maven
+Central is the immutable channel for those signed files.
 
 A project-owned single-file Coursier URL channel is available from public
 `main`. No Coursier contrib entry, MCPB package, MCP Registry entry, native
@@ -168,6 +175,12 @@ It also verified 32 detached test-only signatures and the complete 192-file
 artifact/signature/checksum shape. Those hashes describe the locally frozen
 candidate; a later public verification proved the published release bytes.
 
+The exact source-release candidate was then rebuilt from the current public
+tree under Amazon Corretto 21.0.11 and sbt 1.12.14. Its exact eight-module,
+32-primary manifest retained the same SHA-256 and every file matched freshly
+downloaded Maven Central bytes. Root and benchmark remained non-publishable,
+the internal POM DAG remained byte-identical, and no legacy namespace appeared.
+
 The URL-channel preparation proof used JDK 21.0.12 and Coursier 2.1.25-M25.
 A disposable loopback HTTP server served bytes identical to the canonical
 channel while a fresh outside-checkout cache resolved only the channel URL and
@@ -215,5 +228,6 @@ applications install, run, update, and uninstall independently through that
 route. It does not imply Coursier contrib or registry discovery, MCPB/MCP
 Registry availability, native/container/npm/PyPI packaging, Agent Plugin or
 skill adoption, a stable embeddable-library API, broad Scala compatibility,
-semantic superiority, `0.1.0-alpha.2` Git tag/GitHub Release coherence, or 1.0
-stability.
+semantic superiority, or 1.0 stability. Source/Maven byte coherence is proven,
+but this preparation does not create or authorize a `0.1.0-alpha.2` Git tag or
+GitHub Release.

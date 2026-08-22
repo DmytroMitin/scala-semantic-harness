@@ -17,6 +17,11 @@ constructed, audited clean root followed only by reviewed public-product
 commits. The earlier mixed development history is retained separately in a
 private archive and is not part of this public repository.
 
+This tree reports exact version `0.1.0-alpha.2` and is prepared as the source
+candidate for a separately authorized Git tag and GitHub Release. A clean JDK
+21 build reproduced all 32 primary files already published on Maven Central
+byte-for-byte. No `0.1.0-alpha.2` tag or GitHub Release exists yet.
+
 ## What is included
 
 - structured compile, test, and diagnostic reports;
@@ -95,8 +100,9 @@ project-owned raw GitHub URL, exercised the CLI and generic stdio MCP runtime,
 updated through retained public-channel metadata, and uninstalled cleanly.
 That exact Maven Central plus Coursier URL route is therefore supported.
 
-The candidate publishes exactly the eight implementation modules, never the
-root aggregate or benchmark, and generates exact-version descriptors for the
+The Central publication contains exactly the eight implementation modules,
+never the root aggregate or benchmark, and the public channel uses
+exact-version descriptors for the
 distinct `semantic-scala` CLI and `semantic-scala-mcp` server applications.
 JDK 21 and Coursier are runtime/install prerequisites. Target-workspace sbt is
 needed by build-oracle commands such as `compile`, `errors`, and `test`; it is
@@ -250,8 +256,9 @@ benchmark reproducibility beyond its stated small-sample gate.
   qualified from the actual project-owned public channel URL and Maven
   Central under JDK 21. This does not establish Coursier contrib, MCP Registry,
   MCPB, native/container/npm/PyPI packaging, a stable embeddable-library API,
-  broad Scala compatibility, skill adoption, semantic superiority, tag/Release
-  coherence, or 1.0 stability.
+  broad Scala compatibility, skill adoption, semantic superiority, or 1.0
+  stability. The exact source candidate reproduces the published Maven bytes,
+  but does not itself create or authorize a Git tag or GitHub Release.
   All 16 formerly flagged license/NOTICE rows are technically dispositioned;
   the owner selected Apache-2.0 for resolver-fetched JNA 5.14.0. This is not
   legal advice or authority for another publication action.
