@@ -40,10 +40,14 @@ whole-project validation.
    live point evidence, and conditional reconciliation are themselves
    decision-relevant, especially when caller-selected artifact routing is the
    uncertainty.
-7. Prefer a configured, functioning MCP tool when that exact capability exists.
-8. Do not repeat an expensive query unless inputs changed or the report records
+7. Use CLI-only `tasty-point-evidence` only when authoritative post-compile
+   typed evidence at one point is decision-relevant, especially for generated
+   compiler-plugin facts that the live harness PC cannot see. It runs a fresh
+   selected `Compile`; it is not a cheaper hover query.
+8. Prefer a configured, functioning MCP tool when that exact capability exists.
+9. Do not repeat an expensive query unless inputs changed or the report records
    a specific reason.
-9. Record the actual tool, bounded inputs, result, side effects, and uncertainty.
+10. Record the actual tool, bounded inputs, result, side effects, and uncertainty.
 
 No semantic query is needed when source and existing tests already answer the
 question or when only formatting, prose, file movement, or another non-semantic
@@ -66,6 +70,7 @@ adapter. The MCP surface is exactly the eight tools named below.
 | What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> --json` | `semantic_point_evidence` | Full discovery, unique-parsed selection only, live result, and completed or typed not-attempted reconciliation. It does not assess freshness. |
 | What type is rendered for an expression? | `infer-type --file <scala> --line <n> --col <n> ... --json` | none | CLI-only presentation-compiler evidence. `Resolved` carries rendered evidence; `Unresolved` is neutral absence. |
 | What types are rendered for a bounded request batch sharing one sbt context? | `infer-type-batch --requests <json> --workspace <dir> --sbt-project <id> --sbt-configuration <name> [--sbt-java-home <absolute-directory>] --json` | none | CLI-only ordered batch; strict bounded input and one shared acquisition. |
+| What typed post-compile tree contains one point after an authoritative selected Compile? | `tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json` | none | Alpha-3 SNAPSHOT CLI-only evidence. Runs target build/plugin code during Compile, then inspects receipt-bound TASTy with the exact stable Scala 3 line without replaying target options/plugins in the inspector. |
 | Which SemanticDB artifacts are available and what factual provenance is recorded? | `semanticdb-status --workspace <dir> --json` | none | CLI-only artifact inventory. Availability is not source coverage. |
 | Which explicit artifacts contain one source? | `semanticdb-for-source --file <scala> --workspace <dir> --json` | none | CLI-only source-to-artifact candidates. Hints are not canonical build-target identity. |
 | What source coverage is present in the inventoried artifacts? | `semanticdb-coverage --workspace <dir> --json` | none | CLI-only factual coverage inventory, not proof of complete build coverage. |
@@ -82,6 +87,7 @@ or automatic semantic invocation.
 | `compile`, `errors`, or `test`, through CLI or MCP | Invokes the project build; may execute arbitrary build/plugin/test code and write outputs or caches. | Obtain any approval required for that exact invocation and workspace. |
 | `infer-type` with manual `--classpath`, or a narrow runtime-only context | Avoids sbt acquisition but only proves behavior under the supplied bounded context. | Treat paths and dependencies as user-provided evidence, not project freshness proof. |
 | sbt-backed `infer-type` or `infer-type-batch` with `fresh` | May execute arbitrary build code, compile, download dependencies, and modify project outputs or shared caches. `fresh` is the default. | Obtain approval for this build execution when the environment requires it. |
+| `tasty-point-evidence` | Owns a fresh selected target `Compile`, so target build/plugin code can execute and outputs/caches can change. Its separate inspector child does not replay target compiler options/plugins. | Approval must cover that selected target build; do not describe child-process isolation as a security sandbox. |
 | sbt-backed mode with `refresh` | Has `fresh` effects and additionally publishes newly acquired private cache state for later reuse. | Approval must cover execution and cache publication. |
 | sbt-backed mode with explicit `reuse` | Validates bounded cached evidence and never silently refreshes. It does not prove arbitrary sbt freshness. | Do not replace failure with `fresh` or `refresh` without a new explicit decision and any required approval. |
 | SemanticDB status, lookup, or coverage | Reads existing artifacts; discovery can be broad within the named workspace but does not generate SemanticDB. | Keep the workspace bounded and respect sensitive artifact contents. |

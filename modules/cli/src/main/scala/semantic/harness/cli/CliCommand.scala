@@ -28,6 +28,15 @@ enum CliCommand:
   case SemanticdbCoverage(workspace: String, json: Boolean)
   case SemanticdbForSource(file: String, workspace: String, json: Boolean)
   case PointEvidence(file: String, workspace: String, line: Int, column: Int, json: Boolean)
+  case TastyPointEvidence(
+    workspace: String,
+    sbtProject: SbtProjectId,
+    file: String,
+    line: Int,
+    column: Int,
+    sbtJavaHome: Option[String],
+    json: Boolean
+  )
   case Symbols(semanticdb: String, json: Boolean)
   case Usages(
     workspace: String,

@@ -58,6 +58,8 @@ import semantic.harness.semanticdb_reader.UsagesCliService
 import semantic.harness.semanticdb_reader.UsagesPublicFailure
 import semantic.harness.semanticdb_reader.UsagesPublicFailureKind
 import semantic.harness.semanticdb_reader.UsagesPublicResult
+import semantic.harness.tasty.TastyPointEvidenceInput
+import semantic.harness.tasty.TastyPointEvidenceService
 
 object CliApp:
   val Version = BuildVersion.value
@@ -171,6 +173,8 @@ object CliApp:
         semanticdbForSource(file, workspace, json, projectDir)
       case CliCommand.PointEvidence(file, workspace, line, column, json) =>
         pointEvidence(file, workspace, line, column, json, projectDir)
+      case CliCommand.TastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json) =>
+        tastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json, projectDir)
       case CliCommand.Symbols(semanticdb, json) =>
         symbols(semanticdb, json, projectDir)
       case CliCommand.Usages(workspace, manifest, target, selectors, returnedLimit, json) =>
@@ -425,6 +429,32 @@ object CliApp:
       case Left(message) =>
         CliResult(None, Some(message), 1)
 
+  private def tastyPointEvidence(
+      workspace: String,
+      sbtProject: SbtProjectId,
+      file: String,
+      line: Int,
+      column: Int,
+      sbtJavaHome: Option[String],
+      json: Boolean,
+      projectDir: Path
+  ): CliResult =
+    validatedSbtJavaHome(sbtJavaHome) match
+      case Left(message) => CliResult(None, Some(message), 1)
+      case Right(targetJava) =>
+        TastyPointEvidenceService().inspect(
+          TastyPointEvidenceInput(
+            resolveProjectPath(projectDir, workspace),
+            file,
+            line,
+            column,
+            sbtProject,
+            targetJava
+          )
+        ) match
+          case Right(report) => CliResult(Some(report.asJson.noSpaces), None, 0)
+          case Left(message) => CliResult(None, Some(message), 1)
+
   private def symbolAt(file: String, line: Int, column: Int, json: Boolean, projectDir: Path): CliResult =
     val path = resolveProjectPath(projectDir, file)
     PresentationCompilerService().symbolAt(path, line, column) match
@@ -566,7 +596,8 @@ object CliApp:
                         "Compiler hover rendering is version-dependent.",
                         "Compiler hover rendering is not canonical type identity.",
                         "A compiler hover query does not prove whole-project compilation."
-                      ) ++ provenanceWarnings ++ List(
+                      ) ++ provenanceWarnings ++
+                        pcContextWarnings(acquired.project, acquired.configuration) ++ List(
                         "Sibling uncompiled or open sources are not modeled.",
                         "A batch is not an atomic workspace snapshot; each item source is captured once when that item is processed."
                       ),
@@ -696,7 +727,19 @@ object CliApp:
         case "Beyond the built-in Scala runtime, only the supplied compiled classpath entries are available." =>
           provenanceWarnings
         case warning => List(warning)
-      }
+      } ++ pcContextWarnings(project, configuration)
+    )
+
+  private def pcContextWarnings(
+      project: SbtProjectId,
+      configuration: SbtClasspathConfiguration
+  ): List[String] =
+    val configurationValue = SbtClasspathConfiguration.value(configuration)
+    List(
+      s"The dynamic presentation-compiler classpath was acquired for selected sbt project '${project.value}' configuration '$configurationValue'.",
+      "Dynamic presentation-compiler execution uses semantic-scala's own Scala and Presentation Compiler line.",
+      "The target's exact Scala compiler version, compiler options, compiler plugins and plugin options, and plugin lifecycle are not replayed.",
+      "An unresolved presentation-compiler result is neutral and does not prove that a target compiler plugin caused the absence."
     )
 
   private def reconcileSymbol(file: String, line: Int, column: Int, semanticdb: String, json: Boolean, projectDir: Path): CliResult =
@@ -824,6 +867,7 @@ object CliApp:
       |  semantic-scala semanticdb-coverage --workspace <path> [--json]
       |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--json]
       |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--json]
+      |  semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
       |  semantic-scala symbols --semanticdb <path> [--json]
       |  semantic-scala usages --workspace <path> --manifest <relative.json> --symbol <global-symbol> [selectors] [--json]
       |  semantic-scala usages --workspace <path> --manifest <relative.json> --file <relative-source> --line <n> --col <n> --semanticdb <relative-artifact> [selectors] [--json]
@@ -844,6 +888,7 @@ object CliApp:
       |  semanticdb-coverage Compare a recursive Scala/Java source inventory with SemanticDB documents.
       |  semanticdb-for-source Map a source file to existing SemanticDB candidates.
       |  point-evidence Compose discovery, safe selection, live point evidence, and reconciliation.
+      |  tasty-point-evidence Run a fresh selected Compile build and inspect its bounded TASTy evidence.
       |  symbols   Read a single SemanticDB file and report symbols.
       |  usages    Query exact ordinary occurrences in one explicit manifest scope.
       |  symbol-at Query the symbol at a source position.
@@ -917,6 +962,18 @@ object CliApp:
             |v1 is the default. Opt-in v2 adds all-document, raw artifact,
             |duplicate-group, and bounded-candidate metadata; coverage is NotAssessed.
             |Does not generate SemanticDB or run sbt.
+            |""".stripMargin.trim
+        )
+      case "tasty-point-evidence" =>
+        Some(
+          """Usage:
+            |  semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <workspace-relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
+            |
+            |Owns one authoritative selected fixed Compile request, then inspects only bounded TASTy artifacts from that receipt.
+            |The point is one-based UTF-16. The exact stable target Scala 3 inspector runs in a bounded child process.
+            |Target compiler options and plugins are not replayed by the inspector.
+            |Completed domain outcomes return JSON with exit code 0; validation, launch, and protocol failures use a nonzero exit.
+            |This alpha-3 source capability is CLI-only by design.
             |""".stripMargin.trim
         )
       case "semanticdb-for-source" =>

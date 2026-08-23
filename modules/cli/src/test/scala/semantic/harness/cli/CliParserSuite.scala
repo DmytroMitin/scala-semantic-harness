@@ -180,6 +180,52 @@ class CliParserSuite extends munit.FunSuite:
       )
     )
 
+  test("parses the CLI-only fixed-Compile TASTy point evidence contract"):
+    val args = List(
+      "tasty-point-evidence",
+      "--workspace", ".",
+      "--sbt-project", "pluginTests",
+      "--file", "plugin-tests/src/main/scala/Example.scala",
+      "--line", "10",
+      "--col", "36",
+      "--sbt-java-home", "/opt/jdks/target",
+      "--json"
+    )
+    assertEquals(
+      CliParser.parse(args),
+      ParseResult.Parsed(
+        CliCommand.TastyPointEvidence(
+          ".",
+          project("pluginTests"),
+          "plugin-tests/src/main/scala/Example.scala",
+          10,
+          36,
+          Some("/opt/jdks/target"),
+          json = true
+        )
+      )
+    )
+
+  test("TASTy point evidence requires project and JSON and rejects unsafe selectors"):
+    val valid = List(
+      "tasty-point-evidence", "--workspace", ".", "--sbt-project", "app",
+      "--file", "Main.scala", "--line", "1", "--col", "1", "--json"
+    )
+    val invalid = List(
+      valid.patch(3, Nil, 2),
+      valid.filterNot(_ == "--json"),
+      valid.updated(valid.indexOf("app"), "bad;task"),
+      valid.updated(valid.indexOf("1"), "0"),
+      valid ++ List("--sbt-project", "other"),
+      valid ++ List("--configuration", "Test")
+    )
+    invalid.foreach(args => assert(CliParser.parse(args).isInstanceOf[ParseResult.Invalid], clue(args)))
+
+    val help = CliApp.run(List("help", "tasty-point-evidence"))
+    assertEquals(help.exitCode, 0)
+    assert(help.stdout.exists(_.contains("fixed Compile")))
+    assert(help.stdout.exists(_.contains("domain outcomes return JSON with exit code 0")))
+
   test("rejects incomplete, non-positive, duplicate, and unsupported point-evidence inputs"):
     val base = List(
       "point-evidence",

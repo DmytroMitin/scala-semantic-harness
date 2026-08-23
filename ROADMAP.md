@@ -7,13 +7,16 @@ execution ledger and does not promise delivery dates.
 
 - Scala 3 multi-module build with structured CLI reports.
 - Compile, test, and diagnostic build-oracle commands.
-- Explicit installed target-JDK selection for the five sbt-backed CLI forms,
+- Explicit installed target-JDK selection for the six sbt-backed CLI forms,
   with JDK 21 retained as the harness runtime and no automatic acquisition.
 - SemanticDB inventory, coverage, symbols, and bounded usages.
 - Presentation Compiler symbol and rendered-type queries.
 - Static/dynamic symbol reconciliation.
 - A public semantic point-evidence composition that selects only one parsed
   source artifact and preserves non-selection reasons.
+- A CLI-only bounded post-compile TASTy point-evidence operation with a
+  same-request selected-Compile receipt and exact stable Scala 3 child worker.
+- Stable non-causal target-context warnings on sbt-backed dynamic type evidence.
 - Syntax-first FP effect summaries.
 - A CLI-backed stdio MCP server with exactly eight tools.
 - Public semantic-scala skill policy and repository wrappers.
@@ -28,9 +31,9 @@ execution ledger and does not promise delivery dates.
    Central primaries, while the deterministic two-application public URL
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
-2. Implement bounded post-compile TASTy evidence plus Presentation Compiler
-   context provenance. Keep this evidence bounded and version-specific; do not
-   imply general compiler-plugin semantics or compile-phase replacement.
+2. Harden and broaden evidence for the implemented bounded post-compile TASTy
+   lane without turning it into live compiler-plugin replay, a general TASTy
+   query language, or a compile-phase replacement.
 3. Preserve the qualified canonical-skill install route and corrected
    `symbol-at` versus `point-evidence` boundary. The independent frozen
    replication preserved no-tool restraint and composition selection but left

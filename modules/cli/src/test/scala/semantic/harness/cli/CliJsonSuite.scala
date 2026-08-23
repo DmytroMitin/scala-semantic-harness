@@ -570,6 +570,7 @@ class CliJsonSuite extends munit.FunSuite:
     assert(!stdout.contains("classpathEntries"))
     assert(!stdout.contains("sbtProject"))
     assert(!stdout.contains("sbtConfiguration"))
+    assert(!stdout.contains("target compiler plugin caused the absence"))
 
   test("infer-type unresolved is a successful semantic result"):
     val result = CliApp.run(
@@ -719,6 +720,7 @@ class CliJsonSuite extends munit.FunSuite:
         )
       )
     )
+    assert(!result.stdout.exists(_.contains("target compiler plugin caused the absence")))
 
   test("infer-type sbt context exposes safe provenance without acquired paths"):
     val projectId = project("app-2")
@@ -777,6 +779,34 @@ class CliJsonSuite extends munit.FunSuite:
           _.contains(
             "sbt evaluated project 'app-2' configuration 'Compile' for this invocation"
           )
+        )
+      )
+    )
+    assert(
+      decoded.exists(
+        _.warnings.contains(
+          "The dynamic presentation-compiler classpath was acquired for selected sbt project 'app-2' configuration 'Compile'."
+        )
+      )
+    )
+    assert(
+      decoded.exists(
+        _.warnings.contains(
+          "Dynamic presentation-compiler execution uses semantic-scala's own Scala and Presentation Compiler line."
+        )
+      )
+    )
+    assert(
+      decoded.exists(
+        _.warnings.contains(
+          "The target's exact Scala compiler version, compiler options, compiler plugins and plugin options, and plugin lifecycle are not replayed."
+        )
+      )
+    )
+    assert(
+      decoded.exists(
+        _.warnings.contains(
+          "An unresolved presentation-compiler result is neutral and does not prove that a target compiler plugin caused the absence."
         )
       )
     )
@@ -1052,6 +1082,34 @@ class CliJsonSuite extends munit.FunSuite:
       assertEquals(
         decoded.map(_.context.acquisitionOrigin),
         Right(Some(InferTypeAcquisitionOrigin.FreshSbt))
+      )
+      assert(
+        decoded.exists(
+          _.contextWarnings.contains(
+            "The dynamic presentation-compiler classpath was acquired for selected sbt project 'cli' configuration 'Compile'."
+          )
+        )
+      )
+      assert(
+        decoded.exists(
+          _.contextWarnings.contains(
+            "Dynamic presentation-compiler execution uses semantic-scala's own Scala and Presentation Compiler line."
+          )
+        )
+      )
+      assert(
+        decoded.exists(
+          _.contextWarnings.contains(
+            "The target's exact Scala compiler version, compiler options, compiler plugins and plugin options, and plugin lifecycle are not replayed."
+          )
+        )
+      )
+      assert(
+        decoded.exists(
+          _.contextWarnings.contains(
+            "An unresolved presentation-compiler result is neutral and does not prove that a target compiler plugin caused the absence."
+          )
+        )
       )
       assert(!stdout.contains(acquiredPath.toString))
       assert(!stdout.contains(System.getProperty("user.home")))

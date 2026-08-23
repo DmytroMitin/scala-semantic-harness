@@ -42,6 +42,7 @@ semantic-scala semanticdb-for-source --file <path> --workspace <path>
 semantic-scala semanticdb-for-source --file <path> --workspace <path> --json
 semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n>
 semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> --json
+semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <workspace-relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
 semantic-scala symbols --semanticdb <path>
 semantic-scala symbols --semanticdb <path> --json
 semantic-scala usages --workspace <path> --manifest <relative.json> --symbol <global-symbol> [--include-definitions] [--module <id>]... [--source-set <id>]... [--include-generated] [--limit <1..500>] [--json]
@@ -224,6 +225,9 @@ Current schema-versioned payloads:
   `semantic-scala.semanticdb-for-source.v1`
 - `point-evidence --file <path> --workspace <path> --line <n> --col <n>
   --json`: `semantic-scala.point-evidence-result.v1`
+- `tasty-point-evidence --workspace <dir> --sbt-project <id> --file
+  <relative.scala> --line <n> --col <n> --json`:
+  `semantic-scala.tasty-point-evidence.v1`
 - `symbols --semanticdb <path> --json`: `semantic-scala.symbols-result.v1`
 - `usages ... --json`: `semantic-scala.usages-result.v1` on domain outcomes or
   `semantic-scala.usages-failure.v1` on operational failure; its input manifest
@@ -867,8 +871,8 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
   macros, compiler plugins, or arbitrary project classpaths.
 - The CLI accepts one explicit `.scala` source file path.
 - CLI line and column inputs are one-based.
-- No Metals, BSP, LSP, TASTy, MCP, graph storage, vector search, or FP analyzer
-  integration is added.
+- This dynamic-PC operation adds no Metals, BSP, LSP, TASTy, MCP, graph
+  storage, vector search, or FP analyzer integration.
 - No project-wide workspace indexing is implemented.
 - Symbol identity depends on what the presentation compiler returns for the
   queried source and minimal classpath.
@@ -983,9 +987,9 @@ host-approval and public tool-contract gate remains.
 - Status values are `ExactMatch`, `RangeMatchOnly`, `SymbolMismatch`, and
   `NoMatch`.
 - Valid no-symbol/no-match results are not CLI errors.
-- No Metals, BSP, LSP, TASTy, MCP, graph storage, vector search, FP analyzer,
-  directory indexing, dynamic SemanticDB generation, caching, daemonization, or
-  project-wide analysis is added.
+- This reconciliation operation adds no Metals, BSP, LSP, TASTy, MCP, graph
+  storage, vector search, FP analyzer, directory indexing, dynamic SemanticDB
+  generation, caching, daemonization, or project-wide analysis.
 
 ## FP Effect Summary Limits
 

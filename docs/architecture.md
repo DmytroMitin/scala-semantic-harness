@@ -32,7 +32,10 @@ capability-specific. Build/test commands delegate to the target's own build.
 SemanticDB readers consume explicit version-appropriate artifacts. Syntax-first
 analysis depends on accepted source syntax. Dynamic symbol/type operations use
 the harness's pinned Scala 3.3 presentation compiler rather than a native Scala
-2 compiler.
+2 compiler. The separate CLI-only post-compile TASTy lane first owns one target
+`Compile` request, then compiles and runs a product-owned inspector against the
+acquired exact stable Scala 3 line in bounded child JVMs. Target compiler
+options and plugins are not replayed by that inspector.
 
 A bounded JDK 21 fixture matrix verified build/test/error, SemanticDB,
 effect-summary, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8.
@@ -41,12 +44,12 @@ exactly, but that narrow result does not establish general Scala 2 syntax,
 classpath, macro, compiler-plugin, or project compatibility. Composition
 inherits the limits of every evidence source it uses.
 
-The harness runtime remains supported on JDK 21. Its five existing sbt-backed
+The harness runtime remains supported on JDK 21. Its six sbt-backed
 CLI forms can explicitly select one already-installed target Java home for the
 child sbt process. The shared selector validates and probes that home, sets
-only child `JAVA_HOME`/`PATH`, and never discovers or installs a JDK. The two
-existing sbt process owners remain build-oracle execution and classpath
-acquisition; selection does not create a third execution model. No-selector
+only child `JAVA_HOME`/`PATH`, and never discovers or installs a JDK. The three
+process owners are build-oracle execution, classpath acquisition, and the
+private same-request TASTy receipt task. No-selector
 classpath acquisition remains v1-compatible, while explicit-Java acquisition
 uses an isolated strict v2 cache/protocol context.
 
@@ -88,6 +91,9 @@ Use the narrowest stable owner for each fact:
 - the public point-evidence composition retains the complete source-artifact
   discovery report, one live point result, and reconciliation only when exactly
   one parsed artifact is justified; and
+- post-compile TASTy point evidence owns selected-Compile success, source
+  stability, receipt-bound artifact hashes, exact-inspector provenance, and a
+  deterministic smallest-containing-tree selection; and
 - effect summaries describe declared syntax without claiming compiler-selected
   semantics.
 
@@ -119,7 +125,8 @@ is not a hard JVM wall-clock or memory guarantee.
 - `core`: shared data models and JSON codecs.
 - `cli`: command parsing, orchestration, and JSON rendering.
 - `sbt-runner`: root or validated-project compile/test subprocess integration,
-  shared target-Java validation, and v1/v2 classpath acquisition.
+  shared target-Java validation, v1/v2 classpath acquisition, and the private
+  fixed-Compile TASTy receipt protocol.
 - `semanticdb-reader`: artifact inventory, symbols, coverage, and usages.
 - `presentation-compiler`: bounded point and rendered-type queries.
 - `semantic-reconciliation`: dynamic/static symbol comparison.

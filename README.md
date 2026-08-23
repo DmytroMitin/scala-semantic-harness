@@ -56,6 +56,8 @@ from the alpha-2 packaged contract.
   artifact;
 - a public point-evidence composition that preserves source-artifact discovery,
   safe selection, live symbol evidence, and conditional reconciliation;
+- an alpha-3 SNAPSHOT CLI-only, same-request post-compile TASTy point-evidence
+  operation with exact stable Scala 3 child-inspector provenance;
 - conservative syntax-first FP effect summaries;
 - a stdio MCP server exposing exactly eight public tools;
 - small external example projects and benchmark infrastructure; and
@@ -133,9 +135,9 @@ test runs its fixed `Test` scope. The selector is not arbitrary sbt syntax, and
 a successful selected invocation proves only that bounded project operation,
 not whole-workspace correctness.
 
-All five sbt-backed forms (`compile`, `errors`, `test`, sbt-backed
-`infer-type`, and `infer-type-batch`) also accept an optional
-`--sbt-java-home <absolute-directory>`. The harness itself remains on the
+All six sbt-backed forms (`compile`, `errors`, `test`, sbt-backed
+`infer-type`, `infer-type-batch`, and `tasty-point-evidence`) also accept an
+optional `--sbt-java-home <absolute-directory>`. The harness itself remains on the
 supported JDK 21 runtime; only the target sbt child receives the selected
 canonical `JAVA_HOME` and a matching `PATH` prefix. The home must already be
 installed and pass bounded validation and a fixed version probe. The harness
@@ -197,6 +199,7 @@ boundary.
 ./semantic-scala semanticdb-coverage --workspace . --json
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --json
 ./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --json
+./semantic-scala tasty-point-evidence --workspace . --sbt-project app --file src/main/scala/example/Main.scala --line 6 --col 16 [--sbt-java-home /absolute/path/to/installed-jdk] --json
 ./semantic-scala symbols --semanticdb path/to/Main.scala.semanticdb --json
 ./semantic-scala usages --workspace . --manifest semantic-usages.json --symbol 'example/Foo#bar().' --json
 ./semantic-scala symbol-at --file path/to/Main.scala --line 6 --col 16 --json
@@ -217,6 +220,7 @@ Detailed contracts:
 - [`docs/semantic-api.md`](docs/semantic-api.md)
 - [`docs/usages.md`](docs/usages.md)
 - [`docs/point-evidence.md`](docs/point-evidence.md)
+- [`docs/tasty-point-evidence.md`](docs/tasty-point-evidence.md)
 - [`docs/architecture.md`](docs/architecture.md)
 
 ## MCP server

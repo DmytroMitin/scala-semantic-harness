@@ -215,6 +215,11 @@ command-count parity is not a goal.
 | `infer-type-batch` | `CLI_ONLY_BY_DESIGN` | — |
 | `help`, `version` | `CLI_ONLY_BY_DESIGN` | — |
 
+Mutable alpha-3 SNAPSHOT development additionally provides
+`tasty-point-evidence` as `CLI_ONLY_BY_DESIGN`. It owns a fresh selected
+`Compile` request and has no ninth MCP tool. It is not present in the immutable
+alpha-2 package or supported alpha-2 installation route.
+
 No current alpha-2 CLI operation is `MCP_CANDIDATE_NOT_ADMITTED`. That status
 requires a concrete agent use hypothesis and separate admission; apparent
 symmetry is not sufficient.

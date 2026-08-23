@@ -32,6 +32,8 @@ object CliParser:
         parseSemanticdbForSource(rest)
       case "point-evidence" :: rest =>
         parsePointEvidence(rest)
+      case "tasty-point-evidence" :: rest =>
+        parseTastyPointEvidence(rest)
       case "symbols" :: rest =>
         parseSymbols(rest)
       case "usages" :: rest =>
@@ -612,6 +614,46 @@ object CliParser:
         options.get("--file") match
           case Some(file) => Right(CliCommand.EffectSummary(file, json))
           case None       => Left(s"Invalid arguments for effect-summary: ${args.mkString(" ")}")
+    } match
+      case Right(command) => ParseResult.Parsed(command)
+      case Left(message)  => ParseResult.Invalid(message)
+
+  private def parseTastyPointEvidence(args: List[String]): ParseResult =
+    final case class Options(values: Map[String, String] = Map.empty, json: Boolean = false)
+    val valued = Set("--workspace", "--sbt-project", "--file", "--line", "--col", "--sbt-java-home")
+
+    def loop(rest: List[String], options: Options): Either[String, Options] =
+      rest match
+        case Nil => Right(options)
+        case "--json" :: tail =>
+          if options.json then Left("Option may only be supplied once for tasty-point-evidence: --json")
+          else loop(tail, options.copy(json = true))
+        case key :: value :: tail if valued.contains(key) && !value.startsWith("--") =>
+          if options.values.contains(key) then Left(s"Option may only be supplied once for tasty-point-evidence: $key")
+          else loop(tail, options.copy(values = options.values.updated(key, value)))
+        case other => Left(s"Invalid arguments for tasty-point-evidence: ${other.mkString(" ")}")
+
+    loop(args, Options()).flatMap { options =>
+      for
+        workspace <- options.values.get("--workspace").filter(_.nonEmpty)
+          .toRight("tasty-point-evidence requires --workspace")
+        projectRaw <- options.values.get("--sbt-project")
+          .toRight("tasty-point-evidence requires --sbt-project")
+        project <- SbtProjectId.parse(projectRaw)
+          .left.map(message => s"Invalid --sbt-project for tasty-point-evidence: $message")
+        file <- options.values.get("--file").filter(_.nonEmpty)
+          .toRight("tasty-point-evidence requires --file")
+        _ <- Try(Path.of(file)).toEither.left.map(_ => "Invalid --file for tasty-point-evidence")
+        _ <- Either.cond(!Path.of(file).isAbsolute, (), "--file must be workspace-relative for tasty-point-evidence")
+        lineRaw <- options.values.get("--line").toRight("tasty-point-evidence requires --line")
+        line <- parsePositiveInt("tasty-point-evidence", "line", lineRaw)
+        columnRaw <- options.values.get("--col").toRight("tasty-point-evidence requires --col")
+        column <- parsePositiveInt("tasty-point-evidence", "col", columnRaw)
+        javaHome <- options.values.get("--sbt-java-home") match
+          case Some(value) => validateAbsoluteJavaHome(value, "tasty-point-evidence").map(Some(_))
+          case None        => Right(None)
+        _ <- Either.cond(options.json, (), "tasty-point-evidence requires --json")
+      yield CliCommand.TastyPointEvidence(workspace, project, file, line, column, javaHome, json = true)
     } match
       case Right(command) => ParseResult.Parsed(command)
       case Left(message)  => ParseResult.Invalid(message)

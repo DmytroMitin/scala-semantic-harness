@@ -28,6 +28,7 @@ lazy val circeVersion = "0.14.9"
 lazy val munitVersion = "1.0.0"
 lazy val semanticdbVersion = "4.16.1"
 lazy val presentationCompilerVersion = "3.3.3"
+lazy val coursierInterfaceVersion = "1.0.28"
 
 lazy val stage = taskKey[File]("Stage the semantic-scala CLI launcher")
 
@@ -97,7 +98,10 @@ lazy val cli = (project in file("modules/cli"))
     name := "semantic-scala-cli",
     description := "Command-line application for the semantic-scala evidence harness",
     Compile / mainClass := Some("semantic.harness.cli.Main"),
-    libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test,
+    libraryDependencies ++= Seq(
+      "io.get-coursier" % "interface" % coursierInterfaceVersion,
+      "org.scalameta" %% "munit" % munitVersion % Test
+    ),
     stage := {
       val outputDir = target.value / "stage"
       val binDir = outputDir / "bin"
