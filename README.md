@@ -24,6 +24,29 @@ already published on Maven Central byte-for-byte. The supported packaged route
 remains the exact alpha-2 Maven/Coursier application route; no alpha-3 artifact,
 channel, tag, or GitHub Release exists.
 
+## Agent quick start
+
+The supported packaged route is exact `0.1.0-alpha.2` on JDK 21. Install the
+CLI and generic stdio MCP server first:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  semantic-scala semantic-scala-mcp
+semantic-scala version
+```
+
+Then choose the integration that the agent client supports: the complete CLI,
+the curated exact-eight MCP projection, and/or the immutable alpha-2 agent
+skill. Copying this repository's thin skill wrappers into another project is
+not supported; install the canonical skill from the `0.1.0-alpha.2` tag.
+
+[`docs/agent-onboarding.md`](docs/agent-onboarding.md) gives copy-ready Codex,
+Claude Code, Cursor, and VS Code/Copilot recipes, exact local qualification
+statuses, skill installation, the CLI/MCP surface matrix, and troubleshooting.
+Alpha-3 SNAPSHOT-only project and target-JDK selectors are explicitly excluded
+from the alpha-2 packaged contract.
+
 ## What is included
 
 - structured compile, test, and diagnostic reports;
@@ -220,9 +243,11 @@ scripts/mcp/smoke-mcp-tools.py
 ```
 
 Copy [`.mcp.example.json`](.mcp.example.json) and replace its placeholder
-checkout path for project-scoped client configuration. See
+checkout path for source-development client configuration. Installed alpha-2
+users should configure `semantic-scala-mcp` directly. See
 [`docs/mcp-client-validation.md`](docs/mcp-client-validation.md) for the public
-configuration and protocol checks.
+configuration and protocol checks and
+[`docs/agent-onboarding.md`](docs/agent-onboarding.md) for client recipes.
 
 ## Agent skill
 
@@ -233,8 +258,12 @@ repository wrappers live at:
 - [`.agents/skills/semantic-scala/SKILL.md`](.agents/skills/semantic-scala/SKILL.md)
 - [`.claude/skills/semantic-scala/SKILL.md`](.claude/skills/semantic-scala/SKILL.md)
 
+These files are source-tree wrappers, not standalone external installations.
 The skill is policy and documentation. It does not add commands, background
-services, or automatic invocation. Packaging and maintenance guidance is in
+services, or automatic invocation. External alpha-2 installation plus client
+qualification is in
+[`docs/agent-onboarding.md`](docs/agent-onboarding.md); packaging and
+maintenance guidance is in
 [`docs/agent-skill-semantic-scala.md`](docs/agent-skill-semantic-scala.md).
 
 ## Agent Plugin package

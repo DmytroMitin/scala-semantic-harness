@@ -4,6 +4,17 @@ The stable interface for agents is the CLI. MCP is a thin stdio adapter over
 eight documented CLI-backed operations; CLI-only commands remain available
 without implying an MCP projection.
 
+The complete alpha-2 CLI/MCP classification is maintained in
+[`agent-onboarding.md`](agent-onboarding.md#cli-and-mcp-surface-contract).
+`MCP_EXPOSED` means an admitted bounded agent tool, while
+`CLI_ONLY_BY_DESIGN` is an intentional transport boundary rather than missing
+parity. A future `MCP_CANDIDATE_NOT_ADMITTED` operation would require a
+decision-relevant use hypothesis; no current alpha-2 command has that status.
+
+The command synopsis below describes mutable alpha-3 SNAPSHOT development.
+The optional `--sbt-project` and `--sbt-java-home` forms are not present in the
+supported immutable `0.1.0-alpha.2` package.
+
 ## Current Commands
 
 ```bash

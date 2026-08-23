@@ -3,11 +3,25 @@
 The packaged stdio server delegates to the packaged `semantic-scala` CLI and
 exposes exactly eight tools.
 
-The supported baseline for a source checkout is JDK 21, sbt, Git, and Python
-3. The walkthrough below also assumes an already-installed Claude Code client;
-it does not install or configure a client globally.
+For installed `0.1.0-alpha.2`, configure the command
+`semantic-scala-mcp` directly. Copy-ready Codex, Claude Code, Cursor, and VS
+Code/Copilot recipes, exact MCP and skill qualification statuses, and the
+CLI/MCP surface classification are in
+[`agent-onboarding.md`](agent-onboarding.md).
 
-## Build the launchers
+The current local matrix is bounded: Codex CLI `0.149.0` is
+`QUALIFIED_LOCAL`; Codex Desktop, Claude Code, and Cursor are
+`OFFICIAL_RECIPE_NOT_LOCALLY_QUALIFIED`; VS Code/Copilot is
+`CLIENT_NOT_AVAILABLE`. Claude's official recipe reached client initialization
+but an expired login blocked tool discovery and invocation. These statuses do
+not weaken the independent installed-server protocol smoke.
+
+## Source-development route
+
+The baseline for a source checkout is JDK 21, sbt, Git, and Python 3. This
+walkthrough is for developing the server rather than ordinary alpha-2 use.
+
+### Build the launchers
 
 ```bash
 sbt cli/stage
@@ -33,7 +47,7 @@ and replace `/path/to/scala-semantic-harness` with the absolute path to your
 checkout. Client approval and trust behavior varies; review the command before
 approving build or test execution.
 
-## Bounded Claude Code first use
+### Bounded Claude Code first use
 
 Claude Code 2.1.220 provides a session-only `--mcp-config` route. To avoid a
 persisted project-server approval while evaluating the source alpha, copy
@@ -52,8 +66,9 @@ claude -p \
 ```
 
 The repository-local Claude wrapper makes the `semantic-scala` skill
-discoverable. Skill discovery is not proof of autonomous selection or
-effectiveness. The expected call has adapter `ok: true`, schema
+discoverable. It is a thin source-tree wrapper, not a standalone external
+skill. Skill discovery is not proof of autonomous selection or effectiveness.
+When client authentication is usable, the expected call has adapter `ok: true`, schema
 `semantic-scala.effect-summary.v1`, and syntax-first method summaries. It does
 not compile the fixture or prove inferred effect semantics.
 

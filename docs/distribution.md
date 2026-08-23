@@ -9,6 +9,8 @@ and checksum sidecars were verified against the reviewed release bytes. The
 project-owned public Coursier URL channel has also passed an independent fresh
 JDK 21 install/runtime/update/uninstall qualification, so this exact
 application route is supported alongside the source build.
+For client-specific MCP and skill setup, start with
+[`agent-onboarding.md`](agent-onboarding.md).
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged. The
 immutable `0.1.0-alpha.2` lightweight tag and GitHub prerelease identify the
 source that reproduced all 32 Maven Central primaries byte-for-byte. Mutable
@@ -112,6 +114,17 @@ Update both installed applications with:
 ```bash
 cs update semantic-scala semantic-scala-mcp
 ```
+
+Some Coursier versions can print `No modified time in response` while checking
+the URL channel. This reports missing remote `Last-Modified` metadata; by
+itself it is not an application-update failure. Judge the operation by the
+`cs update` exit status, then re-run `semantic-scala version` and a smoke call.
+The missing timestamp may cause Coursier to refresh or re-download while
+checking the descriptor; it does not change the success criteria.
+Fresh Coursier 2.1.25-M26 qualification completed successfully and preserved
+the exact alpha-2 CLI plus ordered eight-tool MCP behavior. The message was
+source-verified for that Coursier version but was not emitted in the non-TTY
+qualification run.
 
 Uninstall both with:
 

@@ -17,6 +17,8 @@ execution ledger and does not promise delivery dates.
 - Syntax-first FP effect summaries.
 - A CLI-backed stdio MCP server with exactly eight tools.
 - Public semantic-scala skill policy and repository wrappers.
+- Agent-first alpha-2 installation, MCP, and immutable-skill recipes with a
+  client qualification matrix and explicit CLI/MCP surface asymmetry.
 - Examples, CI, benchmark fixtures, and methodology.
 
 ## Near-term priorities
@@ -26,19 +28,24 @@ execution ledger and does not promise delivery dates.
    Central primaries, while the deterministic two-application public URL
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
-2. Preserve the qualified canonical-skill install route and corrected
+2. Implement bounded post-compile TASTy evidence plus Presentation Compiler
+   context provenance. Keep this evidence bounded and version-specific; do not
+   imply general compiler-plugin semantics or compile-phase replacement.
+3. Preserve the qualified canonical-skill install route and corrected
    `symbol-at` versus `point-evidence` boundary. The independent frozen
    replication preserved no-tool restraint and composition selection but left
    a client-mediated narrow-symbol execution gap; invocation or stated intent
    alone is not adoption value.
-3. Invite early technical feedback on the experimental source alpha and use
+4. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
+   qualification statuses without claiming MCP/CLI command-count parity.
+5. Invite early technical feedback on the experimental source alpha and use
    real installation and project cases to guide maintenance.
-4. Preserve the maintained real-project matrices and the narrow alpha-3
+6. Preserve the maintained real-project matrices and the narrow alpha-3
    SNAPSHOT project and target-JDK selectors admitted from their evidence.
    Continue to treat a selected row/runtime as bounded build evidence, not
    whole-workspace success, automatic project discovery, or general alternate
    JDK support.
-5. Admit new semantic capabilities only from concrete user, adoption,
+7. Admit new semantic capabilities only from concrete user, adoption,
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.
 
