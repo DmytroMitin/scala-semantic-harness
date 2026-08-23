@@ -3,6 +3,8 @@ package semantic.harness.sbt_runner
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Base64
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 class SbtClasspathProtocolSuite extends munit.FunSuite:
   test("protocol round-trip preserves order, spaces, Unicode, brackets, parentheses, and commas"):
@@ -86,6 +88,29 @@ class SbtClasspathProtocolSuite extends munit.FunSuite:
       assert(SbtClasspathProtocol.parse(wrongKind, request).isLeft)
     finally
       Files.deleteIfExists(unsupported)
+      Files.deleteIfExists(root)
+
+  test("protocol accepts a readable extensionless JAR materialized from an sbt virtual reference"):
+    val root = Files.createTempDirectory("sbt-classpath-protocol-cas-jar")
+    val archive = root.resolve("sha256-content-address")
+    val stream = ZipOutputStream(Files.newOutputStream(archive))
+    try
+      stream.putNextEntry(ZipEntry("example/Main.class"))
+      stream.write(Array[Byte](1, 2, 3))
+      stream.closeEntry()
+    finally stream.close()
+    val request = SbtClasspathRequest(root, project("app"), SbtClasspathConfiguration.Compile)
+    try
+      val content = protocol(
+        request,
+        List(SbtClasspathEntry(archive, SbtClasspathEntryKind.Jar))
+      )
+      assertEquals(
+        SbtClasspathProtocol.parse(content, request).map(_.entries.map(_.path)),
+        Right(List(archive.toAbsolutePath.normalize()))
+      )
+    finally
+      Files.deleteIfExists(archive)
       Files.deleteIfExists(root)
 
   test("protocol rejects malformed Base64 without interpreting log text"):

@@ -34,7 +34,8 @@ object SbtTastyCompileFailure:
 
 private[sbt_runner] final case class ProcessSbtTastyCompileReceiptAcquirer(
     timeout: FiniteDuration,
-    process: SbtTastyCompileProcess
+    process: SbtTastyCompileProcess,
+    materializer: Option[SbtClasspathMaterializer] = None
 ) extends SbtTastyCompileReceiptAcquirer:
   override def acquire(
       request: SbtTastyCompileRequest
@@ -57,9 +58,16 @@ private[sbt_runner] final case class ProcessSbtTastyCompileReceiptAcquirer(
         SbtTastyCompileInjection.globalSettings(request),
         StandardCharsets.UTF_8
       )
-      process.run(request, globalBase, receiptFile, SbtTastyCompileInjection.Task, timeout) match
+      process.run(request, globalBase, receiptFile, SbtFixedTask.TastyCompileReceipt, timeout) match
         case SbtTastyCompileProcessOutcome.Completed(0) =>
-          readReceipt(receiptFile, request).left.map(SbtTastyCompileFailure.Protocol.apply)
+          readReceipt(receiptFile, request)
+            .flatMap(receipt =>
+              materializer
+                .getOrElse(SbtClasspathMaterializer.forWorkspace(request.workspace))
+                .materialize(receipt, temporaryRoot)
+            )
+            .left
+            .map(SbtTastyCompileFailure.Protocol.apply)
         case SbtTastyCompileProcessOutcome.Completed(exitCode) =>
           Left(
             SbtTastyCompileFailure.Process(
@@ -112,7 +120,7 @@ private[sbt_runner] trait SbtTastyCompileProcess:
       request: SbtTastyCompileRequest,
       globalBase: Path,
       receiptFile: Path,
-      task: String,
+      task: SbtFixedTask,
       timeout: FiniteDuration
   ): SbtTastyCompileProcessOutcome
 
@@ -124,17 +132,17 @@ private final case class ProcessSbtTastyCompileProcess() extends SbtTastyCompile
       request: SbtTastyCompileRequest,
       globalBase: Path,
       receiptFile: Path,
-      task: String,
+      task: SbtFixedTask,
       timeout: FiniteDuration
   ): SbtTastyCompileProcessOutcome =
+    val command = SbtCommandSequence.selected(request.project, task)
     val builder = ProcessBuilder(
       "sbt",
       "-batch",
       "-Dsbt.log.noformat=true",
       "-Dsbt.supershell=false",
       s"-Dsbt.global.base=$globalBase",
-      s"project ${request.project.value}",
-      task
+      command
     ).directory(request.workspace.toFile).redirectErrorStream(false)
     val environment = builder.environment()
     environment.put("SEMANTIC_SCALA_TASTY_RECEIPT", receiptFile.toString)

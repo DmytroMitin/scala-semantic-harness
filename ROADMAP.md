@@ -16,6 +16,9 @@ execution ledger and does not promise delivery dates.
   source artifact and preserves non-selection reasons.
 - A CLI-only bounded post-compile TASTy point-evidence operation with a
   same-request selected-Compile receipt and exact stable Scala 3 child worker.
+- Bounded fixed-task sbt subprocess compatibility proven on sbt 1.12.15 and
+  2.0.6 for selected build oracles, PC classpath acquisition, and the private
+  TASTy receipt.
 - Stable non-causal target-context warnings on sbt-backed dynamic type evidence.
 - Syntax-first FP effect summaries.
 - A CLI-backed stdio MCP server with exactly eight tools.
@@ -96,6 +99,13 @@ execution ledger and does not promise delivery dates.
   closed in current development, but older macro/plugin-heavy stress targets
   still need separate evidence so build shape or ecosystem bitrot is not
   mistaken for semantic compatibility.
+- Preserve the bounded sbt-generation matrix: a disposable sbt 2.0.6
+  multi-project fixture passes selected compile/errors/test, fail-closed
+  unknown-project routing, sbt-backed PC acquisition, and exact-version TASTy;
+  frozen Macro-Paradise sbt 1.12.15 and scala-newtype-compat sbt 2.0.6 plugin
+  rows both pass post-compile typed evidence without inspector plugin replay.
+  This qualifies those rows only and does not establish general sbt 2,
+  build-plugin, or compiler-plugin compatibility.
 - Admit broader compatibility only from concrete version-specific fixtures or
   real projects; do not infer it from the harness implementation language.
 

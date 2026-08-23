@@ -17,7 +17,7 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
 
       assertEquals(result.map(_.entries.map(_.path)), Right(List(classes.toAbsolutePath.normalize())))
       assert(fake.globalSettings.exists(_.contains(SbtClasspathProtocol.Format)))
-      assertEquals(fake.task, Some(SbtClasspathInjection.CompileTask))
+      assertEquals(fake.task, Some(SbtFixedTask.CompileClasspath))
       assert(fake.temporaryRoot.forall(path => !Files.exists(path)))
     finally
       Files.deleteIfExists(classes)
@@ -30,7 +30,7 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
     val request = SbtClasspathRequest(workspace, project("app-2"), SbtClasspathConfiguration.Test)
     try
       assert(ProcessSbtClasspathAcquirer(5.seconds, fake).acquire(request).isRight)
-      assertEquals(fake.task, Some(SbtClasspathInjection.TestTask))
+      assertEquals(fake.task, Some(SbtFixedTask.TestClasspath))
     finally
       Files.deleteIfExists(classes)
       Files.deleteIfExists(workspace)
@@ -108,16 +108,29 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
       Files.deleteIfExists(classes)
       Files.deleteIfExists(workspace)
 
+  test("injection materializes sbt 1 files and sbt 2 virtual references through fileConverter"):
+    val settings = SbtClasspathInjection.GlobalSettings
+
+    assert(settings.contains("xsbti.FileConverter"), clue(settings))
+    assert(settings.contains("xsbti.VirtualFileRef"), clue(settings))
+    assert(settings.contains("Attributed[_]"), clue(settings))
+    assert(settings.contains("fileConverter.value"), clue(settings))
+    assert(settings.contains("toPath(reference)"), clue(settings))
+    assert(settings.contains("case file: java.io.File"), clue(settings))
+    assert(!settings.contains("java.lang.reflect"), clue(settings))
+    assert(!settings.contains(".ivy2"), clue(settings))
+    assert(!settings.contains("coursier"), clue(settings))
+
   private final case class SuccessfulProcess(entry: Path) extends SbtClasspathProcess:
     var globalSettings: Option[String] = None
     var temporaryRoot: Option[Path] = None
-    var task: Option[String] = None
+    var task: Option[SbtFixedTask] = None
 
     override def run(
         request: SbtClasspathRequest,
         globalBase: Path,
         resultFile: Path,
-        selectedTask: String,
+        selectedTask: SbtFixedTask,
         timeout: scala.concurrent.duration.FiniteDuration
     ): SbtClasspathProcessOutcome =
       globalSettings = Some(Files.readString(globalBase.resolve("global.sbt")))
@@ -135,7 +148,9 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
         ),
         StandardCharsets.UTF_8
       )
-      SbtClasspathProcessOutcome.Completed(SbtRunResult(selectedTask, 0, "ignored", ""))
+      SbtClasspathProcessOutcome.Completed(
+        SbtRunResult(selectedTask.selectedTask, 0, "ignored", "")
+      )
 
   private final case class FixedProcess(outcome: SbtClasspathProcessOutcome)
       extends SbtClasspathProcess:
@@ -143,7 +158,7 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
         request: SbtClasspathRequest,
         globalBase: Path,
         resultFile: Path,
-        task: String,
+        task: SbtFixedTask,
         timeout: scala.concurrent.duration.FiniteDuration
     ): SbtClasspathProcessOutcome = outcome
 
@@ -154,7 +169,7 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
         request: SbtClasspathRequest,
         globalBase: Path,
         resultFile: Path,
-        task: String,
+        task: SbtFixedTask,
         timeout: scala.concurrent.duration.FiniteDuration
     ): SbtClasspathProcessOutcome =
       calls += 1

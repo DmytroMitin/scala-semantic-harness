@@ -33,31 +33,28 @@ final case class ProcessSbtRunner() extends SbtRunner:
       project: Option[SbtProjectId],
       targetJava: Option[ValidatedSbtJavaHome]
   ): SbtRunResult =
-    run(projectDir, project, targetJava, "Compile", "compile")
+    run(projectDir, project, targetJava, SbtFixedTask.Compile)
 
   override def test(
       projectDir: Path,
       project: Option[SbtProjectId],
       targetJava: Option[ValidatedSbtJavaHome]
   ): SbtRunResult =
-    run(projectDir, project, targetJava, "Test", "test")
+    run(projectDir, project, targetJava, SbtFixedTask.Test)
 
   private def run(
       projectDir: Path,
       project: Option[SbtProjectId],
       targetJava: Option[ValidatedSbtJavaHome],
-      configuration: String,
-      task: String
+      task: SbtFixedTask
   ): SbtRunResult =
-    val commands = project match
-      case None => List(task)
-      case Some(selected) =>
-        List(s"project ${selected.value}", s"$configuration / $task")
-    val builder = ProcessBuilder((List(
+    val command = SbtCommandSequence.build(project, task)
+    val builder = ProcessBuilder(
       "sbt",
       "-batch",
-      "-Dsbt.log.noformat=true"
-    ) ++ commands)*)
+      "-Dsbt.log.noformat=true",
+      command
+    )
       .directory(projectDir.toFile)
       .redirectErrorStream(false)
 
@@ -76,7 +73,7 @@ final case class ProcessSbtRunner() extends SbtRunner:
     stderrThread.join()
 
     val result = SbtRunResult(
-      command = commands.mkString("; "),
+      command = command,
       exitCode = exitCode,
       stdout = stdoutThread.result,
       stderr = stderrThread.result

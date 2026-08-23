@@ -28,6 +28,13 @@ The requested source is hashed before compilation and again after artifact
 capture and inspection. A byte change produces `SourceChangedDuringRequest`;
 old artifacts are never used after compile failure.
 
+The private receipt is mechanically qualified on sbt 1.12.15 and 2.0.6. It
+uses one fixed selected-project command sequence, classifies Compile success
+through sbt's task-result API rather than console text, and reports
+`CompileFailed` as a domain result. Dependency classpath entries use the
+build's supported file conversion; no virtual-file ID, cache layout, or log is
+used to guess an artifact path.
+
 Candidate `.tasty` files are accepted only under the receipt output directory.
 Symlinks fail closed. The v1 bounds are 512 candidates, 8 MiB per artifact,
 and 64 MiB aggregate. The exact selected artifact is represented by its byte
@@ -63,4 +70,8 @@ use a nonzero exit.
 
 The result proves only the recorded selected-project/source/artifact request.
 It is not whole-workspace atomicity, a live pre-compile query, Scala 2 support,
-or a general compiler-plugin semantic claim.
+or a general compiler-plugin semantic claim. Frozen successful evidence now
+includes Macro-Paradise on sbt 1.12.15 / Scala 3.8.4 and an independent
+scala-newtype-compat plugin consumer on sbt 2.0.6 / Scala 3.7.4, both with
+inspector replay flags false. Two version-specific cases keep the broader
+compiler-plugin dimension evidence-partial.

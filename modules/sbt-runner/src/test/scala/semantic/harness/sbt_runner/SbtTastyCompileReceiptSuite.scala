@@ -129,7 +129,16 @@ class SbtTastyCompileReceiptSuite extends munit.FunSuite:
       assert(settings.contains(SbtTastyCompileProtocol.Format))
       assert(settings.contains("Compile / compile"))
       assert(settings.contains("Compile / classDirectory"))
+      assert(settings.contains("Compile / dependencyClasspath"), clue(settings))
       assert(settings.contains("Compile / sources"))
+      assert(settings.contains("@transient"), clue(settings))
+      assert(settings.contains("compileResult.toEither.isRight"), clue(settings))
+      assert(settings.contains("if (compileSucceeded)"), clue(settings))
+      assert(settings.contains("xsbti.FileConverter"), clue(settings))
+      assert(settings.contains("xsbti.VirtualFileRef"), clue(settings))
+      assert(settings.contains("fileConverter.value"), clue(settings))
+      assert(!settings.contains("sbt.Inc"), clue(settings))
+      assert(!settings.contains("sbt.Value"), clue(settings))
       assert(!settings.contains("scalacOptions"))
       assert(!settings.contains("-Xplugin"))
       assert(!settings.contains("-P:"))
@@ -154,7 +163,7 @@ class SbtTastyCompileReceiptSuite extends munit.FunSuite:
       val result = ProcessSbtTastyCompileReceiptAcquirer(5.seconds, process).acquire(request)
       assertEquals(result.map(_.compileStatus), Right(SbtTastyCompileStatus.Succeeded))
       assertEquals(result.flatMap(_.scalaVersion.toRight("missing")), Right("3.8.4"))
-      assertEquals(process.tasks, List(SbtTastyCompileInjection.Task))
+      assertEquals(process.tasks, List(SbtFixedTask.TastyCompileReceipt))
       assert(process.settings.exists(_.contains(SbtTastyCompileProtocol.Format)))
       assert(process.globalBases.forall(path => !Files.exists(path.getParent)))
     finally
@@ -204,7 +213,7 @@ class SbtTastyCompileReceiptSuite extends munit.FunSuite:
 
   private final case class SuccessfulReceiptProcess(output: Path)
       extends SbtTastyCompileProcess:
-    var tasks = List.empty[String]
+    var tasks = List.empty[SbtFixedTask]
     var settings = List.empty[String]
     var globalBases = List.empty[Path]
 
@@ -212,7 +221,7 @@ class SbtTastyCompileReceiptSuite extends munit.FunSuite:
         request: SbtTastyCompileRequest,
         globalBase: Path,
         receiptFile: Path,
-        task: String,
+        task: SbtFixedTask,
         timeout: scala.concurrent.duration.FiniteDuration
     ): SbtTastyCompileProcessOutcome =
       tasks = tasks :+ task
@@ -236,7 +245,7 @@ class SbtTastyCompileReceiptSuite extends munit.FunSuite:
         request: SbtTastyCompileRequest,
         globalBase: Path,
         receiptFile: Path,
-        task: String,
+        task: SbtFixedTask,
         timeout: scala.concurrent.duration.FiniteDuration
     ): SbtTastyCompileProcessOutcome =
       Files.writeString(receiptFile, SbtTastyCompileProtocol.render(receipt))
@@ -248,6 +257,6 @@ class SbtTastyCompileReceiptSuite extends munit.FunSuite:
         request: SbtTastyCompileRequest,
         globalBase: Path,
         receiptFile: Path,
-        task: String,
+        task: SbtFixedTask,
         timeout: scala.concurrent.duration.FiniteDuration
     ): SbtTastyCompileProcessOutcome = outcome

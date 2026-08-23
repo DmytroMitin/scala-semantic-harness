@@ -127,22 +127,26 @@ object SbtTastyCompileProtocol:
         }
 
 private[sbt_runner] object SbtTastyCompileInjection:
-  val Task = "semanticScalaInternalTastyCompileReceipt"
+  val Task = SbtFixedTask.TastyCompileReceipt.selectedTask
 
   private val Settings =
-    s"""val $Task = taskKey[Unit]("Compile and export one bounded TASTy receipt")
+    SbtInjectedClasspathMaterialization.Settings +
+      s"""@transient val $Task = taskKey[Unit]("Compile and export one bounded TASTy receipt")
        |
        |$Task := {
        |  val compileResult = (Compile / compile).result.value
        |  val selectedScalaVersion = scalaVersion.value
        |  val selectedClassDirectory = (Compile / classDirectory).value.getCanonicalFile
-       |  val selectedFullClasspath = (Compile / fullClasspath).value.map(_.data.getCanonicalFile)
+       |  val converter = fileConverter.value
+       |  val compileSucceeded = compileResult.toEither.isRight
+       |  val selectedDependencyClasspath = if (compileSucceeded) {
+       |    (Compile / dependencyClasspath).value.map(entry =>
+       |      semanticScalaInternalClasspathFile(entry, converter)
+       |    )
+       |  } else Seq.empty[java.io.File]
        |  val selectedSources = (Compile / sources).value.map(_.getCanonicalFile)
        |  val requestedSource = file(sys.env("SEMANTIC_SCALA_TASTY_SOURCE")).getCanonicalFile
-       |  val status = compileResult match {
-       |    case sbt.Inc(_)   => "Failed"
-       |    case sbt.Value(_) => "Succeeded"
-       |  }
+       |  val status = if (compileSucceeded) "Succeeded" else "Failed"
        |  val encoder = java.util.Base64.getEncoder
        |  def encoded(value: String): String =
        |    encoder.encodeToString(value.getBytes(java.nio.charset.StandardCharsets.UTF_8))
@@ -159,7 +163,7 @@ private[sbt_runner] object SbtTastyCompileInjection:
        |      s"scalaVersion\t$${encoded(selectedScalaVersion)}",
        |      s"classDirectory\t$${encoded(selectedClassDirectory.getAbsolutePath)}",
        |      s"sourceIncluded\t$${selectedSources.contains(requestedSource)}",
-       |      s"dependencyClasspath\t$${encoded(selectedFullClasspath.mkString(java.io.File.pathSeparator))}"
+       |      s"dependencyClasspath\t$${encoded(selectedDependencyClasspath.mkString(java.io.File.pathSeparator))}"
        |    ) ++ javaContext
        |  )
        |}

@@ -3,6 +3,7 @@ package semantic.harness.sbt_runner
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Locale
+import java.util.zip.ZipFile
 import semantic.harness.core.SbtProjectIdSyntax
 
 final case class SbtProjectId private (value: String)
@@ -77,10 +78,23 @@ object SbtClasspathEntry:
         if Files.isDirectory(normalized) then Right(entry.copy(path = normalized))
         else Left("acquired Directory entry does not exist as a directory")
       case SbtClasspathEntryKind.Jar =>
-        if Files.isRegularFile(normalized) &&
-            normalized.getFileName.toString.toLowerCase(Locale.ROOT).endsWith(".jar")
+        if Files.isRegularFile(normalized) && isRecognizedJar(normalized)
         then Right(entry.copy(path = normalized))
-        else Left("acquired Jar entry does not exist as a .jar regular file")
+        else Left("acquired Jar entry is not a readable JAR regular file")
+
+  private def isRecognizedJar(path: Path): Boolean =
+    val hasJarExtension = path.getFileName.toString.toLowerCase(Locale.ROOT).endsWith(".jar")
+    hasJarExtension || isReadableArchive(path)
+
+  private def isReadableArchive(path: Path): Boolean =
+    if !Files.isReadable(path) then false
+    else
+      try
+        val archive = ZipFile(path.toFile)
+        try archive.entries()
+        finally archive.close()
+        true
+      catch case _: Exception => false
 
 final case class SbtClasspathResult(
   project: SbtProjectId,

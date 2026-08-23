@@ -19,7 +19,8 @@ object SbtClasspathAcquirer:
 
 private[sbt_runner] final case class ProcessSbtClasspathAcquirer(
     timeout: FiniteDuration,
-    process: SbtClasspathProcess
+    process: SbtClasspathProcess,
+    materializer: Option[SbtClasspathMaterializer] = None
 ) extends SbtClasspathAcquirer:
   override def acquire(
       request: SbtClasspathRequest
@@ -43,13 +44,21 @@ private[sbt_runner] final case class ProcessSbtClasspathAcquirer(
       )
       val task = request.configuration match
         case SbtClasspathConfiguration.Compile =>
-          SbtClasspathInjection.CompileTask
+          SbtFixedTask.CompileClasspath
         case SbtClasspathConfiguration.Test =>
-          SbtClasspathInjection.TestTask
+          SbtFixedTask.TestClasspath
       process.run(request, globalBase, resultFile, task, timeout) match
         case SbtClasspathProcessOutcome.Completed(result) if result.exitCode == 0 =>
           if Files.isRegularFile(resultFile) then
-            SbtClasspathProtocol.parse(Files.readString(resultFile, StandardCharsets.UTF_8), request)
+            SbtClasspathProtocol
+              .parse(Files.readString(resultFile, StandardCharsets.UTF_8), request)
+              .flatMap(result =>
+                materializer
+                  .getOrElse(SbtClasspathMaterializer.forWorkspace(request.workspace))
+                  .materialize(result, temporaryRoot)
+                  .left
+                  .map(SbtClasspathFailure.Protocol.apply)
+              )
           else
             Left(
               SbtClasspathFailure.Protocol(
@@ -115,11 +124,12 @@ private[sbt_runner] final case class ProcessSbtClasspathAcquirer(
       finally paths.close()
 
 private[sbt_runner] object SbtClasspathInjection:
-  val CompileTask = "semanticScalaInternalExportCompileClasspath"
-  val TestTask = "semanticScalaInternalExportTestClasspath"
+  val CompileTask = SbtFixedTask.CompileClasspath.selectedTask
+  val TestTask = SbtFixedTask.TestClasspath.selectedTask
 
   val GlobalSettings: String =
-    """val semanticScalaInternalExportCompileClasspath =
+    SbtInjectedClasspathMaterialization.Settings +
+      """val semanticScalaInternalExportCompileClasspath =
       |  taskKey[Unit]("Export Compile fullClasspath for semantic-scala")
       |val semanticScalaInternalExportTestClasspath =
       |  taskKey[Unit]("Export Test fullClasspath for semantic-scala")
@@ -127,16 +137,18 @@ private[sbt_runner] object SbtClasspathInjection:
       |def semanticScalaInternalWriteClasspath(
       |    projectId: String,
       |    configuration: String,
-      |    classpath: Classpath
+      |    classpath: Classpath,
+      |    converter: xsbti.FileConverter
       |): Unit = {
       |  val encoder = java.util.Base64.getEncoder
       |  def encoded(value: String): String =
       |    encoder.encodeToString(value.getBytes(java.nio.charset.StandardCharsets.UTF_8))
-      |  val entries = classpath.map(_.data).map { entry =>
+      |  val entries = classpath.map(entry =>
+      |    semanticScalaInternalClasspathFile(entry, converter)
+      |  ).map { entry =>
       |    val kind =
       |      if (entry.isDirectory) "Directory"
-      |      else if (entry.isFile &&
-      |          entry.getName.toLowerCase(java.util.Locale.ROOT).endsWith(".jar")) "Jar"
+      |      else if (entry.isFile) "Jar"
       |      else "Unsupported"
       |    s"entry\t$kind\t${encoded(entry.getAbsolutePath)}"
       |  }
@@ -154,7 +166,8 @@ private[sbt_runner] object SbtClasspathInjection:
       |  semanticScalaInternalWriteClasspath(
       |    thisProjectRef.value.project,
       |    "Compile",
-      |    (Compile / fullClasspath).value
+      |    (Compile / fullClasspath).value,
+      |    fileConverter.value
       |  )
       |}
       |
@@ -162,7 +175,8 @@ private[sbt_runner] object SbtClasspathInjection:
       |  semanticScalaInternalWriteClasspath(
       |    thisProjectRef.value.project,
       |    "Test",
-      |    (Test / fullClasspath).value
+      |    (Test / fullClasspath).value,
+      |    fileConverter.value
       |  )
       |}
       |""".stripMargin
@@ -189,7 +203,7 @@ private[sbt_runner] trait SbtClasspathProcess:
       request: SbtClasspathRequest,
       globalBase: Path,
       resultFile: Path,
-      task: String,
+      task: SbtFixedTask,
       timeout: FiniteDuration
   ): SbtClasspathProcessOutcome
 
@@ -201,18 +215,17 @@ private final case class ProcessSbtClasspathProcess() extends SbtClasspathProces
       request: SbtClasspathRequest,
       globalBase: Path,
       resultFile: Path,
-      task: String,
+      task: SbtFixedTask,
       timeout: FiniteDuration
   ): SbtClasspathProcessOutcome =
-    val command = s"project ${request.project.value}; $task"
+    val command = SbtCommandSequence.selected(request.project, task)
     val builder = ProcessBuilder(
       "sbt",
       "-batch",
       "-Dsbt.log.noformat=true",
       "-Dsbt.supershell=false",
       s"-Dsbt.global.base=$globalBase",
-      s"project ${request.project.value}",
-      task
+      command
     )
       .directory(request.workspace.toFile)
       .redirectErrorStream(false)

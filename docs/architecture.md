@@ -53,6 +53,19 @@ private same-request TASTy receipt task. No-selector
 classpath acquisition remains v1-compatible, while explicit-Java acquisition
 uses an isolated strict v2 cache/protocol context.
 
+All three sbt subprocess owners use one closed product-owned command grammar:
+optional validated project selection followed by exactly one fixed task in a
+single sbt command argument. The generated classpath and receipt tasks unwrap
+sbt 1 `Attributed[File]` entries directly and convert sbt 2 virtual references
+with the build's supported `fileConverter`. If sbt 2 materializes a readable
+extensionless CAS JAR inside the request's temporary global base, the harness
+copies those exact bytes to an owner-only SHA-256-named JAR under
+`target/semantic-scala/sbt-materialized-classpath/v1` before deleting the
+temporary base. It does not infer paths from virtual IDs or scan dependency or
+build caches. Existing classpath bounds, evidence, cache identity, and public
+schemas remain authoritative; ordinary workspace build cleanup owns the
+generated materialization area.
+
 ## Packaging boundary
 
 The primary runtime candidate is an exact eight-module thin Maven dependency
@@ -125,8 +138,8 @@ is not a hard JVM wall-clock or memory guarantee.
 - `core`: shared data models and JSON codecs.
 - `cli`: command parsing, orchestration, and JSON rendering.
 - `sbt-runner`: root or validated-project compile/test subprocess integration,
-  shared target-Java validation, v1/v2 classpath acquisition, and the private
-  fixed-Compile TASTy receipt protocol.
+  shared target-Java validation, sbt 1/2 path materialization for v1/v2
+  classpath acquisition, and the private fixed-Compile TASTy receipt protocol.
 - `semanticdb-reader`: artifact inventory, symbols, coverage, and usages.
 - `presentation-compiler`: bounded point and rendered-type queries.
 - `semantic-reconciliation`: dynamic/static symbol comparison.
