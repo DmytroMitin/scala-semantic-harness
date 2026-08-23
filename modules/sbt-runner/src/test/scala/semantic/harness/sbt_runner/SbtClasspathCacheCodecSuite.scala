@@ -18,6 +18,47 @@ class SbtClasspathCacheCodecSuite extends munit.FunSuite:
       assert(String(bytes, StandardCharsets.UTF_8).contains(SbtClasspathCacheRecord.Format))
     finally deleteRecursively(workspace)
 
+  test("selected Java cache record round-trips as strict v2 without storing its path"):
+    val workspace = Files.createTempDirectory("task166-codec-v2")
+    val javaHome = workspace.resolve("private-selected-java")
+    val classes = Files.createDirectory(workspace.resolve("classes"))
+    try
+      val cacheIdentity = identity(
+        workspace,
+        targetJava = Some(selectedJava(javaHome))
+      )
+      val expected = record(cacheIdentity, classes)
+      val bytes = SbtClasspathCacheCodec.encode(expected)
+      val content = String(bytes, StandardCharsets.UTF_8)
+
+      assertEquals(SbtClasspathCacheCodec.decode(bytes, cacheIdentity), Right(expected))
+      assert(content.contains(SbtClasspathCacheRecord.FormatV2))
+      assert(content.contains("\"sbtJavaHomeDigest\""))
+      assert(content.contains("\"sbtJavaRuntimeFingerprint\""))
+      assert(!content.contains(javaHome.toString))
+    finally deleteRecursively(workspace)
+
+  test("selected Java cache rejects an in-place runtime change with a typed mismatch"):
+    val workspace = Files.createTempDirectory("task166-codec-runtime-drift")
+    val classes = Files.createDirectory(workspace.resolve("classes"))
+    try
+      val first = identity(
+        workspace,
+        targetJava = Some(selectedJava(workspace.resolve("jdk"), runtimeFingerprint = "b" * 64))
+      )
+      val changed = identity(
+        workspace,
+        targetJava = Some(selectedJava(workspace.resolve("jdk"), runtimeFingerprint = "c" * 64))
+      )
+      assertEquals(first.storageKey, changed.storageKey)
+
+      val result = SbtClasspathCacheCodec.decode(
+        SbtClasspathCacheCodec.encode(record(first, classes)),
+        changed
+      )
+      assert(result.left.exists(_.isInstanceOf[SbtClasspathCacheFailure.TargetJavaMismatch]))
+    finally deleteRecursively(workspace)
+
   test("codec rejects unsupported marker, unknown fields, and unknown entry kinds"):
     val workspace = Files.createTempDirectory("task071-codec-strict")
     val classes = Files.createDirectory(workspace.resolve("classes"))

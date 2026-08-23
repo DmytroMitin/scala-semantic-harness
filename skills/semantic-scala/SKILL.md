@@ -56,16 +56,16 @@ adapter. The MCP surface is exactly the eight tools named below.
 
 | Question | CLI command | MCP tool | Evidence and limits |
 | --- | --- | --- | --- |
-| Does the project compile? | `compile [--sbt-project <id>] --json` | `semantic_compile` | Root or one validated selected-project invocation; domain `success: false` is a valid compile result. |
-| Do relevant tests pass? | `test [--sbt-project <id>] --json` | `semantic_test` | Root or one validated selected-project test invocation; can execute project test code. |
-| What compiler diagnostics should guide repair? | `errors [--sbt-project <id>] --json` | `semantic_errors` | Structured root or selected-project diagnostics; may rerun compilation. |
+| Does the project compile? | `compile [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json` | `semantic_compile` | Root or one validated selected-project invocation; a known installed alternate JDK may be selected only for target sbt. Domain `success: false` is valid. |
+| Do relevant tests pass? | `test [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json` | `semantic_test` | Root or one validated selected-project test invocation; can execute project test code. |
+| What compiler diagnostics should guide repair? | `errors [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json` | `semantic_errors` | Structured root or selected-project diagnostics; may rerun compilation. |
 | What return wrapper is declared in this file? | `effect-summary --file <scala> --json` | `semantic_effect_summary` | Syntax-first declared return shape and conservative category, not inferred semantics. |
 | What does the presentation compiler report at a point? | `symbol-at --file <scala> --line <n> --col <n> --json` | `semantic_symbol_at` | Dynamic point evidence; rendered or hover-like output is not canonical identity. |
 | What symbols occur in an explicit SemanticDB file? | `symbols --semanticdb <file> --json` | `semantic_symbols` | Static canonical symbol strings and ranges from that file only. |
 | Do dynamic and static symbol evidence agree? | `reconcile-symbol --file <scala> --line <n> --col <n> --semanticdb <file> --json` | `semantic_reconcile_symbol` | Exact or non-exact comparison; preserve the returned status and uncertainty. |
 | What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> --json` | `semantic_point_evidence` | Full discovery, unique-parsed selection only, live result, and completed or typed not-attempted reconciliation. It does not assess freshness. |
 | What type is rendered for an expression? | `infer-type --file <scala> --line <n> --col <n> ... --json` | none | CLI-only presentation-compiler evidence. `Resolved` carries rendered evidence; `Unresolved` is neutral absence. |
-| What types are rendered for a bounded request batch sharing one sbt context? | `infer-type-batch --requests <json> --workspace <dir> --sbt-project <id> --sbt-configuration <name> --json` | none | CLI-only ordered batch; strict bounded input and one shared acquisition. |
+| What types are rendered for a bounded request batch sharing one sbt context? | `infer-type-batch --requests <json> --workspace <dir> --sbt-project <id> --sbt-configuration <name> [--sbt-java-home <absolute-directory>] --json` | none | CLI-only ordered batch; strict bounded input and one shared acquisition. |
 | Which SemanticDB artifacts are available and what factual provenance is recorded? | `semanticdb-status --workspace <dir> --json` | none | CLI-only artifact inventory. Availability is not source coverage. |
 | Which explicit artifacts contain one source? | `semanticdb-for-source --file <scala> --workspace <dir> --json` | none | CLI-only source-to-artifact candidates. Hints are not canonical build-target identity. |
 | What source coverage is present in the inventoried artifacts? | `semanticdb-coverage --workspace <dir> --json` | none | CLI-only factual coverage inventory, not proof of complete build coverage. |
@@ -88,6 +88,13 @@ or automatic semantic invocation.
 
 Approval is request-local. Never assume that MCP initialization, tool
 discovery, or approval for a previous request authorizes later build execution.
+
+Use `--sbt-java-home` only when the target build explicitly requires a known,
+already-installed JDK and that exact child-sbt selection is in scope. It does
+not change the harness JVM, discover or install a JDK, or authorize build
+execution by itself. Omission preserves inherited Java. For sbt-backed type
+queries, selected-JDK cache reuse is isolated from no-selector reuse; never
+replace a typed reuse mismatch with refresh without a new explicit decision.
 
 ## Result interpretation
 
@@ -182,6 +189,10 @@ semantic-scala infer-type --file src/main/scala/example/Service.scala --line 18 
 Report `Resolved` or `Unresolved`, recorded context, warnings, and limitations;
 validate any patch with compile/test.
 
+If this known target requires a different installed JDK, append
+`--sbt-java-home <absolute-directory>` to this sbt-backed form. Do not use the
+flag for narrow-runtime or manual-classpath inference.
+
 ### Effect wrapper
 
 When a method should preserve `F[Option[A]]` rather than flatten or substitute
@@ -213,6 +224,11 @@ that project's fixed ordinary `Compile` scope. The ID must match
 build can execute project/plugin code, resolve
 dependencies, populate caches, and write build outputs. It emits SemanticDB
 only when the checked-in target build is already configured to do so.
+
+When checked-in target metadata also explicitly requires a known installed
+JDK, append `--sbt-java-home <absolute-directory>` to the chosen build command
+or use MCP `sbtJavaHome` on exactly `semantic_compile`, `semantic_errors`, or
+`semantic_test`. Do not infer, download, or globally select a JDK.
 
 After a successful compile, repeat the same status/source lookup or
 `point-evidence` query. Preserve these outcomes separately:

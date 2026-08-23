@@ -12,6 +12,16 @@ or command fragments. Unknown valid projects fail as that bounded invocation;
 they never fall back to the root. A successful selected run is not a
 whole-workspace result.
 
+Both build-oracle execution and classpath acquisition can receive one shared
+validated target Java home. Input is an absolute installed home (a top-level
+SDKMAN-style symlink is allowed and canonicalized), with a contained
+executable platform launcher and bounded launcher/release/version evidence.
+Only the child sbt environment receives canonical `JAVA_HOME` and a leading
+home `bin` entry in `PATH`; unrelated environment and the existing sandbox
+treatment are retained. The parent JVM and global Java state are unchanged.
+No selector performs no probe or extra Java validation, and there is no JDK
+discovery, installation, download, or fallback.
+
 `SbtClasspathAcquirer` accepts an existing workspace, a project ID matching
 `[A-Za-z][A-Za-z0-9_-]*`, and exact configuration `Compile` or `Test`. It
 creates an isolated temporary sbt global base, injects a private task, selects
@@ -46,10 +56,14 @@ acquires/publishes once; reuse validates one exact entry once without sbt.
 The service remains unaware of request items and presentation-compiler
 lifecycle, so no cache operation is repeated per item.
 
-Production storage is outside workspaces at absolute
+No-selector storage remains outside workspaces at absolute
 `$XDG_CACHE_HOME/semantic-scala/sbt-classpath/v1`, or
 `${user.home}/.cache/semantic-scala/sbt-classpath/v1` when no absolute XDG
-root is available. Tests inject their root. POSIX permissions are owner-only
+root is available. Explicit target Java uses the isolated sibling `v2` root
+and strict v2 protocol/cache identity with opaque home/runtime evidence. It
+never reads or migrates v1. Different homes cannot cross-reuse; same-home
+runtime drift fails as a typed mismatch without invoking sbt. Tests inject
+their root. POSIX permissions are owner-only
 where supported. One lock per identity has a 190-second bound; publication
 uses a same-directory owner-only temporary file, force, strict reread, and
 atomic replacement only. Symlinks, malformed/unknown fields, unsupported
@@ -65,8 +79,9 @@ full bytes for every regular file. The documented bounds fail instead of
 silently reducing coverage. Matching evidence does not prove arbitrary sbt
 logic fresh.
 
-The strict private record marker is
-`semantic-scala.internal-sbt-classpath-cache.v1`; it is not a public schema.
+The strict private record markers are
+`semantic-scala.internal-sbt-classpath-cache.v1` for no selector and v2 for
+explicit target Java; neither is a public schema.
 No source contents, environment dumps, secrets, or raw sbt logs are stored.
 Compiler-option/plugin acquisition, BSP/Metals discovery, and an `infer-type`
 MCP tool remain absent.

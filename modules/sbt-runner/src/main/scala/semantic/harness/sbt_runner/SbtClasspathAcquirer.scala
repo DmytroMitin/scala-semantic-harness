@@ -38,7 +38,7 @@ private[sbt_runner] final case class ProcessSbtClasspathAcquirer(
     try
       Files.writeString(
         globalBase.resolve("global.sbt"),
-        SbtClasspathInjection.GlobalSettings,
+        SbtClasspathInjection.globalSettings(request),
         StandardCharsets.UTF_8
       )
       val task = request.configuration match
@@ -167,6 +167,18 @@ private[sbt_runner] object SbtClasspathInjection:
       |}
       |""".stripMargin
 
+  def globalSettings(request: SbtClasspathRequest): String =
+    request.targetJava.fold(GlobalSettings) { selected =>
+      val contextLine =
+        s"      \"javaContext\\t${SbtJavaContext.token(selected)}\""
+      GlobalSettings
+        .replace(SbtClasspathProtocol.Format, SbtClasspathProtocol.FormatV2)
+        .replace(
+          "      s\"configuration\\t$configuration\"",
+          "      s\"configuration\\t$configuration\",\n" + contextLine
+        )
+    }
+
 private[sbt_runner] enum SbtClasspathProcessOutcome:
   case Completed(result: SbtRunResult)
   case TimedOut(stdout: String, stderr: String)
@@ -205,11 +217,15 @@ private final case class ProcessSbtClasspathProcess() extends SbtClasspathProces
       .directory(request.workspace.toFile)
       .redirectErrorStream(false)
     builder.environment().put("SEMANTIC_SCALA_SBT_CLASSPATH_RESULT", resultFile.toString)
+    request.targetJava.foreach(SbtJavaEnvironment.configure(builder.environment(), _))
     SbtSandbox.configure(builder.environment())
 
     Try(builder.start()).toEither match
       case Left(exception) =>
-        SbtClasspathProcessOutcome.FailedToStart(Option(exception.getMessage).getOrElse(""))
+        val message = Option(exception.getMessage).getOrElse("")
+        SbtClasspathProcessOutcome.FailedToStart(
+          request.targetJava.fold(message)(SbtJavaPrivacy.sanitize(message, _))
+        )
       case Right(process) =>
         val stdoutThread = SbtClasspathStreamCollector(process.getInputStream)
         val stderrThread = SbtClasspathStreamCollector(process.getErrorStream)
@@ -221,8 +237,12 @@ private final case class ProcessSbtClasspathProcess() extends SbtClasspathProces
           if !process.waitFor(2, TimeUnit.SECONDS) then process.destroyForcibly()
         stdoutThread.join(5000)
         stderrThread.join(5000)
-        val stdout = stdoutThread.result
-        val stderr = stderrThread.result
+        val stdout = request.targetJava.fold(stdoutThread.result)(
+          SbtJavaPrivacy.sanitize(stdoutThread.result, _)
+        )
+        val stderr = request.targetJava.fold(stderrThread.result)(
+          SbtJavaPrivacy.sanitize(stderrThread.result, _)
+        )
         if completed then
           SbtClasspathProcessOutcome.Completed(
             SbtRunResult(command, process.exitValue(), stdout, stderr)

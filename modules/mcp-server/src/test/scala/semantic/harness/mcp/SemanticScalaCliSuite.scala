@@ -79,6 +79,55 @@ class SemanticScalaCliSuite extends munit.FunSuite:
       )
     }
 
+  test("build-oracle tools forward selected Java but redact it from public metadata"):
+    withTempWorkspace { workspace =>
+      val canonical = Files.createDirectory(workspace.resolve("task166-selected-jdk"))
+      val alias = workspace.resolve("task166-selected-jdk-alias")
+      Files.createSymbolicLink(alias, canonical)
+      val selected = alias.toString
+      val runner = RecordingRunner(
+        successPayload(success = true).copy(stderr = s"warning from $canonical/bin/java")
+      )
+      val result = SemanticScalaCli(Path.of("/tmp/semantic-scala"), runner)
+        .semanticCompile(
+          workspace,
+          Some("core2_13"),
+          Some(selected),
+          ProcessExecution.default
+        )
+
+      assert(result.ok)
+      assertEquals(
+        runner.calls.map(_._1),
+        List(
+          List(
+            "/tmp/semantic-scala",
+            "compile",
+            "--sbt-project",
+            "core2_13",
+            "--sbt-java-home",
+            selected,
+            "--json"
+          )
+        )
+      )
+      assertEquals(
+        result.command,
+        List(
+          "semantic-scala",
+          "compile",
+          "--sbt-project",
+          "core2_13",
+          "--sbt-java-home",
+          "<sbt-java-home>",
+          "--json"
+        )
+      )
+      assert(!result.stderr.contains(selected))
+      assert(!result.stderr.contains(canonical.toString))
+      assert(result.stderr.contains("<sbt-java-home>"))
+    }
+
   test("build-oracle tools reject invalid sbt projects before process launch"):
     withTempWorkspace { workspace =>
       val runner = RecordingRunner(successPayload(success = true))

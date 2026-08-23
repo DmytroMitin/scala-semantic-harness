@@ -71,6 +71,69 @@ class SbtClasspathCacheServiceSuite extends munit.FunSuite:
       deleteRecursively(root)
       deleteRecursively(fixture.root)
 
+  test("selected Java refresh and reuse stay v2 and reuse never invokes sbt"):
+    val fixture = workspaceFixture("task166-service-selected-java")
+    val root = Files.createTempDirectory("task166-service-selected-java-root")
+    val selected = selectedJava(fixture.root.resolve("jdk"))
+    val acquirer = MutableAcquirer(success(fixture.classes))
+    val service = SbtClasspathCacheService.local(
+      acquirer,
+      SbtClasspathCacheStore.local(root)
+    )
+    try
+      val selectedRequest = request(fixture.root, targetJava = Some(selected))
+      val refreshed = service.resolve(selectedRequest, SbtClasspathCacheMode.Refresh)
+      val reused = service.resolve(selectedRequest, SbtClasspathCacheMode.Reuse)
+
+      assert(refreshed.exists(_.result.javaContextToken.contains(SbtJavaContext.token(selected))))
+      assert(reused.exists(_.result.javaContextToken.contains(SbtJavaContext.token(selected))))
+      assertEquals(acquirer.calls, 1)
+      assertEquals(acquirer.requests, List(selectedRequest))
+      assert(Files.isDirectory(root.resolve("v2")))
+      assertEquals(jsonFiles(root), 0)
+      assertEquals(jsonFiles(root.resolve("v2")), 1)
+    finally
+      deleteRecursively(root)
+      deleteRecursively(fixture.root)
+
+  test("selected Java runtime drift is typed and a different home cannot cross-reuse"):
+    val fixture = workspaceFixture("task166-service-java-drift")
+    val root = Files.createTempDirectory("task166-service-java-drift-root")
+    val home = fixture.root.resolve("jdk")
+    val first = selectedJava(home, runtimeFingerprint = "b" * 64)
+    val changedRuntime = selectedJava(home, runtimeFingerprint = "c" * 64)
+    val differentHome = selectedJava(
+      fixture.root.resolve("other-jdk"),
+      homeDigest = "d" * 64,
+      runtimeFingerprint = "e" * 64
+    )
+    val acquirer = MutableAcquirer(success(fixture.classes))
+    val service = SbtClasspathCacheService.local(
+      acquirer,
+      SbtClasspathCacheStore.local(root)
+    )
+    try
+      assert(
+        service
+          .resolve(request(fixture.root, targetJava = Some(first)), SbtClasspathCacheMode.Refresh)
+          .isRight
+      )
+      val runtimeResult = service.resolve(
+        request(fixture.root, targetJava = Some(changedRuntime)),
+        SbtClasspathCacheMode.Reuse
+      )
+      val homeResult = service.resolve(
+        request(fixture.root, targetJava = Some(differentHome)),
+        SbtClasspathCacheMode.Reuse
+      )
+
+      assert(runtimeResult.left.exists(_.isInstanceOf[SbtClasspathCacheFailure.TargetJavaMismatch]))
+      assert(homeResult.left.exists(_.isInstanceOf[SbtClasspathCacheFailure.Missing]))
+      assertEquals(acquirer.calls, 1)
+    finally
+      deleteRecursively(root)
+      deleteRecursively(fixture.root)
+
   test("changed conventional source fails stale and does not invoke sbt"):
     val fixture = workspaceFixture("task071-service-source-drift")
     val root = Files.createTempDirectory("task071-service-source-drift-root")
@@ -248,7 +311,8 @@ class SbtClasspathCacheServiceSuite extends munit.FunSuite:
         SbtClasspathResult(
           requestValue.project,
           requestValue.configuration,
-          List(SbtClasspathEntry(classes, SbtClasspathEntryKind.Directory))
+          List(SbtClasspathEntry(classes, SbtClasspathEntryKind.Directory)),
+          requestValue.targetJava.map(SbtJavaContext.token)
         )
       )
 
@@ -256,11 +320,13 @@ class SbtClasspathCacheServiceSuite extends munit.FunSuite:
       var handler: SbtClasspathRequest => Either[SbtClasspathFailure, SbtClasspathResult]
   ) extends SbtClasspathAcquirer:
     var calls = 0
+    var requests = List.empty[SbtClasspathRequest]
 
     override def acquire(
         request: SbtClasspathRequest
     ): Either[SbtClasspathFailure, SbtClasspathResult] =
       calls += 1
+      requests = requests :+ request
       handler(request)
 
   private def jsonFiles(root: Path): Int =

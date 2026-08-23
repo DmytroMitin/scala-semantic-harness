@@ -6,6 +6,7 @@ import io.circe.Json
 import io.circe.parser.parse
 import io.circe.syntax.*
 import semantic.harness.core.SbtProjectIdSyntax
+import scala.util.Try
 
 final class SemanticScalaMcpServer(cli: SemanticScalaCli):
   import SemanticScalaMcpServer.*
@@ -48,11 +49,11 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
     val params = message.hcursor.downField("params")
     params.downField("name").as[String] match
       case Right(SemanticCompileToolName) =>
-        handleBuildToolCall(id, params, SemanticCompileToolName, (workspace, project) => cli.semanticCompile(workspace, project, execution))
+        handleBuildToolCall(id, params, SemanticCompileToolName, (workspace, project, javaHome) => cli.semanticCompile(workspace, project, javaHome, execution))
       case Right(SemanticErrorsToolName) =>
-        handleBuildToolCall(id, params, SemanticErrorsToolName, (workspace, project) => cli.semanticErrors(workspace, project, execution))
+        handleBuildToolCall(id, params, SemanticErrorsToolName, (workspace, project, javaHome) => cli.semanticErrors(workspace, project, javaHome, execution))
       case Right(SemanticTestToolName) =>
-        handleBuildToolCall(id, params, SemanticTestToolName, (workspace, project) => cli.semanticTest(workspace, project, execution))
+        handleBuildToolCall(id, params, SemanticTestToolName, (workspace, project, javaHome) => cli.semanticTest(workspace, project, javaHome, execution))
       case Right(SemanticEffectSummaryToolName) =>
         handleEffectSummaryToolCall(id, params, execution)
       case Right(SemanticSymbolAtToolName) =>
@@ -72,23 +73,26 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
     id: Json,
     params: io.circe.ACursor,
     toolName: String,
-    run: (Path, Option[String]) => McpToolResult
+    run: (Path, Option[String], Option[String]) => McpToolResult
   ): Json =
     params.downField("arguments").focus match
       case Some(arguments) =>
         buildArguments(arguments) match
           case Left(message) =>
             jsonRpcError(id, JsonRpcErrors.InvalidParams, message)
-          case Right((workspace, sbtProject)) =>
-            jsonRpcResponse(id, toolResult(run(workspace, sbtProject)))
+          case Right((workspace, sbtProject, sbtJavaHome)) =>
+            jsonRpcResponse(id, toolResult(run(workspace, sbtProject, sbtJavaHome)))
       case None =>
         jsonRpcError(id, JsonRpcErrors.InvalidParams, s"Missing arguments for $toolName")
 
-  private def buildArguments(arguments: Json): Either[String, (Path, Option[String])] =
+  private def buildArguments(
+      arguments: Json
+  ): Either[String, (Path, Option[String], Option[String])] =
     for
       workspace <- workspaceArgument(arguments)
       sbtProject <- optionalSbtProjectArgument(arguments)
-    yield (workspace, sbtProject)
+      sbtJavaHome <- optionalSbtJavaHomeArgument(arguments)
+    yield (workspace, sbtProject, sbtJavaHome)
 
   private def optionalSbtProjectArgument(arguments: Json): Either[String, Option[String]] =
     arguments.hcursor.downField("sbtProject").focus match
@@ -102,6 +106,26 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
               .left
               .map(message => s"Invalid sbtProject: $message")
               .map(Some.apply)
+
+  private def optionalSbtJavaHomeArgument(
+      arguments: Json
+  ): Either[String, Option[String]] =
+    arguments.hcursor.downField("sbtJavaHome").focus match
+      case None => Right(None)
+      case Some(value) =>
+        value.asString match
+          case None => Left("Invalid sbtJavaHome: expected string field")
+          case Some(text) =>
+            Try(Path.of(text)).toEither
+              .left
+              .map(_ => "Invalid sbtJavaHome: expected an absolute directory")
+              .flatMap(path =>
+                Either.cond(
+                  text.nonEmpty && path.isAbsolute,
+                  Some(text),
+                  "Invalid sbtJavaHome: expected an absolute directory"
+                )
+              )
 
   private def handleEffectSummaryToolCall(
     id: Json,
@@ -463,6 +487,12 @@ object SemanticScalaMcpServer:
             "pattern" -> Json.fromString(SbtProjectIdSyntax.Pattern),
             "description" -> Json.fromString(
               "Optional validated sbt project ID; compile/errors use Compile and test uses Test."
+            )
+          ),
+          "sbtJavaHome" -> Json.obj(
+            "type" -> Json.fromString("string"),
+            "description" -> Json.fromString(
+              "Optional absolute Java home used only by the child sbt process."
             )
           )
         ),

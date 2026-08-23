@@ -40,6 +40,9 @@ import semantic.harness.sbt_runner.SbtClasspathConfiguration
 import semantic.harness.sbt_runner.SbtClasspathRequest
 import semantic.harness.sbt_runner.SbtProjectId
 import semantic.harness.sbt_runner.SbtRunner
+import semantic.harness.sbt_runner.SbtJavaHomeFailure
+import semantic.harness.sbt_runner.SbtJavaHomeValidator
+import semantic.harness.sbt_runner.ValidatedSbtJavaHome
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import semantic.harness.semanticdb_reader.SemanticdbCoverage
 import semantic.harness.semanticdb_reader.SemanticdbCoverageReport
@@ -154,12 +157,12 @@ object CliApp:
         help(topic)
       case CliCommand.Version =>
         CliResult(Some(Version), None, 0)
-      case CliCommand.Compile(sbtProject, json) =>
-        compile(sbtProject, json, runner, projectDir)
-      case CliCommand.Test(sbtProject, json) =>
-        test(sbtProject, json, runner, projectDir)
-      case CliCommand.Errors(sbtProject, json) =>
-        errors(sbtProject, json, runner, projectDir)
+      case CliCommand.Compile(sbtProject, json, sbtJavaHome) =>
+        compile(sbtProject, sbtJavaHome, json, runner, projectDir)
+      case CliCommand.Test(sbtProject, json, sbtJavaHome) =>
+        test(sbtProject, sbtJavaHome, json, runner, projectDir)
+      case CliCommand.Errors(sbtProject, json, sbtJavaHome) =>
+        errors(sbtProject, sbtJavaHome, json, runner, projectDir)
       case CliCommand.SemanticdbStatus(workspace, schemaVersion, json) =>
         semanticdbStatus(workspace, schemaVersion, json, projectDir)
       case CliCommand.SemanticdbCoverage(workspace, json) =>
@@ -183,7 +186,8 @@ object CliApp:
             sbtProject,
             sbtConfiguration,
             sbtCacheMode,
-            json
+            json,
+            sbtJavaHome
           ) =>
         inferType(
           file,
@@ -194,6 +198,7 @@ object CliApp:
           sbtProject,
           sbtConfiguration,
           sbtCacheMode,
+          sbtJavaHome,
           json,
           cacheService,
           projectDir
@@ -204,7 +209,8 @@ object CliApp:
             sbtProject,
             sbtConfiguration,
             sbtCacheMode,
-            json
+            json,
+            sbtJavaHome
           ) =>
         inferTypeBatch(
           requests,
@@ -212,6 +218,7 @@ object CliApp:
           sbtProject,
           sbtConfiguration,
           sbtCacheMode,
+          sbtJavaHome,
           json,
           cacheService,
           projectDir
@@ -237,53 +244,103 @@ object CliApp:
 
   private def compile(
       sbtProject: Option[SbtProjectId],
+      sbtJavaHome: Option[String],
       json: Boolean,
       runner: SbtRunner,
       projectDir: Path
   ): CliResult =
-    try
-      val report = ReportConverter.compileReport(runner.compile(projectDir, sbtProject))
-      if json then
-        CliResult(Some(report.asJson.noSpaces), None, 0)
-      else
-        CliResult(Some(compileSummary(report)), None, 0)
-    catch
-      case exception: Exception =>
-        CliResult(None, Some(s"Unable to run sbt compile: ${exception.getMessage}"), 1)
+    validatedSbtJavaHome(sbtJavaHome) match
+      case Left(message) => CliResult(None, Some(message), 1)
+      case Right(targetJava) =>
+        try
+          val report = ReportConverter.compileReport(
+            runner.compile(projectDir, sbtProject, targetJava)
+          )
+          if json then
+            CliResult(Some(report.asJson.noSpaces), None, 0)
+          else
+            CliResult(Some(compileSummary(report)), None, 0)
+        catch
+          case exception: Exception =>
+            CliResult(None, Some(s"Unable to run sbt compile: ${safeBuildMessage(exception, targetJava)}"), 1)
 
   private def test(
       sbtProject: Option[SbtProjectId],
+      sbtJavaHome: Option[String],
       json: Boolean,
       runner: SbtRunner,
       projectDir: Path
   ): CliResult =
-    try
-      val report = ReportConverter.testReport(runner.test(projectDir, sbtProject))
-      if json then
-        CliResult(Some(report.asJson.noSpaces), None, 0)
-      else
-        CliResult(Some(testSummary(report)), None, 0)
-    catch
-      case exception: Exception =>
-        CliResult(None, Some(s"Unable to run sbt test: ${exception.getMessage}"), 1)
+    validatedSbtJavaHome(sbtJavaHome) match
+      case Left(message) => CliResult(None, Some(message), 1)
+      case Right(targetJava) =>
+        try
+          val report = ReportConverter.testReport(
+            runner.test(projectDir, sbtProject, targetJava)
+          )
+          if json then
+            CliResult(Some(report.asJson.noSpaces), None, 0)
+          else
+            CliResult(Some(testSummary(report)), None, 0)
+        catch
+          case exception: Exception =>
+            CliResult(None, Some(s"Unable to run sbt test: ${safeBuildMessage(exception, targetJava)}"), 1)
 
   private def errors(
       sbtProject: Option[SbtProjectId],
+      sbtJavaHome: Option[String],
       json: Boolean,
       runner: SbtRunner,
       projectDir: Path
   ): CliResult =
-    try
-      val report = ReportConverter
-        .compileReport(runner.compile(projectDir, sbtProject))
-        .copy(schemaVersion = CompileReport.ErrorsSchemaVersion)
-      if json then
-        CliResult(Some(report.asJson.noSpaces), None, 0)
-      else
-        CliResult(Some(errorsSummary(report)), None, 0)
-    catch
-      case exception: Exception =>
-        CliResult(None, Some(s"Unable to run sbt errors: ${exception.getMessage}"), 1)
+    validatedSbtJavaHome(sbtJavaHome) match
+      case Left(message) => CliResult(None, Some(message), 1)
+      case Right(targetJava) =>
+        try
+          val report = ReportConverter
+            .compileReport(runner.compile(projectDir, sbtProject, targetJava))
+            .copy(schemaVersion = CompileReport.ErrorsSchemaVersion)
+          if json then
+            CliResult(Some(report.asJson.noSpaces), None, 0)
+          else
+            CliResult(Some(errorsSummary(report)), None, 0)
+        catch
+          case exception: Exception =>
+            CliResult(None, Some(s"Unable to run sbt errors: ${safeBuildMessage(exception, targetJava)}"), 1)
+
+  private def validatedSbtJavaHome(
+      raw: Option[String]
+  ): Either[String, Option[ValidatedSbtJavaHome]] =
+    raw match
+      case None => Right(None)
+      case Some(value) =>
+        try
+          SbtJavaHomeValidator.default
+            .validate(Path.of(value))
+            .left
+            .map(SbtJavaHomeFailure.message)
+            .map(Some.apply)
+        catch
+          case _: Exception => Left("--sbt-java-home is not a valid absolute directory")
+
+  private def safeBuildMessage(
+      exception: Exception,
+      targetJava: Option[ValidatedSbtJavaHome]
+  ): String =
+    val initial = Option(exception.getMessage).map(_.trim).filter(_.nonEmpty).getOrElse(
+      exception.getClass.getSimpleName
+    )
+    targetJava.toList
+      .flatMap(selected =>
+        List(
+          selected.launcher.toString,
+          selected.binDirectory.toString,
+          selected.canonicalHome.toString
+        )
+      )
+      .distinct
+      .sortBy(value => -value.length)
+      .foldLeft(initial)((current, path) => current.replace(path, "<sbt-java-home>"))
 
   private def symbols(semanticdb: String, json: Boolean, projectDir: Path): CliResult =
     val path = resolveProjectPath(projectDir, semanticdb)
@@ -386,6 +443,7 @@ object CliApp:
     sbtProject: Option[SbtProjectId],
     sbtConfiguration: Option[SbtClasspathConfiguration],
     sbtCacheMode: Option[SbtClasspathCacheMode],
+    sbtJavaHome: Option[String],
     json: Boolean,
     cacheService: SbtClasspathCacheService,
     projectDir: Path
@@ -394,31 +452,39 @@ object CliApp:
     val workspacePath = workspace.map(resolveProjectPath(projectDir, _))
     (sbtProject, sbtConfiguration) match
       case (Some(project), Some(configuration)) =>
-        val request = SbtClasspathRequest(workspacePath.get, project, configuration)
-        cacheService
-          .resolve(request, sbtCacheMode.getOrElse(SbtClasspathCacheMode.Fresh)) match
-          case Right(resolution) =>
-            val acquired = resolution.result
-            val context = PresentationCompilerContext.explicit(
-              acquired.entries.map(_.path),
-              workspacePath
+        validatedSbtJavaHome(sbtJavaHome) match
+          case Left(message) => CliResult(None, Some(message), 1)
+          case Right(targetJava) =>
+            val request = SbtClasspathRequest(
+              workspacePath.get,
+              project,
+              configuration,
+              targetJava
             )
-            PresentationCompilerService()
-              .inferType(InferTypeRequest(path, line, column, context)) match
-              case Right(result) =>
-                renderInferType(
-                  sbtReport(
-                    result,
-                    acquired.project,
-                    acquired.configuration,
-                    resolution.origin
-                  ),
-                  json
+            cacheService
+              .resolve(request, sbtCacheMode.getOrElse(SbtClasspathCacheMode.Fresh)) match
+              case Right(resolution) =>
+                val acquired = resolution.result
+                val context = PresentationCompilerContext.explicit(
+                  acquired.entries.map(_.path),
+                  workspacePath
                 )
-              case Left(message) =>
-                CliResult(None, Some(message), 1)
-          case Left(failure) =>
-            CliResult(None, Some(SbtClasspathCacheFailure.message(failure)), 1)
+                PresentationCompilerService()
+                  .inferType(InferTypeRequest(path, line, column, context)) match
+                  case Right(result) =>
+                    renderInferType(
+                      sbtReport(
+                        result,
+                        acquired.project,
+                        acquired.configuration,
+                        resolution.origin
+                      ),
+                      json
+                    )
+                  case Left(message) =>
+                    CliResult(None, Some(message), 1)
+              case Left(failure) =>
+                CliResult(None, Some(SbtClasspathCacheFailure.message(failure)), 1)
       case _ =>
         val context =
           if classpathEntries.isEmpty then PresentationCompilerContext(workspace = workspacePath)
@@ -443,6 +509,7 @@ object CliApp:
       project: SbtProjectId,
       configuration: SbtClasspathConfiguration,
       cacheMode: SbtClasspathCacheMode,
+      sbtJavaHome: Option[String],
       json: Boolean,
       cacheService: SbtClasspathCacheService,
       projectDir: Path
@@ -452,56 +519,64 @@ object CliApp:
     readBatchRequest(requestPath) match
       case Left(message) => CliResult(None, Some(message), 1)
       case Right(batchRequest) =>
-        val classpathRequest = SbtClasspathRequest(workspacePath, project, configuration)
-        cacheService.resolve(classpathRequest, cacheMode) match
-          case Left(failure) =>
-            CliResult(None, Some(SbtClasspathCacheFailure.message(failure)), 1)
-          case Right(resolution) =>
-            val acquired = resolution.result
-            val context = PresentationCompilerContext.explicit(
-              acquired.entries.map(_.path),
-              Some(workspacePath)
-            )
-            InferTypeBatchService().infer(
+        validatedSbtJavaHome(sbtJavaHome) match
+          case Left(message) => CliResult(None, Some(message), 1)
+          case Right(targetJava) =>
+            val classpathRequest = SbtClasspathRequest(
               workspacePath,
-              batchRequest.requests,
-              context
-            ) match
-              case Left(message) => CliResult(None, Some(message), 1)
-              case Right(results) =>
-                val (origin, freshness, provenanceWarnings) =
-                  batchProvenance(
-                    acquired.project,
-                    acquired.configuration,
-                    resolution.origin
-                  )
-                val report = InferTypeBatchReport(
-                  requestCount = batchRequest.requests.size,
-                  context = InferTypeContextSummary(
-                    kind = InferTypeContextKind.SbtClasspath,
-                    classpathEntryCount = acquired.entries.size,
-                    workspaceProvided = true,
-                    sbtProject = Some(acquired.project.value),
-                    sbtConfiguration =
-                      Some(SbtClasspathConfiguration.value(acquired.configuration)),
-                    acquisitionOrigin = Some(origin),
-                    freshnessAssessment = Some(freshness)
-                  ),
-                  contextWarnings = List(
-                    "Compiler hover rendering is version-dependent.",
-                    "Compiler hover rendering is not canonical type identity.",
-                    "A compiler hover query does not prove whole-project compilation."
-                  ) ++ provenanceWarnings ++ List(
-                    "Sibling uncompiled or open sources are not modeled.",
-                    "A batch is not an atomic workspace snapshot; each item source is captured once when that item is processed."
-                  ),
-                  results = results
+              project,
+              configuration,
+              targetJava
+            )
+            cacheService.resolve(classpathRequest, cacheMode) match
+              case Left(failure) =>
+                CliResult(None, Some(SbtClasspathCacheFailure.message(failure)), 1)
+              case Right(resolution) =>
+                val acquired = resolution.result
+                val context = PresentationCompilerContext.explicit(
+                  acquired.entries.map(_.path),
+                  Some(workspacePath)
                 )
-                InferTypeBatchReport.encodeBounded(report) match
-                  case Right(encoded) if json => CliResult(Some(encoded), None, 0)
-                  case Right(_) =>
-                    CliResult(None, Some("infer-type-batch requires --json"), 1)
+                InferTypeBatchService().infer(
+                  workspacePath,
+                  batchRequest.requests,
+                  context
+                ) match
                   case Left(message) => CliResult(None, Some(message), 1)
+                  case Right(results) =>
+                    val (origin, freshness, provenanceWarnings) =
+                      batchProvenance(
+                        acquired.project,
+                        acquired.configuration,
+                        resolution.origin
+                      )
+                    val report = InferTypeBatchReport(
+                      requestCount = batchRequest.requests.size,
+                      context = InferTypeContextSummary(
+                        kind = InferTypeContextKind.SbtClasspath,
+                        classpathEntryCount = acquired.entries.size,
+                        workspaceProvided = true,
+                        sbtProject = Some(acquired.project.value),
+                        sbtConfiguration =
+                          Some(SbtClasspathConfiguration.value(acquired.configuration)),
+                        acquisitionOrigin = Some(origin),
+                        freshnessAssessment = Some(freshness)
+                      ),
+                      contextWarnings = List(
+                        "Compiler hover rendering is version-dependent.",
+                        "Compiler hover rendering is not canonical type identity.",
+                        "A compiler hover query does not prove whole-project compilation."
+                      ) ++ provenanceWarnings ++ List(
+                        "Sibling uncompiled or open sources are not modeled.",
+                        "A batch is not an atomic workspace snapshot; each item source is captured once when that item is processed."
+                      ),
+                      results = results
+                    )
+                    InferTypeBatchReport.encodeBounded(report) match
+                      case Right(encoded) if json => CliResult(Some(encoded), None, 0)
+                      case Right(_) =>
+                        CliResult(None, Some("infer-type-batch requires --json"), 1)
+                      case Left(message) => CliResult(None, Some(message), 1)
 
   private def usages(
     workspace: String,
@@ -742,9 +817,9 @@ object CliApp:
       |Usage:
       |  semantic-scala help [command]
       |  semantic-scala version
-      |  semantic-scala compile [--sbt-project <id>] [--json]
-      |  semantic-scala test [--sbt-project <id>] [--json]
-      |  semantic-scala errors [--sbt-project <id>] [--json]
+      |  semantic-scala compile [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+      |  semantic-scala test [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+      |  semantic-scala errors [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
       |  semantic-scala semanticdb-status --workspace <path> [--schema-version v1|v2] [--json]
       |  semantic-scala semanticdb-coverage --workspace <path> [--json]
       |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--json]
@@ -754,8 +829,8 @@ object CliApp:
       |  semantic-scala usages --workspace <path> --manifest <relative.json> --file <relative-source> --line <n> --col <n> --semanticdb <relative-artifact> [selectors] [--json]
       |  semantic-scala symbol-at --file <path> --line <n> --col <n> [--json]
       |  semantic-scala infer-type --file <path> --line <n> --col <n> [--workspace <path>] [--classpath <entry>]... [--json]
-      |  semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--json]
-      |  semantic-scala infer-type-batch --requests <batch-request.json> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] --json
+      |  semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>] [--json]
+      |  semantic-scala infer-type-batch --requests <batch-request.json> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>] --json
       |  semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path> [--json]
       |  semantic-scala effect-summary --file <path> [--json]
       |
@@ -797,34 +872,40 @@ object CliApp:
       case "compile" =>
         Some(
           """Usage:
-            |  semantic-scala compile [--sbt-project <id>] [--json]
+            |  semantic-scala compile [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
             |
             |Without a selector, runs root sbt compile in the current working directory.
             |With --sbt-project, selects one validated sbt project ID matching
             |[A-Za-z][A-Za-z0-9_-]* and runs its fixed Compile / compile scope.
             |A selected-project result proves that bounded invocation, not whole-workspace correctness.
+            |--sbt-java-home validates one installed absolute home and changes only child sbt.
+            |It does not change the harness JVM or discover, download, or install a JDK.
             |""".stripMargin.trim
         )
       case "test" =>
         Some(
           """Usage:
-            |  semantic-scala test [--sbt-project <id>] [--json]
+            |  semantic-scala test [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
             |
             |Without a selector, runs root sbt test in the current working directory.
             |With --sbt-project, selects one validated sbt project ID matching
             |[A-Za-z][A-Za-z0-9_-]* and runs its fixed Test / test scope.
             |A selected-project result proves that bounded invocation, not whole-workspace correctness.
+            |--sbt-java-home validates one installed absolute home and changes only child sbt.
+            |It does not change the harness JVM or discover, download, or install a JDK.
             |""".stripMargin.trim
         )
       case "errors" =>
         Some(
           """Usage:
-            |  semantic-scala errors [--sbt-project <id>] [--json]
+            |  semantic-scala errors [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
             |
             |Temporary behavior: reruns root compile and reports compile diagnostics.
             |With --sbt-project, selects one validated sbt project ID matching
             |[A-Za-z][A-Za-z0-9_-]* and reruns its fixed Compile / compile scope.
             |A selected-project result proves that bounded invocation, not whole-workspace correctness.
+            |--sbt-java-home validates one installed absolute home and changes only child sbt.
+            |It does not change the harness JVM or discover, download, or install a JDK.
             |""".stripMargin.trim
         )
       case "semanticdb-status" =>
@@ -904,7 +985,7 @@ object CliApp:
         Some(
           """Usage:
             |  semantic-scala infer-type --file <path> --line <n> --col <n> [--workspace <path>] [--classpath <entry>]... [--json]
-            |  semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--json]
+            |  semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>] [--json]
             |
             |Queries compiler-rendered hover type/signature evidence at a one-based line and UTF-16 column.
             |Explicit classpath entries are compiled directories or JAR files and do not run a build.
@@ -913,17 +994,21 @@ object CliApp:
             |persistent cache access; refresh runs sbt and atomically replaces one private entry; reuse does
             |not run sbt and requires matching bounded evidence. Matching evidence does not prove arbitrary
             |sbt inputs are fresh.
+            |--sbt-java-home is valid only in sbt mode and selects one installed JDK for child sbt.
+            |Omission preserves inherited Java; no JDK is discovered, downloaded, or installed.
             |""".stripMargin.trim
         )
       case "infer-type-batch" =>
         Some(
           """Usage:
-            |  semantic-scala infer-type-batch --requests <batch-request.json> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] --json
+            |  semantic-scala infer-type-batch --requests <batch-request.json> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>] --json
             |
             |Reads a bounded semantic-scala.infer-type-batch-request.v1 document and returns
             |semantic-scala.infer-type-batch-result.v1. The ordered batch shares exactly one
             |explicit sbt/cache context operation and one sequential presentation-compiler
             |session. Fresh is the default; persistent reuse remains explicit.
+            |--sbt-java-home selects one installed JDK for child sbt only; omission preserves inherited Java.
+            |The harness does not discover, download, install, or globally select a JDK.
             |""".stripMargin.trim
         )
       case "reconcile-symbol" =>

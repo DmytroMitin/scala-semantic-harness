@@ -13,21 +13,37 @@ object SbtClasspathCacheTestSupport:
   def request(
       workspace: Path,
       projectId: String = "app-2",
-      configuration: SbtClasspathConfiguration = SbtClasspathConfiguration.Compile
+      configuration: SbtClasspathConfiguration = SbtClasspathConfiguration.Compile,
+      targetJava: Option[ValidatedSbtJavaHome] = None
   ): SbtClasspathRequest =
-    SbtClasspathRequest(workspace, project(projectId), configuration)
+    SbtClasspathRequest(workspace, project(projectId), configuration, targetJava)
 
   def identity(
       workspace: Path,
       projectId: String = "app-2",
-      configuration: SbtClasspathConfiguration = SbtClasspathConfiguration.Compile
+      configuration: SbtClasspathConfiguration = SbtClasspathConfiguration.Compile,
+      targetJava: Option[ValidatedSbtJavaHome] = None
   ): SbtClasspathCacheIdentity =
     SbtClasspathCacheIdentity
-      .from(request(workspace, projectId, configuration))
+      .from(request(workspace, projectId, configuration, targetJava))
       .fold(
         failure => throw new AssertionError(SbtClasspathCacheFailure.message(failure)),
         value => value
       )
+
+  def selectedJava(
+      home: Path,
+      homeDigest: String = "a" * 64,
+      runtimeFingerprint: String = "b" * 64
+  ): ValidatedSbtJavaHome =
+    val canonical = home.toAbsolutePath.normalize()
+    ValidatedSbtJavaHome(
+      canonicalHome = canonical,
+      binDirectory = canonical.resolve("bin"),
+      launcher = canonical.resolve("bin/java"),
+      sbtJavaHomeDigest = homeDigest,
+      sbtJavaRuntimeFingerprint = runtimeFingerprint
+    )
 
   def record(
       identity: SbtClasspathCacheIdentity,
@@ -37,8 +53,8 @@ object SbtClasspathCacheTestSupport:
       acquiredAt: Long = 1L
   ): SbtClasspathCacheRecord =
     SbtClasspathCacheRecord(
-      format = SbtClasspathCacheRecord.Format,
-      acquisitionProtocol = SbtClasspathProtocol.Format,
+      format = identity.cacheFormat,
+      acquisitionProtocol = identity.acquisitionProtocol,
       identity = identity,
       acquiredAtEpochMillis = acquiredAt,
       inputEvidence = SbtClasspathInputEvidence(

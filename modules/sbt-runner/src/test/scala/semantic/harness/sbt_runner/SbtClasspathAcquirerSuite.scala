@@ -84,6 +84,30 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
     assert(result.left.exists(_.isInstanceOf[SbtClasspathFailure.Validation]))
     assertEquals(process.calls, 0)
 
+  test("explicit Java acquisition uses v2 token without embedding private paths"):
+    val workspace = Files.createTempDirectory("task166-acquirer-v2")
+    val classes = Files.createDirectory(workspace.resolve("classes"))
+    val selected = SbtClasspathCacheTestSupport.selectedJava(workspace.resolve("private-jdk"))
+    val fake = SuccessfulProcess(classes)
+    val request = SbtClasspathRequest(
+      workspace,
+      project("app-2"),
+      SbtClasspathConfiguration.Compile,
+      Some(selected)
+    )
+    try
+      val result = ProcessSbtClasspathAcquirer(5.seconds, fake).acquire(request)
+
+      assert(result.isRight, clue(result))
+      val settings = fake.globalSettings.getOrElse(fail("missing generated settings"))
+      assert(settings.contains(SbtClasspathProtocol.FormatV2), clue(settings))
+      assert(settings.contains(SbtJavaContext.token(selected)), clue(settings))
+      assert(!settings.contains(selected.canonicalHome.toString), clue(settings))
+      assertEquals(result.toOption.flatMap(_.javaContextToken), Some(SbtJavaContext.token(selected)))
+    finally
+      Files.deleteIfExists(classes)
+      Files.deleteIfExists(workspace)
+
   private final case class SuccessfulProcess(entry: Path) extends SbtClasspathProcess:
     var globalSettings: Option[String] = None
     var temporaryRoot: Option[Path] = None
@@ -105,7 +129,8 @@ class SbtClasspathAcquirerSuite extends munit.FunSuite:
           SbtClasspathResult(
             request.project,
             request.configuration,
-            List(SbtClasspathEntry(entry, SbtClasspathEntryKind.Directory))
+            List(SbtClasspathEntry(entry, SbtClasspathEntryKind.Directory)),
+            request.targetJava.map(SbtJavaContext.token)
           )
         ),
         StandardCharsets.UTF_8

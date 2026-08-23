@@ -14,13 +14,13 @@ semantic-scala version
 semantic-scala --version
 semantic-scala compile
 semantic-scala compile --json
-semantic-scala compile --sbt-project <id> --json
+semantic-scala compile [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json
 semantic-scala test
 semantic-scala test --json
-semantic-scala test --sbt-project <id> --json
+semantic-scala test [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json
 semantic-scala errors
 semantic-scala errors --json
-semantic-scala errors --sbt-project <id> --json
+semantic-scala errors [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json
 semantic-scala semanticdb-status --workspace <path>
 semantic-scala semanticdb-status --workspace <path> --json
 semantic-scala semanticdb-status --workspace <path> --schema-version v1 --json
@@ -39,9 +39,9 @@ semantic-scala symbol-at --file <path> --line <n> --col <n>
 semantic-scala symbol-at --file <path> --line <n> --col <n> --json
 semantic-scala infer-type --file <path> --line <n> --col <n> [--workspace <path>] [--classpath <entry>]...
 semantic-scala infer-type --file <path> --line <n> --col <n> [--workspace <path>] [--classpath <entry>]... --json
-semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse]
-semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] --json
-semantic-scala infer-type-batch --requests <path> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] --json
+semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>]
+semantic-scala infer-type --file <path> --line <n> --col <n> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>] --json
+semantic-scala infer-type-batch --requests <path> --workspace <path> --sbt-project <id> --sbt-configuration Compile|Test [--sbt-cache-mode fresh|refresh|reuse] [--sbt-java-home <absolute-directory>] --json
 semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path>
 semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path> --json
 semantic-scala effect-summary --file <path>
@@ -56,6 +56,17 @@ it and runs fixed `Test / test`. The ID is not an sbt command, task,
 configuration, or scope expression. Invalid IDs are rejected before sbt;
 unknown valid IDs fail without root fallback. Success describes only the
 selected bounded invocation, not the aggregate workspace.
+
+Exactly the sbt-backed forms above accept `--sbt-java-home`. Its value must be
+an absolute installed Java home with a contained executable platform launcher;
+a top-level SDKMAN-style symlink is canonicalized before use. A bounded fixed
+`java -version` probe runs before target sbt. The validated home is applied
+only to the child sbt process through `JAVA_HOME` and a leading `PATH` entry,
+after which existing sandbox settings still apply. The parent harness runtime,
+shell, SDKMAN state, and global Java configuration are unchanged. There is no
+automatic JDK discovery, download, installation, or fallback. Invalid homes
+are validation failures rather than compile failures, and raw home/probe data
+is excluded from public results.
 
 `compile` and `test` run `sbt -batch` in the current working directory.
 `errors` temporarily reruns compile and returns the resulting compile report.
@@ -158,6 +169,13 @@ bounded content evidence for every acquired entry, and atomically replaces the
 private exact-key record. `reuse` requires that record and exact matching
 covered evidence; it does not run sbt. No failure silently falls back to a
 previous context.
+
+Without `--sbt-java-home`, acquisition and persistent reuse remain exactly on
+the existing v1 protocol/cache path, including reuse of existing v1 records
+and no additional Java probe. An explicit selected home uses an isolated
+strict v2 context keyed by opaque home and runtime evidence. It never reads or
+rewrites v1. Different canonical homes cannot cross-reuse; if a Java runtime
+changes in place, explicit `reuse` fails closed and never invokes sbt.
 
 The private cache is per-user and outside workspaces. Conventional coverage is
 root `*.sbt`, `project/`, and nested
@@ -628,10 +646,11 @@ semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb 
 semantic-scala point-evidence --workspace . --file <path> --line <n> --col <n> --json
 ```
 
-For the first three tools, optional MCP string input `sbtProject` maps to CLI
-`--sbt-project`. It uses the same strict project-ID policy and fixed scopes.
-The field is absent from tools 4-8, and the ordered registry remains exactly
-eight tools.
+For the first three tools, optional MCP string inputs `sbtProject` and
+`sbtJavaHome` map only to CLI `--sbt-project` and `--sbt-java-home`. They use
+the same strict project-ID and absolute-home policies. Both fields are absent
+from tools 4-8, and the ordered registry remains exactly eight tools. Public
+MCP command metadata redacts the selected Java home.
 
 The adapter parses stdout as the authoritative CLI JSON payload. It requires
 `semantic-scala.compile-result.v1` for `semantic_compile` and

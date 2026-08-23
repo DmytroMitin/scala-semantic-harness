@@ -35,6 +35,29 @@ class SbtClasspathCacheStoreSuite extends munit.FunSuite:
       deleteRecursively(root)
       deleteRecursively(workspace)
 
+  test("selected Java records use an isolated v2 namespace"):
+    val workspace = Files.createTempDirectory("task166-store-workspace")
+    val root = Files.createTempDirectory("task166-store-root")
+    val classes = Files.createDirectory(workspace.resolve("classes"))
+    try
+      val v1 = identity(workspace)
+      val v2 = identity(
+        workspace,
+        targetJava = Some(selectedJava(workspace.resolve("jdk")))
+      )
+      val store = SbtClasspathCacheStore.local(root, 1.second)
+
+      assert(store.withLock(v1)(_.publish(record(v1, classes))).isRight)
+      assert(store.withLock(v2)(_.publish(record(v2, classes))).isRight)
+
+      assert(Files.isRegularFile(root.resolve(s"${v1.storageKey}.json")))
+      assert(Files.isRegularFile(root.resolve("v2").resolve(s"${v2.storageKey}.json")))
+      assertEquals(store.withLock(v1)(_.read(v1)), Right(record(v1, classes)))
+      assertEquals(store.withLock(v2)(_.read(v2)), Right(record(v2, classes)))
+    finally
+      deleteRecursively(root)
+      deleteRecursively(workspace)
+
   test("missing record and record symlink fail closed"):
     val workspace = Files.createTempDirectory("task071-store-missing")
     val root = Files.createTempDirectory("task071-store-missing-root")

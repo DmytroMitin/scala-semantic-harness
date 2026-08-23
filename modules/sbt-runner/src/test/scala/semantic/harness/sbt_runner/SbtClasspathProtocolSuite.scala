@@ -101,6 +101,36 @@ class SbtClasspathProtocolSuite extends munit.FunSuite:
       assert(SbtClasspathProtocol.parse(content, request).isLeft)
     finally Files.deleteIfExists(root)
 
+  test("explicit Java classpath protocol uses v2 and requires the exact opaque context token"):
+    val root = Files.createTempDirectory("task166-protocol-v2")
+    val directory = Files.createDirectory(root.resolve("classes"))
+    val selected = SbtClasspathCacheTestSupport.selectedJava(root.resolve("jdk"))
+    val request = SbtClasspathRequest(
+      root,
+      project("app-2"),
+      SbtClasspathConfiguration.Compile,
+      Some(selected)
+    )
+    val expected = SbtClasspathResult(
+      request.project,
+      request.configuration,
+      List(SbtClasspathEntry(directory, SbtClasspathEntryKind.Directory)),
+      javaContextToken = Some(SbtJavaContext.token(selected))
+    )
+    try
+      val rendered = SbtClasspathProtocol.render(expected)
+      assert(rendered.startsWith(SbtClasspathProtocol.FormatV2 + "\n"), clue(rendered))
+      assertEquals(SbtClasspathProtocol.parse(rendered, request), Right(expected))
+      assert(
+        SbtClasspathProtocol
+          .parse(rendered.replace(SbtJavaContext.token(selected), "f" * 64), request)
+          .isLeft
+      )
+      assert(SbtClasspathProtocol.parse(rendered, request.copy(targetJava = None)).isLeft)
+    finally
+      Files.deleteIfExists(directory)
+      Files.deleteIfExists(root)
+
   private def protocol(
       request: SbtClasspathRequest,
       entries: List[SbtClasspathEntry]

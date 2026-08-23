@@ -41,6 +41,15 @@ exactly, but that narrow result does not establish general Scala 2 syntax,
 classpath, macro, compiler-plugin, or project compatibility. Composition
 inherits the limits of every evidence source it uses.
 
+The harness runtime remains supported on JDK 21. Its five existing sbt-backed
+CLI forms can explicitly select one already-installed target Java home for the
+child sbt process. The shared selector validates and probes that home, sets
+only child `JAVA_HOME`/`PATH`, and never discovers or installs a JDK. The two
+existing sbt process owners remain build-oracle execution and classpath
+acquisition; selection does not create a third execution model. No-selector
+classpath acquisition remains v1-compatible, while explicit-Java acquisition
+uses an isolated strict v2 cache/protocol context.
+
 ## Packaging boundary
 
 The primary runtime candidate is an exact eight-module thin Maven dependency
@@ -109,7 +118,8 @@ is not a hard JVM wall-clock or memory guarantee.
 
 - `core`: shared data models and JSON codecs.
 - `cli`: command parsing, orchestration, and JSON rendering.
-- `sbt-runner`: root or validated-project compile/test subprocess integration.
+- `sbt-runner`: root or validated-project compile/test subprocess integration,
+  shared target-Java validation, and v1/v2 classpath acquisition.
 - `semanticdb-reader`: artifact inventory, symbols, coverage, and usages.
 - `presentation-compiler`: bounded point and rendered-type queries.
 - `semantic-reconciliation`: dynamic/static symbol comparison.

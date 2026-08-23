@@ -11,11 +11,13 @@ semantic-scala infer-type --file <path> --line <n> --col <n> \
 semantic-scala infer-type --file <path> --line <n> --col <n> \
   --workspace <path> --sbt-project <id> \
   --sbt-configuration Compile|Test \
-  [--sbt-cache-mode fresh|refresh|reuse] --json
+  [--sbt-cache-mode fresh|refresh|reuse] \
+  [--sbt-java-home <absolute-directory>] --json
 semantic-scala infer-type-batch --requests <batch-request.json> \
   --workspace <path> --sbt-project <id> \
   --sbt-configuration Compile|Test \
-  [--sbt-cache-mode fresh|refresh|reuse] --json
+  [--sbt-cache-mode fresh|refresh|reuse] \
+  [--sbt-java-home <absolute-directory>] --json
 ```
 
 Line and column inputs are one-based for CLI ergonomics. The implementation
@@ -49,6 +51,13 @@ use `FreshSbt` / `FreshBySbtEvaluation`; explicit evidence-validated reuse uses
 `CachedExplicitReuse` / `ReusedWithMatchingEvidence`. Those optional fields
 preserve historical v1 decoding and remain absent in narrow/manual context.
 No cache path, hash, timestamp, or age is public.
+
+An explicit `--sbt-java-home` selects an already-installed Java only for the
+target sbt child used to acquire the classpath. No selector keeps the existing
+v1 acquisition/cache behavior. Explicit selection uses an isolated v2 context
+so it cannot reuse no-selector or other-home records. The presentation
+compiler module still sees only ordinary classpath entries; the selected home
+and bounded probe evidence are not public context fields.
 
 Public JSON schema `semantic-scala.infer-type-result.v1` reports `Resolved` or
 neutral `Unresolved`, rendering kind (`ExpressionType`, `SymbolSignature`,

@@ -4,6 +4,8 @@ import io.circe.parser.decode
 import io.circe.parser.parse
 import io.circe.syntax.*
 import java.nio.file.Path
+import java.nio.file.attribute.PosixFilePermission
+import java.util.EnumSet
 import java.nio.file.Files
 import semantic.harness.semanticdb_reader.SemanticdbForSource
 import semantic.harness.semanticdb_reader.SemanticdbForSourceReport
@@ -48,6 +50,7 @@ import semantic.harness.sbt_runner.SbtClasspathFailure
 import semantic.harness.sbt_runner.SbtClasspathRequest
 import semantic.harness.sbt_runner.SbtClasspathResult
 import semantic.harness.sbt_runner.SbtProjectId
+import semantic.harness.sbt_runner.ValidatedSbtJavaHome
 import scala.meta.internal.semanticdb.TextDocument
 import scala.meta.internal.semanticdb.TextDocuments
 
@@ -144,6 +147,50 @@ class CliJsonSuite extends munit.FunSuite:
     assert(result.stderr.exists(_.contains("sbt project ID must start with a letter")))
     assertEquals(runner.compileProjects, Nil)
     assertEquals(runner.testProjects, Nil)
+
+  test("build-oracle selected Java is validated once and forwarded without public path leakage"):
+    val home = fakeJavaHome("task166-cli-java-home")
+    val alias = home.resolveSibling(s"${home.getFileName}-current")
+    Files.createSymbolicLink(alias, home)
+    val runner = FakeSbtRunner()
+    try
+      val result = CliApp.run(
+        List(
+          "compile",
+          "--sbt-project",
+          "core2_13",
+          "--sbt-java-home",
+          alias.toString,
+          "--json"
+        ),
+        runner,
+        Path.of(".")
+      )
+
+      assertEquals(result.exitCode, 0)
+      assertEquals(runner.compileProjects, List(Some(project("core2_13"))))
+      assertEquals(
+        runner.compileJavaHomes.map(_.map(_.canonicalHome)),
+        List(Some(home.toRealPath()))
+      )
+      assert(!result.stdout.exists(_.contains(alias.toString)))
+      assert(!result.stdout.exists(_.contains(home.toString)))
+    finally
+      Files.deleteIfExists(alias)
+      deleteFakeJavaHome(home)
+
+  test("invalid build-oracle Java home fails before runner invocation without echoing its path"):
+    val runner = FakeSbtRunner()
+    val missing = Path.of("/tmp/task166-definitely-missing-java-home")
+    val result = CliApp.run(
+      List("compile", "--sbt-java-home", missing.toString, "--json"),
+      runner,
+      Path.of(".")
+    )
+
+    assertEquals(result.exitCode, 1)
+    assertEquals(runner.compileProjects, Nil)
+    assert(!result.stderr.exists(_.contains(missing.toString)))
 
   test("point-evidence --json returns the versioned composed report for a contained source"):
     val workspace = Files.createTempDirectory("cli-point-evidence")
@@ -810,6 +857,46 @@ class CliJsonSuite extends munit.FunSuite:
     )
     assert(!stdout.contains(acquiredPath.toString))
 
+  test("infer-type validates and forwards selected Java without exposing its path"):
+    val javaHome = fakeJavaHome("task166-cli-infer-java-")
+    val cacheService = FakeSbtClasspathCacheService(
+      Left(SbtClasspathCacheFailure.Missing("selected cache deliberately absent"))
+    )
+    try
+      val result = CliApp.run(
+        List(
+          "infer-type",
+          "--file",
+          "Main.scala",
+          "--line",
+          "1",
+          "--col",
+          "1",
+          "--workspace",
+          ".",
+          "--sbt-project",
+          "app-2",
+          "--sbt-configuration",
+          "Compile",
+          "--sbt-java-home",
+          javaHome.toString,
+          "--json"
+        ),
+        FakeSbtRunner(),
+        FakeSbtClasspathAcquirer(Left(SbtClasspathFailure.Process("must not launch directly"))),
+        cacheService,
+        Path.of(".")
+      )
+
+      assertEquals(result.exitCode, 1)
+      assertEquals(cacheService.calls, 1)
+      assertEquals(
+        cacheService.requests.flatMap(_.targetJava).map(_.canonicalHome),
+        List(javaHome.toRealPath())
+      )
+      assert(!result.stderr.getOrElse("").contains(javaHome.toString))
+    finally deleteFakeJavaHome(javaHome)
+
   test("infer-type keeps acquisition failure separate from semantic unresolved"):
     val acquirer = FakeSbtClasspathAcquirer(
       Left(SbtClasspathFailure.Process("bounded acquisition failure"))
@@ -969,6 +1056,51 @@ class CliJsonSuite extends munit.FunSuite:
       assert(!stdout.contains(acquiredPath.toString))
       assert(!stdout.contains(System.getProperty("user.home")))
     finally Files.deleteIfExists(requestPath)
+
+  test("infer-type-batch validates and forwards selected Java once"):
+    val requestPath = Files.createTempFile(Path.of("target"), "task166-cli-batch-java-", ".json")
+    val javaHome = fakeJavaHome("task166-cli-batch-java-home-")
+    val cacheService = FakeSbtClasspathCacheService(
+      Left(SbtClasspathCacheFailure.Missing("selected cache deliberately absent"))
+    )
+    try
+      Files.writeString(
+        requestPath,
+        InferTypeBatchRequest(
+          requests = List(InferTypeBatchRequestItem("one", "Main.scala", 1, 1))
+        ).asJson.noSpaces
+      )
+      val result = CliApp.run(
+        List(
+          "infer-type-batch",
+          "--requests",
+          requestPath.toString,
+          "--workspace",
+          ".",
+          "--sbt-project",
+          "app-2",
+          "--sbt-configuration",
+          "Compile",
+          "--sbt-java-home",
+          javaHome.toString,
+          "--json"
+        ),
+        FakeSbtRunner(),
+        FakeSbtClasspathAcquirer(Left(SbtClasspathFailure.Process("must not launch directly"))),
+        cacheService,
+        Path.of(".")
+      )
+
+      assertEquals(result.exitCode, 1)
+      assertEquals(cacheService.calls, 1)
+      assertEquals(
+        cacheService.requests.flatMap(_.targetJava).map(_.canonicalHome),
+        List(javaHome.toRealPath())
+      )
+      assert(!result.stderr.getOrElse("").contains(javaHome.toString))
+    finally
+      Files.deleteIfExists(requestPath)
+      deleteFakeJavaHome(javaHome)
 
   test("infer-type-batch structural failures happen before context acquisition with no JSON"):
     val requestPath = Files.createTempFile(Path.of("target"), "task072-cli-invalid-batch-", ".json")
@@ -1214,13 +1346,25 @@ class CliJsonSuite extends munit.FunSuite:
   ) extends SbtRunner:
     var compileProjects = List.empty[Option[SbtProjectId]]
     var testProjects = List.empty[Option[SbtProjectId]]
+    var compileJavaHomes = List.empty[Option[ValidatedSbtJavaHome]]
+    var testJavaHomes = List.empty[Option[ValidatedSbtJavaHome]]
 
-    override def compile(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
+    override def compile(
+        projectDir: Path,
+        project: Option[SbtProjectId],
+        targetJava: Option[ValidatedSbtJavaHome]
+    ): SbtRunResult =
       compileProjects = compileProjects :+ project
+      compileJavaHomes = compileJavaHomes :+ targetJava
       compileResult
 
-    override def test(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
+    override def test(
+        projectDir: Path,
+        project: Option[SbtProjectId],
+        targetJava: Option[ValidatedSbtJavaHome]
+    ): SbtRunResult =
       testProjects = testProjects :+ project
+      testJavaHomes = testJavaHomes :+ targetJava
       testResult
 
   private final case class FakeSbtClasspathAcquirer(
@@ -1239,6 +1383,7 @@ class CliJsonSuite extends munit.FunSuite:
   ) extends SbtClasspathCacheService:
     var calls = 0
     var modes = List.empty[SbtClasspathCacheMode]
+    var requests = List.empty[SbtClasspathRequest]
 
     override def resolve(
         request: SbtClasspathRequest,
@@ -1246,7 +1391,30 @@ class CliJsonSuite extends munit.FunSuite:
     ): Either[SbtClasspathCacheFailure, SbtClasspathCacheResolution] =
       calls += 1
       modes = modes :+ mode
+      requests = requests :+ request
       result
 
   private def project(value: String): SbtProjectId =
     SbtProjectId.parse(value).fold(message => fail(message), identity)
+
+  private def fakeJavaHome(prefix: String): Path =
+    val home = Files.createTempDirectory(prefix)
+    val bin = Files.createDirectory(home.resolve("bin"))
+    val launcher = bin.resolve("java")
+    Files.writeString(launcher, "#!/bin/sh\nprintf 'fake-java 25\\n' >&2\n")
+    Files.setPosixFilePermissions(
+      launcher,
+      EnumSet.of(
+        PosixFilePermission.OWNER_READ,
+        PosixFilePermission.OWNER_WRITE,
+        PosixFilePermission.OWNER_EXECUTE
+      )
+    )
+    Files.writeString(home.resolve("release"), "JAVA_VERSION=\"25\"\n")
+    home
+
+  private def deleteFakeJavaHome(home: Path): Unit =
+    Files.deleteIfExists(home.resolve("release"))
+    Files.deleteIfExists(home.resolve("bin/java"))
+    Files.deleteIfExists(home.resolve("bin"))
+    Files.deleteIfExists(home)

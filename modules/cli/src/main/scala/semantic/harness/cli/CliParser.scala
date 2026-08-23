@@ -6,6 +6,8 @@ import semantic.harness.sbt_runner.SbtProjectId
 import semantic.harness.semanticdb_reader.UsagesCliTarget
 import semantic.harness.semanticdb_reader.UsagesPublicSelectors
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
+import scala.util.Try
 
 object CliParser:
   def parse(args: List[String]): ParseResult =
@@ -186,10 +188,11 @@ object CliParser:
   private def parseBuildCommand(
     commandName: String,
     args: List[String],
-    build: (Option[SbtProjectId], Boolean) => CliCommand
+    build: (Option[SbtProjectId], Boolean, Option[String]) => CliCommand
   ): ParseResult =
     final case class Options(
       sbtProject: Option[SbtProjectId] = None,
+      sbtJavaHome: Option[String] = None,
       json: Boolean = false,
       jsonSeen: Boolean = false
     )
@@ -209,11 +212,33 @@ object CliParser:
               .left
               .map(message => s"Invalid --sbt-project for $commandName: $message")
               .flatMap(project => loop(tail, options.copy(sbtProject = Some(project))))
+        case "--sbt-java-home" :: value :: tail if !value.startsWith("--") =>
+          if options.sbtJavaHome.nonEmpty then
+            Left(s"Option may only be supplied once for $commandName: --sbt-java-home")
+          else
+            validateAbsoluteJavaHome(value, commandName)
+              .flatMap(validated => loop(tail, options.copy(sbtJavaHome = Some(validated))))
         case other => Left(s"Invalid arguments for $commandName: ${other.mkString(" ")}")
 
     loop(args, Options()) match
-      case Right(options) => ParseResult.Parsed(build(options.sbtProject, options.json))
+      case Right(options) =>
+        ParseResult.Parsed(build(options.sbtProject, options.json, options.sbtJavaHome))
       case Left(message)  => ParseResult.Invalid(message)
+
+  private def validateAbsoluteJavaHome(
+      value: String,
+      commandName: String
+  ): Either[String, String] =
+    Try(Path.of(value)).toEither
+      .left
+      .map(_ => s"Invalid --sbt-java-home for $commandName: expected an absolute directory")
+      .flatMap(path =>
+        Either.cond(
+          value.nonEmpty && path.isAbsolute,
+          value,
+          s"Invalid --sbt-java-home for $commandName: expected an absolute directory"
+        )
+      )
 
   private def parseSymbols(args: List[String]): ParseResult =
     args match
@@ -347,6 +372,7 @@ object CliParser:
       sbtProject: Option[SbtProjectId] = None,
       sbtConfiguration: Option[SbtClasspathConfiguration] = None,
       sbtCacheMode: Option[SbtClasspathCacheMode] = None,
+      sbtJavaHome: Option[String] = None,
       json: Boolean = false
     )
 
@@ -399,6 +425,11 @@ object CliParser:
               .left
               .map(message => s"Invalid --sbt-cache-mode for infer-type: $message")
               .flatMap(mode => loop(tail, options.copy(sbtCacheMode = Some(mode))))
+        case "--sbt-java-home" :: value :: tail if !value.startsWith("--") =>
+          if options.sbtJavaHome.nonEmpty then duplicate("--sbt-java-home")
+          else
+            validateAbsoluteJavaHome(value, "infer-type")
+              .flatMap(validated => loop(tail, options.copy(sbtJavaHome = Some(validated))))
         case other =>
           Left(s"Invalid arguments for infer-type: ${other.mkString(" ")}")
 
@@ -418,6 +449,10 @@ object CliParser:
           case (None, None) if options.sbtCacheMode.nonEmpty =>
             Left(
               "--sbt-cache-mode requires --workspace, --sbt-project, and --sbt-configuration"
+            )
+          case (None, None) if options.sbtJavaHome.nonEmpty =>
+            Left(
+              "--sbt-java-home requires --workspace, --sbt-project, and --sbt-configuration"
             )
           case _ =>
             Right(())
@@ -439,7 +474,8 @@ object CliParser:
                     options.sbtProject.map(_ =>
                       options.sbtCacheMode.getOrElse(SbtClasspathCacheMode.Fresh)
                     ),
-                  json = options.json
+                  json = options.json,
+                  sbtJavaHome = options.sbtJavaHome
                 )
               }
             }
@@ -457,6 +493,7 @@ object CliParser:
         sbtProject: Option[SbtProjectId] = None,
         sbtConfiguration: Option[SbtClasspathConfiguration] = None,
         sbtCacheMode: Option[SbtClasspathCacheMode] = None,
+        sbtJavaHome: Option[String] = None,
         json: Boolean = false
     )
 
@@ -501,6 +538,11 @@ object CliParser:
               .left
               .map(message => s"Invalid --sbt-cache-mode for infer-type-batch: $message")
               .flatMap(mode => loop(tail, options.copy(sbtCacheMode = Some(mode))))
+        case "--sbt-java-home" :: value :: tail if !value.startsWith("--") =>
+          if options.sbtJavaHome.nonEmpty then duplicate("--sbt-java-home")
+          else
+            validateAbsoluteJavaHome(value, "infer-type-batch")
+              .flatMap(validated => loop(tail, options.copy(sbtJavaHome = Some(validated))))
         case other =>
           Left(s"Invalid arguments for infer-type-batch: ${other.mkString(" ")}")
 
@@ -526,7 +568,8 @@ object CliParser:
               project,
               configuration,
               options.sbtCacheMode.getOrElse(SbtClasspathCacheMode.Fresh),
-              json = true
+              json = true,
+              sbtJavaHome = options.sbtJavaHome
             )
           )
         case _ =>

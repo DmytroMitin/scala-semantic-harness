@@ -50,7 +50,12 @@ class CliParserSuite extends munit.FunSuite:
       val result = CliApp.run(List("help", command))
       assertEquals(result.exitCode, 0)
       val text = result.stdout.getOrElse(fail(s"missing help for $command"))
-      assert(text.contains(s"semantic-scala $command [--sbt-project <id>] [--json]"), clue(text))
+      assert(
+        text.contains(
+          s"semantic-scala $command [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]"
+        ),
+        clue(text)
+      )
       assert(text.contains(scope), clue(text))
       assert(text.contains("validated sbt project ID"), clue(text))
       assert(text.contains("not whole-workspace correctness"), clue(text))
@@ -79,6 +84,37 @@ class CliParserSuite extends munit.FunSuite:
       CliParser.parse(List("test", "--sbt-project", "tests_2")),
       ParseResult.Parsed(CliCommand.Test(Some(project("tests_2")), false))
     )
+
+  test("build-oracle commands accept one absolute sbt Java home and reject unsafe forms"):
+    List("compile", "errors", "test").foreach { command =>
+      val parsed = CliParser.parse(
+        List(command, "--sbt-java-home", "/opt/jdks/target", "--json")
+      )
+      assert(parsed match
+        case ParseResult.Parsed(CliCommand.Compile(_, _, Some(value))) =>
+          value == "/opt/jdks/target"
+        case ParseResult.Parsed(CliCommand.Errors(_, _, Some(value))) =>
+          value == "/opt/jdks/target"
+        case ParseResult.Parsed(CliCommand.Test(_, _, Some(value))) =>
+          value == "/opt/jdks/target"
+        case _ => false
+      , clue(parsed))
+
+      val relative = CliParser.parse(
+        List(command, "--sbt-java-home", "relative/jdk", "--json")
+      )
+      val duplicate = CliParser.parse(
+        List(
+          command,
+          "--sbt-java-home",
+          "/opt/jdks/one",
+          "--sbt-java-home",
+          "/opt/jdks/two"
+        )
+      )
+      assert(relative.isInstanceOf[ParseResult.Invalid], clue(relative))
+      assert(duplicate.isInstanceOf[ParseResult.Invalid], clue(duplicate))
+    }
 
   test("rejects invalid and duplicate sbt projects for build-oracle commands"):
     List("compile", "errors", "test").foreach { command =>
@@ -278,6 +314,53 @@ class CliParserSuite extends munit.FunSuite:
       )
     }
     assert(CliParser.parse(base).toString.contains("Some(Fresh)"))
+
+  test("target Java selection is accepted only for sbt-backed infer-type commands"):
+    val home = Path.of("/opt/task166-jdk")
+    val infer = List(
+      "infer-type",
+      "--file",
+      "Main.scala",
+      "--line",
+      "1",
+      "--col",
+      "1",
+      "--workspace",
+      ".",
+      "--sbt-project",
+      "app-2",
+      "--sbt-configuration",
+      "Compile"
+    )
+    val batch = List(
+      "infer-type-batch",
+      "--requests",
+      "batch.json",
+      "--workspace",
+      ".",
+      "--sbt-project",
+      "app-2",
+      "--sbt-configuration",
+      "Compile",
+      "--json"
+    )
+
+    assert(
+      CliParser.parse(infer ++ List("--sbt-java-home", home.toString)).toString
+        .contains(s"Some(${home.toString})")
+    )
+    assert(
+      CliParser.parse(batch ++ List("--sbt-java-home", home.toString)).toString
+        .contains(s"Some(${home.toString})")
+    )
+    List(
+      infer.take(7) ++ List("--sbt-java-home", home.toString),
+      infer ++ List("--sbt-java-home", "relative-jdk"),
+      infer ++ List("--sbt-java-home", home.toString, "--sbt-java-home", home.toString),
+      batch ++ List("--sbt-java-home", "relative-jdk")
+    ).foreach(args =>
+      assert(CliParser.parse(args).isInstanceOf[ParseResult.Invalid], clue(args))
+    )
 
   test("rejects cache mode without sbt context, unsupported values, and duplicates"):
     val query = List(

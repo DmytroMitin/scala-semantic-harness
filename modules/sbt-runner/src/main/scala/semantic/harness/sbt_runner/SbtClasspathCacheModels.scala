@@ -36,7 +36,9 @@ final case class SbtClasspathCacheIdentity(
   workspaceDigest: String,
   project: SbtProjectId,
   configuration: SbtClasspathConfiguration,
-  storageKey: String
+  storageKey: String,
+  sbtJavaHomeDigest: Option[String] = None,
+  sbtJavaRuntimeFingerprint: Option[String] = None
 )
 
 object SbtClasspathCacheIdentity:
@@ -51,21 +53,31 @@ object SbtClasspathCacheIdentity:
         try
           val canonicalWorkspace = validated.workspace.toRealPath()
           val workspaceDigest = sha256(canonicalWorkspace.toString.getBytes(StandardCharsets.UTF_8))
+          val cacheFormat = validated.targetJava.fold(SbtClasspathCacheRecord.Format)(_ =>
+            SbtClasspathCacheRecord.FormatV2
+          )
+          val acquisitionProtocol = validated.targetJava.fold(SbtClasspathProtocol.Format)(_ =>
+            SbtClasspathProtocol.FormatV2
+          )
           val keyFields = List(
-            SbtClasspathCacheRecord.Format,
-            SbtClasspathProtocol.Format,
+            cacheFormat,
+            acquisitionProtocol,
             workspaceDigest,
             validated.project.value,
             SbtClasspathConfiguration.value(validated.configuration)
-          )
+          ) ++ validated.targetJava.toList.map(_.sbtJavaHomeDigest)
           Right(
             SbtClasspathCacheIdentity(
-              cacheFormat = SbtClasspathCacheRecord.Format,
-              acquisitionProtocol = SbtClasspathProtocol.Format,
+              cacheFormat = cacheFormat,
+              acquisitionProtocol = acquisitionProtocol,
               workspaceDigest = workspaceDigest,
               project = validated.project,
               configuration = validated.configuration,
-              storageKey = sha256(SbtClasspathDigest.lengthDelimited(keyFields))
+              storageKey = sha256(SbtClasspathDigest.lengthDelimited(keyFields)),
+              sbtJavaHomeDigest = validated.targetJava.map(_.sbtJavaHomeDigest),
+              sbtJavaRuntimeFingerprint = validated.targetJava.map(
+                _.sbtJavaRuntimeFingerprint
+              )
             )
           )
         catch
@@ -119,6 +131,7 @@ final case class SbtClasspathCacheRecord(
 
 object SbtClasspathCacheRecord:
   val Format = "semantic-scala.internal-sbt-classpath-cache.v1"
+  val FormatV2 = "semantic-scala.internal-sbt-classpath-cache.v2"
 
 enum SbtClasspathCacheResolutionOrigin:
   case FreshSbt
@@ -132,6 +145,7 @@ final case class SbtClasspathCacheResolution(
 enum SbtClasspathCacheFailure:
   case Missing(message: String)
   case Invalid(message: String)
+  case TargetJavaMismatch(message: String)
   case StaleEvidence(category: String)
   case EvidenceBoundsExceeded(message: String)
   case LockTimeout(message: String)
@@ -144,6 +158,7 @@ object SbtClasspathCacheFailure:
     failure match
       case SbtClasspathCacheFailure.Missing(message) => message
       case SbtClasspathCacheFailure.Invalid(message) => message
+      case SbtClasspathCacheFailure.TargetJavaMismatch(message) => message
       case SbtClasspathCacheFailure.StaleEvidence(category) =>
         s"Cached sbt classpath $category evidence no longer matches the selected " +
           "workspace/project/configuration; rerun with --sbt-cache-mode refresh."

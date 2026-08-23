@@ -79,8 +79,8 @@ private[sbt_runner] final case class DefaultSbtClasspathCacheService(
               )
           entries <- evidence.collectEntries(acquired.entries)
           record = SbtClasspathCacheRecord(
-            format = SbtClasspathCacheRecord.Format,
-            acquisitionProtocol = SbtClasspathProtocol.Format,
+            format = identity.cacheFormat,
+            acquisitionProtocol = identity.acquisitionProtocol,
             identity = identity,
             acquiredAtEpochMillis = currentTimeMillis(),
             inputEvidence = after,
@@ -118,7 +118,8 @@ private[sbt_runner] final case class DefaultSbtClasspathCacheService(
           result = SbtClasspathResult(
             project = identity.project,
             configuration = identity.configuration,
-            entries = cachedEntries
+            entries = cachedEntries,
+            javaContextToken = validated.targetJava.map(SbtJavaContext.token)
           )
         yield SbtClasspathCacheResolution(
           result,

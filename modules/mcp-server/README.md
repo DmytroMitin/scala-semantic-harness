@@ -86,7 +86,8 @@ Tool input:
 ```json
 {
   "workspace": "/path/to/project",
-  "sbtProject": "core2_13"
+  "sbtProject": "core2_13",
+  "sbtJavaHome": "/absolute/path/to/installed-jdk"
 }
 ```
 
@@ -98,6 +99,8 @@ Behavior:
 - runs the configured CLI as argv, not through a shell;
 - uses `workspace` as the process working directory;
 - accepts optional `sbtProject` matching `^[A-Za-z][A-Za-z0-9_-]*$`;
+- accepts optional absolute `sbtJavaHome`, mapped only to CLI
+  `--sbt-java-home`; public wrapper command metadata redacts its value;
 - without it, runs exactly `semantic-scala compile --json`;
 - with it, runs `semantic-scala compile --sbt-project <id> --json`, which
   selects the project's fixed ordinary `Compile` scope;
@@ -112,7 +115,8 @@ Tool input:
 ```json
 {
   "workspace": "/path/to/project",
-  "sbtProject": "core2_13"
+  "sbtProject": "core2_13",
+  "sbtJavaHome": "/absolute/path/to/installed-jdk"
 }
 ```
 
@@ -124,6 +128,8 @@ Behavior:
 - runs the configured CLI as argv, not through a shell;
 - uses `workspace` as the process working directory;
 - accepts optional `sbtProject` matching `^[A-Za-z][A-Za-z0-9_-]*$`;
+- accepts the same optional absolute `sbtJavaHome` child-sbt selector and
+  redaction policy as `semantic_compile`;
 - without it, runs exactly `semantic-scala errors --json`;
 - with it, runs `semantic-scala errors --sbt-project <id> --json`, which
   reruns the project's fixed ordinary `Compile` scope;
@@ -138,7 +144,8 @@ Tool input:
 ```json
 {
   "workspace": "/path/to/project",
-  "sbtProject": "someProject"
+  "sbtProject": "someProject",
+  "sbtJavaHome": "/absolute/path/to/installed-jdk"
 }
 ```
 
@@ -150,6 +157,8 @@ Behavior:
 - runs the configured CLI as argv, not through a shell;
 - uses `workspace` as the process working directory;
 - accepts optional `sbtProject` matching `^[A-Za-z][A-Za-z0-9_-]*$`;
+- accepts the same optional absolute `sbtJavaHome` child-sbt selector and
+  redaction policy as `semantic_compile`;
 - without it, runs exactly `semantic-scala test --json`;
 - with it, runs `semantic-scala test --sbt-project <id> --json`, which selects
   the project's fixed ordinary `Test` scope;

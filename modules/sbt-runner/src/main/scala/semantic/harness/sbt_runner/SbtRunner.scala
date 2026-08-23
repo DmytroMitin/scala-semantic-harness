@@ -13,22 +13,39 @@ final case class SbtRunResult(
 )
 
 trait SbtRunner:
-  def compile(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult
-  def test(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult
+  def compile(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome]
+  ): SbtRunResult
+  def test(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome]
+  ): SbtRunResult
 
 object SbtRunner:
   val default: SbtRunner = ProcessSbtRunner()
 
 final case class ProcessSbtRunner() extends SbtRunner:
-  override def compile(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
-    run(projectDir, project, "Compile", "compile")
+  override def compile(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome]
+  ): SbtRunResult =
+    run(projectDir, project, targetJava, "Compile", "compile")
 
-  override def test(projectDir: Path, project: Option[SbtProjectId]): SbtRunResult =
-    run(projectDir, project, "Test", "test")
+  override def test(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome]
+  ): SbtRunResult =
+    run(projectDir, project, targetJava, "Test", "test")
 
   private def run(
       projectDir: Path,
       project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome],
       configuration: String,
       task: String
   ): SbtRunResult =
@@ -44,6 +61,7 @@ final case class ProcessSbtRunner() extends SbtRunner:
       .directory(projectDir.toFile)
       .redirectErrorStream(false)
 
+    targetJava.foreach(SbtJavaEnvironment.configure(builder.environment(), _))
     SbtSandbox.configure(builder.environment())
 
     val process = builder.start()
@@ -57,11 +75,21 @@ final case class ProcessSbtRunner() extends SbtRunner:
     stdoutThread.join()
     stderrThread.join()
 
-    SbtRunResult(
+    val result = SbtRunResult(
       command = commands.mkString("; "),
       exitCode = exitCode,
       stdout = stdoutThread.result,
       stderr = stderrThread.result
+    )
+    targetJava.fold(result)(selected => sanitizeSelectedJava(result, selected))
+
+  private def sanitizeSelectedJava(
+      result: SbtRunResult,
+      selected: ValidatedSbtJavaHome
+  ): SbtRunResult =
+    result.copy(
+      stdout = SbtJavaPrivacy.sanitize(result.stdout, selected),
+      stderr = SbtJavaPrivacy.sanitize(result.stderr, selected)
     )
 
 private[sbt_runner] object SbtSandbox:

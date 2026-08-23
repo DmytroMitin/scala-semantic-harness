@@ -7,6 +7,8 @@ execution ledger and does not promise delivery dates.
 
 - Scala 3 multi-module build with structured CLI reports.
 - Compile, test, and diagnostic build-oracle commands.
+- Explicit installed target-JDK selection for the five sbt-backed CLI forms,
+  with JDK 21 retained as the harness runtime and no automatic acquisition.
 - SemanticDB inventory, coverage, symbols, and bounded usages.
 - Presentation Compiler symbol and rendered-type queries.
 - Static/dynamic symbol reconciliation.
@@ -31,10 +33,11 @@ execution ledger and does not promise delivery dates.
    alone is not adoption value.
 3. Invite early technical feedback on the experimental source alpha and use
    real installation and project cases to guide maintenance.
-4. Preserve the two maintained real Scala 2.13 project matrices and the narrow
-   alpha-3 SNAPSHOT project selector admitted from their evidence. Continue to
-   treat a selected row as bounded build evidence, not whole-workspace success
-   or automatic project-matrix discovery.
+4. Preserve the maintained real-project matrices and the narrow alpha-3
+   SNAPSHOT project and target-JDK selectors admitted from their evidence.
+   Continue to treat a selected row/runtime as bounded build evidence, not
+   whole-workspace success, automatic project discovery, or general alternate
+   JDK support.
 5. Admit new semantic capabilities only from concrete user, adoption,
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.

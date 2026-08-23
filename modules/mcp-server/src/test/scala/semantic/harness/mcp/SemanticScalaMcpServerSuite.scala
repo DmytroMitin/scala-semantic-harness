@@ -68,11 +68,20 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
         tool.hcursor.downField("inputSchema").downField("properties").downField("sbtProject").downField("type").as[String].toOption,
         Some("string")
       )
+      assertEquals(
+        tool.hcursor.downField("inputSchema").downField("properties").downField("sbtJavaHome").downField("type").as[String].toOption,
+        Some("string")
+      )
     }
 
     tools.drop(3).foreach { tool =>
       assertEquals(
         tool.hcursor.downField("inputSchema").downField("properties").downField("sbtProject").focus,
+        None,
+        clue(tool)
+      )
+      assertEquals(
+        tool.hcursor.downField("inputSchema").downField("properties").downField("sbtJavaHome").focus,
         None,
         clue(tool)
       )
@@ -204,6 +213,43 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       assertEquals(wrapper.hcursor.downField("ok").as[Boolean].toOption, Some(true))
       assertEquals(wrapper.hcursor.downField("payload").downField("success").as[Boolean].toOption, Some(true))
       assertEquals(wrapper.hcursor.downField("payload").downField("schemaVersion").as[String].toOption, Some(SemanticScalaCli.CompileSchemaVersion))
+    }
+
+  test("build tools admit one absolute sbtJavaHome and reject unsafe transport values before launch"):
+    withTempWorkspace { workspace =>
+      val selected = Path.of("/private/task166-selected-jdk")
+      val runner = RecordingRunner(successPayload(success = true))
+      val server = SemanticScalaMcpServer(SemanticScalaCli(Path.of("semantic-scala"), runner))
+      val accepted = responseJson(
+        server,
+        s"""{"jsonrpc":"2.0","id":166,"method":"tools/call","params":{"name":"semantic_compile","arguments":{"workspace":"${workspace.toString}","sbtJavaHome":"${selected.toString}"}}}"""
+      )
+      val acceptedWrapper = structuredContent(accepted)
+
+      assertEquals(
+        runner.calls.map(_._1),
+        List(List("semantic-scala", "compile", "--sbt-java-home", selected.toString, "--json"))
+      )
+      assertEquals(
+        acceptedWrapper.hcursor.downField("command").as[List[String]].toOption,
+        Some(List("semantic-scala", "compile", "--sbt-java-home", "<sbt-java-home>", "--json"))
+      )
+
+      val invalid = List(
+        "\"relative-jdk\"",
+        "17"
+      )
+      invalid.zipWithIndex.foreach { case (value, index) =>
+        val response = responseJson(
+          server,
+          s"""{"jsonrpc":"2.0","id":${167 + index},"method":"tools/call","params":{"name":"semantic_compile","arguments":{"workspace":"${workspace.toString}","sbtJavaHome":$value}}}"""
+        )
+        assertEquals(
+          response.hcursor.downField("error").downField("code").as[Int].toOption,
+          Some(-32602)
+        )
+      }
+      assertEquals(runner.calls.size, 1)
     }
 
   test("tools/call returns ok true for compile failure payload"):

@@ -130,9 +130,10 @@ private[sbt_runner] final case class LocalSbtClasspathCacheStore(
       operation: SbtClasspathLockedCache => Either[SbtClasspathCacheFailure, A]
   ): Either[SbtClasspathCacheFailure, A] =
     root.resolve().flatMap { resolvedRoot =>
-      ensureRoot(resolvedRoot).flatMap { _ =>
-        val lockPath = resolvedRoot.resolve(s"${identity.storageKey}.lock")
-        val recordPath = resolvedRoot.resolve(s"${identity.storageKey}.json")
+      val selectedRoot = cacheFormatRoot(resolvedRoot, identity.cacheFormat)
+      ensureRoot(selectedRoot).flatMap { _ =>
+        val lockPath = selectedRoot.resolve(s"${identity.storageKey}.lock")
+        val recordPath = selectedRoot.resolve(s"${identity.storageKey}.json")
         if Files.isSymbolicLink(lockPath) then
           Left(
             SbtClasspathCacheFailure.Invalid(
@@ -150,6 +151,13 @@ private[sbt_runner] final case class LocalSbtClasspathCacheStore(
           }
       }
     }
+
+  private def cacheFormatRoot(resolvedRoot: Path, format: String): Path =
+    if format == SbtClasspathCacheRecord.FormatV2 then
+      if Option(resolvedRoot.getFileName).exists(_.toString == "v1") then
+        resolvedRoot.resolveSibling("v2")
+      else resolvedRoot.resolve("v2")
+    else resolvedRoot
 
   private def ensureRoot(path: Path): Either[SbtClasspathCacheFailure, Unit] =
     try

@@ -7,14 +7,16 @@ import scala.util.Try
 
 object SbtClasspathProtocol:
   val Format = "semantic-scala.internal-sbt-classpath.v1"
+  val FormatV2 = "semantic-scala.internal-sbt-classpath.v2"
 
   def parse(
       content: String,
       request: SbtClasspathRequest
   ): Either[SbtClasspathFailure.Protocol, SbtClasspathResult] =
     val lines = content.linesIterator.toList
+    val expectedFormat = request.targetJava.fold(Format)(_ => FormatV2)
     lines match
-      case format :: projectLine :: configurationLine :: entryLines if format == Format =>
+      case format :: projectLine :: configurationLine :: remaining if format == expectedFormat =>
         for
           projectText <- field(projectLine, "project")
           project <- decode(projectText, "project")
@@ -35,29 +37,52 @@ object SbtClasspathProtocol:
                     s"received '${SbtClasspathConfiguration.value(configuration)}'"
                 )
               )
+          tokenAndEntries <- parseJavaContext(remaining, request)
+          (javaContextToken, entryLines) = tokenAndEntries
           entries <- parseEntries(entryLines)
           normalized <- normalizeAndValidate(entries)
           _ <-
             if normalized.nonEmpty then Right(())
             else Left(protocol("acquired classpath contained no entries"))
-        yield SbtClasspathResult(request.project, request.configuration, normalized)
+        yield SbtClasspathResult(
+          request.project,
+          request.configuration,
+          normalized,
+          javaContextToken
+        )
       case Nil =>
         Left(protocol("result file was empty"))
-      case format :: _ if format != Format =>
+      case format :: _ if format != expectedFormat =>
         Left(protocol(s"unexpected protocol marker '$format'"))
       case _ =>
         Left(protocol("result file did not contain the required header fields"))
 
   def render(result: SbtClasspathResult): String =
     val header = List(
-      Format,
+      result.javaContextToken.fold(Format)(_ => FormatV2),
       s"project\t${encode(result.project.value)}",
       s"configuration\t${SbtClasspathConfiguration.value(result.configuration)}"
-    )
+    ) ++ result.javaContextToken.toList.map(value => s"javaContext\t$value")
     val entries = result.entries.map { entry =>
       s"entry\t${SbtClasspathEntryKind.value(entry.kind)}\t${encode(entry.path.toString)}"
     }
     (header ++ entries).mkString("", "\n", "\n")
+
+  private def parseJavaContext(
+      lines: List[String],
+      request: SbtClasspathRequest
+  ): Either[SbtClasspathFailure.Protocol, (Option[String], List[String])] =
+    request.targetJava match
+      case None => Right((None, lines))
+      case Some(selected) =>
+        lines match
+          case contextLine :: entries =>
+            field(contextLine, "javaContext").flatMap { received =>
+              val expected = SbtJavaContext.token(selected)
+              if received == expected then Right((Some(expected), entries))
+              else Left(protocol("target Java context mismatch"))
+            }
+          case Nil => Left(protocol("missing target Java context field"))
 
   private def parseEntries(
       lines: List[String]

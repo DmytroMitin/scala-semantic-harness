@@ -5,6 +5,7 @@ import java.nio.file.Path
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import scala.util.control.NonFatal
+import scala.util.Try
 
 import io.circe.Json
 import io.circe.parser.parse
@@ -37,10 +38,19 @@ final case class SemanticScalaCli(
       sbtProject: Option[String],
       execution: ProcessExecution
   ): McpToolResult =
+    semanticCompile(workspace, sbtProject, None, execution)
+
+  def semanticCompile(
+      workspace: Path,
+      sbtProject: Option[String],
+      sbtJavaHome: Option[String],
+      execution: ProcessExecution
+  ): McpToolResult =
     runSelectedBuildJsonTool(
       workspace,
       "compile",
       sbtProject,
+      sbtJavaHome,
       SemanticScalaCli.CompileSchemaVersion,
       execution
     )
@@ -59,10 +69,19 @@ final case class SemanticScalaCli(
       sbtProject: Option[String],
       execution: ProcessExecution
   ): McpToolResult =
+    semanticErrors(workspace, sbtProject, None, execution)
+
+  def semanticErrors(
+      workspace: Path,
+      sbtProject: Option[String],
+      sbtJavaHome: Option[String],
+      execution: ProcessExecution
+  ): McpToolResult =
     runSelectedBuildJsonTool(
       workspace,
       "errors",
       sbtProject,
+      sbtJavaHome,
       SemanticScalaCli.ErrorsSchemaVersion,
       execution
     )
@@ -81,10 +100,19 @@ final case class SemanticScalaCli(
       sbtProject: Option[String],
       execution: ProcessExecution
   ): McpToolResult =
+    semanticTest(workspace, sbtProject, None, execution)
+
+  def semanticTest(
+      workspace: Path,
+      sbtProject: Option[String],
+      sbtJavaHome: Option[String],
+      execution: ProcessExecution
+  ): McpToolResult =
     runSelectedBuildJsonTool(
       workspace,
       "test",
       sbtProject,
+      sbtJavaHome,
       SemanticScalaCli.TestSchemaVersion,
       execution
     )
@@ -314,32 +342,47 @@ final case class SemanticScalaCli(
       workspace: Path,
       commandName: String,
       sbtProject: Option[String],
+      sbtJavaHome: Option[String],
       expectedSchemaVersion: String,
       execution: ProcessExecution
   ): McpToolResult =
-    sbtProject match
-      case None =>
-        runBuildJsonTool(
+    val validatedProject = sbtProject match
+      case None => Right(None)
+      case Some(value) => SbtProjectIdSyntax.validate(value).map(Some.apply)
+    val validatedJavaHome = sbtJavaHome match
+      case None => Right(None)
+      case Some(value) =>
+        Try(Path.of(value)).toEither
+          .left
+          .map(_ => "Invalid sbtJavaHome: expected an absolute directory")
+          .flatMap(path =>
+            Either.cond(
+              value.nonEmpty && path.isAbsolute,
+              Some(value),
+              "Invalid sbtJavaHome: expected an absolute directory"
+            )
+          )
+    (validatedProject, validatedJavaHome) match
+      case (Left(message), _) =>
+        validationFailure(
+          cliCommand(SemanticScalaCli.buildArgs(commandName, None, None)),
+          workspace.toAbsolutePath.normalize(),
+          message
+        )
+      case (_, Left(message)) =>
+        validationFailure(
+          cliCommand(SemanticScalaCli.buildArgs(commandName, None, None)),
+          workspace.toAbsolutePath.normalize(),
+          message
+        )
+      case (Right(project), Right(javaHome)) =>
+        val result = runBuildJsonTool(
           workspace,
-          SemanticScalaCli.buildArgs(commandName, None),
+          SemanticScalaCli.buildArgs(commandName, project, javaHome),
           expectedSchemaVersion,
           execution
         )
-      case Some(value) =>
-        SbtProjectIdSyntax.validate(value) match
-          case Left(message) =>
-            validationFailure(
-              cliCommand(SemanticScalaCli.buildArgs(commandName, None)),
-              workspace.toAbsolutePath.normalize(),
-              message
-            )
-          case Right(validated) =>
-            runBuildJsonTool(
-              workspace,
-              SemanticScalaCli.buildArgs(commandName, Some(validated)),
-              expectedSchemaVersion,
-              execution
-            )
+        redactSelectedJava(result, javaHome)
 
   private def cliCommand(args: List[String]): List[String] =
     cliPath.toString :: args
@@ -504,7 +547,34 @@ final case class SemanticScalaCli(
     )
 
   private def publicCommand(command: List[String]): List[String] =
-    "semantic-scala" :: command.drop(1)
+    def redact(values: List[String]): List[String] =
+      values match
+        case "--sbt-java-home" :: _ :: tail =>
+          "--sbt-java-home" :: "<sbt-java-home>" :: redact(tail)
+        case head :: tail => head :: redact(tail)
+        case Nil => Nil
+    "semantic-scala" :: redact(command.drop(1))
+
+  private def redactSelectedJava(
+      result: McpToolResult,
+      sbtJavaHome: Option[String]
+  ): McpToolResult =
+    sbtJavaHome match
+      case None => result
+      case Some(value) =>
+        val privatePaths =
+          (value :: Try(Path.of(value).toRealPath().toString).toOption.toList)
+            .distinct
+            .sortBy(path => -path.length)
+        def sanitize(text: String): String =
+          privatePaths.foldLeft(text)((current, path) =>
+            current.replace(path, "<sbt-java-home>")
+          )
+        result.copy(
+          command = publicCommand(result.command),
+          stderr = sanitize(result.stderr),
+          error = result.error.map(sanitize)
+        )
 
   private def sanitize(message: String, workspace: Path): String =
     message
@@ -512,11 +582,11 @@ final case class SemanticScalaCli(
       .replace(cliPath.toString, "semantic-scala")
 
 object SemanticScalaCli:
-  val CompileArgs: List[String] = buildArgs("compile", None)
+  val CompileArgs: List[String] = buildArgs("compile", None, None)
   val CompileSchemaVersion: String = CompileReport.SchemaVersion
-  val ErrorsArgs: List[String] = buildArgs("errors", None)
+  val ErrorsArgs: List[String] = buildArgs("errors", None, None)
   val ErrorsSchemaVersion: String = CompileReport.ErrorsSchemaVersion
-  val TestArgs: List[String] = buildArgs("test", None)
+  val TestArgs: List[String] = buildArgs("test", None, None)
   val TestSchemaVersion: String = TestReport.SchemaVersion
   val EffectSummarySchemaVersion: String = EffectSummaryReport.SchemaVersion
   val SymbolAtSchemaVersion: String = SymbolAtResult.SchemaVersion
@@ -525,8 +595,15 @@ object SemanticScalaCli:
   val PointEvidenceSchemaVersion: String = PointEvidenceReport.SchemaVersion
   val DefaultCliPath: Path = Path.of("semantic-scala")
 
-  def buildArgs(commandName: String, sbtProject: Option[String]): List[String] =
-    List(commandName) ++ sbtProject.toList.flatMap(value => List("--sbt-project", value)) ++ List("--json")
+  def buildArgs(
+      commandName: String,
+      sbtProject: Option[String],
+      sbtJavaHome: Option[String] = None
+  ): List[String] =
+    List(commandName) ++
+      sbtProject.toList.flatMap(value => List("--sbt-project", value)) ++
+      sbtJavaHome.toList.flatMap(value => List("--sbt-java-home", value)) ++
+      List("--json")
 
   def effectSummaryArgs(file: String): List[String] =
     List("effect-summary", "--file", file, "--json")

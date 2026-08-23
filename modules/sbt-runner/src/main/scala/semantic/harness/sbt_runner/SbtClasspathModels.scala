@@ -53,7 +53,8 @@ object SbtClasspathEntryKind:
 final case class SbtClasspathRequest(
   workspace: Path,
   project: SbtProjectId,
-  configuration: SbtClasspathConfiguration
+  configuration: SbtClasspathConfiguration,
+  targetJava: Option[ValidatedSbtJavaHome] = None
 )
 
 object SbtClasspathRequest:
@@ -84,7 +85,8 @@ object SbtClasspathEntry:
 final case class SbtClasspathResult(
   project: SbtProjectId,
   configuration: SbtClasspathConfiguration,
-  entries: List[SbtClasspathEntry]
+  entries: List[SbtClasspathEntry],
+  javaContextToken: Option[String] = None
 )
 
 enum SbtClasspathFailure:

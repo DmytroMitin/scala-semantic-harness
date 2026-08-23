@@ -98,6 +98,7 @@ The source-checkout wrapper runs the CLI through sbt:
 ./semantic-scala version
 ./semantic-scala compile --json
 ./semantic-scala compile --sbt-project core2_13 --json
+./semantic-scala compile --sbt-project plugin --sbt-java-home /absolute/path/to/installed-jdk --json
 ./semantic-scala test --json
 ./semantic-scala errors --json
 ```
@@ -108,6 +109,17 @@ behavior. With it, compile/errors run that project's fixed `Compile` scope and
 test runs its fixed `Test` scope. The selector is not arbitrary sbt syntax, and
 a successful selected invocation proves only that bounded project operation,
 not whole-workspace correctness.
+
+All five sbt-backed forms (`compile`, `errors`, `test`, sbt-backed
+`infer-type`, and `infer-type-batch`) also accept an optional
+`--sbt-java-home <absolute-directory>`. The harness itself remains on the
+supported JDK 21 runtime; only the target sbt child receives the selected
+canonical `JAVA_HOME` and a matching `PATH` prefix. The home must already be
+installed and pass bounded validation and a fixed version probe. The harness
+does not discover, download, install, or globally select JDKs. Omitting the
+flag preserves inherited-Java behavior. Selected-JDK classpath acquisition is
+isolated from no-selector cache reuse, and public result schemas do not expose
+the home or probe evidence.
 
 For repeated use, prefer the staged launcher at
 `modules/cli/target/stage/bin/semantic-scala`.
@@ -166,7 +178,7 @@ boundary.
 ./semantic-scala usages --workspace . --manifest semantic-usages.json --symbol 'example/Foo#bar().' --json
 ./semantic-scala symbol-at --file path/to/Main.scala --line 6 --col 16 --json
 ./semantic-scala infer-type --file path/to/Main.scala --line 6 --col 16 --json
-./semantic-scala infer-type-batch --requests batch-request.json --workspace . --sbt-project core --sbt-configuration Compile --json
+./semantic-scala infer-type-batch --requests batch-request.json --workspace . --sbt-project core --sbt-configuration Compile [--sbt-java-home /absolute/path/to/installed-jdk] --json
 ./semantic-scala reconcile-symbol --file path/to/Main.scala --line 6 --col 16 --semanticdb path/to/Main.scala.semanticdb --json
 ./semantic-scala effect-summary --file path/to/UserRepo.scala --json
 ```

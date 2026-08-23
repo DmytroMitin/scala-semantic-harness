@@ -20,7 +20,7 @@ object SbtClasspathCacheCodec:
     "entries",
     "entryCount"
   )
-  private val IdentityFields = Set(
+  private val IdentityFieldsV1 = Set(
     "cacheFormat",
     "acquisitionProtocol",
     "workspaceDigest",
@@ -28,6 +28,8 @@ object SbtClasspathCacheCodec:
     "configuration",
     "storageKey"
   )
+  private val IdentityFieldsV2 =
+    IdentityFieldsV1 ++ Set("sbtJavaHomeDigest", "sbtJavaRuntimeFingerprint")
   private val InputFields =
     Set("coverageVersion", "fileCount", "totalBytes", "sha256", "projectRootPresent")
   private val EntryFields =
@@ -78,16 +80,27 @@ object SbtClasspathCacheCodec:
       _ <- exactFields(objectValue, TopFields, "top-level record")
       format <- requiredString(objectValue, "format")
       _ <-
-        if format == SbtClasspathCacheRecord.Format then Right(())
+        if format == expectedIdentity.cacheFormat &&
+            Set(SbtClasspathCacheRecord.Format, SbtClasspathCacheRecord.FormatV2)
+              .contains(format)
+        then Right(())
         else Left(invalid(s"unsupported cache format '$format'"))
       acquisitionProtocol <- requiredString(objectValue, "acquisitionProtocol")
       _ <-
-        if acquisitionProtocol == SbtClasspathProtocol.Format then Right(())
+        if acquisitionProtocol == expectedIdentity.acquisitionProtocol &&
+            supportedFormatPair(format, acquisitionProtocol)
+        then Right(())
         else Left(invalid(s"unsupported acquisition protocol '$acquisitionProtocol'"))
       identityJson <- requiredField(objectValue, "identity")
       identity <- decodeIdentity(identityJson)
       _ <-
         if identity == expectedIdentity then Right(())
+        else if isTargetJavaRuntimeMismatch(identity, expectedIdentity) then
+          Left(
+            SbtClasspathCacheFailure.TargetJavaMismatch(
+              "Cached sbt classpath target-Java runtime fingerprint no longer matches; rerun with --sbt-cache-mode refresh."
+            )
+          )
         else Left(invalid("cache identity does not match the selected workspace/project/configuration"))
       acquiredAt <- requiredLong(objectValue, "acquiredAtEpochMillis")
       _ <-
@@ -131,7 +144,7 @@ object SbtClasspathCacheCodec:
     )
 
   private def encodeIdentity(identity: SbtClasspathCacheIdentity): Json =
-    Json.obj(
+    val common = List(
       "cacheFormat" -> Json.fromString(identity.cacheFormat),
       "acquisitionProtocol" -> Json.fromString(identity.acquisitionProtocol),
       "workspaceDigest" -> Json.fromString(identity.workspaceDigest),
@@ -141,15 +154,31 @@ object SbtClasspathCacheCodec:
       ),
       "storageKey" -> Json.fromString(identity.storageKey)
     )
+    val javaFields = identity.sbtJavaHomeDigest.toList.zip(
+      identity.sbtJavaRuntimeFingerprint.toList
+    ).flatMap { (homeDigest, runtimeFingerprint) =>
+      List(
+        "sbtJavaHomeDigest" -> Json.fromString(homeDigest),
+        "sbtJavaRuntimeFingerprint" -> Json.fromString(runtimeFingerprint)
+      )
+    }
+    Json.obj((common ++ javaFields)*)
 
   private def decodeIdentity(
       json: Json
   ): Either[SbtClasspathCacheFailure, SbtClasspathCacheIdentity] =
     for
       value <- requiredObject(json, "identity")
-      _ <- exactFields(value, IdentityFields, "identity")
       cacheFormat <- requiredString(value, "cacheFormat")
+      identityFields <-
+        if cacheFormat == SbtClasspathCacheRecord.Format then Right(IdentityFieldsV1)
+        else if cacheFormat == SbtClasspathCacheRecord.FormatV2 then Right(IdentityFieldsV2)
+        else Left(invalid(s"unsupported identity cache format '$cacheFormat'"))
+      _ <- exactFields(value, identityFields, "identity")
       acquisitionProtocol <- requiredString(value, "acquisitionProtocol")
+      _ <-
+        if supportedFormatPair(cacheFormat, acquisitionProtocol) then Right(())
+        else Left(invalid("identity cache format and acquisition protocol do not match"))
       workspaceDigest <- requiredString(value, "workspaceDigest")
       _ <- validateSha256(workspaceDigest, "workspace identity digest")
       projectText <- requiredString(value, "project")
@@ -161,14 +190,57 @@ object SbtClasspathCacheCodec:
         .map(message => invalid(message))
       storageKey <- requiredString(value, "storageKey")
       _ <- validateSha256(storageKey, "storage key")
+      sbtJavaHomeDigest <- optionalSha256(
+        value,
+        "sbtJavaHomeDigest",
+        cacheFormat == SbtClasspathCacheRecord.FormatV2
+      )
+      sbtJavaRuntimeFingerprint <- optionalSha256(
+        value,
+        "sbtJavaRuntimeFingerprint",
+        cacheFormat == SbtClasspathCacheRecord.FormatV2
+      )
     yield SbtClasspathCacheIdentity(
       cacheFormat,
       acquisitionProtocol,
       workspaceDigest,
       project,
       configuration,
-      storageKey
+      storageKey,
+      sbtJavaHomeDigest,
+      sbtJavaRuntimeFingerprint
     )
+
+  private def supportedFormatPair(format: String, protocol: String): Boolean =
+    (format == SbtClasspathCacheRecord.Format &&
+      protocol == SbtClasspathProtocol.Format) ||
+      (format == SbtClasspathCacheRecord.FormatV2 &&
+        protocol == SbtClasspathProtocol.FormatV2)
+
+  private def isTargetJavaRuntimeMismatch(
+      actual: SbtClasspathCacheIdentity,
+      expected: SbtClasspathCacheIdentity
+  ): Boolean =
+    actual.cacheFormat == SbtClasspathCacheRecord.FormatV2 &&
+      actual.cacheFormat == expected.cacheFormat &&
+      actual.acquisitionProtocol == expected.acquisitionProtocol &&
+      actual.workspaceDigest == expected.workspaceDigest &&
+      actual.project == expected.project &&
+      actual.configuration == expected.configuration &&
+      actual.storageKey == expected.storageKey &&
+      actual.sbtJavaHomeDigest == expected.sbtJavaHomeDigest &&
+      actual.sbtJavaRuntimeFingerprint != expected.sbtJavaRuntimeFingerprint
+
+  private def optionalSha256(
+      value: JsonObject,
+      name: String,
+      required: Boolean
+  ): Either[SbtClasspathCacheFailure, Option[String]] =
+    if required then
+      requiredString(value, name).flatMap(text =>
+        validateSha256(text, name).map(_ => Some(text))
+      )
+    else Right(None)
 
   private def encodeInput(evidence: SbtClasspathInputEvidence): Json =
     Json.obj(
