@@ -250,4 +250,7 @@ separate approval. If MCP attachment fails, verify JDK 21, run
 
 For update behavior, source identity, uninstall, and Coursier warning
 interpretation, see [`distribution.md`](distribution.md). For detailed result
-semantics and uncertainty, see [`semantic-api.md`](semantic-api.md).
+semantics and uncertainty, see [`semantic-api.md`](semantic-api.md). Users
+evaluating the installed alpha-2 route or alpha-3 SNAPSHOT source behavior on a
+real project can retain a bounded comparison packet using
+[`early-feedback.md`](early-feedback.md).

@@ -34,18 +34,26 @@ execution ledger and does not promise delivery dates.
    Central primaries, while the deterministic two-application public URL
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
-2. Harden and broaden evidence for the implemented bounded post-compile TASTy
-   lane without turning it into live compiler-plugin replay, a general TASTy
-   query language, or a compile-phase replacement.
-3. Preserve the qualified canonical-skill install route and corrected
-   `symbol-at` versus `point-evidence` boundary. The independent frozen
-   replication preserved no-tool restraint and composition selection but left
-   a client-mediated narrow-symbol execution gap; invocation or stated intent
-   alone is not adoption value.
-4. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
+2. Make external real-project feedback the next evidence milestone. Evaluate
+   concrete Scala decisions against the compiler, build/test, IDE/LSP, and
+   standard artifact tools already available to the user; retain the bounded
+   context described in [`docs/early-feedback.md`](docs/early-feedback.md).
+3. Keep post-compile TASTy evidence CLI-only and the MCP registry at exactly
+   eight tools. On the strongest frozen ordinary-tool comparison, exact-version
+   Scala TASTy output, source-offset mapping, and classfile inspection recovered
+   fact-equivalent point evidence. That scoped result demonstrates no primitive
+   fact advantage, but does not make TASTy generally redundant or erase its
+   composition, robustness, and provenance value. Immediate TASTy hardening,
+   ninth-tool exposure, and primitive-differentiation work are closed; revisit
+   only for a materially different target or tool condition with a
+   decision-relevant fact gap.
+4. Preserve the qualified canonical-skill install route and corrected
+   `symbol-at` versus `point-evidence` boundary. Recent controlled selection
+   evidence found cleaner behavior in some cases but no material generated-fact
+   routing gain, so adoption effectiveness remains partial and immediate
+   automatic skill retuning is not admitted.
+5. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
-5. Invite early technical feedback on the experimental source alpha and use
-   real installation and project cases to guide maintenance.
 6. Preserve the maintained real-project matrices and the narrow alpha-3
    SNAPSHOT project and target-JDK selectors admitted from their evidence.
    Continue to treat a selected row/runtime as bounded build evidence, not
@@ -71,6 +79,11 @@ execution ledger and does not promise delivery dates.
   decision value against direct use of the same underlying operations.
 - Continue comparing coherent operations with direct use of the same compiler,
   test, IDE/LSP, and MCP primitives.
+- Treat the post-compile TASTy lane as a current illustration of composition
+  and provenance value: it normalizes selected-build ownership, point mapping,
+  source/artifact identity, freshness, uncertainty, and no-replay boundaries.
+  The frozen comparison does not by itself strengthen the current `READY`
+  composition/orchestration state.
 - Measure correctness, incorrect edits, tool turns, redundant calls, evidence
   attribution, and human intervention.
 - Do not treat fewer commands or tool invocation alone as product value.
@@ -120,10 +133,14 @@ execution ledger and does not promise delivery dates.
   former mandatory effect-summary oracle is not maintained as a miss. The
   historical regression is the broader point-evidence choice on the narrow
   symbol case.
-- Preserve the corrected selection boundary. In the independent replication,
-  C stated the narrow `symbol-at` choice but did not complete its configured
-  MCP call; B and C therefore both scored `2/3` on appropriate selection or
-  non-selection. Require broader independent execution evidence before READY.
+- Preserve the corrected selection boundary. In a controlled generated-fact,
+  narrow-symbol, and source-sufficient comparison, skill-guided runs were
+  cleaner in some cells but did not select the required CLI-only TASTy route;
+  both arms scored `2/3` on primary routing. This is no material routing gain,
+  not a general skill-effectiveness result.
+- Keep adoption effectiveness `EVIDENCE_PARTIAL`. Do not automatically retune
+  the skill from this result; require a materially different evaluation
+  condition and broader independent execution evidence before READY.
 - Separate capability value from the incremental effect of skill guidance.
 
 ## Installation and packaging

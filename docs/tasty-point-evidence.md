@@ -1,8 +1,9 @@
 # TASTy point evidence
 
 `tasty-point-evidence` is an opt-in CLI-only alpha-3 SNAPSHOT operation for one
-Scala 3 source point. It closes a specific post-compile evidence gap without
-adding a ninth MCP tool or replaying a target compiler plugin in the inspector.
+Scala 3 source point. It provides normalized, bounded post-compile evidence
+without adding a ninth MCP tool or replaying a target compiler plugin in the
+inspector.
 
 ```bash
 semantic-scala tasty-point-evidence \
@@ -75,3 +76,22 @@ includes Macro-Paradise on sbt 1.12.15 / Scala 3.8.4 and an independent
 scala-newtype-compat plugin consumer on sbt 2.0.6 / Scala 3.7.4, both with
 inspector replay flags false. Two version-specific cases keep the broader
 compiler-plugin dimension evidence-partial.
+
+## Marginal-utility boundary
+
+On the frozen Macro-Paradise target above, strong ordinary tooling also
+recovered fact-equivalent point evidence: a fresh selected Compile, standard
+Scala 3.8.4 `-print-tasty`, source-offset mapping, and `javap` supplied the
+same decision-relevant generated C/M/F/S facts. semantic-scala materially
+improved normalization, deterministic point selection, explicit uncertainty,
+same-request source stability, artifact identity, and no-replay provenance,
+but it did not supply a fact missing from that baseline.
+
+This is one target/toolchain comparison, not a claim that TASTy evidence is
+generally redundant or that semantic-scala is generally better or worse than
+Metals, IntelliJ, or raw Scala tooling. It supports composition, robustness,
+and provenance value rather than a demonstrated primitive moat. A future
+primitive-differentiation claim needs a materially different case where strong
+ordinary tooling leaves a decision-relevant fact gap. See
+[`early-feedback.md`](early-feedback.md) for the comparison packet requested
+from real-project evaluators.

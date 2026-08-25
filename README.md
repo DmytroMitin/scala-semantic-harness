@@ -9,7 +9,9 @@ and test results remain the final correctness oracle. See
 [`docs/project-status.md`](docs/project-status.md) for current evidence and
 readiness limits and
 [`docs/semantic-tooling-positioning.md`](docs/semantic-tooling-positioning.md)
-for the product boundary.
+for the product boundary. Technical evaluators can use
+[`docs/early-feedback.md`](docs/early-feedback.md) to report a concrete
+real-project comparison.
 
 The current tree is the standalone experimental public-alpha source product
 under the [Apache-2.0 license](LICENSE). It was published from an independently
@@ -351,10 +353,12 @@ See [`ROADMAP.md`](ROADMAP.md) for product-oriented next steps.
 
 Current development is validation-first: test real Scala projects, preserve
 compatibility boundaries, and admit features only from concrete gaps. Real
-project reports are welcome, especially missing decision-relevant evidence and
-comparisons with compiler, build/test, and strong IDE/LSP tooling. Alpha-2
-remains the supported packaged release while `main` is alpha-3 SNAPSHOT
-development; no alpha-3 date or publication is promised.
+project reports are welcome using the bounded comparison packet in
+[`docs/early-feedback.md`](docs/early-feedback.md), especially missing
+decision-relevant evidence or materially useful composition of compiler,
+build/test, IDE/LSP, and artifact facts. Alpha-2 remains the supported packaged
+release while `main` is alpha-3 SNAPSHOT development; no alpha-3 date or
+publication is promised.
 
 ## Project policies
 
