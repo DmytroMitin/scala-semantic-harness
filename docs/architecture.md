@@ -55,7 +55,13 @@ uses an isolated strict v2 cache/protocol context.
 
 All three sbt subprocess owners use one closed product-owned command grammar:
 optional validated project selection followed by exactly one fixed task in a
-single sbt command argument. The generated classpath and receipt tasks unwrap
+single sbt command argument. Every request launches one foreground
+`sbt --server --batch` process with a fresh global base and a short
+request-owned runtime/socket directory; it cannot attach to ambient server
+state. Timeouts terminate only the owned process tree, and request settings,
+protocols and sockets are removed after completion.
+
+The generated classpath and receipt tasks unwrap
 sbt 1 `Attributed[File]` entries directly and convert sbt 2 virtual references
 with the build's supported `fileConverter`. If sbt 2 materializes a readable
 extensionless CAS JAR inside the request's temporary global base, the harness
@@ -65,6 +71,15 @@ temporary base. It does not infer paths from virtual IDs or scan dependency or
 build caches. Existing classpath bounds, evidence, cache identity, and public
 schemas remain authoritative; ordinary workspace build cleanup owns the
 generated materialization area.
+
+The build-oracle Test task consumes the common `Test / executeTests` output and
+aggregates sbt's structured `SuiteResult` counters into a bounded request-owned
+completion record. Public `total` includes skipped, ignored, canceled, and
+pending cases; `passed` includes only successful cases; and `failed` combines
+framework failures and errors. Skipped-like cases remain the difference
+between those fields. Human console summaries and JUnit XML are not count
+sources. This is version-bounded evidence on sbt 1.12.15, 2.0.6, and 2.0.7,
+not general sbt compatibility.
 
 ## Packaging boundary
 

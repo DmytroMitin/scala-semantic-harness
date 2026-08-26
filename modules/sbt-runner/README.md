@@ -3,14 +3,31 @@
 Process integration for the build/test JSON oracle and deterministic
 project-classpath acquisition.
 
-The build-oracle runner preserves ordinary root `compile`/`test` behavior when
+The build-oracle runner preserves ordinary root `compile`/`test` selection when
 no project is selected. An optional `SbtProjectId` uses the shared strict
-`[A-Za-z][A-Za-z0-9_-]*` policy, then supplies two fixed sbt argv commands:
-`project <id>` followed by `Compile / compile` or `Test / test`. It does not use
+`[A-Za-z][A-Za-z0-9_-]*` policy, then supplies one fixed sbt command sequence:
+`project <id>` followed by `Compile / compile` or the private structured Test
+task. It does not use
 a shell or accept caller-provided tasks, configurations, scopes, separators,
 or command fragments. Unknown valid projects fail as that bounded invocation;
 they never fall back to the root. A successful selected run is not a
 whole-workspace result.
+
+Every build-oracle, classpath, and TASTy request owns one fresh temporary sbt
+global base, one short request-owned runtime/socket directory, and one
+foreground `sbt --server --batch` process. It never attaches to an ambient sbt
+server. Output drains and timeouts are bounded; timeout cleanup targets only
+the owned process tree. Temporary settings, protocols, and socket
+state are removed after every outcome.
+
+The private Test task executes the common `Test / executeTests` task and
+aggregates sbt's structured `SuiteResult` counters. This runs all selected
+tests even on sbt 2, where the public `test` input key may select only tests
+not already satisfied by its incremental state. Passed, failure, error,
+skipped, ignored, canceled, and pending counters produce one bounded
+request-owned completion record. Human console summaries and JUnit XML are not
+count sources, and framework events and properties are never projected
+publicly.
 
 Both build-oracle execution and classpath acquisition can receive one shared
 validated target Java home. Input is an absolute installed home (a top-level
@@ -32,7 +49,7 @@ modify the target build definition.
 The result contains ordered, normalized, de-duplicated `Directory`/`Jar`
 entries. Project/configuration/header/path mismatches and missing or unsupported
 entries are protocol failures; validation, process, and protocol failures stay
-separate. The default process timeout is 180 seconds. Temporary settings and
+separate. The default classpath timeout is 180 seconds. Temporary settings and
 the private protocol result are removed after success or failure.
 
 Classpath evaluation may compile or refresh outputs and may run ordinary build

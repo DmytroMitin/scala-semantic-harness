@@ -4,10 +4,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Comparator
-import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.duration.FiniteDuration
-import scala.util.Try
 
 trait SbtClasspathAcquirer:
   def acquire(request: SbtClasspathRequest): Either[SbtClasspathFailure, SbtClasspathResult]
@@ -33,7 +31,7 @@ private[sbt_runner] final case class ProcessSbtClasspathAcquirer(
   private def withTemporaryProtocol(
       request: SbtClasspathRequest
   ): Either[SbtClasspathFailure, SbtClasspathResult] =
-    val temporaryRoot = Files.createTempDirectory("semantic-scala-sbt-classpath-")
+    val temporaryRoot = Files.createTempDirectory("ss-sbt-cp-")
     val globalBase = Files.createDirectory(temporaryRoot.resolve("global"))
     val resultFile = temporaryRoot.resolve("classpath.protocol")
     try
@@ -219,54 +217,18 @@ private final case class ProcessSbtClasspathProcess() extends SbtClasspathProces
       timeout: FiniteDuration
   ): SbtClasspathProcessOutcome =
     val command = SbtCommandSequence.selected(request.project, task)
-    val builder = ProcessBuilder(
-      "sbt",
-      "-batch",
-      "-Dsbt.log.noformat=true",
-      "-Dsbt.supershell=false",
-      s"-Dsbt.global.base=$globalBase",
-      command
-    )
-      .directory(request.workspace.toFile)
-      .redirectErrorStream(false)
-    builder.environment().put("SEMANTIC_SCALA_SBT_CLASSPATH_RESULT", resultFile.toString)
-    request.targetJava.foreach(SbtJavaEnvironment.configure(builder.environment(), _))
-    SbtSandbox.configure(builder.environment())
-
-    Try(builder.start()).toEither match
-      case Left(exception) =>
-        val message = Option(exception.getMessage).getOrElse("")
-        SbtClasspathProcessOutcome.FailedToStart(
-          request.targetJava.fold(message)(SbtJavaPrivacy.sanitize(message, _))
-        )
-      case Right(process) =>
-        val stdoutThread = SbtClasspathStreamCollector(process.getInputStream)
-        val stderrThread = SbtClasspathStreamCollector(process.getErrorStream)
-        stdoutThread.start()
-        stderrThread.start()
-        val completed = process.waitFor(timeout.toMillis, TimeUnit.MILLISECONDS)
-        if !completed then
-          process.destroy()
-          if !process.waitFor(2, TimeUnit.SECONDS) then process.destroyForcibly()
-        stdoutThread.join(5000)
-        stderrThread.join(5000)
-        val stdout = request.targetJava.fold(stdoutThread.result)(
-          SbtJavaPrivacy.sanitize(stdoutThread.result, _)
-        )
-        val stderr = request.targetJava.fold(stderrThread.result)(
-          SbtJavaPrivacy.sanitize(stderrThread.result, _)
-        )
-        if completed then
-          SbtClasspathProcessOutcome.Completed(
-            SbtRunResult(command, process.exitValue(), stdout, stderr)
-          )
-        else SbtClasspathProcessOutcome.TimedOut(stdout, stderr)
-
-private final class SbtClasspathStreamCollector(stream: java.io.InputStream) extends Thread:
-  private val buffer = StringBuilder()
-
-  override def run(): Unit =
-    val bytes = stream.readAllBytes()
-    buffer.append(String(bytes, StandardCharsets.UTF_8))
-
-  def result: String = buffer.toString
+    SbtProcessLifecycle.run(
+      request.workspace,
+      globalBase,
+      globalBase.getParent.resolve("r"),
+      command,
+      request.targetJava,
+      Map("SEMANTIC_SCALA_SBT_CLASSPATH_RESULT" -> resultFile.toString),
+      timeout
+    ) match
+      case SbtProcessOutcome.Completed(result) =>
+        SbtClasspathProcessOutcome.Completed(result)
+      case SbtProcessOutcome.TimedOut(stdout, stderr) =>
+        SbtClasspathProcessOutcome.TimedOut(stdout, stderr)
+      case SbtProcessOutcome.FailedToStart(message) =>
+        SbtClasspathProcessOutcome.FailedToStart(message)

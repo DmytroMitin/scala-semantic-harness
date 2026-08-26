@@ -8,8 +8,6 @@ import semantic.harness.core.TestReport
 object ReportConverter:
   private val MaxDiagnosticLength = 1200
   private val PositionPattern = raw"([^\s]+\.scala):(\d+):(\d+)".r
-  private val TestCountsPattern =
-    raw".*Total\s+(\d+),\s+Failed\s+(\d+),\s+Errors\s+(\d+),\s+Passed\s+(\d+).*".r
 
   def compileReport(result: SbtRunResult): CompileReport =
     if result.exitCode == 0 then
@@ -21,23 +19,24 @@ object ReportConverter:
       )
 
   def testReport(result: SbtRunResult): TestReport =
-    val counts = testCounts(result.combinedOutput)
-    if result.exitCode == 0 then
-      TestReport(
-        success = true,
-        total = counts.map(_.total).getOrElse(0),
-        passed = counts.map(_.passed).getOrElse(0),
-        failed = counts.map(_.failed).getOrElse(0),
-        failures = Nil
-      )
-    else
-      TestReport(
-        success = false,
-        total = counts.map(_.total).getOrElse(0),
-        passed = counts.map(_.passed).getOrElse(0),
-        failed = counts.map(c => c.failed + c.errors).getOrElse(0),
-        failures = diagnostics(result, "test failed")
-      )
+    result.structuredTestResult match
+      case Some(structured) =>
+        val counts = structured.counts
+        TestReport(
+          success = structured.success,
+          total = counts.total,
+          passed = counts.passed,
+          failed = counts.failures + counts.errors,
+          failures = if structured.success then Nil else diagnostics(result, "test failed")
+        )
+      case None =>
+        TestReport(
+          success = false,
+          total = 0,
+          passed = 0,
+          failed = 0,
+          failures = diagnostics(result, "structured test result unavailable")
+        )
 
   private def diagnostics(result: SbtRunResult, fallback: String): List[Diagnostic] =
     val lines = relevantLines(result.combinedOutput)
@@ -81,18 +80,6 @@ object ReportConverter:
       )
     }
 
-  private def testCounts(output: String): Option[TestCounts] =
-    output
-      .linesIterator
-      .flatMap {
-        case TestCountsPattern(total, failed, errors, passed) =>
-          Some(TestCounts(total.toInt, failed.toInt, errors.toInt, passed.toInt))
-        case _ =>
-          None
-      }
-      .toSeq
-      .lastOption
-
   private def stripSbtPrefix(line: String): String =
     line
       .stripPrefix("[error]")
@@ -103,13 +90,6 @@ object ReportConverter:
   private def truncate(message: String): String =
     if message.length <= MaxDiagnosticLength then message
     else message.take(MaxDiagnosticLength) + "\n... truncated ..."
-
-  private final case class TestCounts(
-    total: Int,
-    failed: Int,
-    errors: Int,
-    passed: Int
-  )
 
 extension (result: SbtRunResult)
   private def combinedOutput: String =

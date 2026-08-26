@@ -120,9 +120,14 @@ classpath/receipt adapters use sbt's `fileConverter` for sbt 2 virtual
 references and preserve sbt 1 file-backed entries. Readable extensionless sbt 2
 CAS JARs are copied directly, without cache scanning, into an owner-only
 content-addressed area under the selected workspace's generated `target` tree.
-A disposable sbt 2.0.6 multi-project fixture and frozen sbt 1.12.15 and sbt
-2.0.6 plugin projects pass the bounded rows. This is version-specific evidence,
-not universal sbt 2 or compiler-plugin compatibility.
+A disposable sbt 2.0.6 fixture, a disposable sbt 2.0.7 multi-project fixture,
+frozen sbt 1.12.15 and sbt 2.0.6 plugin projects, and a frozen Chimney sbt
+2.0.7 / Scala 3.8.4 selected row pass their bounded gates. The shared runner
+uses a request-owned foreground sbt server lifecycle, and structured sbt suite
+counters preserve ignored/skipped tests in the existing Test JSON fields. This
+is version-specific evidence, not universal sbt 2 or compiler-plugin
+compatibility. Chimney's macro-heavy PC points remain neutrally unresolved
+because target compiler options and plugins are not replayed.
 
 ```bash
 sbt -batch test

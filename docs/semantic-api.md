@@ -314,10 +314,16 @@ promote path hints to canonical target identity.
 - `schemaVersion`: payload schema marker, currently
   `semantic-scala.test-result.v1`
 - `success`: whether all tests passed
-- `total`: total test count
-- `passed`: passing test count
-- `failed`: failing test count
+- `total`: all framework-reported test cases, including ignored/skipped-like cases
+- `passed`: test cases reported successful by the framework
+- `failed`: framework failures plus framework errors
 - `failures`: failure diagnostics
+
+The v1 schema has no separate skipped field. The nonnegative difference
+`total - passed - failed` is therefore the existing skipped/ignored-equivalent
+count; ignored/skipped cases are never counted as passed. Counts come from
+bounded structured sbt `SuiteResult` counters, not human console wording or
+JUnit XML.
 
 `SemanticRange`
 

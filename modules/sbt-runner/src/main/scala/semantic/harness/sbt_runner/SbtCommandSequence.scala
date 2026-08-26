@@ -6,6 +6,8 @@ private[sbt_runner] enum SbtFixedTask(
 ):
   case Compile extends SbtFixedTask("Compile / compile", Some("compile"))
   case Test extends SbtFixedTask("Test / test", Some("test"))
+  case StructuredTest
+      extends SbtFixedTask(SbtTestResultSource.Task, Some(SbtTestResultSource.Task))
   case CompileClasspath
       extends SbtFixedTask("semanticScalaInternalExportCompileClasspath", None)
   case TestClasspath

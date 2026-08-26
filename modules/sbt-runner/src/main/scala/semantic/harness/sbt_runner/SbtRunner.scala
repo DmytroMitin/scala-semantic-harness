@@ -9,7 +9,8 @@ final case class SbtRunResult(
   command: String,
   exitCode: Int,
   stdout: String,
-  stderr: String
+  stderr: String,
+  structuredTestResult: Option[SbtStructuredTestResult] = None
 )
 
 trait SbtRunner:
@@ -25,9 +26,12 @@ trait SbtRunner:
   ): SbtRunResult
 
 object SbtRunner:
-  val default: SbtRunner = ProcessSbtRunner()
+  val DefaultTimeout: scala.concurrent.duration.FiniteDuration = scala.concurrent.duration.DurationInt(300).seconds
+  val default: SbtRunner = ProcessSbtRunner(DefaultTimeout)
 
-final case class ProcessSbtRunner() extends SbtRunner:
+final case class ProcessSbtRunner(
+    timeout: scala.concurrent.duration.FiniteDuration = SbtRunner.DefaultTimeout
+) extends SbtRunner:
   override def compile(
       projectDir: Path,
       project: Option[SbtProjectId],
@@ -48,46 +52,50 @@ final case class ProcessSbtRunner() extends SbtRunner:
       targetJava: Option[ValidatedSbtJavaHome],
       task: SbtFixedTask
   ): SbtRunResult =
-    val command = SbtCommandSequence.build(project, task)
-    val builder = ProcessBuilder(
-      "sbt",
-      "-batch",
-      "-Dsbt.log.noformat=true",
-      command
-    )
-      .directory(projectDir.toFile)
-      .redirectErrorStream(false)
+    val temporaryRoot = Files.createTempDirectory("ss-sbt-run-")
+    val globalBase = Files.createDirectory(temporaryRoot.resolve("g"))
+    val runtimeDirectory = Files.createDirectory(temporaryRoot.resolve("r"))
+    val completionFile = temporaryRoot.resolve("test-completion.protocol")
+    val selectedTask = if task == SbtFixedTask.Test then SbtFixedTask.StructuredTest else task
+    val command = SbtCommandSequence.build(project, selectedTask)
+    try
+      val environment =
+        if task == SbtFixedTask.Test then
+          Files.writeString(
+            globalBase.resolve("global.sbt"),
+            SbtTestResultSource.GlobalSettings,
+            StandardCharsets.UTF_8
+          )
+          Map(
+            SbtTestResultSource.CompletionEnvironment -> completionFile.toString
+          )
+        else Map.empty[String, String]
+      SbtProcessLifecycle.run(
+        projectDir,
+        globalBase,
+        runtimeDirectory,
+        command,
+        targetJava,
+        environment,
+        timeout
+      ) match
+        case SbtProcessOutcome.Completed(result) if task == SbtFixedTask.Test =>
+          SbtTestResultSource.read(completionFile) match
+            case Right(structured) => result.copy(structuredTestResult = Some(structured))
+            case Left(message) if result.exitCode == 0 => throw IllegalStateException(message)
+            case Left(_) => result
+        case SbtProcessOutcome.Completed(result) => result
+        case SbtProcessOutcome.TimedOut(_, _) =>
+          throw IllegalStateException(s"sbt exceeded the ${timeout.toSeconds}-second timeout")
+        case SbtProcessOutcome.FailedToStart(message) =>
+          throw IllegalStateException(s"unable to start sbt: $message")
+    finally deleteRecursively(temporaryRoot)
 
-    targetJava.foreach(SbtJavaEnvironment.configure(builder.environment(), _))
-    SbtSandbox.configure(builder.environment())
-
-    val process = builder.start()
-
-    val stdoutThread = StreamCollector(process.getInputStream)
-    val stderrThread = StreamCollector(process.getErrorStream)
-    stdoutThread.start()
-    stderrThread.start()
-
-    val exitCode = process.waitFor()
-    stdoutThread.join()
-    stderrThread.join()
-
-    val result = SbtRunResult(
-      command = command,
-      exitCode = exitCode,
-      stdout = stdoutThread.result,
-      stderr = stderrThread.result
-    )
-    targetJava.fold(result)(selected => sanitizeSelectedJava(result, selected))
-
-  private def sanitizeSelectedJava(
-      result: SbtRunResult,
-      selected: ValidatedSbtJavaHome
-  ): SbtRunResult =
-    result.copy(
-      stdout = SbtJavaPrivacy.sanitize(result.stdout, selected),
-      stderr = SbtJavaPrivacy.sanitize(result.stderr, selected)
-    )
+  private def deleteRecursively(root: Path): Unit =
+    if Files.exists(root) then
+      val paths = Files.walk(root)
+      try paths.sorted(java.util.Comparator.reverseOrder()).forEach(Files.deleteIfExists(_))
+      finally paths.close()
 
 private[sbt_runner] object SbtSandbox:
   def configure(environment: java.util.Map[String, String]): Unit =
@@ -135,12 +143,3 @@ private[sbt_runner] object SbtSandbox:
     if Files.isDirectory(source) && !Files.exists(destination) then
       try Files.createSymbolicLink(destination, source)
       catch case _: Exception => ()
-
-private final class StreamCollector(stream: java.io.InputStream) extends Thread:
-  private val buffer = StringBuilder()
-
-  override def run(): Unit =
-    val bytes = stream.readAllBytes()
-    buffer.append(String(bytes, StandardCharsets.UTF_8))
-
-  def result: String = buffer.toString

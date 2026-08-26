@@ -112,13 +112,14 @@ execution ledger and does not promise delivery dates.
   closed in current development, but older macro/plugin-heavy stress targets
   still need separate evidence so build shape or ecosystem bitrot is not
   mistaken for semantic compatibility.
-- Preserve the bounded sbt-generation matrix: a disposable sbt 2.0.6
-  multi-project fixture passes selected compile/errors/test, fail-closed
-  unknown-project routing, sbt-backed PC acquisition, and exact-version TASTy;
-  frozen Macro-Paradise sbt 1.12.15 and scala-newtype-compat sbt 2.0.6 plugin
-  rows both pass post-compile typed evidence without inspector plugin replay.
-  This qualifies those rows only and does not establish general sbt 2,
-  build-plugin, or compiler-plugin compatibility.
+- Preserve the bounded sbt-generation matrix: disposable sbt 2.0.6 and 2.0.7
+  multi-project fixtures pass selected compile/errors/test, structured counts,
+  fail-closed unknown-project routing, sbt-backed classpath acquisition, and
+  exact-version TASTy; frozen Macro-Paradise sbt 1.12.15,
+  scala-newtype-compat sbt 2.0.6, and Chimney sbt 2.0.7 rows preserve their
+  admitted evidence. Every request owns its foreground sbt lifecycle. This
+  qualifies those rows only and does not establish general sbt 2,
+  build-plugin, compiler-plugin, or target-PC compatibility.
 - Admit broader compatibility only from concrete version-specific fixtures or
   real projects; do not infer it from the harness implementation language.
 

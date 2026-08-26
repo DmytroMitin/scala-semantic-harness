@@ -1,14 +1,11 @@
 package semantic.harness.sbt_runner
 
-import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Comparator
-import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.duration.FiniteDuration
-import scala.util.Try
 
 trait SbtTastyCompileReceiptAcquirer:
   def acquire(
@@ -49,7 +46,7 @@ private[sbt_runner] final case class ProcessSbtTastyCompileReceiptAcquirer(
   private def acquireValidated(
       request: SbtTastyCompileRequest
   ): Either[SbtTastyCompileFailure, SbtTastyCompileReceipt] =
-    val temporaryRoot = Files.createTempDirectory("semantic-scala-tasty-receipt-")
+    val temporaryRoot = Files.createTempDirectory("ss-sbt-tasty-")
     val globalBase = Files.createDirectory(temporaryRoot.resolve("global"))
     val receiptFile = temporaryRoot.resolve("receipt.protocol")
     try
@@ -136,47 +133,22 @@ private final case class ProcessSbtTastyCompileProcess() extends SbtTastyCompile
       timeout: FiniteDuration
   ): SbtTastyCompileProcessOutcome =
     val command = SbtCommandSequence.selected(request.project, task)
-    val builder = ProcessBuilder(
-      "sbt",
-      "-batch",
-      "-Dsbt.log.noformat=true",
-      "-Dsbt.supershell=false",
-      s"-Dsbt.global.base=$globalBase",
-      command
-    ).directory(request.workspace.toFile).redirectErrorStream(false)
-    val environment = builder.environment()
-    environment.put("SEMANTIC_SCALA_TASTY_RECEIPT", receiptFile.toString)
-    environment.put("SEMANTIC_SCALA_TASTY_SOURCE", request.source.toString)
-    request.targetJava.foreach { selected =>
-      SbtJavaEnvironment.configure(environment, selected)
-      environment.put("SEMANTIC_SCALA_TASTY_JAVA_CONTEXT", SbtJavaContext.token(selected))
-    }
-    SbtSandbox.configure(environment)
-
-    Try(builder.start()).toEither match
-      case Left(_) => SbtTastyCompileProcessOutcome.FailedToStart
-      case Right(child) =>
-        val stdout = BoundedDrain(child.getInputStream)
-        val stderr = BoundedDrain(child.getErrorStream)
-        stdout.start()
-        stderr.start()
-        val completed = child.waitFor(timeout.toMillis, TimeUnit.MILLISECONDS)
-        if !completed then
-          child.destroy()
-          if !child.waitFor(2, TimeUnit.SECONDS) then child.destroyForcibly()
-        stdout.join(5000)
-        stderr.join(5000)
-        if completed then SbtTastyCompileProcessOutcome.Completed(child.exitValue())
-        else SbtTastyCompileProcessOutcome.TimedOut
-
-private final class BoundedDrain(stream: InputStream) extends Thread:
-  override def run(): Unit =
-    val buffer = Array.ofDim[Byte](8192)
-    var remaining = 128 * 1024
-    var read = 0
-    try
-      while remaining > 0 && { read = stream.read(buffer, 0, math.min(buffer.length, remaining)); read != -1 } do
-        remaining -= read
-      while stream.read(buffer) != -1 do ()
-    catch case _: Exception => ()
-    finally Try(stream.close())
+    val environment = Map(
+      "SEMANTIC_SCALA_TASTY_RECEIPT" -> receiptFile.toString,
+      "SEMANTIC_SCALA_TASTY_SOURCE" -> request.source.toString
+    ) ++ request.targetJava.map(selected =>
+      "SEMANTIC_SCALA_TASTY_JAVA_CONTEXT" -> SbtJavaContext.token(selected)
+    )
+    SbtProcessLifecycle.run(
+      request.workspace,
+      globalBase,
+      globalBase.getParent.resolve("r"),
+      command,
+      request.targetJava,
+      environment,
+      timeout
+    ) match
+      case SbtProcessOutcome.Completed(result) =>
+        SbtTastyCompileProcessOutcome.Completed(result.exitCode)
+      case SbtProcessOutcome.TimedOut(_, _) => SbtTastyCompileProcessOutcome.TimedOut
+      case SbtProcessOutcome.FailedToStart(_) => SbtTastyCompileProcessOutcome.FailedToStart

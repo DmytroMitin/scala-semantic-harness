@@ -21,14 +21,47 @@ class ReportConverterSuite extends munit.FunSuite:
     assertEquals(report.diagnostics.nonEmpty, true)
     assertEquals(report.diagnostics.head.position.map(_.line), Some(3))
 
-  test("test success parses munit-style counts when available"):
-    val output = "[info] Passed: Total 3, Failed 0, Errors 0, Passed 3"
-    val report = ReportConverter.testReport(SbtRunResult("test", 0, output, ""))
+  test("test success uses structured counts including an implicit skipped remainder"):
+    val result = SbtRunResult(
+      "test",
+      0,
+      "human console wording is not an oracle",
+      "",
+      Some(
+        SbtStructuredTestResult(
+          success = true,
+          SbtTestCounts(total = 4, passed = 3, failures = 0, errors = 0, skipped = 1)
+        )
+      )
+    )
+    val report = ReportConverter.testReport(result)
 
     assertEquals(report.success, true)
-    assertEquals(report.total, 3)
+    assertEquals(report.total, 4)
     assertEquals(report.passed, 3)
     assertEquals(report.failed, 0)
+
+  test("test failure combines structured framework failures and errors"):
+    val result = SbtRunResult(
+      "test",
+      0,
+      "",
+      "[error] suite failed",
+      Some(
+        SbtStructuredTestResult(
+          success = false,
+          SbtTestCounts(total = 3, passed = 1, failures = 1, errors = 1, skipped = 0)
+        )
+      )
+    )
+
+    val report = ReportConverter.testReport(result)
+
+    assertEquals(report.success, false)
+    assertEquals(report.total, 3)
+    assertEquals(report.passed, 1)
+    assertEquals(report.failed, 2)
+    assert(report.failures.nonEmpty)
 
   test("test failure uses zero counts when counts are unavailable"):
     val output = "[error] expected true but was false"
