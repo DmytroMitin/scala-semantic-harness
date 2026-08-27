@@ -34,11 +34,27 @@ execution ledger and does not promise delivery dates.
    Central primaries, while the deterministic two-application public URL
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
-2. Make external real-project feedback the next evidence milestone. Evaluate
-   concrete Scala decisions against the compiler, build/test, IDE/LSP, and
-   standard artifact tools already available to the user; retain the bounded
-   context described in [`docs/early-feedback.md`](docs/early-feedback.md).
-3. Keep post-compile TASTy evidence CLI-only and the MCP registry at exactly
+2. Continue fresh Scala/product development and bounded real-project validation
+   before the planned community announcement. After the announcement, make
+   external real-project feedback a primary source for the next semantic and
+   product gaps. Evaluate concrete Scala decisions against the compiler,
+   build/test, IDE/LSP, and standard artifact tools already available to the
+   user; retain the bounded context described in
+   [`docs/early-feedback.md`](docs/early-feedback.md). This is evidence
+   sequencing, not a delivery-date commitment.
+3. Retain Amazon Q Developer as a future, post-announcement client/provider
+   generalization candidate, not an immediate task or release gate. A future
+   preregistered experiment should first reverify current vendor and product
+   capabilities, prefer the CLI as an independent coding-agent/MCP client, use
+   the supported public semantic-scala distribution current at that time, and
+   compare a strong ordinary baseline with semantic-scala MCP on public Scala
+   decisions. Measure decision correctness, unsafe edits or selections,
+   evidence attribution, redundant calls, approvals/intervention, and wall
+   time; do not treat fewer calls alone as value. Keep client/provider
+   generalization separate from model generalization unless model identity and
+   version can be mechanically frozen and held comparable. This candidate does
+   not imply current qualification, support, or successful integration.
+4. Keep post-compile TASTy evidence CLI-only and the MCP registry at exactly
    eight tools. On the strongest frozen ordinary-tool comparison, exact-version
    Scala TASTy output, source-offset mapping, and classfile inspection recovered
    fact-equivalent point evidence. That scoped result demonstrates no primitive
@@ -47,19 +63,19 @@ execution ledger and does not promise delivery dates.
    ninth-tool exposure, and primitive-differentiation work are closed; revisit
    only for a materially different target or tool condition with a
    decision-relevant fact gap.
-4. Preserve the qualified canonical-skill install route and corrected
+5. Preserve the qualified canonical-skill install route and corrected
    `symbol-at` versus `point-evidence` boundary. Recent controlled selection
    evidence found cleaner behavior in some cases but no material generated-fact
    routing gain, so adoption effectiveness remains partial and immediate
    automatic skill retuning is not admitted.
-5. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
+6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
-6. Preserve the maintained real-project matrices and the narrow alpha-3
+7. Preserve the maintained real-project matrices and the narrow alpha-3
    SNAPSHOT project and target-JDK selectors admitted from their evidence.
    Continue to treat a selected row/runtime as bounded build evidence, not
    whole-workspace success, automatic project discovery, or general alternate
    JDK support.
-7. Admit new semantic capabilities only from concrete user, adoption,
+8. Admit new semantic capabilities only from concrete user, adoption,
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.
 
@@ -75,8 +91,20 @@ execution ledger and does not promise delivery dates.
 
 ## Composition and orchestration
 
-- Maintain the admitted CLI plus thin-MCP point-evidence shape and measure its
-  decision value against direct use of the same underlying operations.
+- Maintain the admitted CLI plus thin-MCP point-evidence shape and the current
+  `READY` composition/orchestration state. Deterministic composition evidence
+  now has a bounded live-agent qualifier on one frozen public Cats Effect case:
+  Codex CLI 0.149.1 with `gpt-5.4` compared fact-equivalent direct primitives
+  with coherent `point-evidence` in two low-reasoning pairs and one
+  medium-reasoning pair. Coherent results preserved typed non-attempt
+  attribution materially better in both configurations; at low reasoning they
+  also avoided more final merge/classification mistakes. Both arms retained
+  safe artifact selection and did not falsely claim static/live agreement.
+- Treat that result as a replicated, configuration-bounded interpretation and
+  attribution qualifier, not evidence of general client, model, provider,
+  repository, or reasoning-level superiority. Further replication on the same
+  client and target is not an immediate priority unless a materially different
+  condition is preregistered.
 - Continue comparing coherent operations with direct use of the same compiler,
   test, IDE/LSP, and MCP primitives.
 - Treat the post-compile TASTy lane as a current illustration of composition
