@@ -425,8 +425,34 @@ def smoke_package(plugin_root: Path, plugin_data: Path) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise PackagingError("representative CLI-backed MCP smoke omitted its payload")
         schema = payload.get("schemaVersion")
-        if schema != "semantic-scala.point-evidence-result.v1":
+        if schema != "semantic-scala.point-evidence-result.v2":
             raise PackagingError(f"representative CLI-backed MCP smoke returned schema {schema!r}")
+        position = payload.get("position")
+        if not isinstance(position, dict) or position != {"line": 1, "column": 8, "encoding": "UTF-16"}:
+            raise PackagingError("representative point-evidence position differs from the requested UTF-16 point")
+        discovery = payload.get("discovery")
+        if not isinstance(discovery, dict) or discovery.get("schemaVersion") != "semantic-scala.semanticdb-for-source.v2":
+            raise PackagingError("representative point-evidence discovery is not the current v2 contract")
+        if discovery.get("status") != "Unavailable":
+            raise PackagingError(f"empty plugin data should have unavailable SemanticDB evidence: {discovery}")
+        selection = payload.get("selection")
+        if not isinstance(selection, dict) or selection.get("status") != "NotSelectedUnavailable" or selection.get("artifact") is not None:
+            raise PackagingError(f"empty plugin data produced an unexpected artifact selection: {selection}")
+        live_point = payload.get("livePoint")
+        if not isinstance(live_point, dict) or live_point.get("status") != "Resolved":
+            raise PackagingError(f"representative source point did not resolve: {live_point}")
+        reconciliation = payload.get("reconciliation")
+        if not isinstance(reconciliation, dict) or reconciliation.get("schemaVersion") != "semantic-scala.reconcile-symbol-result.v2":
+            raise PackagingError("representative point-evidence reconciliation is not the current v2 contract")
+        if reconciliation.get("freshness") is not None:
+            raise PackagingError(f"unavailable artifact evidence reported freshness: {reconciliation}")
+        outcome = reconciliation.get("outcome")
+        if not isinstance(outcome, dict) or outcome.get("status") != "NotAttempted":
+            raise PackagingError(f"unavailable artifact evidence produced an unexpected outcome: {outcome}")
+        if outcome.get("result") is not None or outcome.get("qualificationReason") is not None:
+            raise PackagingError(f"unavailable artifact evidence fabricated a completed result: {outcome}")
+        if outcome.get("notAttemptedReason") != "ArtifactEvidenceUnavailable":
+            raise PackagingError(f"unavailable artifact evidence produced an unexpected reason: {outcome}")
         return {
             "pluginRoot": str(plugin_root),
             "pluginData": str(plugin_data),

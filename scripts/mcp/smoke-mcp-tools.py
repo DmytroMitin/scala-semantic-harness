@@ -6,8 +6,10 @@ from __future__ import annotations
 import json
 import os
 import selectors
+import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 from pathlib import Path
 from typing import Any
@@ -20,8 +22,9 @@ TEST_SCHEMA = "semantic-scala.test-result.v1"
 EFFECT_SUMMARY_SCHEMA = "semantic-scala.effect-summary.v1"
 SYMBOL_AT_SCHEMA = "semantic-scala.symbol-at-result.v1"
 SYMBOLS_SCHEMA = "semantic-scala.symbols-result.v1"
-RECONCILE_SCHEMA = "semantic-scala.reconcile-symbol-result.v1"
-POINT_EVIDENCE_SCHEMA = "semantic-scala.point-evidence-result.v1"
+RECONCILE_SCHEMA = "semantic-scala.reconcile-symbol-result.v2"
+POINT_EVIDENCE_SCHEMA = "semantic-scala.point-evidence-result.v2"
+SEMANTICDB_FOR_SOURCE_SCHEMA = "semantic-scala.semanticdb-for-source.v2"
 
 
 class SmokeFailure(Exception):
@@ -379,7 +382,6 @@ def validate_reconcile_symbol_fixture(process: subprocess.Popen[str], selector: 
         {"file": file, "line": 6, "col": 16, "semanticdb": semanticdb},
     )
     payload = structured.get("payload")
-    reconciled = payload.get("result") if isinstance(payload, dict) else None
     if result.get("isError") is not False or structured.get("ok") is not True:
         raise SmokeFailure(f"reconcile fixture should be ok/isError false: {result}")
     if structured.get("schemaVersion") != RECONCILE_SCHEMA:
@@ -389,25 +391,38 @@ def validate_reconcile_symbol_fixture(process: subprocess.Popen[str], selector: 
     source = payload.get("file")
     if not isinstance(source, str) or not source.endswith(file):
         raise SmokeFailure(f"reconcile file mismatch: {payload}")
-    if not isinstance(reconciled, dict):
-        raise SmokeFailure(f"reconcile result missing: {payload}")
-    if reconciled.get("status") != "RangeMatchOnly":
-        raise SmokeFailure(f"expected RangeMatchOnly fixture status, got: {reconciled}")
-    if not isinstance(reconciled.get("compilerSymbol"), str) or not reconciled["compilerSymbol"]:
-        raise SmokeFailure(f"reconcile compiler symbol missing: {reconciled}")
+    freshness = payload.get("freshness")
+    if not isinstance(freshness, dict) or freshness.get("status") != "Unverifiable":
+        raise SmokeFailure(f"expected Unverifiable reconcile freshness, got: {freshness}")
+    if freshness.get("reason") != "NoUniqueDocumentForSource":
+        raise SmokeFailure(f"unexpected reconcile qualification reason: {freshness}")
+    outcome = payload.get("outcome")
+    if not isinstance(outcome, dict) or outcome.get("status") != "NotAttempted":
+        raise SmokeFailure(f"expected typed not-attempted reconcile outcome, got: {outcome}")
+    if outcome.get("result") is not None or outcome.get("qualificationReason") is not None:
+        raise SmokeFailure(f"unmapped reconcile fixture fabricated a completed result: {outcome}")
+    if outcome.get("notAttemptedReason") != "SelectedArtifactChangedOrRemapped":
+        raise SmokeFailure(f"unexpected reconcile not-attempted reason: {outcome}")
     print("PASS semantic_reconcile_symbol fixture")
 
 
 def validate_point_evidence_fixture(process: subprocess.Popen[str], selector: selectors.BaseSelector, root: Path) -> None:
-    file = "modules/presentation-compiler/src/test/resources/presentation-fixtures/simple/Main.scala"
-    result, structured = call_tool(
-        process,
-        selector,
-        39,
-        "semantic_point_evidence",
-        root,
-        {"file": file, "line": 6, "col": 16},
-    )
+    source_fixture = root / "modules/presentation-compiler/src/test/resources/presentation-fixtures/simple/Main.scala"
+    semanticdb_fixture = root / "modules/semanticdb-reader/src/test/resources/semanticdb-fixtures/simple/Main.scala.semanticdb"
+    with tempfile.TemporaryDirectory(prefix="semantic-scala-mcp-smoke-") as temporary:
+        workspace = Path(temporary)
+        semanticdb = workspace / "target/META-INF/semanticdb/Main.scala.semanticdb"
+        semanticdb.parent.mkdir(parents=True)
+        shutil.copyfile(source_fixture, workspace / "Main.scala")
+        shutil.copyfile(semanticdb_fixture, semanticdb)
+        result, structured = call_tool(
+            process,
+            selector,
+            39,
+            "semantic_point_evidence",
+            workspace,
+            {"file": "Main.scala", "line": 6, "col": 16},
+        )
     payload = structured.get("payload")
     if result.get("isError") is not False or structured.get("ok") is not True:
         raise SmokeFailure(f"point-evidence fixture should be ok/isError false: {result}")
@@ -416,10 +431,44 @@ def validate_point_evidence_fixture(process: subprocess.Popen[str], selector: se
     if not isinstance(payload, dict) or payload.get("schemaVersion") != POINT_EVIDENCE_SCHEMA:
         raise SmokeFailure(f"point-evidence payload mismatch: {payload}")
     position = payload.get("position")
-    if not isinstance(position, dict) or position.get("encoding") != "UTF-16":
+    if not isinstance(position, dict) or position != {"line": 6, "column": 16, "encoding": "UTF-16"}:
         raise SmokeFailure(f"point-evidence position mismatch: {payload}")
-    if not isinstance(payload.get("discovery"), dict) or not isinstance(payload.get("selection"), dict):
-        raise SmokeFailure(f"point-evidence composition missing: {payload}")
+    discovery = payload.get("discovery")
+    if not isinstance(discovery, dict) or discovery.get("schemaVersion") != SEMANTICDB_FOR_SOURCE_SCHEMA:
+        raise SmokeFailure(f"point-evidence discovery mismatch: {discovery}")
+    if discovery.get("status") != "UniqueMatch" or len(discovery.get("matches", [])) != 1:
+        raise SmokeFailure(f"point-evidence should discover one copied fixture: {discovery}")
+    match = discovery["matches"][0]
+    match_freshness = match.get("freshness") if isinstance(match, dict) else None
+    if not isinstance(match_freshness, dict) or match_freshness.get("status") != "Unverifiable":
+        raise SmokeFailure(f"copied fixture should be Unverifiable: {match}")
+    if match_freshness.get("reason") != "MissingDocumentIdentity":
+        raise SmokeFailure(f"unexpected copied-fixture qualification: {match_freshness}")
+    selection = payload.get("selection")
+    if not isinstance(selection, dict) or selection.get("status") != "SelectedUnverifiable":
+        raise SmokeFailure(f"point-evidence selection mismatch: {selection}")
+    live_point = payload.get("livePoint")
+    live_result = live_point.get("result") if isinstance(live_point, dict) else None
+    if not isinstance(live_point, dict) or live_point.get("status") != "Resolved":
+        raise SmokeFailure(f"point-evidence live point mismatch: {live_point}")
+    if not isinstance(live_result, dict) or not isinstance(live_result.get("symbol"), str) or not live_result["symbol"]:
+        raise SmokeFailure(f"point-evidence live symbol missing: {live_result}")
+    reconciliation = payload.get("reconciliation")
+    if not isinstance(reconciliation, dict) or reconciliation.get("schemaVersion") != RECONCILE_SCHEMA:
+        raise SmokeFailure(f"point-evidence reconciliation mismatch: {reconciliation}")
+    freshness = reconciliation.get("freshness")
+    if not isinstance(freshness, dict) or freshness.get("status") != "Unverifiable":
+        raise SmokeFailure(f"point-evidence reconciliation freshness mismatch: {freshness}")
+    outcome = reconciliation.get("outcome")
+    reconciled = outcome.get("result") if isinstance(outcome, dict) else None
+    if not isinstance(outcome, dict) or outcome.get("status") != "CompletedQualifiedUnverifiable":
+        raise SmokeFailure(f"point-evidence qualified outcome missing: {outcome}")
+    if outcome.get("qualificationReason") != "MissingDocumentIdentity" or outcome.get("notAttemptedReason") is not None:
+        raise SmokeFailure(f"point-evidence qualification mismatch: {outcome}")
+    if not isinstance(reconciled, dict) or reconciled.get("status") != "RangeMatchOnly":
+        raise SmokeFailure(f"expected qualified RangeMatchOnly fixture result, got: {reconciled}")
+    if not isinstance(reconciled.get("compilerSymbol"), str) or not reconciled["compilerSymbol"]:
+        raise SmokeFailure(f"point-evidence compiler symbol missing: {reconciled}")
     print("PASS semantic_point_evidence fixture")
 
 

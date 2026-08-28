@@ -278,8 +278,17 @@ reliable multi-workflow action change.
 
 Opt-in `semanticdb-status.v2` exposes the factual all-document subset: raw
 artifact metadata, exact duplicate groups, explicit candidate bounds, and
-separate artifact/coverage status. Provenance, freshness, source selection,
-and `semanticdb-for-source.v2` remain proposals.
+separate artifact/coverage status. It remains an artifact-inventory contract
+and does not itself assess source freshness. Current
+`semanticdb-for-source.v2` maps one captured source snapshot to existing
+artifact candidates and reports `Fresh`, `Stale`, `Unverifiable`, or
+`SourceChangedDuringRequest` from content identity. Candidate mapping and
+freshness assessment are separate facts. Current direct reconciliation and
+point evidence use freshness-aware v2 outcomes: stale static evidence remains
+visible but cannot complete reconciliation, while unverifiable evidence can
+complete only with an explicit qualification. `Fresh` is not whole-project or
+build freshness, and artifact-only `symbols-result.v1` remains outside
+current-source freshness.
 
 An internal copy-level model records independently qualified provenance,
 source-set, output-kind, producer, module, and configuration hints with
@@ -830,11 +839,12 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
 - `semanticdb-for-source` maps a source file to existing candidates with
   `semanticdb-for-source --file <path> --workspace <path> --json`; it reports
   ambiguous and partial evidence rather than choosing silently.
-- Discovery and mapping do not currently identify module/build target,
-  provenance, or source freshness. The fixed source-root
-  list covers only conventional main/test Scala and Java roots, so other roots
-  such as `src/test/resources` can return `NoMatch` even when a nearby fixture
-  exists.
+- Discovery and mapping do not identify a canonical module or build target.
+  Source-paired discovery v2 does report captured content provenance and
+  freshness independently from candidate path/URI mapping. The fixed
+  source-root list covers only conventional main/test Scala and Java roots, so
+  other roots such as `src/test/resources` can return `NoMatch` even when a
+  nearby fixture exists.
 - Opt-in status v2 keeps v1 unchanged, parses every document, hashes raw bytes,
   reports exact duplicate groups, bounds candidate objects deterministically,
   and preserves complete aggregate/group facts. Artifact availability does not
@@ -851,11 +861,13 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
   provenance/source-set/output/producer/module/configuration hints. Structured
   path rules remain heuristic; there is no canonical build-target field, and
   Git/Bloop/BSP metadata enrichment is deferred. Current status, coverage, and
-  mapping schemas do not expose or select by hints. Freshness/selection, public
-  hint fields, `semanticdb-for-source.v2`, and higher-level source selection
-  remain deferred. A bounded compatibility matrix has tested Scala 2.13.18 and
-  Scala 3.3.8 artifacts; target-version claims remain command-specific rather
-  than inferred from artifact availability.
+  source-mapping schemas do not expose or select by those hints. Public hint
+  fields and canonical build-target selection remain deferred;
+  `semanticdb-for-source.v2` freshness and `point-evidence-result.v2`
+  freshness-aware artifact selection are current. A bounded compatibility
+  matrix has tested Scala 2.13.18 and Scala 3.3.8 artifacts; target-version
+  claims remain command-specific rather than inferred from artifact
+  availability.
 - `symbols --semanticdb` and `reconcile-symbol --semanticdb` still require
   explicit SemanticDB paths.
 - It does not generate SemanticDB dynamically.

@@ -163,7 +163,29 @@ for line in sys.stdin:
             "structuredContent": {
                 "ok": ok,
                 "payload": (
-                    {"schemaVersion": "semantic-scala.point-evidence-result.v1"}
+                    {
+                        "schemaVersion": "semantic-scala.point-evidence-result.v2",
+                        "position": {"line": 1, "column": 8, "encoding": "UTF-16"},
+                        "discovery": {
+                            "schemaVersion": "semantic-scala.semanticdb-for-source.v2",
+                            "status": "Unavailable",
+                        },
+                        "selection": {
+                            "status": "NotSelectedUnavailable",
+                            "artifact": None,
+                        },
+                        "livePoint": {"status": "Resolved"},
+                        "reconciliation": {
+                            "schemaVersion": "semantic-scala.reconcile-symbol-result.v2",
+                            "freshness": None,
+                            "outcome": {
+                                "status": "NotAttempted",
+                                "result": None,
+                                "qualificationReason": None,
+                                "notAttemptedReason": "ArtifactEvidenceUnavailable",
+                            },
+                        },
+                    }
                     if ok else None
                 ),
             }
@@ -190,7 +212,7 @@ for line in sys.stdin:
         self.assertEqual(smoke["toolNames"][0], "semantic_compile")
         self.assertEqual(smoke["representativeTool"], "semantic_point_evidence")
         self.assertEqual(
-            smoke["representativeSchema"], "semantic-scala.point-evidence-result.v1"
+            smoke["representativeSchema"], "semantic-scala.point-evidence-result.v2"
         )
 
 
