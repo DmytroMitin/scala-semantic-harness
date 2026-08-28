@@ -1,22 +1,28 @@
 # semantic-reconciliation
 
-Minimal reconciliation layer between static SemanticDB facts and dynamic
-presentation compiler `symbol-at` results.
+Snapshot-consistent reconciliation between static SemanticDB facts and dynamic
+Presentation Compiler `symbol-at` results.
 
-Current command surface:
+Current command surfaces:
 
 ```bash
 semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path> --json
+semantic-scala point-evidence --workspace <dir> --file <path> --line <n> --col <n> --json
 ```
 
-The module also contains the internal `PointEvidenceService` composition seam.
-One request carries a workspace, source file, one-based line, and one-based
-UTF-16 column. Its typed result retains the complete source-to-SemanticDB
-discovery report, selects an artifact only for one parsed match, obtains one
-live point result, and reconciles without querying the Presentation Compiler a
-second time. There is no public command, JSON schema, or MCP tool for this seam.
+`reconcile-symbol` captures source and artifact content once and never asks the
+Presentation Compiler to reread the path. `point-evidence` adds conservative
+source-to-artifact discovery and freshness-aware selection without accepting a
+caller-selected artifact. Both recheck the source before returning.
 
-`ReconciliationStatus` is encoded as a JSON string:
+Fresh evidence can produce `CompletedFresh`. Unverifiable evidence can produce
+only `CompletedQualifiedUnverifiable`. Stale evidence remains reported but
+produces `NotAttempted` / `StaleArtifact`, and source mutation produces
+`NotAttempted` / `SourceChangedDuringRequest`. A stale point-evidence request
+may still report current live point evidence; it never labels that combination
+as completed reconciliation.
+
+Nested `ReconciliationStatus` remains:
 
 - `ExactMatch`
 - `RangeMatchOnly`
@@ -24,15 +30,19 @@ second time. There is no public command, JSON schema, or MCP tool for this seam.
 - `NoMatch`
 
 Only `ExactMatch` means the SemanticDB symbol and compiler symbol strings are
-identical. `displayName` is not identity.
+identical. `displayName` is not identity. None of these statuses proves a
+whole-project compile.
 
 ## Limits
 
-- File-scoped only.
-- Reads one explicit `.semanticdb` file.
-- Uses the existing presentation compiler `symbol-at` query.
+- Source-paired and request-local only.
+- Reads existing SemanticDB artifacts; it does not build or refresh them.
+- Uses captured source content for the existing Presentation Compiler query.
 - Does not normalize symbol strings.
 - Does not silently choose ambiguous, partial, or unparseable artifacts.
-- Does not infer artifact freshness from a mismatch.
-- No Metals, BSP, LSP, TASTy, MCP, graph storage, vector search, caching,
+- Content freshness is not build provenance or complete source coverage.
+- No Metals, BSP, LSP, TASTy, graph storage, vector search, caching,
   daemonization, dynamic SemanticDB generation, or project-wide indexing.
+
+The v1 reconciliation and point-evidence models remain frozen historical
+schemas and do not carry the v2 snapshot/freshness guarantees.

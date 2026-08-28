@@ -327,10 +327,14 @@ benchmark reproducibility beyond its stated small-sample gate.
   official-schema, determinism, and relocated-runtime evidence, but no
   supported release channel or conformant installed-client adoption proof.
 - The MCP surface remains the documented eight-tool stdio adapter.
-- Point evidence is bounded to one contained source position and existing
-  artifacts; it does not assess freshness or replace compilation and tests.
-- SemanticDB commands inspect existing artifacts; they do not establish that
-  every source is covered or fresh.
+- Source-paired `semanticdb-for-source`, `point-evidence`, and
+  `reconcile-symbol` requests now report snapshot-consistent content freshness.
+  Fresh means the captured source content agrees with the captured SemanticDB
+  document; it does not mean a build ran or that the whole project compiles.
+- Stale SemanticDB remains visible but cannot produce completed reconciliation.
+  Unverifiable evidence stays explicit and can complete only as qualified
+  evidence. SemanticDB inventory and coverage still do not establish that every
+  source is covered or fresh.
 - Presentation Compiler renderings are bounded evidence, not whole-project
   compile proof.
 - The canonical skill selects `symbol-at` for one exact Presentation Compiler

@@ -9,6 +9,7 @@ import java.util.EnumSet
 import java.nio.file.Files
 import semantic.harness.semanticdb_reader.SemanticdbForSource
 import semantic.harness.semanticdb_reader.SemanticdbForSourceReport
+import semantic.harness.semanticdb_reader.SemanticdbForSourceReportV2
 import semantic.harness.semanticdb_reader.SemanticdbCoverage
 import semantic.harness.semanticdb_reader.SemanticdbCoverageReport
 import semantic.harness.semanticdb_reader.SemanticdbStatus
@@ -31,9 +32,14 @@ import semantic.harness.presentation.InferTypeBatchRequest
 import semantic.harness.presentation.InferTypeBatchRequestItem
 import semantic.harness.presentation.SymbolAtResult
 import semantic.harness.reconciliation.ReconciliationResult
+import semantic.harness.reconciliation.ReconciliationResultV2
+import semantic.harness.reconciliation.ReconciliationOutcomeV2
+import semantic.harness.reconciliation.ReconciliationNotAttemptedReasonV2
 import semantic.harness.reconciliation.ReconciliationStatus
 import semantic.harness.reconciliation.PointArtifactSelectionStatus
 import semantic.harness.reconciliation.PointEvidenceReport
+import semantic.harness.reconciliation.PointEvidenceReportV2
+import semantic.harness.reconciliation.PointArtifactSelectionStatusV2
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import semantic.harness.sbt_runner.SbtRunResult
 import semantic.harness.sbt_runner.SbtRunner
@@ -217,12 +223,12 @@ class CliJsonSuite extends munit.FunSuite:
 
     assertEquals(result.exitCode, 0)
     assertEquals(result.stderr, None)
-    val decoded = decode[PointEvidenceReport](result.stdout.getOrElse(""))
-    assertEquals(decoded.map(_.schemaVersion), Right(PointEvidenceReport.SchemaVersion))
+    val decoded = decode[PointEvidenceReportV2](result.stdout.getOrElse(""))
+    assertEquals(decoded.map(_.schemaVersion), Right(PointEvidenceReportV2.SchemaVersion))
     assertEquals(decoded.map(_.position.encoding), Right("UTF-16"))
     assertEquals(
       decoded.map(_.selection.status),
-      Right(PointArtifactSelectionStatus.NotSelectedUnavailable)
+      Right(PointArtifactSelectionStatusV2.NotSelectedUnavailable)
     )
     assert(decoded.exists(_.discovery.matches.isEmpty))
 
@@ -466,8 +472,8 @@ class CliJsonSuite extends munit.FunSuite:
 
     assertEquals(result.stderr, None)
     assertEquals(result.exitCode, 0)
-    val decoded = decode[SemanticdbForSourceReport](result.stdout.getOrElse(""))
-    assertEquals(decoded.map(_.schemaVersion), Right(SemanticdbForSourceReport.SchemaVersion))
+    val decoded = decode[SemanticdbForSourceReportV2](result.stdout.getOrElse(""))
+    assertEquals(decoded.map(_.schemaVersion), Right(SemanticdbForSourceReportV2.SchemaVersion))
     assertEquals(decoded.map(_.status), Right(SemanticdbForSource.StatusUniqueMatch))
     assertEquals(decoded.map(_.matches.map(_.matchKind)), Right(List(SemanticdbForSource.MatchMetaInfSuffix)))
 
@@ -1267,7 +1273,7 @@ class CliJsonSuite extends munit.FunSuite:
       assertEquals(cacheService.calls, 0)
     finally Files.deleteIfExists(requestPath)
 
-  test("reconcile-symbol --json returns ReconciliationResult JSON only"):
+  test("reconcile-symbol --json returns the v2 closed envelope"):
     val result = CliApp.run(
       List(
         "reconcile-symbol",
@@ -1287,12 +1293,15 @@ class CliJsonSuite extends munit.FunSuite:
 
     assertEquals(result.stderr, None)
     assertEquals(result.exitCode, 0)
-    val decoded = decode[ReconciliationResult](result.stdout.getOrElse(""))
-    assertEquals(decoded.map(_.schemaVersion), Right(ReconciliationResult.SchemaVersion))
+    val decoded = decode[ReconciliationResultV2](result.stdout.getOrElse(""))
+    assertEquals(decoded.map(_.schemaVersion), Right(ReconciliationResultV2.SchemaVersion))
     assert(decoded.exists(_.file.endsWith("Main.scala")))
-    assert(decoded.exists(_.result.status != ReconciliationStatus.ExactMatch))
+    assertEquals(
+      decoded.map(_.outcome),
+      Right(ReconciliationOutcomeV2.NotAttempted(ReconciliationNotAttemptedReasonV2.SelectedArtifactChangedOrRemapped))
+    )
 
-  test("reconcile-symbol valid no-match query exits zero"):
+  test("reconcile-symbol typed not-attempted domain result exits zero"):
     val result = CliApp.run(
       List(
         "reconcile-symbol",
@@ -1312,9 +1321,9 @@ class CliJsonSuite extends munit.FunSuite:
 
     assertEquals(result.stderr, None)
     assertEquals(result.exitCode, 0)
-    val decoded = decode[ReconciliationResult](result.stdout.getOrElse(""))
-    assertEquals(decoded.map(_.schemaVersion), Right(ReconciliationResult.SchemaVersion))
-    assertEquals(decoded.map(_.result.status), Right(ReconciliationStatus.NoMatch))
+    val decoded = decode[ReconciliationResultV2](result.stdout.getOrElse(""))
+    assertEquals(decoded.map(_.schemaVersion), Right(ReconciliationResultV2.SchemaVersion))
+    assert(decoded.exists(_.outcome.isInstanceOf[ReconciliationOutcomeV2.NotAttempted]))
 
   test("reconcile-symbol returns non-zero and stderr for invalid inputs"):
     val invalidSource = CliApp.run(

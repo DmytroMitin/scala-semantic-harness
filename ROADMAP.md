@@ -85,6 +85,9 @@ execution ledger and does not promise delivery dates.
   Presentation Compiler, or SemanticDB surface.
 - Preserve provenance, freshness, coverage, disagreement, and uncertainty in
   public results.
+- Keep source-paired SemanticDB discovery, point evidence, and reconciliation
+  snapshot-consistent: content identity owns freshness, stale artifacts cannot
+  complete reconciliation, and unverifiable evidence remains qualified.
 - Add capabilities only after a decision-relevant gap is demonstrated against
   strong ordinary tooling.
 - Keep resource and output bounds explicit and tested.

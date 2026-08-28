@@ -7,6 +7,8 @@ import io.circe.Json
 import io.circe.parser.parse
 import semantic.harness.reconciliation.ReconciliationResult
 import semantic.harness.reconciliation.PointEvidenceReport
+import semantic.harness.reconciliation.ReconciliationResultV2
+import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -177,7 +179,7 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
 
       assertEquals(response.hcursor.downField("result").downField("isError").as[Boolean].toOption, Some(false))
       assertEquals(wrapper.hcursor.downField("ok").as[Boolean].toOption, Some(true))
-      assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(PointEvidenceReport.SchemaVersion))
+      assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(PointEvidenceReportV2.SchemaVersion))
       assertEquals(
         wrapper.hcursor.downField("payload").downField("selection").downField("status").as[String].toOption,
         Some("NotSelectedUnavailable")
@@ -199,7 +201,7 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       val wrapper = structuredContent(response)
       assertEquals(response.hcursor.downField("result").downField("isError").as[Boolean].toOption, Some(true))
       assertEquals(wrapper.hcursor.downField("ok").as[Boolean].toOption, Some(false))
-      assert(wrapper.hcursor.downField("error").as[String].toOption.exists(_.contains(PointEvidenceReport.SchemaVersion)))
+      assert(wrapper.hcursor.downField("error").as[String].toOption.exists(_.contains(PointEvidenceReportV2.SchemaVersion)))
     }
 
   test("tools/call returns wrapper JSON for successful compile payload"):
@@ -383,7 +385,7 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       assertEquals(response.hcursor.downField("result").downField("isError").as[Boolean].toOption, Some(false))
       assertEquals(wrapper.hcursor.downField("ok").as[Boolean].toOption, Some(true))
       assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(SemanticScalaCli.ReconcileSymbolSchemaVersion))
-      assertEquals(wrapper.hcursor.downField("payload").downField("schemaVersion").as[String].toOption, Some(ReconciliationResult.SchemaVersion))
+      assertEquals(wrapper.hcursor.downField("payload").downField("schemaVersion").as[String].toOption, Some(ReconciliationResultV2.SchemaVersion))
       assertEquals(wrapper.hcursor.downField("payload").downField("file").as[String].toOption, Some("src/main/scala/example/Main.scala"))
       assertEquals(reconciliationStatus(wrapper), Some("ExactMatch"))
     }
@@ -994,14 +996,14 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
     ProcessResult(
       exitCode = 0,
       stdout =
-        s"""{"schemaVersion":"${ReconciliationResult.SchemaVersion}","file":"src/main/scala/example/Main.scala","queryPosition":{"startLine":5,"startCharacter":15,"endLine":5,"endCharacter":15},"result":{"semanticdbSymbol":"example/Main.add().","compilerSymbol":"example/Main.add().","displayName":"add","range":{"startLine":5,"startCharacter":6,"endLine":5,"endCharacter":9},"status":"$status"}}""",
+        s"""{"schemaVersion":"${ReconciliationResultV2.SchemaVersion}","file":"src/main/scala/example/Main.scala","semanticdb":"target/Main.scala.semanticdb","queryPosition":{"startLine":5,"startCharacter":15,"endLine":5,"endCharacter":15},"freshness":null,"outcome":{"status":"CompletedFresh","result":{"semanticdbSymbol":"example/Main.add().","compilerSymbol":"example/Main.add().","displayName":"add","range":{"startLine":5,"startCharacter":6,"endLine":5,"endCharacter":9},"status":"$status"},"qualificationReason":null,"notAttemptedReason":null}}""",
       stderr = ""
     )
 
   private def pointEvidencePayload: ProcessResult =
     ProcessResult(
       exitCode = 0,
-      stdout = s"""{"schemaVersion":"${PointEvidenceReport.SchemaVersion}","workspace":"/workspace","sourceFile":"/workspace/src/main/scala/example/Main.scala","position":{"line":2,"column":7,"encoding":"UTF-16"},"discovery":{},"selection":{"status":"NotSelectedUnavailable"},"livePoint":{"status":"Unresolved"},"reconciliation":{"status":"NotAttempted"}}""",
+      stdout = s"""{"schemaVersion":"${PointEvidenceReportV2.SchemaVersion}","workspace":"/workspace","sourceFile":"/workspace/src/main/scala/example/Main.scala","position":{"line":2,"column":7,"encoding":"UTF-16"},"discovery":{},"selection":{"status":"NotSelectedUnavailable"},"livePoint":{"status":"Unresolved"},"reconciliation":{"outcome":{"status":"NotAttempted"}}}""",
       stderr = ""
     )
 
@@ -1026,6 +1028,7 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
   private def reconciliationStatus(wrapper: Json): Option[String] =
     wrapper.hcursor
       .downField("payload")
+      .downField("outcome")
       .downField("result")
       .downField("status")
       .as[String]

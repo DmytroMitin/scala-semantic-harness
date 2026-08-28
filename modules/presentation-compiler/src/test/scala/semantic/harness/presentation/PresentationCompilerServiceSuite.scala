@@ -47,6 +47,17 @@ class PresentationCompilerServiceSuite extends munit.FunSuite:
     val symbol = result.fold(message => fail(message), identity)
     assert(symbol.displayName.exists(_.contains("unicodeOptional")))
 
+  test("symbolAtSnapshot queries the supplied immutable source rather than rereading the path"):
+    val path = Files.createTempFile("presentation-snapshot", ".scala")
+    val captured = Files.readString(fixture)
+    Files.writeString(path, "object Changed")
+
+    val result = PresentationCompilerService().symbolAtSnapshot(path, captured, line = 6, column = 16)
+
+    val symbol = result.fold(message => fail(message), identity)
+    assert(symbol.symbol.exists(_.nonEmpty))
+    assertEquals(symbol.source, path.toString)
+
   test("SymbolAtResult encodes schemaVersion and decodes legacy JSON"):
     val result = SymbolAtResult(
       symbol = Some("example/Main.add()."),

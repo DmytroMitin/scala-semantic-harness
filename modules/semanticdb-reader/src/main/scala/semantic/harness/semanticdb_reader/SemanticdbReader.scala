@@ -24,7 +24,37 @@ object SemanticdbReader:
         case exception: Exception =>
           Left(s"Unable to read SemanticDB file $path: ${exception.getMessage}")
 
-  private def summary(document: TextDocument): SemanticFileSummary =
+  def readSnapshot(path: Path): Either[String, ArtifactSnapshot] =
+    if !Files.exists(path) then Left(s"SemanticDB file does not exist: $path")
+    else if !Files.isRegularFile(path) then Left(s"SemanticDB path is not a file: $path")
+    else if path.getFileName == null || !path.getFileName.toString.endsWith(".semanticdb") then
+      Left(s"SemanticDB path must point to a .semanticdb file: $path")
+    else
+      try
+        val normalized = path.toAbsolutePath.normalize()
+        val bytes = Files.readAllBytes(normalized)
+        val documents = TextDocuments.parseFrom(bytes).documents.toList.zipWithIndex.map { case (document, index) =>
+          SemanticdbDocumentSnapshot(
+            index = index,
+            uri = document.uri,
+            semanticdbMd5 = Option(document.md5).filter(_.nonEmpty),
+            hasEmbeddedText = document.text.nonEmpty,
+            summary = summary(document),
+            embeddedText = Option(document.text).filter(_.nonEmpty)
+          )
+        }
+        if documents.isEmpty then Left(s"SemanticDB file contains no documents: $path")
+        else Right(ArtifactSnapshot(
+          path = normalized,
+          sha256 = Digests.sha256(bytes),
+          mtimeMillis = Files.getLastModifiedTime(normalized).toMillis,
+          documents = documents
+        ))
+      catch
+        case exception: Exception =>
+          Left(s"Unable to read SemanticDB file $path: ${exception.getMessage}")
+
+  private[semanticdb_reader] def summary(document: TextDocument): SemanticFileSummary =
     SemanticFileSummary(
       uri = document.uri,
       symbols = document.symbols.map(symbol).toList,

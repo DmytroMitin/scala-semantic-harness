@@ -28,7 +28,8 @@ IDE/LSP/MCP tooling directly.
 - bounded Presentation Compiler type and symbol queries;
 - dynamic/static symbol reconciliation;
 - a public semantic point-evidence composition with typed discovery,
-  live-point, selection, and reconciliation outcomes;
+  snapshot-consistent content freshness, live-point, selection, and
+  reconciliation outcomes, including a stale-artifact completion gate;
 - a CLI-only same-request post-compile TASTy point-evidence operation and
   strengthened sbt-backed Presentation Compiler context warnings;
 - bounded sbt 1.12.15 / 2.0.6 compatibility for the existing selected
@@ -42,6 +43,15 @@ IDE/LSP/MCP tooling directly.
 
 Compiler, build, and tests remain the final correctness oracle. Semantic
 results preserve their stated scope and uncertainty.
+
+The current alpha-3 SNAPSHOT source-paired SemanticDB v2 correction has one
+bounded real-project acceptance replay on frozen Cats Effect / Scala 3.3.7.
+Clean captured source/artifact identities produced `Fresh` and
+`CompletedFresh`; two independent post-compile source edits retained the same
+artifact bytes, produced `Stale`, and were structurally gated as
+`NotAttempted(StaleArtifact)` in composed and direct reconciliation. This is a
+focused provenance qualification, not a release, whole-project build, broad
+ecosystem, or general freshness claim.
 
 ## Evidence and readiness
 

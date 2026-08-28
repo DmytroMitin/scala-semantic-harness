@@ -299,7 +299,7 @@ Behavior:
   `semantic-scala reconcile-symbol --file <file> --line <line> --col <col> --semanticdb <semanticdb> --json`;
 - captures stdout, stderr, and exit code;
 - parses stdout as a JSON object when the process exits `0`;
-- requires `schemaVersion = semantic-scala.reconcile-symbol-result.v1`.
+- requires `schemaVersion = semantic-scala.reconcile-symbol-result.v2`.
 
 ## semantic_point_evidence
 
@@ -318,7 +318,7 @@ The adapter requires an existing workspace, a relative contained regular
 `.scala` file, and positive one-based UTF-16 coordinates. It runs exactly
 `semantic-scala point-evidence --workspace . --file <file> --line <line> --col
 <col> --json` in that workspace and accepts only
-`semantic-scala.point-evidence-result.v1`.
+`semantic-scala.point-evidence-result.v2`.
 
 ## MCP Methods
 
@@ -468,9 +468,11 @@ payload. These statuses are domain evidence, not MCP transport status.
 - `NoMatch`: no useful reconciliation match.
 
 When the CLI exits `0` and emits
-`semantic-scala.reconcile-symbol-result.v1`, all of these statuses return
-wrapper `ok: true` and MCP `isError: false`. CLI/runtime/schema failures return
-wrapper `ok: false` and MCP `isError: true`.
+`semantic-scala.reconcile-symbol-result.v2`, completed fresh or qualified
+outcomes can contain these statuses and return wrapper `ok: true` and MCP
+`isError: false`. Typed stale/source-changed `NotAttempted` outcomes are also
+successful domain evidence. CLI/runtime/schema failures return wrapper
+`ok: false` and MCP `isError: true`.
 
 ## Safety Notes
 

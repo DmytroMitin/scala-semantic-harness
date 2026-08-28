@@ -10,7 +10,10 @@ import scala.meta.internal.metals.CompilerOffsetParams
 
 final case class PresentationCompilerService() extends DynamicSemanticService:
   override def symbolAt(file: Path, line: Int, column: Int): Either[String, SymbolAtResult] =
-    validate(file, line, column).flatMap { source =>
+    validate(file, line, column).flatMap(source => symbolAtSnapshot(file, source, line, column))
+
+  def symbolAtSnapshot(file: Path, source: String, line: Int, column: Int): Either[String, SymbolAtResult] =
+    validateSnapshot(file, line, column).flatMap { _ =>
       SourcePosition.offset(source, line, column).flatMap { value =>
         val compiler = ScalaPresentationCompiler(classpath = runtimeClasspath)
         try
@@ -30,8 +33,7 @@ final case class PresentationCompilerService() extends DynamicSemanticService:
         catch
           case exception: Exception =>
             Left(s"Unable to query symbol at $file:$line:$column: ${exception.getMessage}")
-        finally
-          compiler.shutdown()
+        finally compiler.shutdown()
       }
     }
 
@@ -97,6 +99,13 @@ final case class PresentationCompilerService() extends DynamicSemanticService:
     else if file.getFileName == null || !file.getFileName.toString.endsWith(".scala") then
       Left(s"Source path must point to a .scala file: $file")
     else Right(Files.readString(file))
+
+  private def validateSnapshot(file: Path, line: Int, column: Int): Either[String, Unit] =
+    if line <= 0 then Left(s"Line must be positive: $line")
+    else if column <= 0 then Left(s"Column must be positive: $column")
+    else if file.getFileName == null || !file.getFileName.toString.endsWith(".scala") then
+      Left(s"Source path must point to a .scala file: $file")
+    else Right(())
 
   private def hoverMarkup(hover: org.eclipse.lsp4j.Hover): Option[String] =
     Option(hover)

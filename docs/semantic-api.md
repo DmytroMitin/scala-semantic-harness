@@ -101,12 +101,14 @@ read-only, does not run sbt or generate SemanticDB, and adds no MCP behavior.
 `semanticdb-for-source` uses that discovery metadata to map one source file to
 zero, one, or many candidates. It uses full URI/path signals, preserves
 unparseable path matches as partial evidence, and reports ambiguity explicitly.
-It does not run sbt, generate SemanticDB, or add MCP behavior.
+Its v2 report captures source and artifact bytes once per request and reports
+`Fresh`, `Stale`, `Unverifiable`, or `SourceChangedDuringRequest` from content
+identity. It does not run sbt, generate SemanticDB, or add MCP behavior.
 `point-evidence` composes source-to-artifact discovery, unique parsed-artifact
-selection, a live Presentation Compiler point query, and conditional
+selection, a snapshot-backed Presentation Compiler point query, and conditional
 reconciliation. It accepts no caller-selected artifact, reports typed
-non-selection and not-attempted reasons, and does not assess artifact
-freshness. Its standalone contract is in
+freshness-aware selection and not-attempted reasons, and keeps stale evidence
+visible without treating it as completed reconciliation. Its standalone contract is in
 [`docs/point-evidence.md`](point-evidence.md).
 `symbols` reads one explicit `.semanticdb` file path and returns a file-scoped
 SemanticDB summary. Dynamic SemanticDB generation remains deferred.
@@ -222,9 +224,9 @@ Current schema-versioned payloads:
 - `semanticdb-coverage --workspace <path> --json`:
   `semantic-scala.semanticdb-coverage.v1`
 - `semanticdb-for-source --file <path> --workspace <path> --json`:
-  `semantic-scala.semanticdb-for-source.v1`
+  `semantic-scala.semanticdb-for-source.v2`
 - `point-evidence --file <path> --workspace <path> --line <n> --col <n>
-  --json`: `semantic-scala.point-evidence-result.v1`
+  --json`: `semantic-scala.point-evidence-result.v2`
 - `tasty-point-evidence --workspace <dir> --sbt-project <id> --file
   <relative.scala> --line <n> --col <n> --json`:
   `semantic-scala.tasty-point-evidence.v1`
@@ -241,7 +243,7 @@ Current schema-versioned payloads:
   `semantic-scala.infer-type-batch-result.v1`; its input is
   `semantic-scala.infer-type-batch-request.v1`
 - `reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path>
-  --json`: `semantic-scala.reconcile-symbol-result.v1`
+  --json`: `semantic-scala.reconcile-symbol-result.v2`
 - `effect-summary --json`: `semantic-scala.effect-summary.v1`
 
 Current pre-versioned payloads:
@@ -434,19 +436,26 @@ Coverage count definitions:
   unique evidence match. It does not claim freshness, generated-source or
   build-target discovery, or full project coverage.
 
-`SemanticdbForSourceReport`
+`SemanticdbForSourceReportV2`
 
-- `schemaVersion`: `semantic-scala.semanticdb-for-source.v1`
+- `schemaVersion`: `semantic-scala.semanticdb-for-source.v2`
 - `workspace` / `sourceFile`: normalized absolute input paths
 - `sourceRelativePath`: workspace-relative source path when the file is inside
   the workspace
 - `status`: `UniqueMatch`, `NoMatch`, `Ambiguous`, `Unavailable`,
   `Unparseable`, or `Partial`
 - `semanticdbFiles`, `parseableFiles`, `unparseableFiles`: discovery counts
+- `sourceSnapshot`: captured byte length and SHA-256 source identity
 - `matches`: deterministic bounded candidate metadata with `matchKind` equal to
-  `UriExact`, `MetaInfSuffix`, or `SourceRootSuffix`
+  `UriExact`, `MetaInfSuffix`, or `SourceRootSuffix`, artifact identity, and a
+  typed freshness result
 - `candidatesConsidered`: total discovered candidates examined
 - `warnings`: partial-evidence warnings; `errors`: scan errors
+
+Freshness compares normalized valid SemanticDB MD5 against UTF-8 source bytes,
+then exact embedded source text when MD5 is absent. Conflicting available bases
+are `Unverifiable`; mtimes are descriptive only. V1 remains a frozen historical
+schema and does not carry these guarantees.
 
 `SourceRange`
 
@@ -535,13 +544,18 @@ prove current sbt freshness or cover arbitrary build inputs.
 - `range`: optional best available source range
 - `status`: reconciliation status
 
-`ReconciliationResult`
+`ReconciliationResultV2`
 
 - `schemaVersion`: payload schema marker, currently
-  `semantic-scala.reconcile-symbol-result.v1`
+  `semantic-scala.reconcile-symbol-result.v2`
 - `file`: queried source file path
 - `queryPosition`: zero-based point represented as a `SourceRange`
-- `result`: reconciled symbol result
+- `semanticdb`: normalized explicit artifact path
+- `freshness`: typed source/artifact freshness including captured content
+  identities, when assessment was possible
+- `outcome`: `CompletedFresh`, `CompletedQualifiedUnverifiable`, or
+  `NotAttempted` with a typed reason. `Stale` and
+  `SourceChangedDuringRequest` can never complete reconciliation.
 
 `EffectSourceRange`
 
@@ -612,13 +626,13 @@ prove current sbt freshness or cover arbitrary build inputs.
   `SemanticdbCoverageReport` and keeps stdout JSON-only. Its top-level
   `schemaVersion` is `semantic-scala.semanticdb-coverage.v1`.
 - `semanticdb-for-source --file <path> --workspace <path> --json` emits a
-  `SemanticdbForSourceReport` and keeps stdout JSON-only. Its top-level
-  `schemaVersion` is `semantic-scala.semanticdb-for-source.v1`.
+  `SemanticdbForSourceReportV2` and keeps stdout JSON-only. Its top-level
+  `schemaVersion` is `semantic-scala.semanticdb-for-source.v2`.
 - `point-evidence --file <path> --workspace <path> --line <n> --col <n>
-  --json` emits a `PointEvidenceReport` with full discovery, conservative
-  selection, live point evidence, and completed or typed not-attempted
+  --json` emits a `PointEvidenceReportV2` with full discovery, freshness-aware
+  selection, snapshot-backed live point evidence, and completed or typed not-attempted
   reconciliation. Its top-level `schemaVersion` is
-  `semantic-scala.point-evidence-result.v1`.
+  `semantic-scala.point-evidence-result.v2`.
 - `symbols --semanticdb <path> --json` emits a `SemanticFileSummary` and keeps
   stdout JSON-only. Its top-level `schemaVersion` is
   `semantic-scala.symbols-result.v1`.
@@ -632,11 +646,12 @@ prove current sbt freshness or cover arbitrary build inputs.
   Human output is `<source>:<line>:<column>: <rendering>` or
   `<source>:<line>:<column>: <unresolved>`.
 - `reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path>
-  --json` emits a `ReconciliationResult` and keeps stdout JSON-only. Its
+  --json` emits a `ReconciliationResultV2` and keeps stdout JSON-only. Its
   top-level `schemaVersion` is
-  `semantic-scala.reconcile-symbol-result.v1`.
-- Valid no-symbol or no-match reconciliation queries exit `0` with status
-  `NoMatch`.
+  `semantic-scala.reconcile-symbol-result.v2`.
+- Valid fresh or qualified-unverifiable no-symbol/no-match reconciliation
+  queries exit `0` with nested status `NoMatch`; stale evidence instead exits
+  `0` with `NotAttempted` / `StaleArtifact`.
 - `effect-summary --file <path> --json` emits an `EffectSummaryReport` and
   keeps stdout JSON-only. Its top-level `schemaVersion` is
   `semantic-scala.effect-summary.v1`.
@@ -690,13 +705,14 @@ returns file-scoped symbols and occurrences evidence; it does not generate
 SemanticDB files or discover SemanticDB directories.
 `semantic_reconcile_symbol` combines the relative `.scala` file policy,
 positive one-based `line`/`col` validation, and relative `.semanticdb` file
-policy. It requires `semantic-scala.reconcile-symbol-result.v1` and returns
+policy. It requires `semantic-scala.reconcile-symbol-result.v2` and returns
 reconciliation evidence between the Presentation Compiler point query and
 SemanticDB occurrence data.
 `semantic_point_evidence` uses the relative `.scala` file and positive position
 policy, delegates to the CLI-owned composition, and requires
-`semantic-scala.point-evidence-result.v1`. It never accepts a caller-selected
-SemanticDB artifact and does not assess artifact freshness.
+`semantic-scala.point-evidence-result.v2`. It never accepts a caller-selected
+SemanticDB artifact. Both tools preserve captured source/artifact identity and
+typed freshness; stale evidence cannot become completed reconciliation.
 
 Reconciliation statuses are domain evidence rather than MCP transport status.
 `ExactMatch` is strong evidence that compiler and SemanticDB symbols agreed.

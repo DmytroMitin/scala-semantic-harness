@@ -151,3 +151,47 @@ object SemanticdbForSourceReport:
 
   given Encoder[SemanticdbForSourceReport] = deriveEncoder
   given Decoder[SemanticdbForSourceReport] = deriveDecoder
+
+final case class SemanticdbSourceMatchV2(
+  semanticdb: String,
+  uri: Option[String],
+  parseStatus: String,
+  matchKind: String,
+  symbols: Option[Int],
+  occurrences: Option[Int],
+  mtimeMillis: Long,
+  error: Option[String],
+  documentCount: Option[Int],
+  documentUri: Option[String],
+  documentIndex: Option[Int],
+  artifactSnapshotSha256: Option[String],
+  freshness: Option[SourceArtifactFreshness]
+)
+
+object SemanticdbSourceMatchV2:
+  given Encoder[SemanticdbSourceMatchV2] = deriveEncoder
+  given Decoder[SemanticdbSourceMatchV2] = deriveDecoder
+
+final case class SemanticdbForSourceReportV2(
+  schemaVersion: String = SemanticdbForSourceReportV2.SchemaVersion,
+  workspace: String,
+  sourceFile: String,
+  sourceRelativePath: Option[String],
+  status: String,
+  semanticdbFiles: Int,
+  parseableFiles: Int,
+  unparseableFiles: Int,
+  matches: List[SemanticdbSourceMatchV2],
+  candidatesConsidered: Int,
+  warnings: List[String],
+  errors: List[String]
+)
+
+object SemanticdbForSourceReportV2:
+  val SchemaVersion: String = "semantic-scala.semanticdb-for-source.v2"
+
+  given Encoder[SemanticdbForSourceReportV2] = deriveEncoder
+  given Decoder[SemanticdbForSourceReportV2] = deriveDecoder[SemanticdbForSourceReportV2].emap { report =>
+    if report.schemaVersion == SchemaVersion then Right(report)
+    else Left(s"semanticdb-for-source schemaVersion must be $SchemaVersion")
+  }

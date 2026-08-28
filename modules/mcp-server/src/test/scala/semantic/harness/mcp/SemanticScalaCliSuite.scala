@@ -7,6 +7,8 @@ import io.circe.Json
 import io.circe.syntax.*
 import semantic.harness.reconciliation.ReconciliationResult
 import semantic.harness.reconciliation.PointEvidenceReport
+import semantic.harness.reconciliation.ReconciliationResultV2
+import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -243,7 +245,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
       )
       assertEquals(runner.calls, List((expected, workspace.toAbsolutePath.normalize())))
       assertEquals(result.command, "semantic-scala" :: expected.drop(1))
-      assertEquals(result.schemaVersion, Some(PointEvidenceReport.SchemaVersion))
+      assertEquals(result.schemaVersion, Some(PointEvidenceReportV2.SchemaVersion))
     }
 
   test("semantic_point_evidence validates relative contained Scala input and positive position"):
@@ -272,7 +274,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
 
       assert(!result.ok)
       assertEquals(result.payload, None)
-      assert(result.error.exists(_.contains(s"expected ${PointEvidenceReport.SchemaVersion}")))
+      assert(result.error.exists(_.contains(s"expected ${PointEvidenceReportV2.SchemaVersion}")))
     }
 
   test("semantic_compile returns ok true for successful compile payload"):
@@ -432,11 +434,11 @@ class SemanticScalaCliSuite extends munit.FunSuite:
       assert(result.ok)
       assertEquals(result.exitCode, Some(0))
       assertEquals(result.schemaVersion, Some(SemanticScalaCli.ReconcileSymbolSchemaVersion))
-      assertEquals(payloadString(result, "schemaVersion"), Some(ReconciliationResult.SchemaVersion))
+      assertEquals(payloadString(result, "schemaVersion"), Some(ReconciliationResultV2.SchemaVersion))
       assertEquals(payloadString(result, "file"), Some("src/main/scala/example/Main.scala"))
       assertEquals(payloadStatus(result), Some("ExactMatch"))
-      assertEquals(payloadNestedString(result, List("result", "semanticdbSymbol")), Some("example/Main.add()."))
-      assertEquals(payloadNestedString(result, List("result", "compilerSymbol")), Some("example/Main.add()."))
+      assertEquals(payloadNestedString(result, List("outcome", "result", "semanticdbSymbol")), Some("example/Main.add()."))
+      assertEquals(payloadNestedString(result, List("outcome", "result", "compilerSymbol")), Some("example/Main.add()."))
     }
 
   test("semantic_reconcile_symbol returns ok true for non-exact reconciliation status"):
@@ -1375,14 +1377,14 @@ class SemanticScalaCliSuite extends munit.FunSuite:
     ProcessResult(
       exitCode = 0,
       stdout =
-        s"""{"schemaVersion":"${ReconciliationResult.SchemaVersion}","file":"src/main/scala/example/Main.scala","queryPosition":{"startLine":5,"startCharacter":15,"endLine":5,"endCharacter":15},"result":{"semanticdbSymbol":"$semanticdbSymbol","compilerSymbol":"$compilerSymbol","displayName":"add","range":{"startLine":5,"startCharacter":6,"endLine":5,"endCharacter":9},"status":"$status"}}""",
+        s"""{"schemaVersion":"${ReconciliationResultV2.SchemaVersion}","file":"src/main/scala/example/Main.scala","semanticdb":"target/Main.scala.semanticdb","queryPosition":{"startLine":5,"startCharacter":15,"endLine":5,"endCharacter":15},"freshness":null,"outcome":{"status":"CompletedFresh","result":{"semanticdbSymbol":"$semanticdbSymbol","compilerSymbol":"$compilerSymbol","displayName":"add","range":{"startLine":5,"startCharacter":6,"endLine":5,"endCharacter":9},"status":"$status"},"qualificationReason":null,"notAttemptedReason":null}}""",
       stderr = ""
     )
 
   private def pointEvidencePayload: ProcessResult =
     ProcessResult(
       exitCode = 0,
-      stdout = s"""{"schemaVersion":"${PointEvidenceReport.SchemaVersion}","workspace":"/workspace","sourceFile":"/workspace/src/main/scala/example/Main.scala","position":{"line":2,"column":7,"encoding":"UTF-16"},"discovery":{"schemaVersion":"semantic-scala.semanticdb-for-source.v1","workspace":"/workspace","sourceFile":"/workspace/src/main/scala/example/Main.scala","sourceRelativePath":"src/main/scala/example/Main.scala","status":"Unavailable","semanticdbFiles":0,"parseableFiles":0,"unparseableFiles":0,"matches":[],"candidatesConsidered":0,"warnings":[],"errors":[]},"selection":{"status":"NotSelectedUnavailable","artifact":null,"reason":"SemanticDB artifact evidence was unavailable"},"livePoint":{"status":"Unresolved","result":{"schemaVersion":"semantic-scala.symbol-at-result.v1","symbol":null,"displayName":null,"range":null,"source":"/workspace/src/main/scala/example/Main.scala"},"reason":null},"reconciliation":{"status":"NotAttempted","result":null,"notAttemptedReason":"ArtifactEvidenceUnavailable","detail":"SemanticDB discovery status was Unavailable"}}""",
+      stdout = s"""{"schemaVersion":"${PointEvidenceReportV2.SchemaVersion}","workspace":"/workspace","sourceFile":"/workspace/src/main/scala/example/Main.scala","position":{"line":2,"column":7,"encoding":"UTF-16"},"discovery":{"schemaVersion":"semantic-scala.semanticdb-for-source.v2","workspace":"/workspace","sourceFile":"/workspace/src/main/scala/example/Main.scala","sourceRelativePath":"src/main/scala/example/Main.scala","status":"Unavailable","semanticdbFiles":0,"parseableFiles":0,"unparseableFiles":0,"matches":[],"candidatesConsidered":0,"warnings":[],"errors":[]},"selection":{"status":"NotSelectedUnavailable","artifact":null,"reason":"SemanticDB artifact evidence was unavailable"},"livePoint":{"status":"Unresolved","result":{"schemaVersion":"semantic-scala.symbol-at-result.v1","symbol":null,"displayName":null,"range":null,"source":"/workspace/src/main/scala/example/Main.scala"},"reason":null},"reconciliation":{"schemaVersion":"semantic-scala.reconcile-symbol-result.v2","file":"/workspace/src/main/scala/example/Main.scala","semanticdb":null,"queryPosition":{"startLine":1,"startCharacter":6,"endLine":1,"endCharacter":6},"freshness":null,"outcome":{"status":"NotAttempted","result":null,"qualificationReason":null,"notAttemptedReason":"ArtifactEvidenceUnavailable"}}}""",
       stderr = ""
     )
 
@@ -1401,7 +1403,7 @@ class SemanticScalaCliSuite extends munit.FunSuite:
     }
 
   private def payloadStatus(result: McpToolResult): Option[String] =
-    payloadNestedString(result, List("result", "status"))
+    payloadNestedString(result, List("outcome", "result", "status"))
 
   private def payloadMethods(result: McpToolResult): List[String] =
     result.payload

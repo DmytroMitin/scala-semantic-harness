@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:reconcile-symbol-result:v2",
+  "title": "semantic-scala reconcile symbol result v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "file", "semanticdb", "queryPosition", "freshness", "outcome"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.reconcile-symbol-result.v2" },
+    "file": { "type": "string" },
+    "semanticdb": { "type": ["string", "null"] },
+    "queryPosition": { "$ref": "#/$defs/range" },
+    "freshness": { "oneOf": [{ "$ref": "#/$defs/freshness" }, { "type": "null" }] },
+    "outcome": { "$ref": "#/$defs/outcome" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "properties": { "status": { "const": "CompletedFresh" } }, "required": ["status"] } }, "required": ["outcome"] },
+      "then": { "properties": { "freshness": { "properties": { "status": { "const": "Fresh" } }, "required": ["status"] } } }
+    },
+    {
+      "if": { "properties": { "outcome": { "properties": { "status": { "const": "CompletedQualifiedUnverifiable" } }, "required": ["status"] } }, "required": ["outcome"] },
+      "then": { "properties": { "freshness": { "properties": { "status": { "const": "Unverifiable" } }, "required": ["status"] } } }
+    },
+    {
+      "if": { "properties": { "freshness": { "properties": { "status": { "const": "Stale" } }, "required": ["status"] } }, "required": ["freshness"] },
+      "then": { "properties": { "outcome": { "properties": { "status": { "const": "NotAttempted" }, "notAttemptedReason": { "const": "StaleArtifact" } }, "required": ["status", "notAttemptedReason"] } } }
+    },
+    {
+      "if": { "properties": { "freshness": { "properties": { "status": { "const": "SourceChangedDuringRequest" } }, "required": ["status"] } }, "required": ["freshness"] },
+      "then": { "properties": { "outcome": { "properties": { "status": { "const": "NotAttempted" }, "notAttemptedReason": { "const": "SourceChangedDuringRequest" } }, "required": ["status", "notAttemptedReason"] } } }
+    },
+    {
+      "if": { "properties": { "freshness": { "type": "null" } }, "required": ["freshness"] },
+      "then": { "properties": { "outcome": { "properties": { "status": { "const": "NotAttempted" } }, "required": ["status"] } } }
+    }
+  ],
+  "$defs": {
+    "range": {
+      "type": "object", "additionalProperties": false,
+      "required": ["startLine", "startCharacter", "endLine", "endCharacter"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 0 }, "startCharacter": { "type": "integer", "minimum": 0 },
+        "endLine": { "type": "integer", "minimum": 0 }, "endCharacter": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["basis", "documentUri", "documentIndex", "semanticdbMd5", "sourceMd5", "sourceSnapshotSha256", "artifactSnapshotSha256", "sourceMtimeMillis", "artifactMtimeMillis", "detailCode"],
+      "properties": {
+        "basis": { "enum": ["SemanticdbMd5Utf8", "EmbeddedTextExact", "None"] },
+        "documentUri": { "type": ["string", "null"] }, "documentIndex": { "type": ["integer", "null"], "minimum": 0 },
+        "semanticdbMd5": { "type": ["string", "null"], "pattern": "^[0-9a-f]{32}$" },
+        "sourceMd5": { "type": ["string", "null"], "pattern": "^[0-9a-f]{32}$" },
+        "sourceSnapshotSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "artifactSnapshotSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "sourceMtimeMillis": { "type": ["integer", "null"] }, "artifactMtimeMillis": { "type": ["integer", "null"] },
+        "detailCode": { "type": ["string", "null"] }
+      }
+    },
+    "freshness": {
+      "oneOf": [
+        { "$ref": "#/$defs/freshOrStale" },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "reason", "beforeSha256", "afterSha256", "evidence"],
+          "properties": {
+            "status": { "const": "Unverifiable" }, "reason": { "$ref": "#/$defs/unverifiableReason" },
+            "beforeSha256": { "type": "null" }, "afterSha256": { "type": "null" }, "evidence": { "$ref": "#/$defs/evidence" }
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "reason", "beforeSha256", "afterSha256", "evidence"],
+          "properties": {
+            "status": { "const": "SourceChangedDuringRequest" }, "reason": { "type": "null" },
+            "beforeSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "afterSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "evidence": { "$ref": "#/$defs/evidence" }
+          }
+        }
+      ]
+    },
+    "freshOrStale": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "reason", "beforeSha256", "afterSha256", "evidence"],
+      "properties": {
+        "status": { "enum": ["Fresh", "Stale"] }, "reason": { "type": "null" },
+        "beforeSha256": { "type": "null" }, "afterSha256": { "type": "null" }, "evidence": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "unverifiableReason": { "enum": ["MissingDocumentIdentity", "MalformedDocumentDigest", "InconsistentDocumentIdentity", "InvalidSourceEncoding", "UnsupportedSourceEncodingOrBom", "NoUniqueDocumentForSource", "AmbiguousDocumentIdentity", "SourceUnreadable"] },
+    "symbolResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["semanticdbSymbol", "compilerSymbol", "displayName", "range", "status"],
+      "properties": {
+        "semanticdbSymbol": { "type": ["string", "null"] }, "compilerSymbol": { "type": ["string", "null"] },
+        "displayName": { "type": ["string", "null"] }, "range": { "oneOf": [{ "$ref": "#/$defs/range" }, { "type": "null" }] },
+        "status": { "enum": ["ExactMatch", "RangeMatchOnly", "SymbolMismatch", "NoMatch"] }
+      }
+    },
+    "outcome": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "result", "qualificationReason", "notAttemptedReason"],
+          "properties": { "status": { "const": "CompletedFresh" }, "result": { "$ref": "#/$defs/symbolResult" }, "qualificationReason": { "type": "null" }, "notAttemptedReason": { "type": "null" } }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "result", "qualificationReason", "notAttemptedReason"],
+          "properties": { "status": { "const": "CompletedQualifiedUnverifiable" }, "result": { "$ref": "#/$defs/symbolResult" }, "qualificationReason": { "$ref": "#/$defs/unverifiableReason" }, "notAttemptedReason": { "type": "null" } }
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "result", "qualificationReason", "notAttemptedReason"],
+          "properties": {
+            "status": { "const": "NotAttempted" }, "result": { "type": "null" }, "qualificationReason": { "type": "null" },
+            "notAttemptedReason": { "enum": ["StaleArtifact", "SourceChangedDuringRequest", "NoArtifactCandidate", "AmbiguousArtifactCandidates", "PartialOrUnparseableArtifactEvidence", "ArtifactEvidenceUnavailable", "LivePointUnavailable", "SelectedArtifactUnreadable", "SelectedArtifactChangedOrRemapped"] }
+          }
+        }
+      ]
+    }
+  }
+}

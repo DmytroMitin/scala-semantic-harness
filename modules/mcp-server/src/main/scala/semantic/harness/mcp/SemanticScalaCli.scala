@@ -16,6 +16,8 @@ import semantic.harness.fp.EffectSummaryReport
 import semantic.harness.presentation.SymbolAtResult
 import semantic.harness.reconciliation.ReconciliationResult
 import semantic.harness.reconciliation.PointEvidenceReport
+import semantic.harness.reconciliation.ReconciliationResultV2
+import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 
 final case class SemanticScalaCli(
@@ -591,8 +593,8 @@ object SemanticScalaCli:
   val EffectSummarySchemaVersion: String = EffectSummaryReport.SchemaVersion
   val SymbolAtSchemaVersion: String = SymbolAtResult.SchemaVersion
   val SymbolsSchemaVersion: String = SemanticFileSummary.SchemaVersion
-  val ReconcileSymbolSchemaVersion: String = ReconciliationResult.SchemaVersion
-  val PointEvidenceSchemaVersion: String = PointEvidenceReport.SchemaVersion
+  val ReconcileSymbolSchemaVersion: String = ReconciliationResultV2.SchemaVersion
+  val PointEvidenceSchemaVersion: String = PointEvidenceReportV2.SchemaVersion
   val DefaultCliPath: Path = Path.of("semantic-scala")
 
   def buildArgs(

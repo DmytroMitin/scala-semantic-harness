@@ -66,13 +66,13 @@ adapter. The MCP surface is exactly the eight tools named below.
 | What return wrapper is declared in this file? | `effect-summary --file <scala> --json` | `semantic_effect_summary` | Syntax-first declared return shape and conservative category, not inferred semantics. |
 | What does the presentation compiler report at a point? | `symbol-at --file <scala> --line <n> --col <n> --json` | `semantic_symbol_at` | Dynamic point evidence; rendered or hover-like output is not canonical identity. |
 | What symbols occur in an explicit SemanticDB file? | `symbols --semanticdb <file> --json` | `semantic_symbols` | Static canonical symbol strings and ranges from that file only. |
-| Do dynamic and static symbol evidence agree? | `reconcile-symbol --file <scala> --line <n> --col <n> --semanticdb <file> --json` | `semantic_reconcile_symbol` | Exact or non-exact comparison; preserve the returned status and uncertainty. |
-| What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> --json` | `semantic_point_evidence` | Full discovery, unique-parsed selection only, live result, and completed or typed not-attempted reconciliation. It does not assess freshness. |
+| Do dynamic and static symbol evidence agree? | `reconcile-symbol --file <scala> --line <n> --col <n> --semanticdb <file> --json` | `semantic_reconcile_symbol` | Snapshot-consistent v2 comparison. Fresh may complete, unverifiable may complete only qualified, and stale/source-changed evidence is typed `NotAttempted`. |
+| What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> --json` | `semantic_point_evidence` | Full freshness-aware discovery and selection, captured-source live result, and completed, qualified, or typed not-attempted reconciliation. Stale evidence stays visible and cannot complete. |
 | What type is rendered for an expression? | `infer-type --file <scala> --line <n> --col <n> ... --json` | none | CLI-only presentation-compiler evidence. `Resolved` carries rendered evidence; `Unresolved` is neutral absence. |
 | What types are rendered for a bounded request batch sharing one sbt context? | `infer-type-batch --requests <json> --workspace <dir> --sbt-project <id> --sbt-configuration <name> [--sbt-java-home <absolute-directory>] --json` | none | CLI-only ordered batch; strict bounded input and one shared acquisition. |
 | What typed post-compile tree contains one point after an authoritative selected Compile? | `tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json` | none | Alpha-3 SNAPSHOT CLI-only evidence. Runs target build/plugin code during Compile, then inspects receipt-bound TASTy with the exact stable Scala 3 line without replaying target options/plugins in the inspector. |
 | Which SemanticDB artifacts are available and what factual provenance is recorded? | `semanticdb-status --workspace <dir> --json` | none | CLI-only artifact inventory. Availability is not source coverage. |
-| Which explicit artifacts contain one source? | `semanticdb-for-source --file <scala> --workspace <dir> --json` | none | CLI-only source-to-artifact candidates. Hints are not canonical build-target identity. |
+| Which explicit artifacts contain one source? | `semanticdb-for-source --file <scala> --workspace <dir> --json` | none | CLI-only v2 source-to-artifact candidates with captured identities and content freshness. Fresh is not build or coverage proof. |
 | What source coverage is present in the inventoried artifacts? | `semanticdb-coverage --workspace <dir> --json` | none | CLI-only factual coverage inventory, not proof of complete build coverage. |
 
 `help` and `version` are CLI utility commands. There is no public
@@ -128,9 +128,11 @@ Apply these constraints:
 - `ExactMatch` is stronger agreement evidence. `RangeMatchOnly`,
   `SymbolMismatch`, and `NoMatch` remain successful domain outcomes when the
   adapter succeeds; report them literally and preserve uncertainty.
-- Point evidence selects only one unique parsed artifact. Preserve ambiguous,
+- Point evidence selects only one unique mapped parsed artifact, then preserves
+  `SelectedFresh`, `SelectedUnverifiable`, stale non-selection, ambiguity,
   unavailable, partial/unparseable, live-unavailable, and unreadable-artifact
-  states. A symbol mismatch does not by itself establish staleness.
+  states. Never turn stale evidence into completed reconciliation, and never
+  treat mtimes or a symbol mismatch as freshness authority.
 - `effect-summary` is syntax-first. Its wrapper categories and names do not
   prove full effect semantics or compiler-selected intent.
 - Warnings and hints must remain labeled as such, separate from factual fields.

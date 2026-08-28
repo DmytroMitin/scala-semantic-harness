@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:semanticdb-for-source:v2",
+  "title": "semantic-scala SemanticDB for source v2",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "sourceRelativePath", "status", "semanticdbFiles", "parseableFiles", "unparseableFiles", "matches", "candidatesConsidered", "warnings", "errors"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.semanticdb-for-source.v2" },
+    "workspace": { "type": "string" }, "sourceFile": { "type": "string" }, "sourceRelativePath": { "type": ["string", "null"] },
+    "status": { "enum": ["UniqueMatch", "NoMatch", "Ambiguous", "Unavailable", "Unparseable", "Partial"] },
+    "semanticdbFiles": { "type": "integer", "minimum": 0 }, "parseableFiles": { "type": "integer", "minimum": 0 }, "unparseableFiles": { "type": "integer", "minimum": 0 },
+    "matches": { "type": "array", "items": { "$ref": "#/$defs/candidate" } },
+    "candidatesConsidered": { "type": "integer", "minimum": 0 },
+    "warnings": { "type": "array", "items": { "type": "string" } }, "errors": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["semanticdb", "uri", "parseStatus", "matchKind", "symbols", "occurrences", "mtimeMillis", "error", "documentCount", "documentUri", "documentIndex", "artifactSnapshotSha256", "freshness"],
+      "properties": {
+        "semanticdb": { "type": "string" }, "uri": { "type": ["string", "null"] }, "parseStatus": { "enum": ["Parsed", "Unparseable"] },
+        "matchKind": { "enum": ["UriExact", "MetaInfSuffix", "SourceRootSuffix"] }, "symbols": { "type": ["integer", "null"], "minimum": 0 },
+        "occurrences": { "type": ["integer", "null"], "minimum": 0 }, "mtimeMillis": { "type": "integer" }, "error": { "type": ["string", "null"] },
+        "documentCount": { "type": ["integer", "null"], "minimum": 1 }, "documentUri": { "type": ["string", "null"] }, "documentIndex": { "type": ["integer", "null"], "minimum": 0 },
+        "artifactSnapshotSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "freshness": { "oneOf": [{ "$ref": "#/$defs/freshness" }, { "type": "null" }] }
+      },
+      "allOf": [
+        { "if": { "properties": { "parseStatus": { "const": "Parsed" } }, "required": ["parseStatus"] }, "then": { "properties": { "documentCount": { "type": "integer", "minimum": 1 }, "artifactSnapshotSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "freshness": { "$ref": "#/$defs/freshness" }, "error": { "type": "null" } } } },
+        { "if": { "properties": { "parseStatus": { "const": "Unparseable" } }, "required": ["parseStatus"] }, "then": { "properties": { "documentCount": { "type": "null" }, "artifactSnapshotSha256": { "type": "null" }, "freshness": { "type": "null" }, "error": { "type": "string" } } } }
+      ]
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["basis", "documentUri", "documentIndex", "semanticdbMd5", "sourceMd5", "sourceSnapshotSha256", "artifactSnapshotSha256", "sourceMtimeMillis", "artifactMtimeMillis", "detailCode"],
+      "properties": {
+        "basis": { "enum": ["SemanticdbMd5Utf8", "EmbeddedTextExact", "None"] }, "documentUri": { "type": ["string", "null"] }, "documentIndex": { "type": ["integer", "null"], "minimum": 0 },
+        "semanticdbMd5": { "type": ["string", "null"], "pattern": "^[0-9a-f]{32}$" }, "sourceMd5": { "type": ["string", "null"], "pattern": "^[0-9a-f]{32}$" },
+        "sourceSnapshotSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" }, "artifactSnapshotSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "sourceMtimeMillis": { "type": ["integer", "null"] }, "artifactMtimeMillis": { "type": ["integer", "null"] }, "detailCode": { "type": ["string", "null"] }
+      }
+    },
+    "unverifiableReason": { "enum": ["MissingDocumentIdentity", "MalformedDocumentDigest", "InconsistentDocumentIdentity", "InvalidSourceEncoding", "UnsupportedSourceEncodingOrBom", "NoUniqueDocumentForSource", "AmbiguousDocumentIdentity", "SourceUnreadable"] },
+    "freshness": {
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["status", "reason", "beforeSha256", "afterSha256", "evidence"], "properties": { "status": { "enum": ["Fresh", "Stale"] }, "reason": { "type": "null" }, "beforeSha256": { "type": "null" }, "afterSha256": { "type": "null" }, "evidence": { "$ref": "#/$defs/evidence" } } },
+        { "type": "object", "additionalProperties": false, "required": ["status", "reason", "beforeSha256", "afterSha256", "evidence"], "properties": { "status": { "const": "Unverifiable" }, "reason": { "$ref": "#/$defs/unverifiableReason" }, "beforeSha256": { "type": "null" }, "afterSha256": { "type": "null" }, "evidence": { "$ref": "#/$defs/evidence" } } },
+        { "type": "object", "additionalProperties": false, "required": ["status", "reason", "beforeSha256", "afterSha256", "evidence"], "properties": { "status": { "const": "SourceChangedDuringRequest" }, "reason": { "type": "null" }, "beforeSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "afterSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "evidence": { "$ref": "#/$defs/evidence" } } }
+      ]
+    }
+  }
+}

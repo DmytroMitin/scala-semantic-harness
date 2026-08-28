@@ -26,8 +26,12 @@ import semantic.harness.presentation.InferTypeBatchService
 import semantic.harness.presentation.PresentationCompilerContext
 import semantic.harness.presentation.SymbolAtResult
 import semantic.harness.reconciliation.ReconciliationResult
+import semantic.harness.reconciliation.ReconciliationResultV2
+import semantic.harness.reconciliation.FreshnessReconciliationService
 import semantic.harness.reconciliation.PointEvidenceReport
+import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceService
+import semantic.harness.reconciliation.PointEvidenceServiceV2
 import semantic.harness.reconciliation.SemanticPointEvidenceRequest
 import semantic.harness.reconciliation.SemanticReconciler
 import semantic.harness.sbt_runner.ReportConverter
@@ -48,6 +52,7 @@ import semantic.harness.semanticdb_reader.SemanticdbCoverage
 import semantic.harness.semanticdb_reader.SemanticdbCoverageReport
 import semantic.harness.semanticdb_reader.SemanticdbForSource
 import semantic.harness.semanticdb_reader.SemanticdbForSourceReport
+import semantic.harness.semanticdb_reader.SemanticdbForSourceReportV2
 import semantic.harness.semanticdb_reader.SemanticdbStatus
 import semantic.harness.semanticdb_reader.SemanticdbStatusReport
 import semantic.harness.semanticdb_reader.SemanticdbStatusReportV2
@@ -381,7 +386,7 @@ object CliApp:
   private def semanticdbForSource(file: String, workspace: String, json: Boolean, projectDir: Path): CliResult =
     val sourcePath = resolveProjectPath(projectDir, file)
     val workspacePath = resolveProjectPath(projectDir, workspace)
-    SemanticdbForSource.inspect(workspacePath, sourcePath) match
+    SemanticdbForSource.inspectV2(workspacePath, sourcePath) match
       case Right(report) =>
         if json then CliResult(Some(report.asJson.noSpaces), None, 0)
         else CliResult(Some(semanticdbForSourceSummary(report)), None, 0)
@@ -411,9 +416,8 @@ object CliApp:
     else if !sourcePath.getFileName.toString.endsWith(".scala") then
       CliResult(None, Some("Invalid file: expected .scala source file"), 1)
     else
-      PointEvidenceService()
-        .inspect(SemanticPointEvidenceRequest(workspacePath, sourcePath, line, column))
-        .flatMap(PointEvidenceReport.fromInternal) match
+      PointEvidenceServiceV2()
+        .inspect(SemanticPointEvidenceRequest(workspacePath, sourcePath, line, column)) match
         case Right(report) =>
           if json then CliResult(Some(report.asJson.noSpaces), None, 0)
           else CliResult(Some(pointEvidenceSummary(report)), None, 0)
@@ -745,7 +749,7 @@ object CliApp:
   private def reconcileSymbol(file: String, line: Int, column: Int, semanticdb: String, json: Boolean, projectDir: Path): CliResult =
     val sourcePath = resolveProjectPath(projectDir, file)
     val semanticdbPath = resolveProjectPath(projectDir, semanticdb)
-    SemanticReconciler.reconcile(sourcePath, line, column, semanticdbPath) match
+    FreshnessReconciliationService().reconcile(sourcePath, line, column, semanticdbPath) match
       case Right(result) =>
         if json then CliResult(Some(result.asJson.noSpaces), None, 0)
         else CliResult(Some(reconciliationSummary(result)), None, 0)
@@ -817,11 +821,11 @@ object CliApp:
   private def semanticdbStatusV2Summary(report: SemanticdbStatusReportV2): String =
     s"${report.workspace}: ${report.artifactStatus}, ${report.parseableFiles}/${report.semanticdbFiles} parseable SemanticDB file(s), ${report.uniqueContentFiles} unique content file(s)"
 
-  private def semanticdbForSourceSummary(report: SemanticdbForSourceReport): String =
+  private def semanticdbForSourceSummary(report: SemanticdbForSourceReportV2): String =
     s"${report.sourceFile}: ${report.status}, ${report.matches.size} SemanticDB match(es)"
 
-  private def pointEvidenceSummary(report: PointEvidenceReport): String =
-    s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.selection.status}, ${report.livePoint.status}, ${report.reconciliation.status}"
+  private def pointEvidenceSummary(report: PointEvidenceReportV2): String =
+    s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.selection.status}, ${report.livePoint.status}, ${report.reconciliation.outcome}"
 
   private def semanticdbCoverageSummary(report: SemanticdbCoverageReport): String =
     s"${report.workspace}: ${report.coverageStatus}, ${report.coveredSourceFiles}/${report.sourceFiles} inventory source(s) covered; freshness and build-target completeness are not assessed"
@@ -837,8 +841,8 @@ object CliApp:
         case InferTypeStatus.Unresolved => "<unresolved>"
     s"${report.source}:${report.position.line}:${report.position.column}: $rendering"
 
-  private def reconciliationSummary(result: ReconciliationResult): String =
-    s"${result.file}: ${result.result.status}"
+  private def reconciliationSummary(result: ReconciliationResultV2): String =
+    s"${result.file}: ${result.outcome}"
 
   private def effectSummaryText(report: EffectSummaryReport): String =
     s"${report.source}: ${report.methods.size} method(s)"

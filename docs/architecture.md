@@ -136,12 +136,13 @@ build contexts. Paths are validated and outputs are bounded. Commands avoid
 hidden persistent state; any explicit cache mode must report its evidence and
 must not silently refresh a requested reuse operation.
 
-`PointEvidenceService` is an internal composition seam in
-`semantic-reconciliation`. It does not define a CLI command, JSON schema, or
-MCP tool. Ambiguous, partial, unparseable, unavailable, and unmatched artifact
-states remain explicit and never trigger candidate selection. Live unresolved
-and unavailable states remain distinct, and mismatch is not labeled as
-freshness evidence.
+The v2 point-evidence and reconciliation services are request-local composition
+seams in `semantic-reconciliation`. They capture source/artifact content once,
+give captured source text to the Presentation Compiler, and recheck source
+identity before returning. Ambiguous, partial, unparseable, unavailable,
+unmatched, stale, and source-changed states remain explicit. Stale evidence may
+coexist with a live result but never triggers completed reconciliation;
+unverifiable evidence can complete only with an explicit qualification.
 
 The usages operation aggregates exact ordinary SemanticDB occurrences over an
 explicit manifest. It keeps mapping, coverage, duplicate, freshness, and

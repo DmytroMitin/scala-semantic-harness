@@ -134,8 +134,11 @@ are not compiled as module test sources.
   packages, or display names.
 - Status v2 does not assess source coverage. The separate coverage command does
   not expose internal provenance hints, assess freshness/build targets, or
-  select an artifact for higher-level source queries. `semanticdb-for-source`
-  remains v1.
+  select an artifact for higher-level source queries. The current
+  `semanticdb-for-source` v2 captures source bytes and each candidate artifact
+  once, exposes their content identities, and assesses mapped document
+  freshness without treating mtimes as authority. Its v1 schema remains
+  frozen historical behavior.
 - Does not generate SemanticDB dynamically.
 - The internal selected-context spike requires one explicit SemanticDB document
   and ignores selected arguments whose `GIVEN`/`IMPLICIT` metadata is not owned
