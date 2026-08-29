@@ -3,6 +3,7 @@ package semantic.harness.cli
 import semantic.harness.sbt_runner.SbtClasspathConfiguration
 import semantic.harness.sbt_runner.SbtClasspathCacheMode
 import semantic.harness.sbt_runner.SbtProjectId
+import semantic.harness.sbt_runner.SbtScalaVersion
 import semantic.harness.semanticdb_reader.UsagesCliTarget
 import semantic.harness.semanticdb_reader.UsagesPublicSelectors
 
@@ -31,6 +32,7 @@ enum CliCommand:
     workspace: String,
     json: Boolean,
     sbtProject: Option[SbtProjectId] = None,
+    sbtScalaVersion: Option[SbtScalaVersion] = None,
     sbtJavaHome: Option[String] = None
   )
   case PointEvidence(

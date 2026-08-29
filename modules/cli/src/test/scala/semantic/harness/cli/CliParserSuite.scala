@@ -6,6 +6,7 @@ import java.nio.file.Path
 import semantic.harness.sbt_runner.SbtClasspathConfiguration
 import semantic.harness.sbt_runner.SbtClasspathCacheMode
 import semantic.harness.sbt_runner.SbtProjectId
+import semantic.harness.sbt_runner.SbtScalaVersion
 
 class CliParserSuite extends munit.FunSuite:
   test("parses help shortcuts"):
@@ -19,12 +20,12 @@ class CliParserSuite extends munit.FunSuite:
     assertEquals(known.stderr, None)
     assert(
       known.stdout.exists(
-        _.contains("--workspace <path> [--sbt-project <id>] [--sbt-java-home <absolute-directory>]")
+        _.contains("--workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>]")
       )
     )
     assert(known.stdout.exists(_.contains("preserves the read-only v2 workspace mapping")))
     assert(known.stdout.exists(_.contains("may resolve dependencies or populate caches")))
-    assert(known.stdout.exists(_.contains("may compile transitively")))
+    assert(known.stdout.exists(_.contains("does not request target compilation")))
 
     val unknown = CliApp.run(List("help", "not-a-command"))
     assertEquals(unknown.exitCode, 1)
@@ -183,14 +184,16 @@ class CliParserSuite extends munit.FunSuite:
       )
     )
 
-  test("parses opt-in target-aware source and point evidence and requires project for Java selection"):
+  test("parses v4 target-aware source axis while point evidence remains the unqualified v3 grammar"):
     assertEquals(
       CliParser.parse(List(
         "semanticdb-for-source", "--workspace", ".", "--file", "Main.scala",
-        "--sbt-project", "kernelJVM", "--sbt-java-home", "/opt/jdk", "--json"
+        "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7-RC1",
+        "--sbt-java-home", "/opt/jdk", "--json"
       )),
       ParseResult.Parsed(CliCommand.SemanticdbForSource(
-        "Main.scala", ".", json = true, Some(project("kernelJVM")), Some("/opt/jdk")
+        "Main.scala", ".", json = true, Some(project("kernelJVM")),
+        Some(scalaVersion("3.3.7-RC1")), Some("/opt/jdk")
       ))
     )
     assertEquals(
@@ -208,6 +211,19 @@ class CliParserSuite extends munit.FunSuite:
       assert(CliParser.parse(base ++ List("--sbt-java-home", "/opt/jdk", "--json")).isInstanceOf[ParseResult.Invalid])
       assert(CliParser.parse(base ++ List("--sbt-project", "bad;command", "--json")).isInstanceOf[ParseResult.Invalid])
     }
+    val base = List("semanticdb-for-source", "--workspace", ".", "--file", "Main.scala")
+    assert(CliParser.parse(base ++ List("--sbt-scala-version", "3.3.7")).isInstanceOf[ParseResult.Invalid])
+    assert(CliParser.parse(base ++ List(
+      "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7;compile"
+    )).isInstanceOf[ParseResult.Invalid])
+    assert(CliParser.parse(base ++ List(
+      "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7",
+      "--sbt-scala-version", "3.3.8"
+    )).isInstanceOf[ParseResult.Invalid])
+    assert(CliParser.parse(List(
+      "point-evidence", "--workspace", ".", "--file", "Main.scala", "--line", "1", "--col", "1",
+      "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7"
+    )).isInstanceOf[ParseResult.Invalid])
 
   test("parses the CLI-only fixed-Compile TASTy point evidence contract"):
     val args = List(
@@ -766,6 +782,9 @@ class CliParserSuite extends munit.FunSuite:
 
   private def project(value: String): SbtProjectId =
     SbtProjectId.parse(value).fold(message => fail(message), identity)
+
+  private def scalaVersion(value: String): SbtScalaVersion =
+    SbtScalaVersion.parse(value).fold(message => fail(message), identity)
 
   private def repositoryFile(relative: String): Path =
     Iterator.iterate(Path.of("").toAbsolutePath)(_.getParent)

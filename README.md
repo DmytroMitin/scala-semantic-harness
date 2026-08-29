@@ -58,8 +58,9 @@ from the alpha-2 packaged contract.
   artifact;
 - a public point-evidence composition that preserves source-artifact discovery,
   safe selection, live symbol evidence, and conditional reconciliation;
-- alpha-3 SNAPSHOT opt-in build-target-aware SemanticDB source mapping and
-  point evidence with one fixed Compile context receipt;
+- alpha-3 SNAPSHOT opt-in build-target-aware SemanticDB source mapping v4 with
+  a validated optional Scala axis and root-only receipt, alongside retained
+  target-aware point-evidence v3;
 - an alpha-3 SNAPSHOT CLI-only, same-request post-compile TASTy point-evidence
   operation with exact stable Scala 3 child-inspector provenance;
 - bounded alpha-3 SNAPSHOT sbt-backed command, classpath, and TASTy-receipt
@@ -169,6 +170,12 @@ flag preserves inherited-Java behavior. Selected-JDK classpath acquisition is
 isolated from no-selector cache reuse, and public result schemas do not expose
 the home or probe evidence.
 
+Target-aware `semanticdb-for-source` alone also accepts
+`--sbt-scala-version <version>`. The option requires `--sbt-project`, uses a
+strict version-only grammar, and selects that cross-Scala axis in a fresh sbt
+lifecycle before the fixed root-only receipt task. Omission means the checked-in
+build default, never inherited `++` state.
+
 For repeated use, prefer the staged launcher at
 `modules/cli/target/stage/bin/semantic-scala`.
 
@@ -222,7 +229,7 @@ boundary.
 ./semantic-scala semanticdb-coverage --workspace . --json
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --json
 ./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --json
-./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --sbt-project app --json
+./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --sbt-project app [--sbt-scala-version 3.3.7] --json
 ./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --sbt-project app --json
 ./semantic-scala tasty-point-evidence --workspace . --sbt-project app --file src/main/scala/example/Main.scala --line 6 --col 16 [--sbt-java-home /absolute/path/to/installed-jdk] --json
 ./semantic-scala symbols --semanticdb path/to/Main.scala.semanticdb --json
@@ -236,18 +243,22 @@ boundary.
 
 Target-aware source mapping and point evidence are explicit alpha-3 SNAPSHOT
 options. Omitting target options preserves the v2 workspace-wide behavior,
-including truthful ambiguity. With `--sbt-project`, one fixed sbt
-receipt reports the selected Compile output root, classpath, Scala version, and
-bounded JDK provenance; candidate ownership is checked canonically beneath the
-reported SemanticDB root while workspace discovery remains unchanged. Receipt
-acquisition evaluates checked-in sbt build/plugin code, may resolve
-dependencies or populate caches, and may compile transitively while evaluating
-`Compile / fullClasspath`. The
-receipt aligns build-output/classpath/JDK attribution; it does not replay the
-target compiler version, flags, or plugins in the Presentation Compiler.
-The initial contract has no cross-Scala-version selector and a fresh receipt
-cannot inherit a prior interactive sbt `++` choice; `scalaVersion` in v3 is
-descriptive evidence for the axis the new sbt lifecycle actually selected.
+including truthful ambiguity. With `--sbt-project`, source mapping emits v4 and
+uses a fixed root-only Compile receipt containing target identity,
+`classDirectory`, `semanticdbTargetRoot`, requested/effective Scala-axis
+provenance, and bounded JDK provenance. It does not request target compilation,
+`fullClasspath`, products, or exported products; sbt build/plugin loading,
+resolution, and ordinary metadata/cache writes remain possible. Candidate
+ownership is checked canonically beneath the reported SemanticDB root while
+workspace discovery remains unchanged. Optional `--sbt-scala-version` selects
+one validated axis and must exactly match the effective receipt axis; omission
+uses the fresh lifecycle's build default.
+
+Target-aware point evidence remains the existing unqualified v3 contract. Its
+classpath-bearing receipt may compile transitively while evaluating
+`Compile / fullClasspath`; it has no Scala-axis input. The receipt aligns
+build-output/classpath/JDK attribution but does not replay target compiler flags
+or plugins in the Presentation Compiler.
 `semanticdb-for-source` remains CLI-only, direct `reconcile-symbol` remains an
 explicit-artifact target-independent operation, and the MCP registry remains
 exactly eight tools.

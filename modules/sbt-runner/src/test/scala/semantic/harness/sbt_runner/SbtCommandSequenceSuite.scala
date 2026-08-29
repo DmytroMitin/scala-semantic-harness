@@ -52,5 +52,41 @@ class SbtCommandSequenceSuite extends munit.FunSuite:
     assert(!longestFixedEvidence.contains("sbt"))
     assert(longestFixedEvidence.length < 128)
 
+  test("validated Scala axes precede the selected project and fixed root-only task"):
+    val axis = scalaVersion("3.3.7-RC1")
+    val command = SbtCommandSequence.selected(
+      project("kernelJVM"),
+      SbtFixedTask.SourceMappingRootReceipt,
+      Some(axis)
+    )
+
+    assertEquals(
+      command,
+      "++ 3.3.7-RC1; project kernelJVM; semanticScalaInternalSourceMappingRootReceipt"
+    )
+    assertEquals(command.count(_ == ';'), 2)
+    assert(!command.contains("++ 3.3.7-RC1!"))
+
+  test("Scala axis validation admits versions and rejects command and path shapes"):
+    List("2.13", "2.13.18", "3.3.7", "3.8.0-RC1", "3.9.0-M2", "3.3.7-bin-20260101.abc")
+      .foreach(value => assertEquals(SbtScalaVersion.parse(value).map(_.value), Right(value)))
+
+    List(
+      "",
+      "3",
+      " 3.3.7",
+      "3.3.7 ",
+      "3.3.7;compile",
+      "3.3.7'",
+      "3.3.7`",
+      "3.3.7\nreload",
+      "../3.3.7",
+      "3:3.7",
+      "++3.3.7"
+    ).foreach(value => assert(SbtScalaVersion.parse(value).isLeft, clue(value)))
+
   private def project(value: String): SbtProjectId =
     SbtProjectId.parse(value).fold(message => fail(message), identity)
+
+  private def scalaVersion(value: String): SbtScalaVersion =
+    SbtScalaVersion.parse(value).fold(message => fail(message), identity)

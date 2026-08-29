@@ -124,3 +124,8 @@ The exact eighth MCP tool accepts optional `sbtProject` and dependent
 `sbtJavaHome`. Without them it requires v2; with them it requires v3. The MCP
 registry remains exactly eight tools. Source mapping remains CLI-only, and
 direct `reconcile-symbol` remains explicit-artifact, v2, and target-independent.
+
+Point evidence does not accept `--sbt-scala-version`. Target-aware point
+evidence remains the existing unqualified v3 contract pending a separate v4
+slice; the axis-aware root-only v4 contract applies only to CLI
+`semanticdb-for-source`.

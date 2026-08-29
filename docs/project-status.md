@@ -30,8 +30,9 @@ IDE/LSP/MCP tooling directly.
 - a public semantic point-evidence composition with typed discovery,
   snapshot-consistent content freshness, live-point, selection, and
   reconciliation outcomes, including a stale-artifact completion gate;
-- opt-in alpha-3 build-target-aware SemanticDB mapping and point evidence with
-  one fixed Compile receipt and closed v3 contracts;
+- opt-in alpha-3 build-target-aware SemanticDB source mapping v4 with a
+  validated Scala-axis selector and non-compiling root-only receipt, alongside
+  the retained unqualified point-evidence v3 contract;
 - a CLI-only same-request post-compile TASTy point-evidence operation and
   strengthened sbt-backed Presentation Compiler context warnings;
 - bounded sbt 1.12.15 / 2.0.6 compatibility for the existing selected
@@ -55,18 +56,15 @@ artifact bytes, produced `Stale`, and were structurally gated as
 focused provenance qualification, not a release, whole-project build, broad
 ecosystem, or general freshness claim.
 
-Current alpha-3 SNAPSHOT target-aware v3 preserves the same workspace discovery
-and no-option v2 ambiguity, then uses an authoritative sbt-reported SemanticDB
-root to select only one canonically owned target artifact. The same receipt
-supplies live classpath and redacted JDK attribution. Receipt acquisition can
-execute checked-in build/plugin code, populate caches, and compile transitively
-while evaluating `Compile / fullClasspath`;
-the live compiler does not replay target flags or plugins. The initial request
-has no cross-Scala-version selector and cannot inherit an earlier sbt `++`
-selection. Frozen Cats Effect 3.3.7 acceptance therefore remains unqualified:
-a fresh project-only receipt selected that build's default 2.13.18 axis. This
-is not general target discovery, Scala.js equivalence, release readiness,
-primitive uniqueness, or IDE/LSP superiority.
+Current alpha-3 SNAPSHOT target-aware source mapping v4 preserves the same
+workspace discovery and no-option v2 ambiguity, then uses an authoritative
+sbt-reported SemanticDB root to select only one canonically owned target
+artifact. Its root-only receipt supports an optional validated Scala axis and
+does not request target compilation or `Compile / fullClasspath`; build/plugin
+loading, resolution, and metadata/cache effects remain possible. The separate
+target-aware point-evidence v3 path still evaluates the classpath and remains
+unqualified pending its own v4 slice. This is not general target discovery,
+release readiness, primitive uniqueness, or IDE/LSP superiority.
 
 ## Evidence and readiness
 

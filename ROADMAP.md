@@ -14,9 +14,9 @@ execution ledger and does not promise delivery dates.
 - Static/dynamic symbol reconciliation.
 - A public semantic point-evidence composition that selects only one parsed
   source artifact and preserves non-selection reasons.
-- Opt-in alpha-3 target-aware SemanticDB source mapping and point evidence that
-  retain workspace ambiguity while selecting only one canonically target-owned
-  artifact from a fixed Compile context receipt.
+- Opt-in alpha-3 target-aware SemanticDB source mapping v4 with a validated
+  optional Scala axis and a non-compiling root-only receipt, plus the retained
+  unqualified target-aware point-evidence v3 contract.
 - A CLI-only bounded post-compile TASTy point-evidence operation with a
   same-request selected-Compile receipt and exact stable Scala 3 child worker.
 - Bounded fixed-task sbt subprocess compatibility proven on sbt 1.12.15 and
@@ -91,10 +91,9 @@ execution ledger and does not promise delivery dates.
 - Keep source-paired SemanticDB discovery, point evidence, and reconciliation
   snapshot-consistent: content identity owns freshness, stale artifacts cannot
   complete reconciliation, and unverifiable evidence remains qualified.
-- Preserve the target-aware boundary: output-root/classpath/JDK attribution is
-  not target compiler-option/plugin replay; the receipt can execute checked-in
-  build/plugin code, populate caches, and compile transitively while evaluating
-  the requested classpath.
+- Preserve the target-aware boundary: source mapping v4 requests root/JDK/axis
+  attribution without target compilation, while point evidence v3 retains its
+  classpath-bearing receipt; neither is target compiler-option/plugin replay.
 - Add capabilities only after a decision-relevant gap is demonstrated against
   strong ordinary tooling.
 - Keep resource and output bounds explicit and tested.

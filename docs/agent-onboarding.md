@@ -225,7 +225,9 @@ inputs to the existing `semantic_point_evidence` tool. No target inputs preserve
 v2; target inputs select the v3 contract through a fixed Compile context
 receipt. Receipt acquisition may execute checked-in build/plugin code, populate
 caches, and compile transitively. The registry remains exactly eight, and target-aware
-`semanticdb-for-source` remains CLI-only.
+`semanticdb-for-source` remains CLI-only. The latter now uses a distinct v4
+root-only receipt and optional validated Scala-axis selector; it does not alter
+the MCP point-evidence v3 grammar or registry.
 
 No current alpha-2 CLI operation is `MCP_CANDIDATE_NOT_ADMITTED`. That status
 requires a concrete agent use hypothesis and separate admission; apparent

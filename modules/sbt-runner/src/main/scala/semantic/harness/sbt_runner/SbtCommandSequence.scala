@@ -16,6 +16,8 @@ private[sbt_runner] enum SbtFixedTask(
       extends SbtFixedTask("semanticScalaInternalTastyCompileReceipt", None)
   case TargetContextReceipt
       extends SbtFixedTask("semanticScalaInternalTargetContextReceipt", None)
+  case SourceMappingRootReceipt
+      extends SbtFixedTask("semanticScalaInternalSourceMappingRootReceipt", None)
 
 private[sbt_runner] object SbtCommandSequence:
   def build(project: Option[SbtProjectId], task: SbtFixedTask): String =
@@ -28,3 +30,12 @@ private[sbt_runner] object SbtCommandSequence:
 
   def selected(project: SbtProjectId, task: SbtFixedTask): String =
     s"project ${project.value}; ${task.selectedTask}"
+
+  def selected(
+      project: SbtProjectId,
+      task: SbtFixedTask,
+      scalaVersion: Option[SbtScalaVersion]
+  ): String =
+    scalaVersion.fold(selected(project, task))(axis =>
+      s"++ ${axis.value}; project ${project.value}; ${task.selectedTask}"
+    )

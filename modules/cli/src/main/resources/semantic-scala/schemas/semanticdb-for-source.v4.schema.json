@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:semanticdb-for-source:v4",
+  "title": "semantic-scala target-aware SemanticDB for source v4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "sourceRelativePath", "discovery", "targetContext", "targetSelection"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.semanticdb-for-source.v4" },
+    "workspace": { "type": "string" },
+    "sourceFile": { "type": "string" },
+    "sourceRelativePath": { "type": ["string", "null"] },
+    "discovery": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2" },
+    "targetContext": { "$ref": "#/$defs/targetContext" },
+    "targetSelection": { "$ref": "#/$defs/targetSelection" }
+  },
+  "$defs": {
+    "targetContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "configuration", "status", "requestedScalaVersion", "effectiveScalaVersion", "scalaAxisStatus", "targetJavaContext", "acquisitionProfile", "acquisitionEffect", "buildPerformed", "possibleEffects", "pathStatus", "classDirectory", "semanticdbTargetRoot", "failure"],
+      "properties": {
+        "project": { "type": "string", "minLength": 1 },
+        "configuration": { "const": "Compile" },
+        "status": { "enum": ["Acquired", "AcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch"] },
+        "requestedScalaVersion": { "type": ["string", "null"] },
+        "effectiveScalaVersion": { "type": ["string", "null"] },
+        "scalaAxisStatus": { "enum": ["BuildDefault", "RequestedMatched", "SwitchFailure", "MismatchFailure", "Unavailable"] },
+        "targetJavaContext": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "acquisitionProfile": { "const": "RootOnlySourceMapping" },
+        "acquisitionEffect": { "const": "TargetSourceOutputsNotRequested" },
+        "buildPerformed": { "const": "NotRequested" },
+        "possibleEffects": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "BuildDefinitionOrPluginLoading" },
+            { "const": "DependencyResolution" },
+            { "const": "MetadataOrCacheWrites" }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "pathStatus": { "enum": ["Represented", "UnavailableUnsafeOrNonUnique"] },
+        "classDirectory": { "type": ["string", "null"] },
+        "semanticdbTargetRoot": { "type": ["string", "null"] },
+        "failure": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "Acquired" } }, "required": ["status"] },
+          "then": { "properties": { "effectiveScalaVersion": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "scalaAxisStatus": { "const": "BuildDefault" } }, "required": ["scalaAxisStatus"] },
+          "then": { "properties": { "requestedScalaVersion": { "type": "null" }, "effectiveScalaVersion": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "scalaAxisStatus": { "const": "RequestedMatched" } }, "required": ["scalaAxisStatus"] },
+          "then": {
+            "properties": {
+              "requestedScalaVersion": { "type": "string", "minLength": 1 },
+              "effectiveScalaVersion": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "pathStatus": { "const": "Represented" } }, "required": ["pathStatus"] },
+          "then": { "properties": { "classDirectory": { "type": "string" }, "semanticdbTargetRoot": { "type": "string" }, "failure": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["AcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch"] } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "effectiveScalaVersion": { "type": "null" },
+              "targetJavaContext": { "type": "null" },
+              "pathStatus": { "const": "UnavailableUnsafeOrNonUnique" },
+              "classDirectory": { "type": "null" },
+              "semanticdbTargetRoot": { "type": "null" },
+              "failure": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "targetSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "selectedArtifact", "ownedCandidates", "reason"],
+      "properties": {
+        "status": {
+          "enum": [
+            "SelectedTargetOwnedFresh",
+            "SelectedTargetOwnedQualifiedUnverifiable",
+            "NoCandidateOwnedByTarget",
+            "MultipleCandidatesOwnedByTarget",
+            "StaleTargetOwnedCandidate",
+            "TargetContextAcquisitionFailed",
+            "UnknownProject",
+            "ScalaSwitchFailed",
+            "ScalaAxisMismatch",
+            "SourceChangedDuringRequest",
+            "SelectedArtifactChangedOrRemapped",
+            "UnsafeOrUnverifiableOutputRoots"
+          ]
+        },
+        "selectedArtifact": {
+          "oneOf": [
+            { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" },
+            { "type": "null" }
+          ]
+        },
+        "ownedCandidates": {
+          "type": "array",
+          "items": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" }
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["SelectedTargetOwnedFresh", "SelectedTargetOwnedQualifiedUnverifiable", "StaleTargetOwnedCandidate"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" }, "ownedCandidates": { "minItems": 1, "maxItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "MultipleCandidatesOwnedByTarget" } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "type": "null" }, "ownedCandidates": { "minItems": 2 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["NoCandidateOwnedByTarget", "TargetContextAcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch", "SourceChangedDuringRequest", "SelectedArtifactChangedOrRemapped", "UnsafeOrUnverifiableOutputRoots"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "type": "null" } } }
+        }
+      ]
+    }
+  }
+}

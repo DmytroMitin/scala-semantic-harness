@@ -38,6 +38,9 @@ import semantic.harness.reconciliation.SemanticPointEvidenceTargetRequest
 import semantic.harness.reconciliation.SemanticdbForSourceReportV3
 import semantic.harness.reconciliation.SemanticdbForSourceServiceV3
 import semantic.harness.reconciliation.SemanticdbForSourceTargetRequest
+import semantic.harness.reconciliation.SemanticdbForSourceReportV4
+import semantic.harness.reconciliation.SemanticdbForSourceServiceV4
+import semantic.harness.reconciliation.SemanticdbForSourceTargetRequestV4
 import semantic.harness.reconciliation.SemanticPointEvidenceRequest
 import semantic.harness.reconciliation.SemanticReconciler
 import semantic.harness.sbt_runner.ReportConverter
@@ -49,6 +52,7 @@ import semantic.harness.sbt_runner.SbtClasspathCacheService
 import semantic.harness.sbt_runner.SbtClasspathConfiguration
 import semantic.harness.sbt_runner.SbtClasspathRequest
 import semantic.harness.sbt_runner.SbtProjectId
+import semantic.harness.sbt_runner.SbtScalaVersion
 import semantic.harness.sbt_runner.SbtRunner
 import semantic.harness.sbt_runner.SbtJavaHomeFailure
 import semantic.harness.sbt_runner.SbtJavaHomeValidator
@@ -180,8 +184,8 @@ object CliApp:
         semanticdbStatus(workspace, schemaVersion, json, projectDir)
       case CliCommand.SemanticdbCoverage(workspace, json) =>
         semanticdbCoverage(workspace, json, projectDir)
-      case CliCommand.SemanticdbForSource(file, workspace, json, sbtProject, sbtJavaHome) =>
-        semanticdbForSource(file, workspace, sbtProject, sbtJavaHome, json, projectDir)
+      case CliCommand.SemanticdbForSource(file, workspace, json, sbtProject, sbtScalaVersion, sbtJavaHome) =>
+        semanticdbForSource(file, workspace, sbtProject, sbtScalaVersion, sbtJavaHome, json, projectDir)
       case CliCommand.PointEvidence(file, workspace, line, column, json, sbtProject, sbtJavaHome) =>
         pointEvidence(file, workspace, line, column, sbtProject, sbtJavaHome, json, projectDir)
       case CliCommand.TastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json) =>
@@ -393,6 +397,7 @@ object CliApp:
       file: String,
       workspace: String,
       sbtProject: Option[SbtProjectId],
+      sbtScalaVersion: Option[SbtScalaVersion],
       sbtJavaHome: Option[String],
       json: Boolean,
       projectDir: Path
@@ -410,12 +415,18 @@ object CliApp:
         validatedSbtJavaHome(sbtJavaHome) match
           case Left(message) => CliResult(None, Some(message), 1)
           case Right(targetJava) =>
-            SemanticdbForSourceServiceV3().inspect(
-              SemanticdbForSourceTargetRequest(workspacePath, sourcePath, project, targetJava)
+            SemanticdbForSourceServiceV4().inspect(
+              SemanticdbForSourceTargetRequestV4(
+                workspacePath,
+                sourcePath,
+                project,
+                sbtScalaVersion,
+                targetJava
+              )
             ) match
               case Right(report) =>
                 if json then CliResult(Some(report.asJson.noSpaces), None, 0)
-                else CliResult(Some(semanticdbForSourceSummaryV3(report)), None, 0)
+                else CliResult(Some(semanticdbForSourceSummaryV4(report)), None, 0)
               case Left(message) => CliResult(None, Some(message), 1)
 
   private def pointEvidence(
@@ -873,6 +884,9 @@ object CliApp:
   private def semanticdbForSourceSummaryV3(report: SemanticdbForSourceReportV3): String =
     s"${report.sourceFile}: ${report.targetSelection.status}, ${report.discovery.matches.size} workspace SemanticDB match(es)"
 
+  private def semanticdbForSourceSummaryV4(report: SemanticdbForSourceReportV4): String =
+    s"${report.sourceFile}: ${report.targetSelection.status}, ${report.discovery.matches.size} workspace SemanticDB match(es)"
+
   private def pointEvidenceSummary(report: PointEvidenceReportV2): String =
     s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.selection.status}, ${report.livePoint.status}, ${report.reconciliation.outcome}"
 
@@ -921,7 +935,7 @@ object CliApp:
       |  semantic-scala errors [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
       |  semantic-scala semanticdb-status --workspace <path> [--schema-version v1|v2] [--json]
       |  semantic-scala semanticdb-coverage --workspace <path> [--json]
-      |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+      |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
       |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
       |  semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
       |  semantic-scala symbols --semanticdb <path> [--json]
@@ -1035,12 +1049,15 @@ object CliApp:
       case "semanticdb-for-source" =>
         Some(
           """Usage:
-            |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+            |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
             |
             |Without target options, preserves the read-only v2 workspace mapping and ambiguity behavior.
-            |With --sbt-project, acquires one fixed Compile target-context receipt and emits v3.
+            |With --sbt-project, acquires one fixed Compile root-only receipt and emits v4.
+            |--sbt-scala-version requires --sbt-project, selects one validated cross-Scala axis,
+            |and must exactly match the effective Scala version reported by the receipt.
+            |Without it, a fresh sbt lifecycle uses the build default; no prior ++ state is inherited.
             |Receipt acquisition evaluates checked-in sbt build/plugin code, may resolve dependencies or populate caches,
-            |and may compile transitively while evaluating Compile / fullClasspath. It does not replay target compiler options/plugins.
+            |and may write ordinary metadata, but it does not request target compilation, classpaths, products, or exported products.
             |--sbt-java-home requires --sbt-project and applies only to the receipt's child sbt process.
             |""".stripMargin.trim
         )

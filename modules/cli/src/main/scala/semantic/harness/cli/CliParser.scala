@@ -277,14 +277,14 @@ object CliParser:
 
   private def parseSemanticdbForSource(args: List[String]): ParseResult =
     parseKeyValueArgs("semanticdb-for-source", args).flatMap { case (options, json) =>
-      val allowed = Set("--file", "--workspace", "--sbt-project", "--sbt-java-home")
+      val allowed = Set("--file", "--workspace", "--sbt-project", "--sbt-scala-version", "--sbt-java-home")
       val unsupported = options.keySet.diff(allowed)
       if unsupported.nonEmpty then Left(s"Invalid arguments for semanticdb-for-source: ${unsupported.toList.sorted.mkString(" ")}")
       else
         (options.get("--file"), options.get("--workspace")) match
           case (Some(file), Some(workspace)) =>
-            targetSelectionOptions("semanticdb-for-source", options).map { case (project, javaHome) =>
-              CliCommand.SemanticdbForSource(file, workspace, json, project, javaHome)
+            sourceMappingTargetOptions(options).map { case (project, scalaVersion, javaHome) =>
+              CliCommand.SemanticdbForSource(file, workspace, json, project, scalaVersion, javaHome)
             }
           case _ => Left(s"Invalid arguments for semanticdb-for-source: ${args.mkString(" ")}")
     } match
@@ -669,13 +669,33 @@ object CliParser:
     def loop(rest: List[String], options: Map[String, String], json: Boolean): Either[String, (Map[String, String], Boolean)] =
       rest match
         case Nil => Right((options, json))
-        case "--json" :: tail => loop(tail, options, json = true)
+        case "--json" :: tail =>
+          if json then Left(s"Option may only be supplied once for $commandName: --json")
+          else loop(tail, options, json = true)
         case key :: value :: tail if key.startsWith("--") && !value.startsWith("--") =>
-          loop(tail, options.updated(key, value), json)
+          if options.contains(key) then Left(s"Option may only be supplied once for $commandName: $key")
+          else loop(tail, options.updated(key, value), json)
         case other =>
           Left(s"Invalid arguments for $commandName: ${other.mkString(" ")}")
 
     loop(args, Map.empty, json = false)
+
+  private def sourceMappingTargetOptions(
+      options: Map[String, String]
+  ): Either[String, (Option[SbtProjectId], Option[semantic.harness.sbt_runner.SbtScalaVersion], Option[String])] =
+    for
+      target <- targetSelectionOptions("semanticdb-for-source", options)
+      scalaVersion <- options.get("--sbt-scala-version") match
+        case Some(value) => semantic.harness.sbt_runner.SbtScalaVersion.parse(value)
+          .left.map(message => s"Invalid --sbt-scala-version for semanticdb-for-source: $message")
+          .map(Some.apply)
+        case None => Right(None)
+      _ <- Either.cond(
+        scalaVersion.isEmpty || target._1.nonEmpty,
+        (),
+        "--sbt-scala-version requires --sbt-project for semanticdb-for-source"
+      )
+    yield (target._1, scalaVersion, target._2)
 
   private def targetSelectionOptions(
       commandName: String,
