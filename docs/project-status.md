@@ -19,6 +19,16 @@ Fewer commands alone is not evidence of composition value. Both modes require
 comparison with a strong baseline that can use compiler, tests, and appropriate
 IDE/LSP/MCP tooling directly.
 
+A potential future role is a Scala-specific **semantic evidence broker /
+decision layer** for agents: compose bounded compiler, build/target, test,
+Presentation Compiler, SemanticDB, TASTy/classfile, and separately admitted
+IDE/LSP evidence into one packet with explicit target/toolchain provenance,
+freshness, completeness, uncertainty, disagreement, acquisition effects,
+resource bounds, and typed safe non-action reasons. This is a hypothesis for
+controlled comparison, not a completed architecture, semantic-superiority
+claim, or authority for a new backend, persistent IDE integration,
+orchestration framework, or MCP tool.
+
 ## Implemented foundation
 
 - Scala 3 CLI with structured compile, test, and diagnostic results;
@@ -107,16 +117,27 @@ Scala 2 support, and 1.0 stability remain unproven.
 
 ## Next evidence milestone
 
-The evidence sequence is not a product delivery promise. Before the planned
-community announcement, fresh Scala/product development and bounded
-real-project validation remain open. After the announcement, external feedback
-from real Scala projects and concrete decisions becomes a primary source for
-the next semantic and product gaps, reported with the bounded comparison and
-reproducibility context in [`early-feedback.md`](early-feedback.md). The most
-useful cases show either a missing decision fact or materially better
-composition of facts that strong compiler, build/test, IDE/LSP, or standard
-artifact tooling can already provide. Installation/client friction and exact
-Scala/sbt/JDK/project compatibility failures are also in scope.
+The evidence sequence is not a product delivery promise. The next substantive
+task is expected to recheck the current Metals MCP or officially supported
+headless Metals surface and preregister a controlled competitive baseline; it
+will not integrate Metals into the product. A following task may execute the
+first comparison across source/compiler/test, Metals, `semantic-scala`, and
+combined Metals-plus-`semantic-scala` arms. Cross-target ambiguity, stale
+artifacts, missing-output partial context, and compiled/generated-fact decisions
+are candidate families. Diagnosis/edit correctness, unsafe selection, false
+certainty, provenance mistakes, exact non-attempt attribution, intervention,
+iterations, redundant calls, latency, and observable cost are candidate
+metrics. Current Metals mechanics must be reverified rather than inferred from
+old evidence.
+
+The result will decide whether to pursue alpha-3/community-feedback
+preparation, mature-tool composition, one genuinely missing Scala capability,
+or scope reduction/deferral. Before the planned early-September community
+announcement, fresh Scala/product development and bounded real-project
+validation remain open. After the announcement, external feedback from real
+Scala projects and concrete decisions becomes a primary source for subsequent
+gaps, reported with the bounded comparison and reproducibility context in
+[`early-feedback.md`](early-feedback.md).
 
 Immediate TASTy-primitive differentiation, ninth-MCP-tool exposure, and
 automatic skill-retuning loops are closed. Skill adoption, Scala target
@@ -125,4 +146,7 @@ independent compiler-plugin cases preserve their bounded qualifier, while the
 strongest frozen ordinary-tool comparison found fact-equivalent point evidence
 and therefore no demonstrated primitive fact advantage. The supported package
 remains alpha-2; alpha-3 SNAPSHOT behavior on `main` remains unreleased source
-development.
+development. Alpha-3 is intentionally not cut immediately after the current
+implementation or the first comparison; release consideration is deferred
+toward qualification nearer the planned announcement and requires separate
+authority.

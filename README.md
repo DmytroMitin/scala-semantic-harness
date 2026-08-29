@@ -173,8 +173,9 @@ the home or probe evidence.
 Target-aware `semanticdb-for-source` and `point-evidence` also accept
 `--sbt-scala-version <version>`. The option requires `--sbt-project`, uses a
 strict version-only grammar, and selects that cross-Scala axis in a fresh sbt
-lifecycle before the fixed root-only receipt task. Omission means the checked-in
-build default, never inherited `++` state.
+lifecycle. Source mapping then runs its fixed root-only receipt task; point
+evidence runs its distinct partial existing-output point-context receipt.
+Omission means the checked-in build default, never inherited `++` state.
 
 For repeated use, prefer the staged launcher at
 `modules/cli/target/stage/bin/semantic-scala`.
@@ -405,8 +406,9 @@ project reports are welcome using the bounded comparison packet in
 [`docs/early-feedback.md`](docs/early-feedback.md), especially missing
 decision-relevant evidence or materially useful composition of compiler,
 build/test, IDE/LSP, and artifact facts. Alpha-2 remains the supported packaged
-release while `main` is alpha-3 SNAPSHOT development; no alpha-3 date or
-publication is promised.
+release while `main` is alpha-3 SNAPSHOT development. Alpha-3 release
+consideration is intentionally deferred toward qualification nearer the planned
+early-September community announcement and still requires separate authority.
 
 ## Project policies
 

@@ -38,7 +38,11 @@ execution ledger and does not promise delivery dates.
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
 2. Continue fresh Scala/product development and bounded real-project validation
-   before the planned community announcement. After the announcement, make
+   before the planned early-September community announcement. Alpha-2 remains
+   the supported package; alpha-3 remains SNAPSHOT development and is not cut
+   merely to align packaging with mutable `main`. Alpha-3 consideration is
+   intentionally nearer that announcement and remains subject to explicit
+   qualification and release authority. After the announcement, make
    external real-project feedback a primary source for the next semantic and
    product gaps. Evaluate concrete Scala decisions against the compiler,
    build/test, IDE/LSP, and standard artifact tools already available to the
@@ -82,6 +86,56 @@ execution ledger and does not promise delivery dates.
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.
 
+## Next comparative research sequence
+
+The evidence-broker / decision-layer hypothesis is the next planned research
+sequence, not an implemented subsystem or release gate:
+
+1. This documentation and roadmap normalization step corrects the current
+   contract wording, records the hypothesis, and preregisters the comparison
+   shape.
+2. The next substantive design/intake step will mechanically inspect the
+   current Metals MCP or officially supported headless Metals semantic surface
+   and freeze a controlled experiment design. It adds no product integration
+   unless a later task separately admits one.
+3. The following execution step may run the first strong
+   Metals-versus-`semantic-scala` agent comparison under the frozen design.
+4. Only then decide whether evidence supports alpha-3 release/community-feedback
+   preparation, `semantic-scala` plus Metals/IDE composition, a genuinely
+   missing Scala capability, or deliberate scope reduction/deferral.
+
+Do not assume old Metals versions, installation routes, tool names, readiness
+signals, or client compatibility. The design/intake step must recheck them
+mechanically and may narrow the experiment to the smallest high-information
+subset.
+
+Candidate arms use the same client, model, reasoning level, task wording, and
+repository state where mechanically possible:
+
+- **A:** source/shell plus compiler/test baseline;
+- **B:** current verified Metals MCP or supported headless Metals surface;
+- **C:** `semantic-scala`; and
+- **D:** Metals plus `semantic-scala`.
+
+Candidate decision families are cross-built/shared-source target ambiguity,
+stale SemanticDB after source mutation, multi-project missing-output partial
+context, and compiler-plugin/generated facts where live source and compiled
+truth may differ. Primary metrics are diagnosis/edit correctness, unsafe target
+or artifact selection, false certainty/agreement, wrong project/Scala/JDK
+attribution, stale-artifact mistakes, exact evidence or non-attempt attribution,
+iterations to compile/test green, controller intervention, redundant semantic
+calls, latency, and reliably observable token/context/cost. Fewer calls alone
+are not product value.
+
+Interpret outcomes without preselecting a winner:
+
+- **C > B:** evidence for independent `semantic-scala` value;
+- **D > B and D > C:** evidence for a complementary evidence/decision layer;
+- **B >= C and D adds no material value:** evidence to reduce, redirect, or
+  defer scope rather than manufacture a feature; and
+- **mixed:** identify the decision families that benefit and keep claims
+  bounded.
+
 ## Semantic evidence quality
 
 - Keep facts owned by the narrowest appropriate compiler, build, test,
@@ -98,6 +152,12 @@ execution ledger and does not promise delivery dates.
 - Add capabilities only after a decision-relevant gap is demonstrated against
   strong ordinary tooling.
 - Keep resource and output bounds explicit and tested.
+
+Validation depth follows the semantic boundary being changed: ordinary focused
+implementation receives focused unit/schema/integration tests; a semantic
+boundary change also receives bounded real-project acceptance; a release
+candidate requires full regression, package/install/publication-shape, and
+privacy qualification. These tiers do not authorize release actions.
 
 ## Composition and orchestration
 
@@ -117,11 +177,12 @@ execution ledger and does not promise delivery dates.
   condition is preregistered.
 - Continue comparing coherent operations with direct use of the same compiler,
   test, IDE/LSP, and MCP primitives.
-- Keep the frozen Cats Effect JVM/JS shared-source acceptance open until a
-  separately admitted cross-Scala-axis contract can reproduce the prepared
-  3.3.7 target in each fresh receipt. Do not treat project-only selection on
-  the build's default 2.13 axis as that qualification or as general Scala.js,
-  primitive-information, or IDE/LSP evidence.
+- Preserve the frozen current Cats Effect JVM/JS shared-source qualification:
+  explicit 3.3.7 target-aware point-evidence v4 reproduced the prepared JVM/JS
+  targets with unchanged selected outputs, while missing-output and
+  multi-project controls remained explicitly partial and non-compiling. This
+  is not general Scala.js, complete classpath, primitive-information, or
+  IDE/LSP evidence.
 - Treat the post-compile TASTy lane as a current illustration of composition
   and provenance value: it normalizes selected-build ownership, point mapping,
   source/artifact identity, freshness, uncertainty, and no-replay boundaries.

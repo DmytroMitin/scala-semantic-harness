@@ -71,7 +71,11 @@ The current supported packaged route is exactly `0.1.0-alpha.2`; follow
 `0.1.0-alpha.3-SNAPSHOT`. Its project/JDK selectors and TASTy evidence are
 development-source behavior until a later release; no alpha-3 artifact,
 channel, tag, or GitHub Release is claimed. Label source-built alpha-3 SNAPSHOT
-feedback explicitly and include the tested revision when shareable.
+feedback explicitly and include the tested revision when shareable. Alpha-3 is
+not being cut merely to align the supported package with mutable `main`;
+release consideration is intentionally deferred toward qualification nearer
+the planned early-September community announcement and remains separately
+authorized.
 
 ## Especially valuable now
 

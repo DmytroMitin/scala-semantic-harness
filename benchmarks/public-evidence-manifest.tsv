@@ -11,7 +11,7 @@ benchmarks/runs/v0/usages-by-symbol-public-cli-contract-schema-design-gate/schem
 benchmarks/runs/v0/usages-by-symbol-public-cli-contract-schema-design-gate/schemas/usages-result.v1.schema.json	25396	960180ada0294728ef72dc3e6cd44919036284e9e62c4d5fa735a583386839cf	test-coupled-json-schema
 benchmarks/validate-public-evidence.py	2608	062156c2191ae190db8bc767546923c3596bde8723ad4e62ae1839f157404d92	deterministic-evidence-validator
 docs/benchmark-design.md	12722	149aa0797dcd28c69c5669bd0a616efa5cb8b33d08d25a324679476ea8ad23aa	methodology
-docs/benchmark-experiment-protocol.md	10481	dfe22eb2a7a08a847dd9f0ad254e26f77e295ef0ae56834a91b60086da55a724	methodology
+docs/benchmark-experiment-protocol.md	12431	36495a7a1aa6a2cf3ddd8fed27548c17ac5d67c444cb0b2136125db05fd3c999	methodology
 docs/semantic-benchmark-taxonomy.md	6295	b9be319ee52f5513d87b1133431e44ccc54723c389b8fb9d0f597870ebdc83b4	interpretation-taxonomy
 scripts/benchmark/README.md	1214	863b0dba334d8c91236baaa6cdf228d1401910ecb9ef2c295d9f1ace44996b9e	portable-input-guide
 scripts/benchmark/prompts/ambiguous-symbol-1.semantic-harness.md	1224	1e964427cb50a00cd0180ff56bc85e44b6036dfabf5c2bb7c26cc08ef4ba71b5	portable-condition-prompt

@@ -14,6 +14,21 @@ The project principle is:
 
 In short: complement, do not duplicate, Metals, Serena, or JetBrains.
 
+One explicit hypothesis now guides the next comparison: the harness may be most
+useful as a Scala-specific **semantic evidence broker / decision layer** for
+agents. In that potential role it would not replace any evidence source. It
+would compose bounded facts from the compiler, build/BSP/sbt targets, tests,
+Presentation Compiler, SemanticDB, TASTy/classfile tooling, and—only after
+separate admission—mature IDE/LSP sources such as Metals or JetBrains. The
+candidate differentiated output is one decision packet that preserves target,
+project, configuration, Scala/JDK/toolchain provenance, freshness, coverage,
+completeness, uncertainty, disagreement, acquisition effects, resource bounds,
+and typed safe non-action reasons.
+
+This is a benchmark hypothesis, not an implemented architecture or superiority
+claim. It authorizes no generic orchestration framework, persistent IDE
+integration, new semantic backend, or expanded MCP surface.
+
 The CLI remains the source of truth. Its differentiated value is a bounded,
 headless contract around:
 
@@ -92,11 +107,13 @@ reimplementing the underlying generic operations.
 > directly.
 
 Scala specificity alone is insufficient. A proposal must identify a live
-decision that existing evidence does not resolve, define a bounded contract,
-and pass a separate utility/admission benchmark before implementation or
-public exposure. Composition is not established merely by counting fewer
-commands: it must be compared with a strong baseline that can use the relevant
-compiler, IDE/LSP/MCP, and CLI tools directly.
+decision where a strong ordinary baseline loses information, misattributes
+evidence, makes an unsafe choice, or incurs material orchestration friction. It
+must define the observable improvement, a bounded contract, and a separate
+utility/admission benchmark before implementation or public exposure.
+Composition is not established merely by counting fewer commands: it must be
+compared with a strong baseline that can use the relevant compiler, IDE/LSP/MCP,
+and CLI tools directly.
 
 A previously tested selected-context prototype demonstrates the negative side
 of this rule: it remained internal after controlled agents did not use it.
@@ -172,16 +189,17 @@ or inconsistent artifacts. Any future diagnostic-action evidence must retain
 its originating diagnostic, build/source context, completeness status, and
 limits. No public diagnostic-action schema exists.
 
-## Future comparison baseline
+## Next comparison baseline
 
-A separately admitted benchmark may compare:
+The next research sequence will first recheck the current officially supported
+headless Metals semantic surface and preregister a controlled comparison. It
+will not add product integration. A following task may then execute the first
+comparison using these candidate arms:
 
-1. shell/plain-file only;
-2. compiler/test only;
-3. Metals through LSP or MCP;
-4. Serena;
-5. JetBrains MCP; and
-6. generic semantic tooling plus `scala-semantic-harness`.
+1. agent plus source/shell and compiler/test baseline;
+2. agent plus the verified current Metals MCP or supported headless surface;
+3. agent plus `semantic-scala`; and
+4. agent plus both Metals and `semantic-scala`.
 
 Such a comparison must control tool-use attribution and environment confounds.
 Tool exposure or invocation is not success. The useful outcomes are
@@ -189,7 +207,9 @@ decision-relevant semantic-tool use, compile/test success, iterations to green,
 incorrect edits and over-edits, exact-symbol errors, contextual/implicit errors
 where applicable, and unnecessary human intervention.
 
-No such benchmark or integration is currently scheduled.
+The exact Metals capabilities, version, install route, tool names, readiness,
+and client compatibility must be mechanically rechecked before experiment
+design. No comparative run or product integration has occurred yet.
 
 ## Frozen current boundary
 

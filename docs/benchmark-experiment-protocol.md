@@ -54,22 +54,33 @@ designed so `effect-summary` can report both an `Option[User]` parser and an
 `Either[String, User]` parser; the intended repair is still determined by the
 public `Either` contract and tests.
 
-### Future semantic-evidence condition matrix
+### Preregistered next semantic-evidence condition matrix
 
-For a controlled future comparison, use the same task in these arms:
+The next planned competitive sequence uses the same task in these candidate
+arms:
 
-1. **Plain files**: source and ordinary file/text tools only.
-2. **Compiler/test only**: compile and test feedback without a structured
-   semantic query layer.
-3. **semantic-scala**: schema-versioned CLI/MCP evidence.
-4. **IDE/LSP semantic**: an explicitly named IDE or language-server surface,
-   such as JetBrains IDE MCP or Metals/LSP.
-5. **Combined**: semantic-scala plus IDE/LSP evidence, only when evidence and
-   tool-use attribution remain measurable.
+1. **A — ordinary baseline**: source/shell plus compiler/test feedback.
+2. **B — Metals**: the current verified Metals MCP or officially supported
+   headless Metals semantic surface.
+3. **C — semantic-scala**: schema-versioned CLI/MCP evidence.
+4. **D — combined**: Metals plus semantic-scala, with evidence and tool-use
+   attribution kept separable.
 
 These are proposed experimental conditions, not new implemented
 `BenchmarkCase.mode` values. Do not rewrite current run JSON as if these arms
 had already been executed.
+
+Before freezing the experiment, the design task must mechanically recheck the
+current Metals capabilities, install route, version, tool names, readiness
+state, and client compatibility. Old prose and historical Metals observations
+are not current capability authority. The design may narrow the following
+candidate decisions to the smallest high-information subset:
+
+- cross-built/shared-source target ambiguity;
+- stale SemanticDB after source mutation;
+- multi-project missing-output or partial-context decisions; and
+- compiler-plugin/generated facts where live source and compiled truth can
+  differ.
 
 For each arm, record independently:
 
@@ -80,6 +91,24 @@ For each arm, record independently:
 
 This separation prevents a capability comparison from being confused with an
 instruction-quality or automatic-workflow comparison.
+
+Primary metrics are decision-oriented: correct diagnosis/classification,
+correct final edit when applicable, unsafe semantic/artifact/target selection,
+false certainty or false static/live agreement, wrong project/Scala-axis/JDK
+attribution, stale-artifact mistakes, exact evidence or non-attempt attribution,
+iterations to compile/test green, controller intervention, redundant or
+irrelevant semantic calls, wall-clock latency, and token/context/cost when
+reliably observable. Fewer tool calls alone are not product value.
+
+Interpret outcomes without precommitting to a winner:
+
+- **C > B** supports independent semantic-scala value;
+- **D > B and D > C** supports the hypothesis that semantic-scala is most
+  valuable as a complementary evidence/decision layer;
+- **B >= C and D adds no material value** supports scope reduction,
+  redirection, or deferral; and
+- **mixed** results identify bounded decision families rather than a general
+  winner.
 
 ## 3. Command Categories
 
@@ -229,6 +258,13 @@ Then optionally run:
 The first pair tests whether adding semantic commands changes behavior on a
 simple compile repair. The optional reconciliation case tests whether the agent
 handles uncertainty instead of over-trusting semantic output.
+
+This v0 recommendation remains historical methodology. The next substantive
+research task is expected to perform Metals baseline intake and preregister the
+A/B/C/D design above without product integration. A following task may execute
+the first frozen comparison. Only after those results should the project choose
+between release/community-feedback preparation, mature-tool composition, a
+genuinely missing Scala capability, or deliberate scope reduction/deferral.
 
 ## 8. Fairness Rules
 
