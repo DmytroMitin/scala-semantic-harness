@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:point-evidence-result:v4",
+  "title": "semantic-scala target-aware partial existing-output point evidence result v4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "position", "discovery", "targetContext", "targetSelection", "livePoint", "reconciliation"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.point-evidence-result.v4" },
+    "workspace": { "type": "string" },
+    "sourceFile": { "type": "string" },
+    "position": { "$ref": "#/$defs/rangePosition" },
+    "discovery": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2" },
+    "targetContext": { "$ref": "#/$defs/targetContext" },
+    "targetSelection": { "$ref": "#/$defs/targetSelection" },
+    "livePoint": { "$ref": "#/$defs/livePoint" },
+    "reconciliation": {
+      "oneOf": [
+        { "$ref": "urn:semantic-scala:schema:reconcile-symbol-result:v2" },
+        { "$ref": "#/$defs/targetNotAttemptedReconciliation" }
+      ]
+    }
+  },
+  "$defs": {
+    "rangePosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line", "column", "encoding"],
+      "properties": {
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "encoding": { "const": "UTF-16" }
+      }
+    },
+    "targetContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "configuration", "status", "requestedScalaVersion", "effectiveScalaVersion", "scalaAxisStatus", "targetJavaContext", "acquisitionProfile", "acquisitionEffect", "buildPerformed", "possibleEffects", "pathStatus", "classDirectory", "semanticdbTargetRoot", "selectedClassDirectoryStatus", "compiledOutputFreshness", "classpathBasis", "externalDependencyEntryCount", "presentationCompilerContextEntryCount", "contextCompleteness", "failure"],
+      "properties": {
+        "project": { "type": "string", "minLength": 1 },
+        "configuration": { "const": "Compile" },
+        "status": { "enum": ["Acquired", "AcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch"] },
+        "requestedScalaVersion": { "type": ["string", "null"] },
+        "effectiveScalaVersion": { "type": ["string", "null"] },
+        "scalaAxisStatus": { "enum": ["BuildDefault", "RequestedMatched", "SwitchFailure", "MismatchFailure", "Unavailable"] },
+        "targetJavaContext": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "acquisitionProfile": { "const": "PartialExistingOutputPointContext" },
+        "acquisitionEffect": { "const": "TargetSourceOutputsNotRequested" },
+        "buildPerformed": { "const": "NotRequested" },
+        "possibleEffects": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "BuildDefinitionOrPluginLoading" },
+            { "const": "DependencyResolution" },
+            { "const": "MetadataOrCacheWrites" }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "pathStatus": { "enum": ["Represented", "UnavailableUnsafeOrNonUnique"] },
+        "classDirectory": { "type": ["string", "null"] },
+        "semanticdbTargetRoot": { "type": ["string", "null"] },
+        "selectedClassDirectoryStatus": { "enum": ["PresentIncluded", "AbsentNotIncluded", "UnavailableUnsafe"] },
+        "compiledOutputFreshness": { "const": "NotAssessed" },
+        "classpathBasis": { "const": "ExistingSelectedClassDirectoryPlusExternalDependencies" },
+        "externalDependencyEntryCount": { "type": ["integer", "null"], "minimum": 0 },
+        "presentationCompilerContextEntryCount": { "type": ["integer", "null"], "minimum": 1 },
+        "contextCompleteness": { "const": "PartialExistingOutputs" },
+        "failure": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "Acquired" } }, "required": ["status"] },
+          "then": { "properties": { "effectiveScalaVersion": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "scalaAxisStatus": { "const": "BuildDefault" } }, "required": ["scalaAxisStatus"] },
+          "then": { "properties": { "requestedScalaVersion": { "type": "null" }, "effectiveScalaVersion": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "scalaAxisStatus": { "const": "RequestedMatched" } }, "required": ["scalaAxisStatus"] },
+          "then": { "properties": { "requestedScalaVersion": { "type": "string", "minLength": 1 }, "effectiveScalaVersion": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "pathStatus": { "const": "Represented" } }, "required": ["pathStatus"] },
+          "then": {
+            "properties": {
+              "status": { "const": "Acquired" },
+              "classDirectory": { "type": "string" },
+              "semanticdbTargetRoot": { "type": "string" },
+              "selectedClassDirectoryStatus": { "enum": ["PresentIncluded", "AbsentNotIncluded"] },
+              "externalDependencyEntryCount": { "type": "integer", "minimum": 0 },
+              "presentationCompilerContextEntryCount": { "type": "integer", "minimum": 1 },
+              "failure": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["AcquisitionFailed", "UnknownProject", "ScalaSwitchFailed"] } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "effectiveScalaVersion": { "type": "null" },
+              "targetJavaContext": { "type": "null" },
+              "pathStatus": { "const": "UnavailableUnsafeOrNonUnique" },
+              "classDirectory": { "type": "null" },
+              "semanticdbTargetRoot": { "type": "null" },
+              "selectedClassDirectoryStatus": { "const": "UnavailableUnsafe" },
+              "externalDependencyEntryCount": { "type": "null" },
+              "presentationCompilerContextEntryCount": { "type": "null" },
+              "failure": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "ScalaAxisMismatch" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "pathStatus": { "const": "UnavailableUnsafeOrNonUnique" },
+              "classDirectory": { "type": "null" },
+              "semanticdbTargetRoot": { "type": "null" },
+              "selectedClassDirectoryStatus": { "const": "UnavailableUnsafe" },
+              "externalDependencyEntryCount": { "type": "null" },
+              "presentationCompilerContextEntryCount": { "type": "null" },
+              "failure": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "targetSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "selectedArtifact", "ownedCandidates", "reason"],
+      "properties": {
+        "status": {
+          "enum": [
+            "SelectedTargetOwnedFresh",
+            "SelectedTargetOwnedQualifiedUnverifiable",
+            "NoCandidateOwnedByTarget",
+            "MultipleCandidatesOwnedByTarget",
+            "StaleTargetOwnedCandidate",
+            "TargetContextAcquisitionFailed",
+            "UnknownProject",
+            "ScalaSwitchFailed",
+            "ScalaAxisMismatch",
+            "SourceChangedDuringRequest",
+            "SelectedArtifactChangedOrRemapped",
+            "PointContextInputsChangedDuringRequest",
+            "TargetRootsOrAxisChangedDuringRequest",
+            "UnsafeOrUnverifiableOutputRoots"
+          ]
+        },
+        "selectedArtifact": {
+          "oneOf": [
+            { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" },
+            { "type": "null" }
+          ]
+        },
+        "ownedCandidates": {
+          "type": "array",
+          "items": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" }
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["SelectedTargetOwnedFresh", "SelectedTargetOwnedQualifiedUnverifiable", "StaleTargetOwnedCandidate"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" }, "ownedCandidates": { "minItems": 1, "maxItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "MultipleCandidatesOwnedByTarget" } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "type": "null" }, "ownedCandidates": { "minItems": 2 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["NoCandidateOwnedByTarget", "TargetContextAcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch", "SourceChangedDuringRequest", "SelectedArtifactChangedOrRemapped", "PointContextInputsChangedDuringRequest", "TargetRootsOrAxisChangedDuringRequest", "UnsafeOrUnverifiableOutputRoots"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "type": "null" } } }
+        }
+      ]
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startLine", "startCharacter", "endLine", "endCharacter"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 0 },
+        "startCharacter": { "type": "integer", "minimum": 0 },
+        "endLine": { "type": "integer", "minimum": 0 },
+        "endCharacter": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "liveResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "symbol", "displayName", "range", "source"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.symbol-at-result.v1" },
+        "symbol": { "type": ["string", "null"] },
+        "displayName": { "type": ["string", "null"] },
+        "range": { "oneOf": [{ "$ref": "#/$defs/range" }, { "type": "null" }] },
+        "source": { "type": "string" }
+      }
+    },
+    "livePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "result", "reason"],
+      "properties": {
+        "status": { "enum": ["Resolved", "Unresolved", "Unavailable"] },
+        "result": { "oneOf": [{ "$ref": "#/$defs/liveResult" }, { "type": "null" }] },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "Unavailable" } }, "required": ["status"] },
+          "then": { "properties": { "result": { "type": "null" }, "reason": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["Resolved", "Unresolved"] } }, "required": ["status"] },
+          "then": { "properties": { "result": { "$ref": "#/$defs/liveResult" }, "reason": { "type": "null" } } }
+        }
+      ]
+    },
+    "targetNotAttemptedReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "file", "semanticdb", "queryPosition", "freshness", "outcome"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.reconcile-symbol-result.v2" },
+        "file": { "type": "string" },
+        "semanticdb": { "type": ["string", "null"] },
+        "queryPosition": { "$ref": "#/$defs/range" },
+        "freshness": { "type": "null" },
+        "outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "result", "qualificationReason", "notAttemptedReason"],
+          "properties": {
+            "status": { "const": "NotAttempted" },
+            "result": { "type": "null" },
+            "qualificationReason": { "type": "null" },
+            "notAttemptedReason": {
+              "enum": [
+                "StaleArtifact",
+                "SourceChangedDuringRequest",
+                "NoArtifactCandidate",
+                "AmbiguousArtifactCandidates",
+                "PartialOrUnparseableArtifactEvidence",
+                "ArtifactEvidenceUnavailable",
+                "LivePointUnavailable",
+                "SelectedArtifactUnreadable",
+                "SelectedArtifactChangedOrRemapped"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

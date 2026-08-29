@@ -32,7 +32,8 @@ IDE/LSP/MCP tooling directly.
   reconciliation outcomes, including a stale-artifact completion gate;
 - opt-in alpha-3 build-target-aware SemanticDB source mapping v4 with a
   validated Scala-axis selector and non-compiling root-only receipt, alongside
-  the retained unqualified point-evidence v3 contract;
+  target-aware point-evidence v4 with a non-compiling partial existing-output
+  receipt;
 - a CLI-only same-request post-compile TASTy point-evidence operation and
   strengthened sbt-backed Presentation Compiler context warnings;
 - bounded sbt 1.12.15 / 2.0.6 compatibility for the existing selected
@@ -61,9 +62,13 @@ workspace discovery and no-option v2 ambiguity, then uses an authoritative
 sbt-reported SemanticDB root to select only one canonically owned target
 artifact. Its root-only receipt supports an optional validated Scala axis and
 does not request target compilation or `Compile / fullClasspath`; build/plugin
-loading, resolution, and metadata/cache effects remain possible. The separate
-target-aware point-evidence v3 path still evaluates the classpath and remains
-unqualified pending its own v4 slice. This is not general target discovery,
+loading, resolution, and metadata/cache effects remain possible. Target-aware
+point-evidence v4 likewise avoids compilation and uses only an existing selected
+class directory plus target external dependencies. Its context remains
+`PartialExistingOutputs`; it is not a complete arbitrary multi-project
+classpath and does not replay target compiler flags or plugins. Frozen Cats
+Effect JVM/JS prepared and missing-output controls and a disposable two-project
+fixture qualify this bounded behavior. This is not general target discovery,
 release readiness, primitive uniqueness, or IDE/LSP superiority.
 
 ## Evidence and readiness

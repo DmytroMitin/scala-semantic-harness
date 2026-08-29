@@ -312,22 +312,26 @@ Tool input:
   "line": 6,
   "col": 16,
   "sbtProject": "app",
+  "sbtScalaVersion": "3.3.7",
   "sbtJavaHome": "/absolute/path/to/installed-jdk"
 }
 ```
 
 The adapter requires an existing workspace, a relative contained regular
-`.scala` file, and positive one-based UTF-16 coordinates. `sbtProject` and
-`sbtJavaHome` are optional; the Java home requires the project selector. With
+`.scala` file, and positive one-based UTF-16 coordinates. `sbtProject`,
+`sbtScalaVersion`, and `sbtJavaHome` are optional; the latter two require the
+project selector. With
 neither option, it runs exactly
 `semantic-scala point-evidence --workspace . --file <file> --line <line> --col
 <col> --json` in that workspace and accepts only
 `semantic-scala.point-evidence-result.v2`. With a project it forwards the
 validated target options and accepts only
-`semantic-scala.point-evidence-result.v3`. Target-context acquisition evaluates
-checked-in sbt build/plugin code, can resolve dependencies or populate caches,
-and may compile transitively. The receipt supplies target
-output/classpath/JDK attribution, not target compiler-option/plugin replay.
+`semantic-scala.point-evidence-result.v4`. Target-context acquisition evaluates
+checked-in sbt build/plugin code and can resolve dependencies or populate
+metadata/caches, but does not request target compilation, `fullClasspath`,
+products, or exported products. The receipt supplies selected-existing-output,
+external-dependency, axis, and JDK attribution, not target compiler-option or
+plugin replay. Its PC context is explicitly partial and has no build fallback.
 
 ## MCP Methods
 
@@ -511,11 +515,14 @@ them.
 `semantic_point_evidence` delegates to the CLI-owned composition. It discovers
 existing artifacts, preserves live resolved/unresolved/unavailable evidence,
 and either reconciles or reports a typed not-attempted reason. Without target
-inputs it preserves v2 behavior and does not run sbt. With `sbtProject`, its v3
-route retains workspace ambiguity while selecting only a canonically
-target-owned artifact and acquiring the matching live classpath/JDK context.
-That receipt can evaluate build/plugin code, populate caches, and compile transitively;
-it does not generate SemanticDB or replay target compiler flags/plugins.
+inputs it preserves v2 behavior and does not run sbt. With `sbtProject`, its v4
+route keeps workspace ambiguity visible while only a
+canonically target-owned artifact may be selected. The matching live context
+contains the selected existing class directory when present plus target
+external dependencies and is always `PartialExistingOutputs`. Receipt
+acquisition can evaluate build/plugin code and populate resolution/metadata
+caches, but does not request compilation and does not replay target compiler
+flags/plugins.
 
 The server does not add arbitrary extra args, generic command execution,
 caching, broad workspace-root policy, direct module calls, or MCP tools beyond

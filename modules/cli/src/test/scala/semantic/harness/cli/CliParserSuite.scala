@@ -184,7 +184,7 @@ class CliParserSuite extends munit.FunSuite:
       )
     )
 
-  test("parses v4 target-aware source axis while point evidence remains the unqualified v3 grammar"):
+  test("parses v4 target-aware source and point axes while preserving no-target point grammar"):
     assertEquals(
       CliParser.parse(List(
         "semanticdb-for-source", "--workspace", ".", "--file", "Main.scala",
@@ -199,10 +199,11 @@ class CliParserSuite extends munit.FunSuite:
     assertEquals(
       CliParser.parse(List(
         "point-evidence", "--workspace", ".", "--file", "Main.scala", "--line", "1", "--col", "1",
-        "--sbt-project", "kernelJS", "--json"
+        "--sbt-project", "kernelJS", "--sbt-scala-version", "3.3.7", "--json"
       )),
       ParseResult.Parsed(CliCommand.PointEvidence(
-        "Main.scala", ".", 1, 1, json = true, Some(project("kernelJS")), None
+        "Main.scala", ".", 1, 1, json = true, Some(project("kernelJS")),
+        Some(scalaVersion("3.3.7")), None
       ))
     )
     List("semanticdb-for-source", "point-evidence").foreach { command =>
@@ -220,9 +221,16 @@ class CliParserSuite extends munit.FunSuite:
       "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7",
       "--sbt-scala-version", "3.3.8"
     )).isInstanceOf[ParseResult.Invalid])
-    assert(CliParser.parse(List(
+    val pointBase = List(
       "point-evidence", "--workspace", ".", "--file", "Main.scala", "--line", "1", "--col", "1",
-      "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7"
+    )
+    assert(CliParser.parse(pointBase ++ List("--sbt-scala-version", "3.3.7")).isInstanceOf[ParseResult.Invalid])
+    assert(CliParser.parse(pointBase ++ List(
+      "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7;compile"
+    )).isInstanceOf[ParseResult.Invalid])
+    assert(CliParser.parse(pointBase ++ List(
+      "--sbt-project", "kernelJVM", "--sbt-scala-version", "3.3.7",
+      "--sbt-scala-version", "3.3.8"
     )).isInstanceOf[ParseResult.Invalid])
 
   test("parses the CLI-only fixed-Compile TASTy point evidence contract"):

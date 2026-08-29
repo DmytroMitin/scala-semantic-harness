@@ -12,7 +12,7 @@ freshness, or reconciliation.
 ## Request
 
 ```text
-semantic-scala point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+semantic-scala point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
 ```
 
 The workspace must exist. The source must be an existing regular `.scala` file
@@ -68,36 +68,37 @@ proof.
 The exact eighth MCP tool is:
 
 ```text
-semantic_point_evidence(workspace, file, line, col[, sbtProject, sbtJavaHome])
+semantic_point_evidence(workspace, file, line, col[, sbtProject, sbtScalaVersion, sbtJavaHome])
 ```
 
 The adapter validates the workspace-relative source and positive position.
 Without target inputs it runs the v2 CLI route and accepts only
 `semantic-scala.point-evidence-result.v2`; with `sbtProject` it forwards the
-target options and accepts only `semantic-scala.point-evidence-result.v3`.
-`sbtJavaHome` requires `sbtProject`. Adapter or transport failure is distinct
-from every successful domain state above.
+target options and accepts only `semantic-scala.point-evidence-result.v4`.
+`sbtScalaVersion` and `sbtJavaHome` require `sbtProject`. Adapter or transport
+failure is distinct from every successful domain state above.
 
 The v1 schema remains frozen historical evidence. It did not assess freshness
 and must not be interpreted as the current source-paired contract.
 
-## Opt-in target-aware v3
+## Opt-in target-aware v4
 
 Adding `--sbt-project <id>` fixes the target configuration to `Compile` and
-emits `semantic-scala.point-evidence-result.v3`. `--sbt-java-home` is optional
-but requires a project selector. Omitting both options preserves the v2 schema
-and behavior exactly, including `NotSelectedAmbiguous` when shared sources map
-to multiple workspace artifacts.
+emits `semantic-scala.point-evidence-result.v4`. Optional
+`--sbt-scala-version` selects a strictly validated axis and must match the
+effective receipt axis. It and optional `--sbt-java-home` require a project
+selector. Omitting target options preserves the v2 schema and behavior exactly,
+including `NotSelectedAmbiguous` when shared sources map to multiple artifacts.
 
-The v3 request acquires one fixed target-context receipt in one
-bounded sbt lifecycle. The receipt owns the selected project, fixed Compile
-configuration, class directory, authoritative SemanticDB output root, full
-classpath, descriptive Scala version, and bounded selected-JDK context. It
-evaluates checked-in sbt build-definition/plugin code, may resolve dependencies
-or populate build caches, and may compile transitively while evaluating
-`Compile / fullClasspath`.
+The v4 request acquires one fixed partial-existing-output point-context receipt
+in one bounded sbt lifecycle. The receipt owns the selected project, fixed
+Compile configuration, requested/effective Scala axis, class directory,
+authoritative SemanticDB output root, target external dependencies, and bounded
+selected-JDK context. It never requests target compilation, `fullClasspath`,
+products, or exported products. Checked-in sbt build/plugin code still executes
+and may resolve dependencies or populate build metadata and caches.
 
-Workspace discovery and target ownership remain separate facts. V3 retains
+Workspace discovery and target ownership remain separate facts. V4 retains
 the complete workspace-wide v2 discovery report, then canonically checks each
 existing artifact against the receipt's authoritative SemanticDB root. Only
 one safely target-owned Fresh candidate, or one explicitly qualified
@@ -105,27 +106,26 @@ Unverifiable candidate, may be selected. Zero, multiple, outside, stale,
 symlink-unsafe, unrepresentable-root, source-changed, and acquisition-failed
 states are typed non-selection and cannot yield completed reconciliation.
 
-The same receipt classpath and JDK attribution are used for live point
-evidence, preventing static ownership from one target from being merged with
-another request's live context. This alignment is output/classpath/JDK
-provenance only: the harness Presentation Compiler does not replay the target
-compiler version, flags, compiler plugins, or plugin lifecycle. Public JSON
-reports relative output provenance, classpath entry count, and redacted JDK
-context; it never exposes the raw classpath, dependency-cache paths, or Java
-home.
+Live point evidence uses only the selected existing class directory when it is
+present, followed by distinct target external dependencies. Missing class
+output is omitted and never triggers compilation. The report always exposes
+`PartialExistingOutputs`, so `Resolved` does not imply a complete target
+classpath and `Unresolved` may reflect missing internal project products. No
+other target or platform output is inferred. The harness Presentation Compiler
+does not replay the target compiler version, flags, compiler plugins, or plugin
+lifecycle. Public JSON reports relative roots, presence and entry counts, and
+redacted JDK context; it never exposes raw classpaths, dependency-cache paths,
+or Java home.
 
-V3 has no cross-Scala-version selector. Every request starts a fresh sbt
-lifecycle, so it cannot inherit an interactive `++` selection from an earlier
-process. The reported `scalaVersion` and output roots describe the effective
-axis actually selected by that receipt; callers must not substitute artifacts
-prepared under another axis.
+Every request starts a fresh sbt lifecycle, so it cannot inherit an interactive
+`++` selection from an earlier process. Requested and effective axes and their
+match status are explicit; omission uses the build default in that lifecycle.
 
 The exact eighth MCP tool accepts optional `sbtProject` and dependent
-`sbtJavaHome`. Without them it requires v2; with them it requires v3. The MCP
+`sbtScalaVersion`/`sbtJavaHome`. Without target inputs it requires v2; with a
+project it requires v4. The MCP
 registry remains exactly eight tools. Source mapping remains CLI-only, and
 direct `reconcile-symbol` remains explicit-artifact, v2, and target-independent.
 
-Point evidence does not accept `--sbt-scala-version`. Target-aware point
-evidence remains the existing unqualified v3 contract pending a separate v4
-slice; the axis-aware root-only v4 contract applies only to CLI
-`semanticdb-for-source`.
+The v3 schema and models remain frozen historical/review evidence and are no
+longer emitted by the current target-aware CLI or MCP route.

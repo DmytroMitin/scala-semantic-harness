@@ -29,6 +29,11 @@ private[sbt_runner] trait SbtClasspathMaterializer:
       transientRoot: Path
   ): Either[String, SbtTargetContextReceipt]
 
+  def materialize(
+      receipt: SbtPointContextReceipt,
+      transientRoot: Path
+  ): Either[String, SbtPointContextReceipt]
+
 private[sbt_runner] object SbtClasspathMaterializer:
   def forWorkspace(workspace: Path): SbtClasspathMaterializer =
     local(
@@ -71,6 +76,18 @@ private final case class LocalSbtClasspathMaterializer(
       receipt.copy(classpath = receipt.classpath.zip(paths).map { case (entry, path) =>
         entry.copy(path = path)
       })
+    }
+
+  override def materialize(
+      receipt: SbtPointContextReceipt,
+      transientRoot: Path
+  ): Either[String, SbtPointContextReceipt] =
+    materializePaths(receipt.externalDependencyClasspath.map(_.path), transientRoot).map { paths =>
+      receipt.copy(
+        externalDependencyClasspath = receipt.externalDependencyClasspath.zip(paths).map {
+          case (entry, path) => entry.copy(path = path)
+        }
+      )
     }
 
   private def materializePaths(

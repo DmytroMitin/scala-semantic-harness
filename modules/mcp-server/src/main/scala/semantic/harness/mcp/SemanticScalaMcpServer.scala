@@ -6,6 +6,7 @@ import io.circe.Json
 import io.circe.parser.parse
 import io.circe.syntax.*
 import semantic.harness.core.SbtProjectIdSyntax
+import semantic.harness.sbt_runner.SbtScalaVersion
 import scala.util.Try
 
 final class SemanticScalaMcpServer(cli: SemanticScalaCli):
@@ -199,13 +200,14 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
       case Some(arguments) =>
         pointEvidenceArguments(arguments) match
           case Left(message) => jsonRpcError(id, JsonRpcErrors.InvalidParams, message)
-          case Right((workspace, file, line, col, sbtProject, sbtJavaHome)) =>
+          case Right((workspace, file, line, col, sbtProject, sbtScalaVersion, sbtJavaHome)) =>
             jsonRpcResponse(id, toolResult(cli.semanticPointEvidence(
               workspace,
               file,
               line,
               col,
               sbtProject,
+              sbtScalaVersion,
               sbtJavaHome,
               execution
             )))
@@ -239,17 +241,32 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
 
   private def pointEvidenceArguments(
       arguments: Json
-  ): Either[String, (Path, String, Int, Int, Option[String], Option[String])] =
+  ): Either[String, (Path, String, Int, Int, Option[String], Option[String], Option[String])] =
     for
       base <- symbolAtArguments(arguments)
       sbtProject <- optionalSbtProjectArgument(arguments)
+      sbtScalaVersion <- optionalSbtScalaVersionArgument(arguments)
       sbtJavaHome <- optionalSbtJavaHomeArgument(arguments)
       _ <- Either.cond(
         sbtJavaHome.isEmpty || sbtProject.nonEmpty,
         (),
         "sbtJavaHome requires sbtProject for semantic_point_evidence"
       )
-    yield (base._1, base._2, base._3, base._4, sbtProject, sbtJavaHome)
+      _ <- Either.cond(
+        sbtScalaVersion.isEmpty || sbtProject.nonEmpty,
+        (),
+        "sbtScalaVersion requires sbtProject for semantic_point_evidence"
+      )
+    yield (base._1, base._2, base._3, base._4, sbtProject, sbtScalaVersion, sbtJavaHome)
+
+  private def optionalSbtScalaVersionArgument(arguments: Json): Either[String, Option[String]] =
+    arguments.hcursor.downField("sbtScalaVersion").focus match
+      case None => Right(None)
+      case Some(value) => value.asString match
+        case None => Left("Invalid sbtScalaVersion: expected string field")
+        case Some(text) => SbtScalaVersion.parse(text)
+          .left.map(message => s"Invalid sbtScalaVersion: $message")
+          .map(axis => Some(axis.value))
 
   private def symbolsArguments(arguments: Json): Either[String, (Path, String)] =
     for
@@ -489,7 +506,11 @@ object SemanticScalaMcpServer:
           ),
           "sbtProject" -> Json.obj(
             "type" -> Json.fromString("string"),
-            "description" -> Json.fromString("Optional validated sbt project ID selecting fixed Compile target-aware v3 evidence.")
+            "description" -> Json.fromString("Optional validated sbt project ID selecting fixed Compile target-aware v4 partial existing-output evidence.")
+          ),
+          "sbtScalaVersion" -> Json.obj(
+            "type" -> Json.fromString("string"),
+            "description" -> Json.fromString("Optional validated Scala axis; requires sbtProject.")
           ),
           "sbtJavaHome" -> Json.obj(
             "type" -> Json.fromString("string"),

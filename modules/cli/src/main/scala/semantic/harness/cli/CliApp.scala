@@ -35,6 +35,9 @@ import semantic.harness.reconciliation.PointEvidenceServiceV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.reconciliation.PointEvidenceServiceV3
 import semantic.harness.reconciliation.SemanticPointEvidenceTargetRequest
+import semantic.harness.reconciliation.PointEvidenceReportV4
+import semantic.harness.reconciliation.PointEvidenceServiceV4
+import semantic.harness.reconciliation.SemanticPointEvidenceTargetRequestV4
 import semantic.harness.reconciliation.SemanticdbForSourceReportV3
 import semantic.harness.reconciliation.SemanticdbForSourceServiceV3
 import semantic.harness.reconciliation.SemanticdbForSourceTargetRequest
@@ -186,8 +189,8 @@ object CliApp:
         semanticdbCoverage(workspace, json, projectDir)
       case CliCommand.SemanticdbForSource(file, workspace, json, sbtProject, sbtScalaVersion, sbtJavaHome) =>
         semanticdbForSource(file, workspace, sbtProject, sbtScalaVersion, sbtJavaHome, json, projectDir)
-      case CliCommand.PointEvidence(file, workspace, line, column, json, sbtProject, sbtJavaHome) =>
-        pointEvidence(file, workspace, line, column, sbtProject, sbtJavaHome, json, projectDir)
+      case CliCommand.PointEvidence(file, workspace, line, column, json, sbtProject, sbtScalaVersion, sbtJavaHome) =>
+        pointEvidence(file, workspace, line, column, sbtProject, sbtScalaVersion, sbtJavaHome, json, projectDir)
       case CliCommand.TastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json) =>
         tastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json, projectDir)
       case CliCommand.Symbols(semanticdb, json) =>
@@ -435,6 +438,7 @@ object CliApp:
     line: Int,
     column: Int,
     sbtProject: Option[SbtProjectId],
+    sbtScalaVersion: Option[SbtScalaVersion],
     sbtJavaHome: Option[String],
     json: Boolean,
     projectDir: Path
@@ -466,19 +470,20 @@ object CliApp:
           validatedSbtJavaHome(sbtJavaHome) match
             case Left(message) => CliResult(None, Some(message), 1)
             case Right(targetJava) =>
-              PointEvidenceServiceV3().inspect(
-                SemanticPointEvidenceTargetRequest(
+              PointEvidenceServiceV4().inspect(
+                SemanticPointEvidenceTargetRequestV4(
                   workspacePath,
                   sourcePath,
                   line,
                   column,
                   project,
+                  sbtScalaVersion,
                   targetJava
                 )
               ) match
                 case Right(report) =>
                   if json then CliResult(Some(report.asJson.noSpaces), None, 0)
-                  else CliResult(Some(pointEvidenceSummaryV3(report)), None, 0)
+                  else CliResult(Some(pointEvidenceSummaryV4(report)), None, 0)
                 case Left(message) => CliResult(None, Some(message), 1)
 
   private def semanticdbCoverage(workspace: String, json: Boolean, projectDir: Path): CliResult =
@@ -893,6 +898,9 @@ object CliApp:
   private def pointEvidenceSummaryV3(report: PointEvidenceReportV3): String =
     s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.targetSelection.status}, ${report.livePoint.status}, ${report.reconciliation.outcome}"
 
+  private def pointEvidenceSummaryV4(report: PointEvidenceReportV4): String =
+    s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.targetSelection.status}, ${report.livePoint.status}, ${report.targetContext.contextCompleteness}, ${report.reconciliation.outcome}"
+
   private def semanticdbCoverageSummary(report: SemanticdbCoverageReport): String =
     s"${report.workspace}: ${report.coverageStatus}, ${report.coveredSourceFiles}/${report.sourceFiles} inventory source(s) covered; freshness and build-target completeness are not assessed"
 
@@ -936,7 +944,7 @@ object CliApp:
       |  semantic-scala semanticdb-status --workspace <path> [--schema-version v1|v2] [--json]
       |  semantic-scala semanticdb-coverage --workspace <path> [--json]
       |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
-      |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+      |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
       |  semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
       |  semantic-scala symbols --semanticdb <path> [--json]
       |  semantic-scala usages --workspace <path> --manifest <relative.json> --symbol <global-symbol> [selectors] [--json]
@@ -1064,15 +1072,19 @@ object CliApp:
       case "point-evidence" =>
         Some(
           """Usage:
-            |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] [--json]
+            |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
             |
             |Composes existing SemanticDB discovery with one live presentation-compiler point query.
             |The source must be contained by the explicit workspace. Input positions are one-based UTF-16.
             |Without target options, preserves v2 selection, including workspace ambiguity.
-            |With --sbt-project, emits v3 and selects only a uniquely owned candidate beneath the receipt's authoritative SemanticDB root.
+            |With --sbt-project, emits v4 and selects only a uniquely owned candidate beneath the receipt's authoritative SemanticDB root.
+            |--sbt-scala-version requires --sbt-project and must match the receipt's effective Scala axis.
             |Workspace discovery remains separate from target ownership; direct reconcile-symbol remains target-independent.
-            |Receipt acquisition evaluates checked-in sbt build/plugin code, may resolve dependencies or populate caches, and may compile transitively.
-            |The receipt aligns output/classpath/JDK attribution; the live compiler does not replay target compiler options/plugins.
+            |The target-aware receipt requests only roots and externalDependencyClasspath. It never requests target compilation, fullClasspath, products, or exported products.
+            |The selected target's own class directory is included only when already present; no build fallback occurs.
+            |The live compiler context is always PartialExistingOutputs and may return Unresolved when internal or own outputs are absent.
+            |Receipt acquisition still evaluates checked-in sbt build/plugin code and may resolve dependencies or populate metadata/caches.
+            |The live compiler does not replay target compiler options, plugins, or lifecycle.
             |--sbt-java-home requires --sbt-project and applies only to the receipt's child sbt process.
             |""".stripMargin.trim
         )

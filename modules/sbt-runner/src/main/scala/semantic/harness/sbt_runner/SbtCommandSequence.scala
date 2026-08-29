@@ -18,6 +18,8 @@ private[sbt_runner] enum SbtFixedTask(
       extends SbtFixedTask("semanticScalaInternalTargetContextReceipt", None)
   case SourceMappingRootReceipt
       extends SbtFixedTask("semanticScalaInternalSourceMappingRootReceipt", None)
+  case PointContextReceipt
+      extends SbtFixedTask("semanticScalaInternalPointContextReceipt", None)
 
 private[sbt_runner] object SbtCommandSequence:
   def build(project: Option[SbtProjectId], task: SbtFixedTask): String =

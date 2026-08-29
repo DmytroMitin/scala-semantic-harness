@@ -310,7 +310,7 @@ object CliParser:
         case other => Left(s"Invalid arguments for point-evidence: ${other.mkString(" ")}")
 
     loop(args, Options()).flatMap { options =>
-      val allowed = Set("--file", "--workspace", "--line", "--col", "--sbt-project", "--sbt-java-home")
+      val allowed = Set("--file", "--workspace", "--line", "--col", "--sbt-project", "--sbt-scala-version", "--sbt-java-home")
       val unsupported = options.values.keySet.diff(allowed)
       if unsupported.nonEmpty then Left(s"Invalid arguments for point-evidence: ${unsupported.toList.sorted.mkString(" ")}")
       else
@@ -324,8 +324,8 @@ object CliParser:
             for
               line <- parsePositiveInt("point-evidence", "line", lineText)
               column <- parsePositiveInt("point-evidence", "col", columnText)
-              target <- targetSelectionOptions("point-evidence", options.values)
-            yield CliCommand.PointEvidence(file, workspace, line, column, options.json, target._1, target._2)
+              target <- targetOptionsWithScalaVersion("point-evidence", options.values)
+            yield CliCommand.PointEvidence(file, workspace, line, column, options.json, target._1, target._2, target._3)
           case _ => Left(s"Invalid arguments for point-evidence: ${args.mkString(" ")}")
     } match
       case Right(command) => ParseResult.Parsed(command)
@@ -683,17 +683,23 @@ object CliParser:
   private def sourceMappingTargetOptions(
       options: Map[String, String]
   ): Either[String, (Option[SbtProjectId], Option[semantic.harness.sbt_runner.SbtScalaVersion], Option[String])] =
+    targetOptionsWithScalaVersion("semanticdb-for-source", options)
+
+  private def targetOptionsWithScalaVersion(
+      commandName: String,
+      options: Map[String, String]
+  ): Either[String, (Option[SbtProjectId], Option[semantic.harness.sbt_runner.SbtScalaVersion], Option[String])] =
     for
-      target <- targetSelectionOptions("semanticdb-for-source", options)
+      target <- targetSelectionOptions(commandName, options)
       scalaVersion <- options.get("--sbt-scala-version") match
         case Some(value) => semantic.harness.sbt_runner.SbtScalaVersion.parse(value)
-          .left.map(message => s"Invalid --sbt-scala-version for semanticdb-for-source: $message")
+          .left.map(message => s"Invalid --sbt-scala-version for $commandName: $message")
           .map(Some.apply)
         case None => Right(None)
       _ <- Either.cond(
         scalaVersion.isEmpty || target._1.nonEmpty,
         (),
-        "--sbt-scala-version requires --sbt-project for semanticdb-for-source"
+        s"--sbt-scala-version requires --sbt-project for $commandName"
       )
     yield (target._1, scalaVersion, target._2)
 

@@ -220,14 +220,16 @@ Mutable alpha-3 SNAPSHOT development additionally provides
 `Compile` request and has no ninth MCP tool. It is not present in the immutable
 alpha-2 package or supported alpha-2 installation route.
 
-Alpha-3 SNAPSHOT also adds optional `sbtProject` and dependent `sbtJavaHome`
-inputs to the existing `semantic_point_evidence` tool. No target inputs preserve
-v2; target inputs select the v3 contract through a fixed Compile context
-receipt. Receipt acquisition may execute checked-in build/plugin code, populate
-caches, and compile transitively. The registry remains exactly eight, and target-aware
-`semanticdb-for-source` remains CLI-only. The latter now uses a distinct v4
-root-only receipt and optional validated Scala-axis selector; it does not alter
-the MCP point-evidence v3 grammar or registry.
+Alpha-3 SNAPSHOT also adds optional `sbtProject` plus dependent
+`sbtScalaVersion` and `sbtJavaHome` inputs to the existing
+`semantic_point_evidence` tool. No target inputs preserve v2; target inputs
+select v4 through a fixed partial-existing-output Compile receipt. Acquisition
+may execute checked-in build/plugin code and populate resolution/metadata
+caches, but does not request compilation, `fullClasspath`, products, or
+exported products. Existing selected class output is used only when present;
+the target external dependency context remains explicitly partial and has no
+build fallback. The registry remains exactly eight, and target-aware
+`semanticdb-for-source` remains CLI-only.
 
 No current alpha-2 CLI operation is `MCP_CANDIDATE_NOT_ADMITTED`. That status
 requires a concrete agent use hypothesis and separate admission; apparent

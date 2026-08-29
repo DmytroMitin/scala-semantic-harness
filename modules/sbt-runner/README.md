@@ -56,6 +56,16 @@ Classpath evaluation may compile or refresh outputs and may run ordinary build
 logic. Successful sbt logs are discarded; failures use bounded diagnostics.
 No classpath paths are exposed by this module's public CLI projection.
 
+`SbtPointContextAcquirer` is a separate non-compiling target-aware path. In one
+fresh lifecycle it selects a validated optional Scala axis and fixed Compile
+project, then reads only `classDirectory`, `semanticdbTargetRoot`, and
+`externalDependencyClasspath`. It does not evaluate `fullClasspath`, products,
+exported products, or a compile task. The selected class directory is included
+only when it already exists; external entries are materialized with the same
+sbt-1/sbt-2 converter boundary. Its receipt reports axis, root, presence, and
+redacted JDK facts without exposing raw paths publicly. Ordinary build/plugin
+loading, resolution, and metadata/cache effects remain possible.
+
 `SbtClasspathCacheService` adds three explicit orchestration modes:
 
 - `fresh` delegates to current acquisition and never accesses persistent

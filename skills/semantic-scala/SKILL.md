@@ -67,7 +67,7 @@ adapter. The MCP surface is exactly the eight tools named below.
 | What does the presentation compiler report at a point? | `symbol-at --file <scala> --line <n> --col <n> --json` | `semantic_symbol_at` | Dynamic point evidence; rendered or hover-like output is not canonical identity. |
 | What symbols occur in an explicit SemanticDB file? | `symbols --semanticdb <file> --json` | `semantic_symbols` | Static canonical symbol strings and ranges from that file only. |
 | Do dynamic and static symbol evidence agree? | `reconcile-symbol --file <scala> --line <n> --col <n> --semanticdb <file> --json` | `semantic_reconcile_symbol` | Snapshot-consistent v2 comparison. Fresh may complete, unverifiable may complete only qualified, and stale/source-changed evidence is typed `NotAttempted`. |
-| What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json` | `semantic_point_evidence` | No target preserves v2 workspace selection. Opt-in target v3 retains workspace ambiguity, then selects only uniquely and canonically target-owned evidence and uses the same receipt classpath/JDK attribution. Stale evidence stays visible and cannot complete. |
+| What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] --json` | `semantic_point_evidence` | No target preserves v2 workspace selection. Opt-in target v4 retains workspace ambiguity, selects only uniquely and canonically target-owned evidence, and uses only an existing selected class directory plus target external dependencies. Context stays explicitly partial; stale evidence cannot complete. |
 | What type is rendered for an expression? | `infer-type --file <scala> --line <n> --col <n> ... --json` | none | CLI-only presentation-compiler evidence. `Resolved` carries rendered evidence; `Unresolved` is neutral absence. |
 | What types are rendered for a bounded request batch sharing one sbt context? | `infer-type-batch --requests <json> --workspace <dir> --sbt-project <id> --sbt-configuration <name> [--sbt-java-home <absolute-directory>] --json` | none | CLI-only ordered batch; strict bounded input and one shared acquisition. |
 | What typed post-compile tree contains one point after an authoritative selected Compile? | `tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json` | none | Alpha-3 SNAPSHOT CLI-only evidence. Runs target build/plugin code during Compile, then inspects receipt-bound TASTy with the exact stable Scala 3 line without replaying target options/plugins in the inspector. |
@@ -88,7 +88,7 @@ or automatic semantic invocation.
 | `infer-type` with manual `--classpath`, or a narrow runtime-only context | Avoids sbt acquisition but only proves behavior under the supplied bounded context. | Treat paths and dependencies as user-provided evidence, not project freshness proof. |
 | sbt-backed `infer-type` or `infer-type-batch` with `fresh` | May execute arbitrary build code, compile, download dependencies, and modify project outputs or shared caches. `fresh` is the default. | Obtain approval for this build execution when the environment requires it. |
 | Target-aware `semanticdb-for-source` | Acquires one fixed root-only Compile receipt. It does not request target compilation, classpaths, products, or exported products. Checked-in sbt build/plugin loading, resolution, and metadata/cache writes remain possible. | Approval must cover those bounded build-tool effects. It does not authorize arbitrary sbt commands. |
-| Target-aware `point-evidence` | Acquires the existing v3 classpath-bearing Compile receipt. Evaluating checked-in sbt build/plugin code may resolve dependencies, populate caches, or compile transitively through `Compile / fullClasspath`. It has no Scala-axis selector and remains unqualified pending a separate v4 slice. | Approval must cover those effects. It does not authorize arbitrary sbt commands. |
+| Target-aware `point-evidence` | Acquires one v4 partial-existing-output Compile receipt. It does not request target compilation, `fullClasspath`, products, or exported products. Checked-in sbt build/plugin loading, resolution, and metadata/cache writes remain possible. | Approval must cover those bounded build-tool effects. It does not authorize arbitrary sbt commands. |
 | `tasty-point-evidence` | Owns a fresh selected target `Compile`, so target build/plugin code can execute and outputs/caches can change. Its separate inspector child does not replay target compiler options/plugins. | Approval must cover that selected target build; do not describe child-process isolation as a security sandbox. |
 | sbt-backed mode with `refresh` | Has `fresh` effects and additionally publishes newly acquired private cache state for later reuse. | Approval must cover execution and cache publication. |
 | sbt-backed mode with explicit `reuse` | Validates bounded cached evidence and never silently refreshes. It does not prove arbitrary sbt freshness. | Do not replace failure with `fresh` or `refresh` without a new explicit decision and any required approval. |
@@ -243,12 +243,12 @@ or use MCP `sbtJavaHome` on exactly `semantic_compile`, `semantic_errors`, or
 When a project ID is already known and shared-source workspace ambiguity is the
 actual uncertainty, prefer one opt-in target-aware
 `point-evidence --sbt-project <id>` request over guessing an artifact path. Its
-v3 workspace discovery can remain ambiguous while canonical target ownership is
-unique. Treat its selected output/classpath/JDK context as provenance only;
-target compiler flags and plugins are not replayed. `--sbt-java-home` requires
-the project selector. The initial route has no cross-Scala-version selector and
-cannot inherit a prior sbt `++`; trust the receipt's reported `scalaVersion`,
-not a separately prepared axis. Direct `reconcile-symbol` stays
+v4 workspace discovery can remain ambiguous while canonical target ownership is
+unique. Treat its selected-existing-output/external-dependency/JDK context as
+partial provenance only; target compiler flags and plugins are not replayed.
+`--sbt-scala-version` and `--sbt-java-home` require the project selector. A
+request cannot inherit a prior sbt `++`; trust the receipt's explicit requested
+and effective axis. Direct `reconcile-symbol` stays
 target-independent.
 
 After a successful compile, repeat the same status/source lookup or

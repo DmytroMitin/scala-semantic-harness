@@ -10,6 +10,7 @@ import semantic.harness.reconciliation.PointEvidenceReport
 import semantic.harness.reconciliation.ReconciliationResultV2
 import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
+import semantic.harness.reconciliation.PointEvidenceReportV4
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -249,35 +250,41 @@ class SemanticScalaCliSuite extends munit.FunSuite:
       assertEquals(result.schemaVersion, Some(PointEvidenceReportV2.SchemaVersion))
     }
 
-  test("semantic_point_evidence target options select v3 argv and schema while omission remains v2"):
+  test("semantic_point_evidence target options select v4 argv and schema while omission remains v2"):
     withScalaWorkspace { (workspace, file) =>
-      val runner = RecordingRunner(successPayload(success = true, schemaVersion = PointEvidenceReportV3.SchemaVersion))
+      val runner = RecordingRunner(successPayload(success = true, schemaVersion = PointEvidenceReportV4.SchemaVersion))
       val result = SemanticScalaCli(Path.of("/tmp/semantic-scala"), runner).semanticPointEvidence(
         workspace,
         file,
         2,
         7,
         Some("kernelJVM"),
+        Some("3.3.7"),
         Some("/opt/jdk"),
         ProcessExecution.default
       )
 
       assert(result.ok, clue(result))
-      assertEquals(result.schemaVersion, Some(PointEvidenceReportV3.SchemaVersion))
+      assertEquals(result.schemaVersion, Some(PointEvidenceReportV4.SchemaVersion))
       assertEquals(
         runner.calls.head._1,
         List(
           "/tmp/semantic-scala", "point-evidence", "--workspace", ".", "--file", file,
           "--line", "2", "--col", "7", "--sbt-project", "kernelJVM",
-          "--sbt-java-home", "/opt/jdk", "--json"
+          "--sbt-scala-version", "3.3.7", "--sbt-java-home", "/opt/jdk", "--json"
         )
       )
       assertEquals(result.command.takeRight(3), List("--sbt-java-home", "<sbt-java-home>", "--json"))
 
       val rejected = SemanticScalaCli(Path.of("semantic-scala"), RecordingRunner(pointEvidencePayload))
-        .semanticPointEvidence(workspace, file, 2, 7, None, Some("/opt/jdk"), ProcessExecution.default)
+        .semanticPointEvidence(workspace, file, 2, 7, None, None, Some("/opt/jdk"), ProcessExecution.default)
       assert(!rejected.ok)
       assert(rejected.error.exists(_.contains("requires sbtProject")), clue(rejected))
+
+      val axisRejected = SemanticScalaCli(Path.of("semantic-scala"), RecordingRunner(pointEvidencePayload))
+        .semanticPointEvidence(workspace, file, 2, 7, None, Some("3.3.7"), None, ProcessExecution.default)
+      assert(!axisRejected.ok)
+      assert(axisRejected.error.exists(_.contains("requires sbtProject")), clue(axisRejected))
     }
 
   test("semantic_point_evidence validates relative contained Scala input and positive position"):

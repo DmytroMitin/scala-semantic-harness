@@ -10,6 +10,7 @@ import semantic.harness.reconciliation.PointEvidenceReport
 import semantic.harness.reconciliation.ReconciliationResultV2
 import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
+import semantic.harness.reconciliation.PointEvidenceReportV4
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -181,6 +182,10 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       pointEvidence.hcursor.downField("inputSchema").downField("properties").downField("sbtJavaHome").downField("type").as[String].toOption,
       Some("string")
     )
+    assertEquals(
+      pointEvidence.hcursor.downField("inputSchema").downField("properties").downField("sbtScalaVersion").downField("type").as[String].toOption,
+      Some("string")
+    )
 
   test("tools/call semantic_point_evidence returns the CLI report through the standard wrapper"):
     withScalaWorkspace { (workspace, file) =>
@@ -197,18 +202,18 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       )
     }
 
-  test("tools/call semantic_point_evidence dynamically requires v3 for selected target context"):
+  test("tools/call semantic_point_evidence dynamically requires v4 and forwards axis for selected target context"):
     withScalaWorkspace { (workspace, file) =>
       val response = responseJson(
-        serverWith(successPayload(success = true, schemaVersion = PointEvidenceReportV3.SchemaVersion)),
-        s"""{"jsonrpc":"2.0","id":22,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","sbtJavaHome":"/opt/jdk"}}}"""
+        serverWith(successPayload(success = true, schemaVersion = PointEvidenceReportV4.SchemaVersion)),
+        s"""{"jsonrpc":"2.0","id":22,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","sbtScalaVersion":"3.3.7","sbtJavaHome":"/opt/jdk"}}}"""
       )
       val wrapper = structuredContent(response)
       assertEquals(response.hcursor.downField("result").downField("isError").as[Boolean].toOption, Some(false))
-      assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(PointEvidenceReportV3.SchemaVersion))
+      assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(PointEvidenceReportV4.SchemaVersion))
       assertEquals(
-        wrapper.hcursor.downField("command").as[List[String]].toOption.map(_.takeRight(3)),
-        Some(List("--sbt-java-home", "<sbt-java-home>", "--json"))
+        wrapper.hcursor.downField("command").as[List[String]].toOption.map(_.takeRight(5)),
+        Some(List("--sbt-scala-version", "3.3.7", "--sbt-java-home", "<sbt-java-home>", "--json"))
       )
 
       val invalid = responseJson(
@@ -216,6 +221,12 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
         s"""{"jsonrpc":"2.0","id":23,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtJavaHome":"/opt/jdk"}}}"""
       )
       assertEquals(invalid.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
+
+      val invalidAxis = responseJson(
+        serverWith(pointEvidencePayload),
+        s"""{"jsonrpc":"2.0","id":24,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtScalaVersion":"3.3.7"}}}"""
+      )
+      assertEquals(invalidAxis.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
     }
 
   test("tools/call semantic_point_evidence rejects incomplete transport input"):

@@ -19,6 +19,8 @@ import semantic.harness.reconciliation.PointEvidenceReport
 import semantic.harness.reconciliation.ReconciliationResultV2
 import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
+import semantic.harness.reconciliation.PointEvidenceReportV4
+import semantic.harness.sbt_runner.SbtScalaVersion
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 
 final case class SemanticScalaCli(
@@ -252,7 +254,7 @@ final case class SemanticScalaCli(
     col: Int,
       execution: ProcessExecution
   ): McpToolResult =
-    semanticPointEvidence(workspace, file, line, col, None, None, execution)
+    semanticPointEvidence(workspace, file, line, col, None, None, None, execution)
 
   def semanticPointEvidence(
     workspace: Path,
@@ -260,6 +262,7 @@ final case class SemanticScalaCli(
     line: Int,
     col: Int,
     sbtProject: Option[String],
+    sbtScalaVersion: Option[String],
     sbtJavaHome: Option[String],
     execution: ProcessExecution
   ): McpToolResult =
@@ -271,13 +274,21 @@ final case class SemanticScalaCli(
         .left.map(_ => "Invalid sbtJavaHome: expected an absolute directory")
         .flatMap(path => Either.cond(value.nonEmpty && path.isAbsolute, Some(value), "Invalid sbtJavaHome: expected an absolute directory"))
       case None => Right(None)
+    val validatedScalaVersion = sbtScalaVersion match
+      case Some(value) => SbtScalaVersion.parse(value)
+        .left.map(message => s"Invalid sbtScalaVersion: $message")
+        .map(axis => Some(axis.value))
+      case None => Right(None)
     val selected = for
       project <- validatedProject
+      scalaVersion <- validatedScalaVersion
       javaHome <- validatedJavaHome
       _ <- Either.cond(javaHome.isEmpty || project.nonEmpty, (), "sbtJavaHome requires sbtProject for semantic_point_evidence")
-    yield project -> javaHome
+      _ <- Either.cond(scalaVersion.isEmpty || project.nonEmpty, (), "sbtScalaVersion requires sbtProject for semantic_point_evidence")
+    yield (project, scalaVersion, javaHome)
     val args = selected.toOption.fold(SemanticScalaCli.pointEvidenceArgs(file, line, col)) {
-      case (project, javaHome) => SemanticScalaCli.pointEvidenceArgs(file, line, col, project, javaHome)
+      case (project, scalaVersion, javaHome) =>
+        SemanticScalaCli.pointEvidenceArgs(file, line, col, project, scalaVersion, javaHome)
     }
     val command = cliCommand(args)
     val normalizedWorkspace = workspace.toAbsolutePath.normalize()
@@ -296,8 +307,8 @@ final case class SemanticScalaCli(
       validateRelativeScalaFile(normalizedWorkspace, file, command) match
         case Some(failure) => failure
         case None =>
-          val (project, javaHome) = selected.toOption.get
-          val expected = if project.nonEmpty then PointEvidenceReportV3.SchemaVersion else PointEvidenceReportV2.SchemaVersion
+          val (project, _, javaHome) = selected.toOption.get
+          val expected = if project.nonEmpty then PointEvidenceReportV4.SchemaVersion else PointEvidenceReportV2.SchemaVersion
           val result =
             if project.nonEmpty then runBuildJsonTool(workspace, args, expected, execution)
             else runJsonTool(workspace, args, expected, execution)
@@ -660,10 +671,12 @@ object SemanticScalaCli:
       line: Int,
       col: Int,
       sbtProject: Option[String] = None,
+      sbtScalaVersion: Option[String] = None,
       sbtJavaHome: Option[String] = None
   ): List[String] =
     List("point-evidence", "--workspace", ".", "--file", file, "--line", line.toString, "--col", col.toString) ++
       sbtProject.toList.flatMap(value => List("--sbt-project", value)) ++
+      sbtScalaVersion.toList.flatMap(value => List("--sbt-scala-version", value)) ++
       sbtJavaHome.toList.flatMap(value => List("--sbt-java-home", value)) ++
       List("--json")
 
