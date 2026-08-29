@@ -130,7 +130,10 @@ final class FreshnessReconciliationService private (
 object FreshnessReconciliationService:
   def apply(): FreshnessReconciliationService =
     val compiler = PresentationCompilerService()
-    new FreshnessReconciliationService(compiler.symbolAtSnapshot, () => ())
+    new FreshnessReconciliationService(
+      (path, source, line, column) => compiler.symbolAtSnapshot(path, source, line, column),
+      () => ()
+    )
 
   private[reconciliation] def withPointQuery(
     pointQuery: (Path, String, Int, Int) => Either[String, SymbolAtResult]

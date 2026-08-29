@@ -58,6 +58,24 @@ class PresentationCompilerServiceSuite extends munit.FunSuite:
     assert(symbol.symbol.exists(_.nonEmpty))
     assertEquals(symbol.source, path.toString)
 
+  test("symbolAtSnapshot accepts and validates one explicit target classpath context"):
+    val context = PresentationCompilerContext.explicit(
+      List(Path.of("modules/presentation-compiler/target/scala-3.3.3/classes")),
+      Some(Path.of("."))
+    )
+    val result = PresentationCompilerService()
+      .symbolAtSnapshot(fixture, Files.readString(fixture), line = 6, column = 16, context)
+
+    assert(result.toOption.flatMap(_.symbol).nonEmpty, clue(result))
+    val invalid = PresentationCompilerService().symbolAtSnapshot(
+      fixture,
+      Files.readString(fixture),
+      line = 6,
+      column = 16,
+      PresentationCompilerContext.explicit(Nil)
+    )
+    assert(invalid.left.exists(_.contains("Explicit classpath")), clue(invalid))
+
   test("SymbolAtResult encodes schemaVersion and decodes legacy JSON"):
     val result = SymbolAtResult(
       symbol = Some("example/Main.add()."),

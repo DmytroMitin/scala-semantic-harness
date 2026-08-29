@@ -26,8 +26,22 @@ enum CliCommand:
   )
   case SemanticdbStatus(workspace: String, schemaVersion: SemanticdbStatusVersion, json: Boolean)
   case SemanticdbCoverage(workspace: String, json: Boolean)
-  case SemanticdbForSource(file: String, workspace: String, json: Boolean)
-  case PointEvidence(file: String, workspace: String, line: Int, column: Int, json: Boolean)
+  case SemanticdbForSource(
+    file: String,
+    workspace: String,
+    json: Boolean,
+    sbtProject: Option[SbtProjectId] = None,
+    sbtJavaHome: Option[String] = None
+  )
+  case PointEvidence(
+    file: String,
+    workspace: String,
+    line: Int,
+    column: Int,
+    json: Boolean,
+    sbtProject: Option[SbtProjectId] = None,
+    sbtJavaHome: Option[String] = None
+  )
   case TastyPointEvidence(
     workspace: String,
     sbtProject: SbtProjectId,

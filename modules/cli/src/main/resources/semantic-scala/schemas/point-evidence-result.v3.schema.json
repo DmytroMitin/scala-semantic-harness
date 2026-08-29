@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:point-evidence-result:v3",
+  "title": "semantic-scala target-aware point evidence result v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "position", "discovery", "targetContext", "targetSelection", "livePoint", "reconciliation"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.point-evidence-result.v3" },
+    "workspace": { "type": "string" },
+    "sourceFile": { "type": "string" },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line", "column", "encoding"],
+      "properties": {
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "encoding": { "const": "UTF-16" }
+      }
+    },
+    "discovery": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2" },
+    "targetContext": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v3#/$defs/targetContext" },
+    "targetSelection": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v3#/$defs/targetSelection" },
+    "livePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "result", "reason"],
+      "properties": {
+        "status": { "enum": ["Resolved", "Unresolved", "Unavailable"] },
+        "result": { "oneOf": [{ "$ref": "urn:semantic-scala:schema:point-evidence-result:v3#/$defs/liveResult" }, { "type": "null" }] },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "Unavailable" } }, "required": ["status"] },
+          "then": { "properties": { "result": { "type": "null" }, "reason": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["Resolved", "Unresolved"] } }, "required": ["status"] },
+          "then": { "properties": { "result": { "$ref": "urn:semantic-scala:schema:point-evidence-result:v3#/$defs/liveResult" }, "reason": { "type": "null" } } }
+        }
+      ]
+    },
+    "reconciliation": {
+      "oneOf": [
+        { "$ref": "urn:semantic-scala:schema:reconcile-symbol-result:v2" },
+        { "$ref": "urn:semantic-scala:schema:point-evidence-result:v3#/$defs/targetNotAttemptedReconciliation" }
+      ]
+    }
+  },
+  "$defs": {
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startLine", "startCharacter", "endLine", "endCharacter"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 0 },
+        "startCharacter": { "type": "integer", "minimum": 0 },
+        "endLine": { "type": "integer", "minimum": 0 },
+        "endCharacter": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "liveResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "symbol", "displayName", "range", "source"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.symbol-at-result.v1" },
+        "symbol": { "type": ["string", "null"] },
+        "displayName": { "type": ["string", "null"] },
+        "range": { "oneOf": [{ "$ref": "urn:semantic-scala:schema:point-evidence-result:v3#/$defs/range" }, { "type": "null" }] },
+        "source": { "type": "string" }
+      }
+    },
+    "targetNotAttemptedReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "file", "semanticdb", "queryPosition", "freshness", "outcome"],
+      "properties": {
+        "schemaVersion": { "const": "semantic-scala.reconcile-symbol-result.v2" },
+        "file": { "type": "string" },
+        "semanticdb": { "type": ["string", "null"] },
+        "queryPosition": { "$ref": "urn:semantic-scala:schema:point-evidence-result:v3#/$defs/range" },
+        "freshness": { "type": "null" },
+        "outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "result", "qualificationReason", "notAttemptedReason"],
+          "properties": {
+            "status": { "const": "NotAttempted" },
+            "result": { "type": "null" },
+            "qualificationReason": { "type": "null" },
+            "notAttemptedReason": {
+              "enum": [
+                "NoArtifactCandidate",
+                "AmbiguousArtifactCandidates",
+                "ArtifactEvidenceUnavailable",
+                "LivePointUnavailable",
+                "SelectedArtifactUnreadable",
+                "SelectedArtifactChangedOrRemapped"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

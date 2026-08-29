@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:semanticdb-for-source:v3",
+  "title": "semantic-scala target-aware SemanticDB for source v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "sourceRelativePath", "discovery", "targetContext", "targetSelection"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.semanticdb-for-source.v3" },
+    "workspace": { "type": "string" },
+    "sourceFile": { "type": "string" },
+    "sourceRelativePath": { "type": ["string", "null"] },
+    "discovery": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2" },
+    "targetContext": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v3#/$defs/targetContext" },
+    "targetSelection": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v3#/$defs/targetSelection" }
+  },
+  "$defs": {
+    "targetContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "configuration", "status", "acquisitionOrigin", "pathProvenanceStatus", "classDirectory", "semanticdbTargetRoot", "classpathEntryCount", "scalaVersion", "targetJavaContext", "failure"],
+      "properties": {
+        "project": { "type": "string", "minLength": 1 },
+        "configuration": { "const": "Compile" },
+        "status": { "enum": ["Acquired", "AcquisitionFailed", "UnknownProject"] },
+        "acquisitionOrigin": { "oneOf": [{ "const": "FreshSbtEvaluation" }, { "type": "null" }] },
+        "pathProvenanceStatus": { "enum": ["Represented", "UnavailableUnsafe"] },
+        "classDirectory": { "type": ["string", "null"] },
+        "semanticdbTargetRoot": { "type": ["string", "null"] },
+        "classpathEntryCount": { "type": ["integer", "null"], "minimum": 0 },
+        "scalaVersion": { "type": ["string", "null"] },
+        "targetJavaContext": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "failure": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "Acquired" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "acquisitionOrigin": { "const": "FreshSbtEvaluation" },
+              "classpathEntryCount": { "type": "integer", "minimum": 0 },
+              "scalaVersion": { "type": "string", "minLength": 1 },
+              "failure": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["AcquisitionFailed", "UnknownProject"] } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "acquisitionOrigin": { "type": "null" },
+              "pathProvenanceStatus": { "const": "UnavailableUnsafe" },
+              "classDirectory": { "type": "null" },
+              "semanticdbTargetRoot": { "type": "null" },
+              "classpathEntryCount": { "type": "null" },
+              "scalaVersion": { "type": "null" },
+              "targetJavaContext": { "type": "null" },
+              "failure": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+        ,
+        {
+          "if": { "properties": { "pathProvenanceStatus": { "const": "Represented" } }, "required": ["pathProvenanceStatus"] },
+          "then": { "properties": { "classDirectory": { "type": "string" }, "semanticdbTargetRoot": { "type": "string" } } }
+        }
+      ]
+    },
+    "targetSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "selectedArtifact", "ownedCandidates", "reason"],
+      "properties": {
+        "status": {
+          "enum": [
+            "SelectedTargetOwnedFresh",
+            "SelectedTargetOwnedQualifiedUnverifiable",
+            "NoCandidateOwnedByTarget",
+            "MultipleCandidatesOwnedByTarget",
+            "StaleTargetOwnedCandidate",
+            "TargetContextAcquisitionFailed",
+            "UnknownProject",
+            "SourceChangedDuringRequest",
+            "UnsafeOrUnverifiableOutputRootOwnership"
+          ]
+        },
+        "selectedArtifact": {
+          "oneOf": [
+            { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" },
+            { "type": "null" }
+          ]
+        },
+        "ownedCandidates": {
+          "type": "array",
+          "items": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" }
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["SelectedTargetOwnedFresh", "SelectedTargetOwnedQualifiedUnverifiable", "StaleTargetOwnedCandidate"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2#/$defs/candidate" }, "ownedCandidates": { "minItems": 1, "maxItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "MultipleCandidatesOwnedByTarget" } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "type": "null" }, "ownedCandidates": { "minItems": 2 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["NoCandidateOwnedByTarget", "TargetContextAcquisitionFailed", "UnknownProject", "SourceChangedDuringRequest", "UnsafeOrUnverifiableOutputRootOwnership"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedArtifact": { "type": "null" } } }
+        }
+      ]
+    }
+  }
+}

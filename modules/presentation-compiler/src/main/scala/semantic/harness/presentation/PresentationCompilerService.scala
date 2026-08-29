@@ -12,28 +12,42 @@ final case class PresentationCompilerService() extends DynamicSemanticService:
   override def symbolAt(file: Path, line: Int, column: Int): Either[String, SymbolAtResult] =
     validate(file, line, column).flatMap(source => symbolAtSnapshot(file, source, line, column))
 
-  def symbolAtSnapshot(file: Path, source: String, line: Int, column: Int): Either[String, SymbolAtResult] =
+  def symbolAtSnapshot(
+      file: Path,
+      source: String,
+      line: Int,
+      column: Int,
+      context: PresentationCompilerContext = PresentationCompilerContext()
+  ): Either[String, SymbolAtResult] =
     validateSnapshot(file, line, column).flatMap { _ =>
-      SourcePosition.offset(source, line, column).flatMap { value =>
-        val compiler = ScalaPresentationCompiler(classpath = runtimeClasspath)
-        try
-          val uri = file.toAbsolutePath.normalize().toUri
-          val params = CompilerOffsetParams(uri, source, value)
-          val result = compiler.definition(params).get()
-          val locations = result.locations().asScala.toList
-          val symbol = symbolIdentity(result.symbol())
-          Right(
-            SymbolAtResult(
-              symbol = symbol,
-              displayName = symbol.flatMap(displayName),
-              range = locations.headOption.map(location => sourceRange(location.getRange)),
-              source = file.toString
-            )
+      PresentationCompilerContext.validate(context).flatMap { validatedContext =>
+        SourcePosition.offset(source, line, column).flatMap { value =>
+          val selectedClasspath = validatedContext.classpath match
+            case PresentationCompilerClasspath.NarrowRuntime => Nil
+            case PresentationCompilerClasspath.Explicit(entries) => entries
+          val compiler = ScalaPresentationCompiler(
+            classpath = (runtimeClasspath ++ selectedClasspath).distinct,
+            folderPath = validatedContext.workspace
           )
-        catch
-          case exception: Exception =>
-            Left(s"Unable to query symbol at $file:$line:$column: ${exception.getMessage}")
-        finally compiler.shutdown()
+          try
+            val uri = file.toAbsolutePath.normalize().toUri
+            val params = CompilerOffsetParams(uri, source, value)
+            val result = compiler.definition(params).get()
+            val locations = result.locations().asScala.toList
+            val symbol = symbolIdentity(result.symbol())
+            Right(
+              SymbolAtResult(
+                symbol = symbol,
+                displayName = symbol.flatMap(displayName),
+                range = locations.headOption.map(location => sourceRange(location.getRange)),
+                source = file.toString
+              )
+            )
+          catch
+            case exception: Exception =>
+              Left(s"Unable to query symbol at $file:$line:$column: ${exception.getMessage}")
+          finally compiler.shutdown()
+        }
       }
     }
 

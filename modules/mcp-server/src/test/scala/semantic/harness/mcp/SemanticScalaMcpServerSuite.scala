@@ -9,6 +9,7 @@ import semantic.harness.reconciliation.ReconciliationResult
 import semantic.harness.reconciliation.PointEvidenceReport
 import semantic.harness.reconciliation.ReconciliationResultV2
 import semantic.harness.reconciliation.PointEvidenceReportV2
+import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -76,7 +77,9 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       )
     }
 
-    tools.drop(3).foreach { tool =>
+    tools.drop(3).filterNot(
+      _.hcursor.downField("name").as[String].toOption.contains("semantic_point_evidence")
+    ).foreach { tool =>
       assertEquals(
         tool.hcursor.downField("inputSchema").downField("properties").downField("sbtProject").focus,
         None,
@@ -170,6 +173,14 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       pointEvidence.hcursor.downField("inputSchema").downField("required").as[List[String]].toOption,
       Some(List("workspace", "file", "line", "col"))
     )
+    assertEquals(
+      pointEvidence.hcursor.downField("inputSchema").downField("properties").downField("sbtProject").downField("type").as[String].toOption,
+      Some("string")
+    )
+    assertEquals(
+      pointEvidence.hcursor.downField("inputSchema").downField("properties").downField("sbtJavaHome").downField("type").as[String].toOption,
+      Some("string")
+    )
 
   test("tools/call semantic_point_evidence returns the CLI report through the standard wrapper"):
     withScalaWorkspace { (workspace, file) =>
@@ -184,6 +195,27 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
         wrapper.hcursor.downField("payload").downField("selection").downField("status").as[String].toOption,
         Some("NotSelectedUnavailable")
       )
+    }
+
+  test("tools/call semantic_point_evidence dynamically requires v3 for selected target context"):
+    withScalaWorkspace { (workspace, file) =>
+      val response = responseJson(
+        serverWith(successPayload(success = true, schemaVersion = PointEvidenceReportV3.SchemaVersion)),
+        s"""{"jsonrpc":"2.0","id":22,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","sbtJavaHome":"/opt/jdk"}}}"""
+      )
+      val wrapper = structuredContent(response)
+      assertEquals(response.hcursor.downField("result").downField("isError").as[Boolean].toOption, Some(false))
+      assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(PointEvidenceReportV3.SchemaVersion))
+      assertEquals(
+        wrapper.hcursor.downField("command").as[List[String]].toOption.map(_.takeRight(3)),
+        Some(List("--sbt-java-home", "<sbt-java-home>", "--json"))
+      )
+
+      val invalid = responseJson(
+        serverWith(pointEvidencePayload),
+        s"""{"jsonrpc":"2.0","id":23,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtJavaHome":"/opt/jdk"}}}"""
+      )
+      assertEquals(invalid.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
     }
 
   test("tools/call semantic_point_evidence rejects incomplete transport input"):

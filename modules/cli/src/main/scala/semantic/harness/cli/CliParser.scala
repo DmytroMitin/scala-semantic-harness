@@ -277,12 +277,15 @@ object CliParser:
 
   private def parseSemanticdbForSource(args: List[String]): ParseResult =
     parseKeyValueArgs("semanticdb-for-source", args).flatMap { case (options, json) =>
-      val allowed = Set("--file", "--workspace")
+      val allowed = Set("--file", "--workspace", "--sbt-project", "--sbt-java-home")
       val unsupported = options.keySet.diff(allowed)
       if unsupported.nonEmpty then Left(s"Invalid arguments for semanticdb-for-source: ${unsupported.toList.sorted.mkString(" ")}")
       else
         (options.get("--file"), options.get("--workspace")) match
-          case (Some(file), Some(workspace)) => Right(CliCommand.SemanticdbForSource(file, workspace, json))
+          case (Some(file), Some(workspace)) =>
+            targetSelectionOptions("semanticdb-for-source", options).map { case (project, javaHome) =>
+              CliCommand.SemanticdbForSource(file, workspace, json, project, javaHome)
+            }
           case _ => Left(s"Invalid arguments for semanticdb-for-source: ${args.mkString(" ")}")
     } match
       case Right(command) => ParseResult.Parsed(command)
@@ -307,7 +310,7 @@ object CliParser:
         case other => Left(s"Invalid arguments for point-evidence: ${other.mkString(" ")}")
 
     loop(args, Options()).flatMap { options =>
-      val allowed = Set("--file", "--workspace", "--line", "--col")
+      val allowed = Set("--file", "--workspace", "--line", "--col", "--sbt-project", "--sbt-java-home")
       val unsupported = options.values.keySet.diff(allowed)
       if unsupported.nonEmpty then Left(s"Invalid arguments for point-evidence: ${unsupported.toList.sorted.mkString(" ")}")
       else
@@ -321,7 +324,8 @@ object CliParser:
             for
               line <- parsePositiveInt("point-evidence", "line", lineText)
               column <- parsePositiveInt("point-evidence", "col", columnText)
-            yield CliCommand.PointEvidence(file, workspace, line, column, options.json)
+              target <- targetSelectionOptions("point-evidence", options.values)
+            yield CliCommand.PointEvidence(file, workspace, line, column, options.json, target._1, target._2)
           case _ => Left(s"Invalid arguments for point-evidence: ${args.mkString(" ")}")
     } match
       case Right(command) => ParseResult.Parsed(command)
@@ -672,6 +676,26 @@ object CliParser:
           Left(s"Invalid arguments for $commandName: ${other.mkString(" ")}")
 
     loop(args, Map.empty, json = false)
+
+  private def targetSelectionOptions(
+      commandName: String,
+      options: Map[String, String]
+  ): Either[String, (Option[SbtProjectId], Option[String])] =
+    for
+      project <- options.get("--sbt-project") match
+        case Some(value) => SbtProjectId.parse(value)
+          .left.map(message => s"Invalid --sbt-project for $commandName: $message")
+          .map(Some.apply)
+        case None => Right(None)
+      javaHome <- options.get("--sbt-java-home") match
+        case Some(value) => validateAbsoluteJavaHome(value, commandName).map(Some.apply)
+        case None => Right(None)
+      _ <- Either.cond(
+        javaHome.isEmpty || project.nonEmpty,
+        (),
+        s"--sbt-java-home requires --sbt-project for $commandName"
+      )
+    yield project -> javaHome
 
   private def parsePositiveInt(commandName: String, name: String, value: String): Either[String, Int] =
     value.toIntOption.filter(_ > 0).toRight(s"Invalid $name for $commandName: $value")

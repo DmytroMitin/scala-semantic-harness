@@ -197,10 +197,18 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
   ): Json =
     params.downField("arguments").focus match
       case Some(arguments) =>
-        symbolAtArguments(arguments) match
+        pointEvidenceArguments(arguments) match
           case Left(message) => jsonRpcError(id, JsonRpcErrors.InvalidParams, message)
-          case Right((workspace, file, line, col)) =>
-            jsonRpcResponse(id, toolResult(cli.semanticPointEvidence(workspace, file, line, col, execution)))
+          case Right((workspace, file, line, col, sbtProject, sbtJavaHome)) =>
+            jsonRpcResponse(id, toolResult(cli.semanticPointEvidence(
+              workspace,
+              file,
+              line,
+              col,
+              sbtProject,
+              sbtJavaHome,
+              execution
+            )))
       case None =>
         jsonRpcError(id, JsonRpcErrors.InvalidParams, s"Missing arguments for $SemanticPointEvidenceToolName")
 
@@ -228,6 +236,20 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
       line <- positiveIntArgument(arguments, "line")
       col <- positiveIntArgument(arguments, "col")
     yield (workspace, file, line, col)
+
+  private def pointEvidenceArguments(
+      arguments: Json
+  ): Either[String, (Path, String, Int, Int, Option[String], Option[String])] =
+    for
+      base <- symbolAtArguments(arguments)
+      sbtProject <- optionalSbtProjectArgument(arguments)
+      sbtJavaHome <- optionalSbtJavaHomeArgument(arguments)
+      _ <- Either.cond(
+        sbtJavaHome.isEmpty || sbtProject.nonEmpty,
+        (),
+        "sbtJavaHome requires sbtProject for semantic_point_evidence"
+      )
+    yield (base._1, base._2, base._3, base._4, sbtProject, sbtJavaHome)
 
   private def symbolsArguments(arguments: Json): Either[String, (Path, String)] =
     for
@@ -464,6 +486,14 @@ object SemanticScalaMcpServer:
           "col" -> Json.obj(
             "type" -> Json.fromString("integer"),
             "description" -> Json.fromString("Positive one-based UTF-16 source column.")
+          ),
+          "sbtProject" -> Json.obj(
+            "type" -> Json.fromString("string"),
+            "description" -> Json.fromString("Optional validated sbt project ID selecting fixed Compile target-aware v3 evidence.")
+          ),
+          "sbtJavaHome" -> Json.obj(
+            "type" -> Json.fromString("string"),
+            "description" -> Json.fromString("Optional absolute target JDK home; requires sbtProject.")
           )
         ),
         "required" -> Json.arr(Json.fromString("workspace"), Json.fromString("file"), Json.fromString("line"), Json.fromString("col"))

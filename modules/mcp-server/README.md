@@ -310,15 +310,24 @@ Tool input:
   "workspace": "/path/to/project",
   "file": "src/main/scala/example/Main.scala",
   "line": 6,
-  "col": 16
+  "col": 16,
+  "sbtProject": "app",
+  "sbtJavaHome": "/absolute/path/to/installed-jdk"
 }
 ```
 
 The adapter requires an existing workspace, a relative contained regular
-`.scala` file, and positive one-based UTF-16 coordinates. It runs exactly
+`.scala` file, and positive one-based UTF-16 coordinates. `sbtProject` and
+`sbtJavaHome` are optional; the Java home requires the project selector. With
+neither option, it runs exactly
 `semantic-scala point-evidence --workspace . --file <file> --line <line> --col
 <col> --json` in that workspace and accepts only
-`semantic-scala.point-evidence-result.v2`.
+`semantic-scala.point-evidence-result.v2`. With a project it forwards the
+validated target options and accepts only
+`semantic-scala.point-evidence-result.v3`. Target-context acquisition evaluates
+checked-in sbt build/plugin code, can resolve dependencies or populate caches,
+and may compile transitively. The receipt supplies target
+output/classpath/JDK attribution, not target compiler-option/plugin replay.
 
 ## MCP Methods
 
@@ -350,7 +359,8 @@ The build-oracle tools require `workspace` and alone accept optional validated
 `line`, and `col`; `semantic_symbols` requires `workspace` and `semanticdb`;
 `semantic_reconcile_symbol` requires `workspace`, `file`, `line`, `col`, and
 `semanticdb`; `semantic_point_evidence` requires `workspace`, `file`, `line`,
-and `col`. `tools/call` accepts only those eight tools.
+and `col` and accepts optional `sbtProject` plus dependent `sbtJavaHome`.
+`tools/call` accepts only those eight tools.
 
 `sbtProject` is a project ID, not arbitrary sbt syntax. Invalid IDs are
 rejected at the adapter boundary before process launch. An unknown valid ID
@@ -499,10 +509,13 @@ Metals/LSP, SemanticDB, and Presentation Compiler tooling; it does not replace
 them.
 
 `semantic_point_evidence` delegates to the CLI-owned composition. It discovers
-existing artifacts, selects only one unique parsed match, preserves live
-resolved/unresolved/unavailable evidence, and either reconciles or reports a
-typed not-attempted reason. It does not run a build, generate SemanticDB, or
-assess freshness.
+existing artifacts, preserves live resolved/unresolved/unavailable evidence,
+and either reconciles or reports a typed not-attempted reason. Without target
+inputs it preserves v2 behavior and does not run sbt. With `sbtProject`, its v3
+route retains workspace ambiguity while selecting only a canonically
+target-owned artifact and acquiring the matching live classpath/JDK context.
+That receipt can evaluate build/plugin code, populate caches, and compile transitively;
+it does not generate SemanticDB or replay target compiler flags/plugins.
 
 The server does not add arbitrary extra args, generic command execution,
 caching, broad workspace-root policy, direct module calls, or MCP tools beyond

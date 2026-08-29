@@ -30,6 +30,10 @@ class SbtCommandSequenceSuite extends munit.FunSuite:
       SbtCommandSequence.selected(app, SbtFixedTask.TastyCompileReceipt),
       "project app; semanticScalaInternalTastyCompileReceipt"
     )
+    assertEquals(
+      SbtCommandSequence.selected(app, SbtFixedTask.TargetContextReceipt),
+      "project app; semanticScalaInternalTargetContextReceipt"
+    )
 
   test("project validation cannot add an sbt command or alter sequencing"):
     val unsafe = List(

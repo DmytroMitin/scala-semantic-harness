@@ -38,10 +38,10 @@ semantic-scala semanticdb-status --workspace <path> --schema-version v1 --json
 semantic-scala semanticdb-status --workspace <path> --schema-version v2 --json
 semantic-scala semanticdb-coverage --workspace <path>
 semantic-scala semanticdb-coverage --workspace <path> --json
-semantic-scala semanticdb-for-source --file <path> --workspace <path>
-semantic-scala semanticdb-for-source --file <path> --workspace <path> --json
-semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n>
-semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> --json
+semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-java-home <absolute-directory>]
+semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json
+semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>]
+semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-java-home <absolute-directory>] --json
 semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <workspace-relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
 semantic-scala symbols --semanticdb <path>
 semantic-scala symbols --semanticdb <path> --json
@@ -103,13 +103,31 @@ zero, one, or many candidates. It uses full URI/path signals, preserves
 unparseable path matches as partial evidence, and reports ambiguity explicitly.
 Its v2 report captures source and artifact bytes once per request and reports
 `Fresh`, `Stale`, `Unverifiable`, or `SourceChangedDuringRequest` from content
-identity. It does not run sbt, generate SemanticDB, or add MCP behavior.
+identity. Without target options it does not run sbt, generate SemanticDB, or
+add MCP behavior. With `--sbt-project`, it emits v3 and acquires one fixed
+Compile receipt before selecting only a uniquely and canonically
+target-owned candidate. Source mapping remains CLI-only.
 `point-evidence` composes source-to-artifact discovery, unique parsed-artifact
 selection, a snapshot-backed Presentation Compiler point query, and conditional
 reconciliation. It accepts no caller-selected artifact, reports typed
 freshness-aware selection and not-attempted reasons, and keeps stale evidence
 visible without treating it as completed reconciliation. Its standalone contract is in
 [`docs/point-evidence.md`](point-evidence.md).
+
+For both commands, `--sbt-java-home` requires `--sbt-project`. Target-aware
+receipt acquisition evaluates checked-in sbt build/plugin code, may resolve
+dependencies or populate caches, and may compile transitively while evaluating
+`Compile / fullClasspath`. The same
+receipt owns the selected output root, classpath, and bounded JDK attribution
+used by live point evidence. Workspace discovery remains a separate fact and
+can still be ambiguous. Alignment does not replay the target compiler version,
+flags, plugins, or plugin lifecycle. Direct `reconcile-symbol` remains an
+explicit-artifact, target-independent v2 operation.
+
+The initial v3 request has no cross-Scala-version selector. Its fresh sbt
+lifecycle cannot inherit a prior process's `++` selection. Reported Scala
+version and output roots are descriptive receipt facts; a caller must not
+assume they match artifacts prepared under another cross-build axis.
 `symbols` reads one explicit `.semanticdb` file path and returns a file-scoped
 SemanticDB summary. Dynamic SemanticDB generation remains deferred.
 
@@ -225,8 +243,12 @@ Current schema-versioned payloads:
   `semantic-scala.semanticdb-coverage.v1`
 - `semanticdb-for-source --file <path> --workspace <path> --json`:
   `semantic-scala.semanticdb-for-source.v2`
+- `semanticdb-for-source --file <path> --workspace <path> --sbt-project <id>
+  --json`: `semantic-scala.semanticdb-for-source.v3`
 - `point-evidence --file <path> --workspace <path> --line <n> --col <n>
   --json`: `semantic-scala.point-evidence-result.v2`
+- `point-evidence --file <path> --workspace <path> --line <n> --col <n>
+  --sbt-project <id> --json`: `semantic-scala.point-evidence-result.v3`
 - `tasty-point-evidence --workspace <dir> --sbt-project <id> --file
   <relative.scala> --line <n> --col <n> --json`:
   `semantic-scala.tasty-point-evidence.v1`
@@ -289,6 +311,16 @@ visible but cannot complete reconciliation, while unverifiable evidence can
 complete only with an explicit qualification. `Fresh` is not whole-project or
 build freshness, and artifact-only `symbols-result.v1` remains outside
 current-source freshness.
+
+Opt-in target-aware v3 embeds the unchanged workspace-wide v2 discovery
+evidence and adds closed target-context and target-selection objects. It
+reports selected project, fixed Compile configuration, acquisition/origin,
+descriptive Scala version, safely representable relative roots or a typed
+inability to represent them, classpath entry count, and redacted JDK context.
+It never publishes the raw classpath, dependency-cache paths, or Java home.
+Target selection distinguishes uniquely owned Fresh or qualified-Unverifiable
+evidence from zero/multiple/stale/unsafe ownership, unknown project,
+acquisition failure, and source change. No target options preserve v2 exactly.
 
 An internal copy-level model records independently qualified provenance,
 source-set, output-kind, producer, module, and configuration hints with
@@ -637,11 +669,16 @@ prove current sbt freshness or cover arbitrary build inputs.
 - `semanticdb-for-source --file <path> --workspace <path> --json` emits a
   `SemanticdbForSourceReportV2` and keeps stdout JSON-only. Its top-level
   `schemaVersion` is `semantic-scala.semanticdb-for-source.v2`.
+- Adding `--sbt-project <id>` emits a target-aware
+  `SemanticdbForSourceReportV3` with top-level `schemaVersion`
+  `semantic-scala.semanticdb-for-source.v3`.
 - `point-evidence --file <path> --workspace <path> --line <n> --col <n>
   --json` emits a `PointEvidenceReportV2` with full discovery, freshness-aware
   selection, snapshot-backed live point evidence, and completed or typed not-attempted
   reconciliation. Its top-level `schemaVersion` is
   `semantic-scala.point-evidence-result.v2`.
+- Adding `--sbt-project <id>` emits target-aware `PointEvidenceReportV3` with
+  top-level `schemaVersion` `semantic-scala.point-evidence-result.v3`.
 - `symbols --semanticdb <path> --json` emits a `SemanticFileSummary` and keeps
   stdout JSON-only. Its top-level `schemaVersion` is
   `semantic-scala.symbols-result.v1`.
@@ -691,11 +728,13 @@ semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb 
 semantic-scala point-evidence --workspace . --file <path> --line <n> --col <n> --json
 ```
 
-For the first three tools, optional MCP string inputs `sbtProject` and
-`sbtJavaHome` map only to CLI `--sbt-project` and `--sbt-java-home`. They use
-the same strict project-ID and absolute-home policies. Both fields are absent
-from tools 4-8, and the ordered registry remains exactly eight tools. Public
-MCP command metadata redacts the selected Java home.
+For the first three tools and the eighth `semantic_point_evidence` tool,
+optional MCP string inputs `sbtProject` and `sbtJavaHome` map only to CLI
+`--sbt-project` and `--sbt-java-home`. They use the same strict project-ID and
+absolute-home policies, and `sbtJavaHome` requires `sbtProject`. Both fields
+remain absent from tools 4-7, and the ordered registry remains exactly eight
+tools. Public MCP command metadata and v3 context redact the selected Java
+home.
 
 The adapter parses stdout as the authoritative CLI JSON payload. It requires
 `semantic-scala.compile-result.v1` for `semantic_compile` and
@@ -719,9 +758,16 @@ reconciliation evidence between the Presentation Compiler point query and
 SemanticDB occurrence data.
 `semantic_point_evidence` uses the relative `.scala` file and positive position
 policy, delegates to the CLI-owned composition, and requires
-`semantic-scala.point-evidence-result.v2`. It never accepts a caller-selected
-SemanticDB artifact. Both tools preserve captured source/artifact identity and
-typed freshness; stale evidence cannot become completed reconciliation.
+`semantic-scala.point-evidence-result.v2` without target inputs or
+`semantic-scala.point-evidence-result.v3` with `sbtProject`. It never accepts a
+caller-selected SemanticDB artifact. Target acquisition may execute checked-in
+sbt build/plugin code, populate caches, and compile transitively. Workspace
+discovery and target ownership remain separate; the receipt supplies target
+output/classpath/JDK attribution without replaying target compiler flags or
+plugins. Both point-evidence families preserve captured source/artifact
+identity and typed freshness; stale evidence cannot become completed
+reconciliation. Direct reconcile stays explicit-artifact v2 and
+target-independent, and source mapping remains CLI-only.
 
 Reconciliation statuses are domain evidence rather than MCP transport status.
 `ExactMatch` is strong evidence that compiler and SemanticDB symbols agreed.
@@ -838,8 +884,11 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
   availability using existing `.semanticdb` files only.
 - `semanticdb-for-source` maps a source file to existing candidates with
   `semanticdb-for-source --file <path> --workspace <path> --json`; it reports
-  ambiguous and partial evidence rather than choosing silently.
-- Discovery and mapping do not identify a canonical module or build target.
+  ambiguous and partial evidence rather than choosing silently. Opt-in
+  `--sbt-project` adds v3 target ownership while retaining that discovery.
+- No-option discovery and mapping do not identify a canonical module or build
+  target. Target-aware v3 uses only one authoritative sbt-reported SemanticDB
+  root plus canonical existing-path containment; it does not promote path hints.
   Source-paired discovery v2 does report captured content provenance and
   freshness independently from candidate path/URI mapping. The fixed
   source-root list covers only conventional main/test Scala and Java roots, so
@@ -861,10 +910,11 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
   provenance/source-set/output/producer/module/configuration hints. Structured
   path rules remain heuristic; there is no canonical build-target field, and
   Git/Bloop/BSP metadata enrichment is deferred. Current status, coverage, and
-  source-mapping schemas do not expose or select by those hints. Public hint
-  fields and canonical build-target selection remain deferred;
-  `semanticdb-for-source.v2` freshness and `point-evidence-result.v2`
-  freshness-aware artifact selection are current. A bounded compatibility
+  source-mapping schemas do not expose or select by those hints. Public
+  heuristic hint fields remain deferred. No-option
+  `semanticdb-for-source.v2` and `point-evidence-result.v2` preserve
+  workspace-wide freshness-aware behavior; opt-in v3 adds authoritative
+  selected-target ownership without reinterpreting those schemas. A bounded compatibility
   matrix has tested Scala 2.13.18 and Scala 3.3.8 artifacts; target-version
   claims remain command-specific rather than inferred from artifact
   availability.

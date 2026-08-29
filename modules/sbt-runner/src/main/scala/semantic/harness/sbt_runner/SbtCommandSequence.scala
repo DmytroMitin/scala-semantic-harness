@@ -14,6 +14,8 @@ private[sbt_runner] enum SbtFixedTask(
       extends SbtFixedTask("semanticScalaInternalExportTestClasspath", None)
   case TastyCompileReceipt
       extends SbtFixedTask("semanticScalaInternalTastyCompileReceipt", None)
+  case TargetContextReceipt
+      extends SbtFixedTask("semanticScalaInternalTargetContextReceipt", None)
 
 private[sbt_runner] object SbtCommandSequence:
   def build(project: Option[SbtProjectId], task: SbtFixedTask): String =

@@ -223,7 +223,10 @@ final class PointEvidenceServiceV2 private (
 object PointEvidenceServiceV2:
   def apply(): PointEvidenceServiceV2 =
     val compiler = PresentationCompilerService()
-    new PointEvidenceServiceV2(compiler.symbolAtSnapshot, () => ())
+    new PointEvidenceServiceV2(
+      (path, source, line, column) => compiler.symbolAtSnapshot(path, source, line, column),
+      () => ()
+    )
 
   private[reconciliation] def withPointQuery(
     pointQuery: (Path, String, Int, Int) => Either[String, SymbolAtResult]

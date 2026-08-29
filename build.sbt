@@ -187,7 +187,7 @@ lazy val presentationCompiler = (project in file("modules/presentation-compiler"
   )
 
 lazy val semanticReconciliation = (project in file("modules/semantic-reconciliation"))
-  .dependsOn(core, semanticdbReader, presentationCompiler)
+  .dependsOn(core, sbtRunner, semanticdbReader, presentationCompiler)
   .settings(commonSettings)
   .settings(
     name := "semantic-harness-semantic-reconciliation",

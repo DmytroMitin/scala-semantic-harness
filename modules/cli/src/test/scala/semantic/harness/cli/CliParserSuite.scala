@@ -19,9 +19,12 @@ class CliParserSuite extends munit.FunSuite:
     assertEquals(known.stderr, None)
     assert(
       known.stdout.exists(
-        _.contains("semantic-scala semanticdb-for-source --file <path> --workspace <path> [--json]")
+        _.contains("--workspace <path> [--sbt-project <id>] [--sbt-java-home <absolute-directory>]")
       )
     )
+    assert(known.stdout.exists(_.contains("preserves the read-only v2 workspace mapping")))
+    assert(known.stdout.exists(_.contains("may resolve dependencies or populate caches")))
+    assert(known.stdout.exists(_.contains("may compile transitively")))
 
     val unknown = CliApp.run(List("help", "not-a-command"))
     assertEquals(unknown.exitCode, 1)
@@ -179,6 +182,32 @@ class CliParserSuite extends munit.FunSuite:
         )
       )
     )
+
+  test("parses opt-in target-aware source and point evidence and requires project for Java selection"):
+    assertEquals(
+      CliParser.parse(List(
+        "semanticdb-for-source", "--workspace", ".", "--file", "Main.scala",
+        "--sbt-project", "kernelJVM", "--sbt-java-home", "/opt/jdk", "--json"
+      )),
+      ParseResult.Parsed(CliCommand.SemanticdbForSource(
+        "Main.scala", ".", json = true, Some(project("kernelJVM")), Some("/opt/jdk")
+      ))
+    )
+    assertEquals(
+      CliParser.parse(List(
+        "point-evidence", "--workspace", ".", "--file", "Main.scala", "--line", "1", "--col", "1",
+        "--sbt-project", "kernelJS", "--json"
+      )),
+      ParseResult.Parsed(CliCommand.PointEvidence(
+        "Main.scala", ".", 1, 1, json = true, Some(project("kernelJS")), None
+      ))
+    )
+    List("semanticdb-for-source", "point-evidence").foreach { command =>
+      val base = List(command, "--workspace", ".", "--file", "Main.scala") ++
+        Option.when(command == "point-evidence")(List("--line", "1", "--col", "1")).getOrElse(Nil)
+      assert(CliParser.parse(base ++ List("--sbt-java-home", "/opt/jdk", "--json")).isInstanceOf[ParseResult.Invalid])
+      assert(CliParser.parse(base ++ List("--sbt-project", "bad;command", "--json")).isInstanceOf[ParseResult.Invalid])
+    }
 
   test("parses the CLI-only fixed-Compile TASTy point evidence contract"):
     val args = List(

@@ -58,6 +58,8 @@ from the alpha-2 packaged contract.
   artifact;
 - a public point-evidence composition that preserves source-artifact discovery,
   safe selection, live symbol evidence, and conditional reconciliation;
+- alpha-3 SNAPSHOT opt-in build-target-aware SemanticDB source mapping and
+  point evidence with one fixed Compile context receipt;
 - an alpha-3 SNAPSHOT CLI-only, same-request post-compile TASTy point-evidence
   operation with exact stable Scala 3 child-inspector provenance;
 - bounded alpha-3 SNAPSHOT sbt-backed command, classpath, and TASTy-receipt
@@ -147,15 +149,17 @@ The source-checkout wrapper runs the CLI through sbt:
 ./semantic-scala errors --json
 ```
 
-`compile`, `errors`, and `test` accept an optional `--sbt-project <id>` where
+`compile`, `errors`, `test`, `semanticdb-for-source`, and `point-evidence`
+accept an optional `--sbt-project <id>` where
 the ID matches `[A-Za-z][A-Za-z0-9_-]*`. Without it they preserve ordinary root
 behavior. With it, compile/errors run that project's fixed `Compile` scope and
 test runs its fixed `Test` scope. The selector is not arbitrary sbt syntax, and
 a successful selected invocation proves only that bounded project operation,
 not whole-workspace correctness.
 
-All six sbt-backed forms (`compile`, `errors`, `test`, sbt-backed
-`infer-type`, `infer-type-batch`, and `tasty-point-evidence`) also accept an
+All eight sbt-backed forms (`compile`, `errors`, `test`, target-aware
+`semanticdb-for-source`, target-aware `point-evidence`, sbt-backed `infer-type`,
+`infer-type-batch`, and `tasty-point-evidence`) also accept an
 optional `--sbt-java-home <absolute-directory>`. The harness itself remains on the
 supported JDK 21 runtime; only the target sbt child receives the selected
 canonical `JAVA_HOME` and a matching `PATH` prefix. The home must already be
@@ -218,6 +222,8 @@ boundary.
 ./semantic-scala semanticdb-coverage --workspace . --json
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --json
 ./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --json
+./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --sbt-project app --json
+./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --sbt-project app --json
 ./semantic-scala tasty-point-evidence --workspace . --sbt-project app --file src/main/scala/example/Main.scala --line 6 --col 16 [--sbt-java-home /absolute/path/to/installed-jdk] --json
 ./semantic-scala symbols --semanticdb path/to/Main.scala.semanticdb --json
 ./semantic-scala usages --workspace . --manifest semantic-usages.json --symbol 'example/Foo#bar().' --json
@@ -227,6 +233,24 @@ boundary.
 ./semantic-scala reconcile-symbol --file path/to/Main.scala --line 6 --col 16 --semanticdb path/to/Main.scala.semanticdb --json
 ./semantic-scala effect-summary --file path/to/UserRepo.scala --json
 ```
+
+Target-aware source mapping and point evidence are explicit alpha-3 SNAPSHOT
+options. Omitting target options preserves the v2 workspace-wide behavior,
+including truthful ambiguity. With `--sbt-project`, one fixed sbt
+receipt reports the selected Compile output root, classpath, Scala version, and
+bounded JDK provenance; candidate ownership is checked canonically beneath the
+reported SemanticDB root while workspace discovery remains unchanged. Receipt
+acquisition evaluates checked-in sbt build/plugin code, may resolve
+dependencies or populate caches, and may compile transitively while evaluating
+`Compile / fullClasspath`. The
+receipt aligns build-output/classpath/JDK attribution; it does not replay the
+target compiler version, flags, or plugins in the Presentation Compiler.
+The initial contract has no cross-Scala-version selector and a fresh receipt
+cannot inherit a prior interactive sbt `++` choice; `scalaVersion` in v3 is
+descriptive evidence for the axis the new sbt lifecycle actually selected.
+`semanticdb-for-source` remains CLI-only, direct `reconcile-symbol` remains an
+explicit-artifact target-independent operation, and the MCP registry remains
+exactly eight tools.
 
 All machine-facing commands have JSON output. Build-oracle command exit code
 `0` means the CLI operation completed; inspect the JSON `success` field for the

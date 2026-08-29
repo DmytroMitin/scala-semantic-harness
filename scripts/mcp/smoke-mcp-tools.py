@@ -24,6 +24,7 @@ SYMBOL_AT_SCHEMA = "semantic-scala.symbol-at-result.v1"
 SYMBOLS_SCHEMA = "semantic-scala.symbols-result.v1"
 RECONCILE_SCHEMA = "semantic-scala.reconcile-symbol-result.v2"
 POINT_EVIDENCE_SCHEMA = "semantic-scala.point-evidence-result.v2"
+POINT_EVIDENCE_V3_SCHEMA = "semantic-scala.point-evidence-result.v3"
 SEMANTICDB_FOR_SOURCE_SCHEMA = "semantic-scala.semanticdb-for-source.v2"
 
 
@@ -423,6 +424,27 @@ def validate_point_evidence_fixture(process: subprocess.Popen[str], selector: se
             workspace,
             {"file": "Main.scala", "line": 6, "col": 16},
         )
+        (workspace / "project").mkdir()
+        (workspace / "project/build.properties").write_text("sbt.version=1.12.14\n", encoding="utf-8")
+        (workspace / "build.sbt").write_text(
+            'lazy val smoke = project.in(file(".")).settings(\n'
+            '  scalaVersion := "3.3.3",\n'
+            '  Compile / semanticdbTargetRoot := baseDirectory.value / "meta"\n'
+            ')\n',
+            encoding="utf-8",
+        )
+        target_root = workspace / "meta"
+        target_root.mkdir()
+        shutil.copyfile(semanticdb_fixture, target_root / "Main.scala.semanticdb")
+        (workspace / "target/scala-3.3.3/classes").mkdir(parents=True)
+        target_result, target_structured = call_tool(
+            process,
+            selector,
+            40,
+            "semantic_point_evidence",
+            workspace,
+            {"file": "Main.scala", "line": 6, "col": 16, "sbtProject": "smoke"},
+        )
     payload = structured.get("payload")
     if result.get("isError") is not False or structured.get("ok") is not True:
         raise SmokeFailure(f"point-evidence fixture should be ok/isError false: {result}")
@@ -470,6 +492,25 @@ def validate_point_evidence_fixture(process: subprocess.Popen[str], selector: se
     if not isinstance(reconciled.get("compilerSymbol"), str) or not reconciled["compilerSymbol"]:
         raise SmokeFailure(f"point-evidence compiler symbol missing: {reconciled}")
     print("PASS semantic_point_evidence fixture")
+    target_payload = target_structured.get("payload")
+    if target_result.get("isError") is not False or target_structured.get("ok") is not True:
+        raise SmokeFailure(f"target point-evidence fixture should be ok/isError false: {target_result}")
+    if target_structured.get("schemaVersion") != POINT_EVIDENCE_V3_SCHEMA:
+        raise SmokeFailure(f"wrong target point-evidence wrapper schemaVersion: {target_structured}")
+    if not isinstance(target_payload, dict) or target_payload.get("schemaVersion") != POINT_EVIDENCE_V3_SCHEMA:
+        raise SmokeFailure(f"target point-evidence payload mismatch: {target_payload}")
+    target_discovery = target_payload.get("discovery")
+    if not isinstance(target_discovery, dict) or target_discovery.get("status") != "Ambiguous":
+        raise SmokeFailure(f"target point-evidence erased workspace ambiguity: {target_discovery}")
+    target_context = target_payload.get("targetContext")
+    if not isinstance(target_context, dict) or target_context.get("project") != "smoke":
+        raise SmokeFailure(f"target point-evidence context mismatch: {target_context}")
+    if target_context.get("configuration") != "Compile" or target_context.get("semanticdbTargetRoot") != "meta":
+        raise SmokeFailure(f"target point-evidence root provenance mismatch: {target_context}")
+    target_selection = target_payload.get("targetSelection")
+    if not isinstance(target_selection, dict) or target_selection.get("status") != "SelectedTargetOwnedQualifiedUnverifiable":
+        raise SmokeFailure(f"target point-evidence selection mismatch: {target_selection}")
+    print("PASS semantic_point_evidence target-aware v3 fixture")
 
 
 def validate_invalid_workspace(process: subprocess.Popen[str], selector: selectors.BaseSelector, root: Path) -> None:

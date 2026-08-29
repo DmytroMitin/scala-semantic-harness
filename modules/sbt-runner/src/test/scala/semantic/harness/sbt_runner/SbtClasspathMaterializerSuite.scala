@@ -40,9 +40,20 @@ class SbtClasspathMaterializerSuite extends munit.FunSuite:
 
       val persistedClasspath = materializer.materialize(classpath, transientRoot)
       val persistedReceipt = materializer.materialize(receipt, transientRoot)
+      val targetContext = SbtTargetContextReceipt(
+        projectId,
+        SbtClasspathConfiguration.Compile,
+        classes,
+        root.resolve("semanticdb"),
+        classpath.entries,
+        "3.8.4",
+        None
+      )
+      val persistedTargetContext = materializer.materialize(targetContext, transientRoot)
 
       assert(persistedClasspath.isRight, clue(persistedClasspath))
       assert(persistedReceipt.isRight, clue(persistedReceipt))
+      assert(persistedTargetContext.isRight, clue(persistedTargetContext))
       val classpathValue = persistedClasspath.fold(message => fail(message), identity)
       val receiptValue = persistedReceipt.fold(message => fail(message), identity)
       val copied = classpathValue.entries(1).path
@@ -51,6 +62,10 @@ class SbtClasspathMaterializerSuite extends munit.FunSuite:
       assertEquals(classpathValue.entries(0).path, classes)
       assertEquals(classpathValue.entries(2).path, externalJar)
       assertEquals(receiptValue.dependencyClasspath, List(copied, externalJar))
+      assertEquals(
+        persistedTargetContext.toOption.toList.flatMap(_.classpath.map(_.path)),
+        List(classes, copied, externalJar)
+      )
 
       Files.delete(transientJar)
       assert(Files.isReadable(copied))
