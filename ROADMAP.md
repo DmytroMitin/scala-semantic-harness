@@ -38,13 +38,14 @@ execution ledger and does not promise delivery dates.
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
 2. Continue fresh Scala/product development and bounded real-project validation
-   before the planned early-September community announcement. Alpha-2 remains
+   before the planned early-September community announcement, while making
+   real-project, user, and community feedback a primary source for the next
+   decision-relevant gaps. Alpha-2 remains
    the supported package; alpha-3 remains SNAPSHOT development and is not cut
    merely to align packaging with mutable `main`. Alpha-3 consideration is
    intentionally nearer that announcement and remains subject to explicit
-   qualification and release authority. After the announcement, make
-   external real-project feedback a primary source for the next semantic and
-   product gaps. Evaluate concrete Scala decisions against the compiler,
+   qualification and release authority. Evaluate concrete Scala decisions
+   against the compiler,
    build/test, IDE/LSP, and standard artifact tools already available to the
    user; retain the bounded context described in
    [`docs/early-feedback.md`](docs/early-feedback.md). This is evidence
@@ -71,10 +72,12 @@ execution ledger and does not promise delivery dates.
    only for a materially different target or tool condition with a
    decision-relevant fact gap.
 5. Preserve the qualified canonical-skill install route and corrected
-   `symbol-at` versus `point-evidence` boundary. Recent controlled selection
-   evidence found cleaner behavior in some cases but no material generated-fact
-   routing gain, so adoption effectiveness remains partial and immediate
-   automatic skill retuning is not admitted.
+   `symbol-at` versus `point-evidence` boundary. Controlled selection evidence
+   found cleaner behavior in some cases but no material generated-fact routing
+   gain. A later natural-surface comparison made zero MCP calls, selected the
+   semantic CLI in one combined condition, and gained sharper provenance without
+   changing the decision. Adoption effectiveness therefore remains partial and
+   immediate automatic skill retuning is not admitted.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
@@ -86,55 +89,53 @@ execution ledger and does not promise delivery dates.
    compatibility, or benchmark gaps that strong ordinary tooling does not
    already address adequately.
 
-## Next comparative research sequence
+## Competitive evidence and next gate
 
-The evidence-broker / decision-layer hypothesis is the next planned research
-sequence, not an implemented subsystem or release gate:
-
-1. This documentation and roadmap normalization step corrects the current
-   contract wording, records the hypothesis, and preregisters the comparison
-   shape.
-2. The next substantive design/intake step will mechanically inspect the
-   current Metals MCP or officially supported headless Metals semantic surface
-   and freeze a controlled experiment design. It adds no product integration
-   unless a later task separately admits one.
-3. The following execution step may run the first strong
-   Metals-versus-`semantic-scala` agent comparison under the frozen design.
-4. Only then decide whether evidence supports alpha-3 release/community-feedback
-   preparation, `semantic-scala` plus Metals/IDE composition, a genuinely
-   missing Scala capability, or deliberate scope reduction/deferral.
-
-Do not assume old Metals versions, installation routes, tool names, readiness
-signals, or client compatibility. The design/intake step must recheck them
-mechanically and may narrow the experiment to the smallest high-information
-subset.
-
-Candidate arms use the same client, model, reasoning level, task wording, and
-repository state where mechanically possible:
+The planned baseline-intake and competitive sequence is now substantially
+executed. It qualified released Metals MCP 1.6.8 with its exact 17-tool surface
+and reproducible isolated writable initialization on both frozen targets, then used
+the same client, model, reasoning level, task wording, and repository state
+where mechanically possible across these arms:
 
 - **A:** source/shell plus compiler/test baseline;
 - **B:** current verified Metals MCP or supported headless Metals surface;
 - **C:** `semantic-scala`; and
 - **D:** Metals plus `semantic-scala`.
 
-Candidate decision families are cross-built/shared-source target ambiguity,
-stale SemanticDB after source mutation, multi-project missing-output partial
-context, and compiler-plugin/generated facts where live source and compiled
-truth may differ. Primary metrics are diagnosis/edit correctness, unsafe target
-or artifact selection, false certainty/agreement, wrong project/Scala/JDK
-attribution, stale-artifact mistakes, exact evidence or non-attempt attribution,
-iterations to compile/test green, controller intervention, redundant semantic
-calls, latency, and reliably observable token/context/cost. Fewer calls alone
-are not product value.
+On the generated-fact decision, all four arms were protocol-valid: A/B/C scored
+8/8 and D scored 7/8 with no veto. The one-point loss was non-material, so the
+ordinary baseline was sufficient for that exact decision and neither
+specialized surface showed a material primary advantage. This is not a general
+redundancy claim.
 
-Interpret outcomes without preselecting a winner:
+On the shared-source target decision, repeated valid A/B observations scored
+6/6; a later valid D observation also scored 6/6 and used `semantic-scala` CLI
+evidence to sharpen provenance and typed ambiguity without changing the primary
+decision. The independent C condition exceeded its frozen operation budget in
+both attempts, so C comparisons remain unavailable. Its second run also used a
+relocated repository wrapper outside its documented source-tree role; that is a
+bounded experimental deviation, not evidence of supported-install fragility or
+intrinsic semantic complexity.
 
-- **C > B:** evidence for independent `semantic-scala` value;
-- **D > B and D > C:** evidence for a complementary evidence/decision layer;
-- **B >= C and D adds no material value:** evidence to reduce, redirect, or
-  defer scope rather than manufacture a feature; and
-- **mixed:** identify the decision families that benefit and keep claims
-  bounded.
+Direct calibration established that the configured MCP surfaces were callable,
+but no treatment selected an MCP call. Capability availability, natural tool
+selection, and material decision improvement therefore remain separate. The
+automatic S/G comparative rerun sequence is closed; do not rerun it merely to
+force a complete or favorable matrix.
+
+The evidence-broker / decision-layer hypothesis remains open but opportunity
+gated. The completed cases gave the combined arm no distinct primary fact or
+criterion unavailable to the strongest single arm, so their null results are
+not negative broker evidence. Any future combined comparison must begin with a
+real decision where two independently useful sources contribute distinct facts
+and the combined packet has preregistered room to improve correctness, safety,
+or materially reduce orchestration friction. Do not implement a Metals backend
+or invent a benchmark criterion merely to manufacture that opportunity.
+
+The next gap source shifts toward bounded real-project, user, and community
+feedback against strong ordinary tooling. That emphasis does not stop fresh
+product development or compatibility validation; it governs which new semantic
+capabilities are admitted.
 
 ## Semantic evidence quality
 
@@ -175,6 +176,13 @@ privacy qualification. These tiers do not authorize release actions.
   repository, or reasoning-level superiority. Further replication on the same
   client and target is not an immediate priority unless a materially different
   condition is preregistered.
+- Keep natural-surface evidence separate from those controlled composition
+  results. In two source/build-solvable decisions, valid specialized arms did
+  not materially improve the primary outcome; one combined arm selected
+  semantic CLI evidence and improved provenance wording without changing the
+  decision, while no arm selected MCP. This narrows where `READY` applies but
+  does not erase the controlled positive evidence or establish general
+  redundancy.
 - Continue comparing coherent operations with direct use of the same compiler,
   test, IDE/LSP, and MCP primitives.
 - Preserve the frozen current Cats Effect JVM/JS shared-source qualification:
@@ -246,6 +254,14 @@ privacy qualification. These tiers do not authorize release actions.
 - Keep adoption effectiveness `EVIDENCE_PARTIAL`. Do not automatically retune
   the skill from this result; require a materially different evaluation
   condition and broader independent execution evidence before READY.
+- Preserve the natural-selection qualifier: direct calibration established MCP
+  callability, but treatments made no MCP calls, while one combined condition
+  selected the semantic CLI and
+  gained clearer provenance without a primary-score gain. The independent
+  semantic-only condition exceeded its operation budget twice. One repetition
+  relocated a repository-only thin wrapper contrary to the documented canonical
+  install route, so do not label that routing failure intrinsic skill or product
+  complexity.
 - Separate capability value from the incremental effect of skill guidance.
 
 ## Installation and packaging

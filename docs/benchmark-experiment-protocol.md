@@ -54,10 +54,9 @@ designed so `effect-summary` can report both an `Option[User]` parser and an
 `Either[String, User]` parser; the intended repair is still determined by the
 public `Either` contract and tests.
 
-### Preregistered next semantic-evidence condition matrix
+### Competitive semantic-evidence condition matrix
 
-The next planned competitive sequence uses the same task in these candidate
-arms:
+A completed bounded competitive sequence used the same task in these arms:
 
 1. **A — ordinary baseline**: source/shell plus compiler/test feedback.
 2. **B — Metals**: the current verified Metals MCP or officially supported
@@ -66,15 +65,16 @@ arms:
 4. **D — combined**: Metals plus semantic-scala, with evidence and tool-use
    attribution kept separable.
 
-These are proposed experimental conditions, not new implemented
-`BenchmarkCase.mode` values. Do not rewrite current run JSON as if these arms
-had already been executed.
+These were later controlled conditions, not new implemented
+`BenchmarkCase.mode` values. The public v0 run JSON remains a separate earlier
+screening layer and is not rewritten as this later comparison.
 
-Before freezing the experiment, the design task must mechanically recheck the
+Before freezing such an experiment, the design must mechanically recheck the
 current Metals capabilities, install route, version, tool names, readiness
-state, and client compatibility. Old prose and historical Metals observations
-are not current capability authority. The design may narrow the following
-candidate decisions to the smallest high-information subset:
+state, and client compatibility. The completed sequence qualified released
+Metals MCP 1.6.8 with its exact 17-tool surface and reproducible isolated writable
+initialization. Old prose and historical Metals observations remain
+insufficient current capability authority. Candidate decisions included:
 
 - cross-built/shared-source target ambiguity;
 - stale SemanticDB after source mutation;
@@ -109,6 +109,33 @@ Interpret outcomes without precommitting to a winner:
   redirection, or deferral; and
 - **mixed** results identify bounded decision families rather than a general
   winner.
+
+The later comparison adds two distinct evidence layers without changing the
+historical v0 screening data:
+
+- **controlled coherent composition:** on one frozen public shared-source
+  decision with fact-equivalent primitive inputs, coherent `point-evidence`
+  improved typed non-attempt attribution and merge discipline under bounded
+  low- and medium-reasoning conditions;
+- **natural competitive selection:** on a fully valid generated-fact decision,
+  A/B/C scored 8/8 and D scored 7/8 with no veto, a non-material difference. On
+  the shared-source decision, valid A/B/D arms scored 6/6, while C exceeded its
+  fixed operation budget twice and remains unavailable for confirmatory
+  comparison. D selected semantic CLI evidence that sharpened provenance but
+  did not change its decision. Direct calibration established MCP callability,
+  but no treatment selected an MCP call.
+
+Do not average these layers. The controlled result is bounded positive
+composition evidence; the natural-surface results are a case-specific null plus
+one incomplete comparison. They separate capability availability, natural
+selection, and material gain, and they do not establish general redundancy or
+negative broker evidence. The two-case automatic rerun sequence is closed.
+
+The broker hypothesis requires a separately preregistered,
+opportunity-qualified case where independently useful evidence sources provide
+distinct facts and the combined arm has room to improve correctness, safety, or
+material orchestration friction. Do not manufacture such room by withholding a
+released capability or adding a criterion that merely rewards tool use.
 
 ## 3. Command Categories
 
@@ -259,12 +286,11 @@ The first pair tests whether adding semantic commands changes behavior on a
 simple compile repair. The optional reconciliation case tests whether the agent
 handles uncertainty instead of over-trusting semantic output.
 
-This v0 recommendation remains historical methodology. The next substantive
-research task is expected to perform Metals baseline intake and preregister the
-A/B/C/D design above without product integration. A following task may execute
-the first frozen comparison. Only after those results should the project choose
-between release/community-feedback preparation, mature-tool composition, a
-genuinely missing Scala capability, or deliberate scope reduction/deferral.
+This v0 recommendation remains historical methodology. The later Metals intake
+and A/B/C/D sequence described above is substantially executed without product
+integration. Its bounded results shift the next gap source toward real-project,
+user, and community feedback against strong ordinary tooling, while leaving
+fresh product development and compatibility validation open.
 
 ## 8. Fairness Rules
 

@@ -42,6 +42,17 @@ boundary, see [`../benchmarks/README.md`](../benchmarks/README.md); for the
 current scoped TASTy comparison, see
 [`tasty-point-evidence.md`](tasty-point-evidence.md#marginal-utility-boundary).
 
+Recent bounded competitive work makes external cases especially important. On
+two frozen source/build-solvable decisions, valid ordinary and specialized arms
+had no material primary-score difference; one combined arm selected semantic
+CLI evidence and reported provenance more precisely without changing the
+decision, while no treatment selected MCP. This does not make semantic tooling
+generally redundant. It means the next useful report should show where a strong
+ordinary route actually loses a fact, makes an unsafe choice, or incurs material
+merge/orchestration friction. A composition report is strongest when two
+independently useful sources contribute distinct facts and the combined packet
+has an observable decision role.
+
 ## Minimum reproducibility packet
 
 Retain only the bounded, non-secret context needed to understand the result:
@@ -83,8 +94,8 @@ Priority feedback is:
 
 1. a strong ordinary-tool comparison where semantic-scala changes a decision
    or safely avoids guessing;
-2. a case where composition or provenance helps even though each primitive
-   fact is individually obtainable;
+2. an opportunity-qualified case where distinct facts from two useful evidence
+   sources make a combined provenance/decision packet materially helpful;
 3. a missing Scala, compiler, or FP fact that strong ordinary tooling does not
    already handle adequately;
 4. installation, client, MCP, or skill-selection friction; and

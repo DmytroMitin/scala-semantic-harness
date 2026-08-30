@@ -189,27 +189,44 @@ or inconsistent artifacts. Any future diagnostic-action evidence must retain
 its originating diagnostic, build/source context, completeness status, and
 limits. No public diagnostic-action schema exists.
 
-## Next comparison baseline
+## Competitive evidence boundary
 
-The next research sequence will first recheck the current officially supported
-headless Metals semantic surface and preregister a controlled comparison. It
-will not add product integration. A following task may then execute the first
-comparison using these candidate arms:
+A completed bounded research sequence mechanically qualified released Metals
+MCP 1.6.8, including its exact 17-tool surface and reproducible isolated writable
+initialization on two frozen targets, then compared these arms without adding
+product integration:
 
 1. agent plus source/shell and compiler/test baseline;
 2. agent plus the verified current Metals MCP or supported headless surface;
 3. agent plus `semantic-scala`; and
 4. agent plus both Metals and `semantic-scala`.
 
-Such a comparison must control tool-use attribution and environment confounds.
-Tool exposure or invocation is not success. The useful outcomes are
-decision-relevant semantic-tool use, compile/test success, iterations to green,
-incorrect edits and over-edits, exact-symbol errors, contextual/implicit errors
-where applicable, and unnecessary human intervention.
+The generated-fact decision produced a fully valid bounded null result: the
+ordinary, Metals, and semantic-scala arms each scored 8/8, while the combined
+arm scored 7/8 with no veto. That one-point difference was non-material. On the
+shared-source decision, valid ordinary, Metals, and combined arms each scored
+6/6; the combined arm selected semantic CLI provenance and typed-ambiguity
+evidence but did not change the primary decision. The semantic-only condition
+exceeded its fixed operation budget twice, so its pairwise result remains
+unavailable. These case-specific results do not establish general redundancy
+or statistical performance.
 
-The exact Metals capabilities, version, install route, tool names, readiness,
-and client compatibility must be mechanically rechecked before experiment
-design. No comparative run or product integration has occurred yet.
+Direct calibration established that the configured MCP surfaces were callable,
+but no MCP tool was selected across the natural treatments. One combined
+condition selected the semantic CLI; availability, natural selection, and
+material gain therefore remain separate observations. A relocated repository-only wrapper
+failed outside its documented source-tree role in one semantic-only treatment;
+that is an experimental deviation, not supported-install fragility or proof of
+intrinsic product complexity.
+
+The automatic rerun sequence for these two cases is closed. The broker /
+decision-layer hypothesis remains opportunity gated rather than rejected: the
+cases gave the combined arm no distinct primary criterion beyond the strongest
+single arm. A future combined comparison must begin with a real decision where
+independently useful sources contribute distinct facts and there is
+preregistered room for the combined packet to improve correctness, safety, or
+materially reduce orchestration friction. Do not implement a Metals backend or
+invent a criterion merely to force that condition.
 
 ## Frozen current boundary
 
