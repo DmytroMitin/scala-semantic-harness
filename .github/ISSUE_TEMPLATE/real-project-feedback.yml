@@ -1,0 +1,83 @@
+name: Real-project semantic-scala feedback
+description: Report one bounded Scala decision compared with strong ordinary tooling.
+title: "[real-project feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing semantic-scala on a concrete decision. Null results are useful: it is completely valid to report that ordinary tooling was sufficient or semantic-scala added no value. Read the [feedback guide](https://github.com/DmytroMitin/scala-semantic-harness/blob/main/docs/early-feedback.md) before posting, and do not include credentials, private source, private absolute paths, or unrestricted logs.
+  - type: dropdown
+    id: outcome_category
+    attributes:
+      label: Outcome category
+      description: Choose the closest observed outcome, not the result you hoped to see.
+      options:
+        - Missing decision fact
+        - Unsafe or ambiguous decision
+        - Composition or provenance gain
+        - No value / ordinary tooling sufficient
+        - Installation, client, or skill-selection friction
+        - Scala, sbt, JDK, or project compatibility failure
+        - Opportunity-qualified broker case
+    validations:
+      required: true
+  - type: input
+    id: repository_revision
+    attributes:
+      label: Repository and revision
+      description: Provide a public URL and commit, or say that a minimized reproducer is attached.
+      placeholder: https://github.com/example/project at full commit SHA
+    validations:
+      required: true
+  - type: input
+    id: toolchain
+    attributes:
+      label: Scala, build tool, and JDK
+      placeholder: Scala 3.3.7, sbt 1.12.14, harness JDK 21, target JDK 17
+    validations:
+      required: true
+  - type: input
+    id: semantic_scala_version
+    attributes:
+      label: semantic-scala version and surface
+      description: State whether you used CLI, MCP, and/or the skill. Source-built SNAPSHOT reports must include the revision.
+      placeholder: 0.1.0-alpha.2, CLI plus skill
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision to make
+      description: Describe one diagnosis, edit, selection, or stop condition fixed before choosing a semantic command.
+    validations:
+      required: true
+  - type: textarea
+    id: ordinary_baseline
+    attributes:
+      label: Strong ordinary-tool result
+      description: Record the relevant compiler/test, IDE/LSP, artifact, source, or shell evidence and what it established.
+    validations:
+      required: true
+  - type: textarea
+    id: semantic_evidence
+    attributes:
+      label: semantic-scala command and result
+      description: Include the exact bounded command or MCP tool, schema/domain status, relevant warnings, and whether build execution was approved.
+    validations:
+      required: true
+  - type: textarea
+    id: decision_effect
+    attributes:
+      label: Effect on the decision
+      description: Explain what changed, what became safer or clearer, what remained unresolved, or why the harness added no value.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy and scope check
+      options:
+        - label: I removed credentials, tokens, private source, private absolute paths, full environment dumps, and unrestricted logs.
+          required: true
+        - label: I have kept the claim bounded to this repository, revision, toolchain, and decision.
+          required: true

@@ -6,6 +6,25 @@ Scala users and coding-agent users who can compare the harness with the strong
 ordinary tooling they already use. It is not a feature-wishlist template, and
 none of the examples below is automatically a demonstrated product advantage.
 
+## Smallest evaluation path
+
+1. Install the supported alpha-2 CLI, MCP server, and optional skill using
+   [`agent-onboarding.md`](agent-onboarding.md).
+2. Pick one concrete decision before choosing a semantic command.
+3. Use the narrowest relevant operation. For example,
+   `effect-summary --file <scala> --json` gives syntax-first declared wrapper
+   evidence, while `point-evidence --workspace <dir> --file <scala> --line <n>
+   --col <n> --json` composes existing artifact discovery, live point evidence,
+   and conditional reconciliation.
+4. Answer the same question with compiler/test, IDE/LSP, artifact, source, and
+   shell tools you already trust.
+5. Record whether semantic-scala changed the decision, made uncertainty safer,
+   improved provenance/merge discipline, added no value, or introduced friction.
+
+The commands are examples, not required calls or superiority demonstrations.
+Do not use a semantic command when source and existing compiler/test evidence
+already settle the decision.
+
 ## What to evaluate
 
 Start with one decision where better evidence could change a diagnosis, edit,
@@ -52,6 +71,23 @@ ordinary route actually loses a fact, makes an unsafe choice, or incurs material
 merge/orchestration friction. A composition report is strongest when two
 independently useful sources contribute distinct facts and the combined packet
 has an observable decision role.
+
+Classify the observed outcome as one of:
+
+- **missing decision fact:** ordinary tooling could not establish a fact needed
+  for the decision;
+- **unsafe or ambiguous decision:** the harness prevented an unjustified
+  target, artifact, symbol, or semantic choice;
+- **composition or provenance gain:** the individual facts existed elsewhere,
+  but the bounded packet materially improved provenance, freshness,
+  completeness, uncertainty, or merge discipline;
+- **no value / ordinary tooling sufficient:** the harness did not improve this
+  case; this is explicitly useful feedback, not a failed report;
+- **installation, client, or skill-selection friction**;
+- **Scala, sbt, JDK, or project compatibility failure**; or
+- **opportunity-qualified broker case:** two independently useful evidence
+  sources supplied distinct facts and a combined packet could plausibly improve
+  the decision.
 
 ## Minimum reproducibility packet
 
@@ -103,3 +139,13 @@ Priority feedback is:
 
 Feature ideas detached from a concrete decision are still hypotheses; label
 them speculative rather than presenting them as observed gaps.
+
+## Report the result
+
+Open the lightweight
+[real-project feedback issue](https://github.com/DmytroMitin/scala-semantic-harness/issues/new?template=real-project-feedback.yml).
+The form mirrors the categories and minimum packet above. Reports where ordinary
+tooling was sufficient or semantic-scala added no value are welcome. If the
+project cannot be shared, use a minimized reproducer or describe only the
+non-secret decision boundary; do not disclose private source to complete the
+form.
