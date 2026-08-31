@@ -20,6 +20,7 @@ import semantic.harness.reconciliation.ReconciliationResultV2
 import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.reconciliation.PointEvidenceReportV4
+import semantic.harness.reconciliation.PointEvidenceReportV5
 import semantic.harness.sbt_runner.SbtScalaVersion
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 
@@ -266,6 +267,29 @@ final case class SemanticScalaCli(
     sbtJavaHome: Option[String],
     execution: ProcessExecution
   ): McpToolResult =
+    semanticPointEvidence(
+      workspace,
+      file,
+      line,
+      col,
+      sbtProject,
+      sbtScalaVersion,
+      sbtJavaHome,
+      includeExistingInternalOutputs = false,
+      execution
+    )
+
+  def semanticPointEvidence(
+    workspace: Path,
+    file: String,
+    line: Int,
+    col: Int,
+    sbtProject: Option[String],
+    sbtScalaVersion: Option[String],
+    sbtJavaHome: Option[String],
+    includeExistingInternalOutputs: Boolean,
+    execution: ProcessExecution
+  ): McpToolResult =
     val validatedProject = sbtProject match
       case Some(value) => SbtProjectIdSyntax.validate(value).map(Some.apply)
       case None => Right(None)
@@ -285,10 +309,19 @@ final case class SemanticScalaCli(
       javaHome <- validatedJavaHome
       _ <- Either.cond(javaHome.isEmpty || project.nonEmpty, (), "sbtJavaHome requires sbtProject for semantic_point_evidence")
       _ <- Either.cond(scalaVersion.isEmpty || project.nonEmpty, (), "sbtScalaVersion requires sbtProject for semantic_point_evidence")
+      _ <- Either.cond(!includeExistingInternalOutputs || project.nonEmpty, (), "includeExistingInternalOutputs requires sbtProject for semantic_point_evidence")
     yield (project, scalaVersion, javaHome)
     val args = selected.toOption.fold(SemanticScalaCli.pointEvidenceArgs(file, line, col)) {
       case (project, scalaVersion, javaHome) =>
-        SemanticScalaCli.pointEvidenceArgs(file, line, col, project, scalaVersion, javaHome)
+        SemanticScalaCli.pointEvidenceArgs(
+          file,
+          line,
+          col,
+          project,
+          scalaVersion,
+          javaHome,
+          includeExistingInternalOutputs
+        )
     }
     val command = cliCommand(args)
     val normalizedWorkspace = workspace.toAbsolutePath.normalize()
@@ -308,7 +341,10 @@ final case class SemanticScalaCli(
         case Some(failure) => failure
         case None =>
           val (project, _, javaHome) = selected.toOption.get
-          val expected = if project.nonEmpty then PointEvidenceReportV4.SchemaVersion else PointEvidenceReportV2.SchemaVersion
+          val expected =
+            if includeExistingInternalOutputs then PointEvidenceReportV5.SchemaVersion
+            else if project.nonEmpty then PointEvidenceReportV4.SchemaVersion
+            else PointEvidenceReportV2.SchemaVersion
           val result =
             if project.nonEmpty then runBuildJsonTool(workspace, args, expected, execution)
             else runJsonTool(workspace, args, expected, execution)
@@ -672,12 +708,14 @@ object SemanticScalaCli:
       col: Int,
       sbtProject: Option[String] = None,
       sbtScalaVersion: Option[String] = None,
-      sbtJavaHome: Option[String] = None
+      sbtJavaHome: Option[String] = None,
+      includeExistingInternalOutputs: Boolean = false
   ): List[String] =
     List("point-evidence", "--workspace", ".", "--file", file, "--line", line.toString, "--col", col.toString) ++
       sbtProject.toList.flatMap(value => List("--sbt-project", value)) ++
       sbtScalaVersion.toList.flatMap(value => List("--sbt-scala-version", value)) ++
       sbtJavaHome.toList.flatMap(value => List("--sbt-java-home", value)) ++
+      Option.when(includeExistingInternalOutputs)("--include-existing-internal-outputs").toList ++
       List("--json")
 
   def default: SemanticScalaCli =

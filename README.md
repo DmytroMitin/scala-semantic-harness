@@ -60,7 +60,8 @@ from the alpha-2 packaged contract.
   safe selection, live symbol evidence, and conditional reconciliation;
 - alpha-3 SNAPSHOT opt-in build-target-aware SemanticDB source mapping v4 with
   a validated optional Scala axis and root-only receipt, alongside target-aware
-  point-evidence v4 with a non-compiling partial existing-output context;
+  point-evidence v4 with a non-compiling partial existing-output context and
+  explicit v5 existing-internal-Compile-output opt-in;
 - an alpha-3 SNAPSHOT CLI-only, same-request post-compile TASTy point-evidence
   operation with exact stable Scala 3 child-inspector provenance;
 - bounded alpha-3 SNAPSHOT sbt-backed command, classpath, and TASTy-receipt
@@ -231,7 +232,7 @@ boundary.
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --json
 ./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --json
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --sbt-project app [--sbt-scala-version 3.3.7] --json
-./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --sbt-project app [--sbt-scala-version 3.3.7] --json
+./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --sbt-project app [--sbt-scala-version 3.3.7] [--include-existing-internal-outputs] --json
 ./semantic-scala tasty-point-evidence --workspace . --sbt-project app --file src/main/scala/example/Main.scala --line 6 --col 16 [--sbt-java-home /absolute/path/to/installed-jdk] --json
 ./semantic-scala symbols --semanticdb path/to/Main.scala.semanticdb --json
 ./semantic-scala usages --workspace . --manifest semantic-usages.json --symbol 'example/Foo#bar().' --json
@@ -255,7 +256,7 @@ workspace discovery remains unchanged. Optional `--sbt-scala-version` selects
 one validated axis and must exactly match the effective receipt axis; omission
 uses the fresh lifecycle's build default.
 
-Target-aware point evidence emits v4. It acquires exactly one fixed Compile
+Target-aware point evidence emits v4 by default. It acquires exactly one fixed Compile
 receipt containing the selected existing class directory when present plus the
 selected target's external dependencies. It never requests target compilation,
 `fullClasspath`, products, or exported products, and has no build fallback.
@@ -264,6 +265,14 @@ directory is omitted rather than built. Checked-in sbt build/plugin loading,
 dependency resolution, and metadata/cache writes remain possible. The harness
 Presentation Compiler does not replay target compiler flags, plugins, or
 lifecycle, and the context is not a complete arbitrary multi-project classpath.
+An explicit `--include-existing-internal-outputs` presence flag emits v5 and
+adds only already-present same-axis internal Compile class directories found by
+a bounded settings-only dependency traversal. Missing outputs remain typed and
+are never built. V5 stays `PartialExistingCompileOutputs`, does not request
+`fullClasspath`, products, or `internalDependencyClasspath`, and still does not
+replay target compiler flags/plugins. The existing eighth MCP tool exposes the
+same opt-in as optional boolean `includeExistingInternalOutputs`; the registry
+remains exactly eight.
 `semanticdb-for-source` remains CLI-only, direct `reconcile-symbol` remains an
 explicit-artifact target-independent operation, and the MCP registry remains
 exactly eight tools.

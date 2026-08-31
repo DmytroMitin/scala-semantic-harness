@@ -313,7 +313,8 @@ Tool input:
   "col": 16,
   "sbtProject": "app",
   "sbtScalaVersion": "3.3.7",
-  "sbtJavaHome": "/absolute/path/to/installed-jdk"
+  "sbtJavaHome": "/absolute/path/to/installed-jdk",
+  "includeExistingInternalOutputs": true
 }
 ```
 
@@ -326,7 +327,10 @@ neither option, it runs exactly
 <col> --json` in that workspace and accepts only
 `semantic-scala.point-evidence-result.v2`. With a project it forwards the
 validated target options and accepts only
-`semantic-scala.point-evidence-result.v4`. Target-context acquisition evaluates
+`semantic-scala.point-evidence-result.v4`. Optional boolean
+`includeExistingInternalOutputs=true` requires the project and accepts only
+`semantic-scala.point-evidence-result.v5`; omitted/false preserves v2/v4.
+Target-context acquisition evaluates
 checked-in sbt build/plugin code and can resolve dependencies or populate
 metadata/caches, but does not request target compilation, `fullClasspath`,
 products, or exported products. The receipt supplies selected-existing-output,
@@ -523,6 +527,11 @@ external dependencies and is always `PartialExistingOutputs`. Receipt
 acquisition can evaluate build/plugin code and populate resolution/metadata
 caches, but does not request compilation and does not replay target compiler
 flags/plugins.
+With `includeExistingInternalOutputs=true`, the same eighth tool selects v5.
+The settings-only route follows admitted Compile dependencies, includes only
+present same-axis class directories, keeps missing/unsafe/excluded entries
+typed, and remains `PartialExistingCompileOutputs`. It does not request
+compilation, products, `fullClasspath`, or `internalDependencyClasspath`.
 
 The server does not add arbitrary extra args, generic command execution,
 caching, broad workspace-root policy, direct module calls, or MCP tools beyond

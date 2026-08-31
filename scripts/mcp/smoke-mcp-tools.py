@@ -25,6 +25,7 @@ SYMBOLS_SCHEMA = "semantic-scala.symbols-result.v1"
 RECONCILE_SCHEMA = "semantic-scala.reconcile-symbol-result.v2"
 POINT_EVIDENCE_SCHEMA = "semantic-scala.point-evidence-result.v2"
 POINT_EVIDENCE_V4_SCHEMA = "semantic-scala.point-evidence-result.v4"
+POINT_EVIDENCE_V5_SCHEMA = "semantic-scala.point-evidence-result.v5"
 SEMANTICDB_FOR_SOURCE_SCHEMA = "semantic-scala.semanticdb-for-source.v2"
 
 
@@ -451,6 +452,21 @@ def validate_point_evidence_fixture(process: subprocess.Popen[str], selector: se
                 "sbtScalaVersion": "3.3.3",
             },
         )
+        target_v5_result, target_v5_structured = call_tool(
+            process,
+            selector,
+            41,
+            "semantic_point_evidence",
+            workspace,
+            {
+                "file": "Main.scala",
+                "line": 6,
+                "col": 16,
+                "sbtProject": "smoke",
+                "sbtScalaVersion": "3.3.3",
+                "includeExistingInternalOutputs": True,
+            },
+        )
     payload = structured.get("payload")
     if result.get("isError") is not False or structured.get("ok") is not True:
         raise SmokeFailure(f"point-evidence fixture should be ok/isError false: {result}")
@@ -525,6 +541,25 @@ def validate_point_evidence_fixture(process: subprocess.Popen[str], selector: se
     if not isinstance(target_selection, dict) or target_selection.get("status") != "SelectedTargetOwnedQualifiedUnverifiable":
         raise SmokeFailure(f"target point-evidence selection mismatch: {target_selection}")
     print("PASS semantic_point_evidence target-aware v4 fixture")
+    target_v5_payload = target_v5_structured.get("payload")
+    if target_v5_result.get("isError") is not False or target_v5_structured.get("ok") is not True:
+        raise SmokeFailure(f"target v5 point-evidence fixture should be ok/isError false: {target_v5_result}")
+    if target_v5_structured.get("schemaVersion") != POINT_EVIDENCE_V5_SCHEMA:
+        raise SmokeFailure(f"wrong target v5 point-evidence wrapper schemaVersion: {target_v5_structured}")
+    if not isinstance(target_v5_payload, dict) or target_v5_payload.get("schemaVersion") != POINT_EVIDENCE_V5_SCHEMA:
+        raise SmokeFailure(f"target v5 point-evidence payload mismatch: {target_v5_payload}")
+    target_v5_context = target_v5_payload.get("targetContext")
+    if not isinstance(target_v5_context, dict):
+        raise SmokeFailure(f"target v5 point-evidence context missing: {target_v5_payload}")
+    if target_v5_context.get("classpathBasis") != "ExistingSelectedAndInternalCompileOutputsPlusExternalDependencies":
+        raise SmokeFailure(f"target v5 point-evidence classpath basis mismatch: {target_v5_context}")
+    if target_v5_context.get("contextCompleteness") != "PartialExistingCompileOutputs":
+        raise SmokeFailure(f"target v5 point-evidence partiality missing: {target_v5_context}")
+    if target_v5_context.get("internalDependencies") != [] or target_v5_context.get("internalDependencyDiscoveredCount") != 0:
+        raise SmokeFailure(f"target v5 point-evidence empty graph mismatch: {target_v5_context}")
+    if target_v5_context.get("buildPerformed") != "NotRequested":
+        raise SmokeFailure(f"target v5 point-evidence build state mismatch: {target_v5_context}")
+    print("PASS semantic_point_evidence target-aware v5 fixture")
 
 
 def validate_invalid_workspace(process: subprocess.Popen[str], selector: selectors.BaseSelector, root: Path) -> None:

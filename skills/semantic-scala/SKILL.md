@@ -67,7 +67,7 @@ adapter. The MCP surface is exactly the eight tools named below.
 | What does the presentation compiler report at a point? | `symbol-at --file <scala> --line <n> --col <n> --json` | `semantic_symbol_at` | Dynamic point evidence; rendered or hover-like output is not canonical identity. |
 | What symbols occur in an explicit SemanticDB file? | `symbols --semanticdb <file> --json` | `semantic_symbols` | Static canonical symbol strings and ranges from that file only. |
 | Do dynamic and static symbol evidence agree? | `reconcile-symbol --file <scala> --line <n> --col <n> --semanticdb <file> --json` | `semantic_reconcile_symbol` | Snapshot-consistent v2 comparison. Fresh may complete, unverifiable may complete only qualified, and stale/source-changed evidence is typed `NotAttempted`. |
-| What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] --json` | `semantic_point_evidence` | No target preserves v2 workspace selection. Opt-in target v4 retains workspace ambiguity, selects only uniquely and canonically target-owned evidence, and uses only an existing selected class directory plus target external dependencies. Context stays explicitly partial; stale evidence cannot complete. |
+| What coherent point evidence is available without caller-selected artifact routing? | `point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs] --json` | `semantic_point_evidence` | No target preserves v2 workspace selection. Target v4 retains workspace ambiguity and uses only an existing selected class directory plus external dependencies. The explicit v5 flag/MCP boolean adds only already-present same-axis internal Compile outputs from a bounded settings receipt. Both target contexts stay partial; stale evidence cannot complete. |
 | What type is rendered for an expression? | `infer-type --file <scala> --line <n> --col <n> ... --json` | none | CLI-only presentation-compiler evidence. `Resolved` carries rendered evidence; `Unresolved` is neutral absence. |
 | What types are rendered for a bounded request batch sharing one sbt context? | `infer-type-batch --requests <json> --workspace <dir> --sbt-project <id> --sbt-configuration <name> [--sbt-java-home <absolute-directory>] --json` | none | CLI-only ordered batch; strict bounded input and one shared acquisition. |
 | What typed post-compile tree contains one point after an authoritative selected Compile? | `tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json` | none | Alpha-3 SNAPSHOT CLI-only evidence. Runs target build/plugin code during Compile, then inspects receipt-bound TASTy with the exact stable Scala 3 line without replaying target options/plugins in the inspector. |
@@ -88,7 +88,7 @@ or automatic semantic invocation.
 | `infer-type` with manual `--classpath`, or a narrow runtime-only context | Avoids sbt acquisition but only proves behavior under the supplied bounded context. | Treat paths and dependencies as user-provided evidence, not project freshness proof. |
 | sbt-backed `infer-type` or `infer-type-batch` with `fresh` | May execute arbitrary build code, compile, download dependencies, and modify project outputs or shared caches. `fresh` is the default. | Obtain approval for this build execution when the environment requires it. |
 | Target-aware `semanticdb-for-source` | Acquires one fixed root-only Compile receipt. It does not request target compilation, classpaths, products, or exported products. Checked-in sbt build/plugin loading, resolution, and metadata/cache writes remain possible. | Approval must cover those bounded build-tool effects. It does not authorize arbitrary sbt commands. |
-| Target-aware `point-evidence` | Acquires one v4 partial-existing-output Compile receipt. It does not request target compilation, `fullClasspath`, products, or exported products. Checked-in sbt build/plugin loading, resolution, and metadata/cache writes remain possible. | Approval must cover those bounded build-tool effects. It does not authorize arbitrary sbt commands. |
+| Target-aware `point-evidence` | Without the internal-output opt-in, acquires the unchanged v4 partial-existing-output Compile receipt. Explicit v5 follows only admitted `thisProject.dependencies` and reads existing same-axis `Compile / classDirectory` settings. Neither route requests target/dependency compilation, `fullClasspath`, products, exported products, or `internalDependencyClasspath`. Checked-in sbt build/plugin loading, resolution, and metadata/cache writes remain possible. | Approval must cover those bounded build-tool effects. It does not authorize arbitrary sbt commands. |
 | `tasty-point-evidence` | Owns a fresh selected target `Compile`, so target build/plugin code can execute and outputs/caches can change. Its separate inspector child does not replay target compiler options/plugins. | Approval must cover that selected target build; do not describe child-process isolation as a security sandbox. |
 | sbt-backed mode with `refresh` | Has `fresh` effects and additionally publishes newly acquired private cache state for later reuse. | Approval must cover execution and cache publication. |
 | sbt-backed mode with explicit `reuse` | Validates bounded cached evidence and never silently refreshes. It does not prove arbitrary sbt freshness. | Do not replace failure with `fresh` or `refresh` without a new explicit decision and any required approval. |
@@ -250,6 +250,16 @@ partial provenance only; target compiler flags and plugins are not replayed.
 request cannot inherit a prior sbt `++`; trust the receipt's explicit requested
 and effective axis. Direct `reconcile-symbol` stays
 target-independent.
+
+Use `--include-existing-internal-outputs` (or MCP
+`includeExistingInternalOutputs: true`) only when the known selected project's
+already-built internal Compile products are decision-relevant and v4's
+selected-output-plus-external context is insufficient. The opt-in requires the
+project, emits v5, never builds a missing dependency output, and remains
+`PartialExistingCompileOutputs`. Preserve its ordered admitted/excluded graph,
+axis, presence, and contribution receipt. Do not infer arbitrary sbt
+configuration semantics, complete classpath coverage, generated semantics, or
+target compiler-option/plugin replay from a resolved v5 point.
 
 After a successful compile, repeat the same status/source lookup or
 `point-evidence` query. Preserve these outcomes separately:

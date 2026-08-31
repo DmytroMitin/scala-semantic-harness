@@ -11,6 +11,7 @@ import semantic.harness.reconciliation.ReconciliationResultV2
 import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.reconciliation.PointEvidenceReportV4
+import semantic.harness.reconciliation.PointEvidenceReportV5
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -285,6 +286,52 @@ class SemanticScalaCliSuite extends munit.FunSuite:
         .semanticPointEvidence(workspace, file, 2, 7, None, Some("3.3.7"), None, ProcessExecution.default)
       assert(!axisRejected.ok)
       assert(axisRejected.error.exists(_.contains("requires sbtProject")), clue(axisRejected))
+    }
+
+  test("semantic_point_evidence explicit internal-output opt-in selects v5 argv and schema"):
+    withScalaWorkspace { (workspace, file) =>
+      val runner = RecordingRunner(successPayload(
+        success = true,
+        schemaVersion = PointEvidenceReportV5.SchemaVersion
+      ))
+      val result = SemanticScalaCli(Path.of("/tmp/semantic-scala"), runner).semanticPointEvidence(
+        workspace = workspace,
+        file = file,
+        line = 2,
+        col = 7,
+        sbtProject = Some("kernelJVM"),
+        sbtScalaVersion = Some("3.3.7"),
+        sbtJavaHome = Some("/opt/jdk"),
+        includeExistingInternalOutputs = true,
+        execution = ProcessExecution.default
+      )
+
+      assert(result.ok, clue(result))
+      assertEquals(result.schemaVersion, Some(PointEvidenceReportV5.SchemaVersion))
+      assertEquals(
+        runner.calls.head._1,
+        List(
+          "/tmp/semantic-scala", "point-evidence", "--workspace", ".", "--file", file,
+          "--line", "2", "--col", "7", "--sbt-project", "kernelJVM",
+          "--sbt-scala-version", "3.3.7", "--sbt-java-home", "/opt/jdk",
+          "--include-existing-internal-outputs", "--json"
+        )
+      )
+
+      val rejected = SemanticScalaCli(Path.of("semantic-scala"), RecordingRunner(pointEvidencePayload))
+        .semanticPointEvidence(
+          workspace = workspace,
+          file = file,
+          line = 2,
+          col = 7,
+          sbtProject = None,
+          sbtScalaVersion = None,
+          sbtJavaHome = None,
+          includeExistingInternalOutputs = true,
+          execution = ProcessExecution.default
+        )
+      assert(!rejected.ok)
+      assert(rejected.error.exists(_.contains("requires sbtProject")), clue(rejected))
     }
 
   test("semantic_point_evidence validates relative contained Scala input and positive position"):

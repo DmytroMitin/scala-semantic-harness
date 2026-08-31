@@ -200,7 +200,7 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
       case Some(arguments) =>
         pointEvidenceArguments(arguments) match
           case Left(message) => jsonRpcError(id, JsonRpcErrors.InvalidParams, message)
-          case Right((workspace, file, line, col, sbtProject, sbtScalaVersion, sbtJavaHome)) =>
+          case Right((workspace, file, line, col, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs)) =>
             jsonRpcResponse(id, toolResult(cli.semanticPointEvidence(
               workspace,
               file,
@@ -209,6 +209,7 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
               sbtProject,
               sbtScalaVersion,
               sbtJavaHome,
+              includeExistingInternalOutputs,
               execution
             )))
       case None =>
@@ -241,12 +242,16 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
 
   private def pointEvidenceArguments(
       arguments: Json
-  ): Either[String, (Path, String, Int, Int, Option[String], Option[String], Option[String])] =
+  ): Either[String, (Path, String, Int, Int, Option[String], Option[String], Option[String], Boolean)] =
     for
       base <- symbolAtArguments(arguments)
       sbtProject <- optionalSbtProjectArgument(arguments)
       sbtScalaVersion <- optionalSbtScalaVersionArgument(arguments)
       sbtJavaHome <- optionalSbtJavaHomeArgument(arguments)
+      includeExistingInternalOutputs <- optionalBooleanArgument(
+        arguments,
+        "includeExistingInternalOutputs"
+      )
       _ <- Either.cond(
         sbtJavaHome.isEmpty || sbtProject.nonEmpty,
         (),
@@ -257,7 +262,17 @@ final class SemanticScalaMcpServer(cli: SemanticScalaCli):
         (),
         "sbtScalaVersion requires sbtProject for semantic_point_evidence"
       )
-    yield (base._1, base._2, base._3, base._4, sbtProject, sbtScalaVersion, sbtJavaHome)
+      _ <- Either.cond(
+        !includeExistingInternalOutputs || sbtProject.nonEmpty,
+        (),
+        "includeExistingInternalOutputs requires sbtProject for semantic_point_evidence"
+      )
+    yield (base._1, base._2, base._3, base._4, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs)
+
+  private def optionalBooleanArgument(arguments: Json, name: String): Either[String, Boolean] =
+    arguments.hcursor.downField(name).focus match
+      case None => Right(false)
+      case Some(value) => value.asBoolean.toRight(s"Invalid $name: expected boolean field")
 
   private def optionalSbtScalaVersionArgument(arguments: Json): Either[String, Option[String]] =
     arguments.hcursor.downField("sbtScalaVersion").focus match
@@ -515,6 +530,10 @@ object SemanticScalaMcpServer:
           "sbtJavaHome" -> Json.obj(
             "type" -> Json.fromString("string"),
             "description" -> Json.fromString("Optional absolute target JDK home; requires sbtProject.")
+          ),
+          "includeExistingInternalOutputs" -> Json.obj(
+            "type" -> Json.fromString("boolean"),
+            "description" -> Json.fromString("Optional v5 opt-in for already-present same-axis internal Compile outputs; true requires sbtProject and does not request compilation.")
           )
         ),
         "required" -> Json.arr(Json.fromString("workspace"), Json.fromString("file"), Json.fromString("line"), Json.fromString("col"))

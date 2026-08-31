@@ -8,6 +8,7 @@ Current command surfaces:
 ```bash
 semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path> --json
 semantic-scala point-evidence --workspace <dir> --file <path> --line <n> --col <n> --json
+semantic-scala point-evidence --workspace <dir> --file <path> --line <n> --col <n> --sbt-project <id> --include-existing-internal-outputs --json
 ```
 
 `reconcile-symbol` captures source and artifact content once and never asks the
@@ -32,6 +33,14 @@ Nested `ReconciliationStatus` remains:
 Only `ExactMatch` means the SemanticDB symbol and compiler symbol strings are
 identical. `displayName` is not identity. None of these statuses proves a
 whole-project compile.
+
+The explicit target-aware v5 route retains v4 ownership and final integrity
+gates while adding only already-present same-axis internal Compile outputs from
+the bounded settings receipt. Its context order is selected output, ordered
+internal outputs, then external dependencies. Missing and unsafe directories
+do not enter the compiler context, and the report remains
+`PartialExistingCompileOutputs`; no compile or arbitrary complete classpath is
+claimed.
 
 ## Limits
 

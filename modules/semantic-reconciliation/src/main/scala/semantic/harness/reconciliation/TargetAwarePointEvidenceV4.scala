@@ -2,8 +2,10 @@ package semantic.harness.reconciliation
 
 import io.circe.Decoder
 import io.circe.Encoder
+import io.circe.Json
 import io.circe.generic.semiauto.deriveDecoder
 import io.circe.generic.semiauto.deriveEncoder
+import io.circe.syntax.*
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.Path
@@ -19,6 +21,12 @@ import semantic.harness.sbt_runner.SbtClasspathEntry
 import semantic.harness.sbt_runner.SbtClasspathEntryEvidence
 import semantic.harness.sbt_runner.SbtClasspathEntryKind
 import semantic.harness.sbt_runner.SbtClasspathEvidenceCollector
+import semantic.harness.sbt_runner.SbtCompileDependencyMapping
+import semantic.harness.sbt_runner.SbtInternalDependencyExclusion
+import semantic.harness.sbt_runner.SbtInternalDependencyExclusionReason
+import semantic.harness.sbt_runner.SbtInternalDependencyGraph
+import semantic.harness.sbt_runner.SbtInternalDependencyReceipt
+import semantic.harness.sbt_runner.SbtInternalDependencyRole
 import semantic.harness.sbt_runner.SbtPointContextAcquirer
 import semantic.harness.sbt_runner.SbtPointContextFailure
 import semantic.harness.sbt_runner.SbtPointContextReceipt
@@ -37,6 +45,16 @@ import semantic.harness.semanticdb_reader.SourceArtifactFreshness
 import semantic.harness.semanticdb_reader.SourceSnapshot
 
 final case class SemanticPointEvidenceTargetRequestV4(
+    workspace: Path,
+    sourceFile: Path,
+    line: Int,
+    column: Int,
+    project: SbtProjectId,
+    requestedScalaVersion: Option[SbtScalaVersion] = None,
+    targetJava: Option[ValidatedSbtJavaHome] = None
+)
+
+final case class SemanticPointEvidenceTargetRequestV5(
     workspace: Path,
     sourceFile: Path,
     line: Int,
@@ -183,6 +201,337 @@ object PointEvidenceReportV4:
     )
   }
 
+enum PointContextAcquisitionProfileV5:
+  case PartialExistingCompileOutputPointContext
+
+object PointContextAcquisitionProfileV5:
+  given Encoder[PointContextAcquisitionProfileV5] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[PointContextAcquisitionProfileV5] = pointEnumDecoder("point context acquisition profile v5", values)
+
+enum PointClasspathBasisV5:
+  case ExistingSelectedAndInternalCompileOutputsPlusExternalDependencies
+
+object PointClasspathBasisV5:
+  given Encoder[PointClasspathBasisV5] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[PointClasspathBasisV5] = pointEnumDecoder("point classpath basis v5", values)
+
+enum PointContextCompletenessV5:
+  case PartialExistingCompileOutputs
+
+object PointContextCompletenessV5:
+  given Encoder[PointContextCompletenessV5] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[PointContextCompletenessV5] = pointEnumDecoder("point context completeness v5", values)
+
+enum InternalClassDirectoryStatusV5:
+  case PresentIncluded
+  case AbsentNotIncluded
+  case UnavailableUnsafe
+
+object InternalClassDirectoryStatusV5:
+  given Encoder[InternalClassDirectoryStatusV5] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[InternalClassDirectoryStatusV5] = pointEnumDecoder("internal class directory status v5", values)
+
+enum InternalDependencyAcquisitionEffectV5:
+  case DependencySourceOutputsNotRequested
+
+object InternalDependencyAcquisitionEffectV5:
+  given Encoder[InternalDependencyAcquisitionEffectV5] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[InternalDependencyAcquisitionEffectV5] = pointEnumDecoder("internal dependency acquisition effect v5", values)
+
+final case class InternalCompileDependencyEvidenceV5(
+    projectRef: String,
+    project: String,
+    role: SbtInternalDependencyRole,
+    compileMapping: SbtCompileDependencyMapping,
+    requestedScalaVersion: Option[String],
+    effectiveScalaVersion: String,
+    scalaAxisStatus: ScalaAxisStatusV4,
+    configuration: String,
+    classDirectory: Option[String],
+    directoryStatus: InternalClassDirectoryStatusV5,
+    contributedToPresentationCompilerContext: Boolean,
+    acquisitionEffect: InternalDependencyAcquisitionEffectV5
+)
+
+object InternalCompileDependencyEvidenceV5:
+  given Encoder[SbtInternalDependencyRole] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[SbtInternalDependencyRole] = pointEnumDecoder("internal dependency role", SbtInternalDependencyRole.values)
+  given Encoder[SbtCompileDependencyMapping] = Encoder.encodeString.contramap(_.toString)
+  given Decoder[SbtCompileDependencyMapping] = pointEnumDecoder("Compile dependency mapping", SbtCompileDependencyMapping.values)
+  given Encoder[InternalCompileDependencyEvidenceV5] = deriveEncoder
+  given Decoder[InternalCompileDependencyEvidenceV5] = deriveDecoder[InternalCompileDependencyEvidenceV5].emap(validate)
+
+  private def validate(
+      value: InternalCompileDependencyEvidenceV5
+  ): Either[String, InternalCompileDependencyEvidenceV5] =
+    val projectValid = SbtProjectId.parse(value.project).isRight
+    val referenceValid = value.projectRef == s"ThisBuild/${value.project}"
+    val axisValid = value.scalaAxisStatus match
+      case ScalaAxisStatusV4.BuildDefault => value.requestedScalaVersion.isEmpty
+      case ScalaAxisStatusV4.RequestedMatched => value.requestedScalaVersion.exists(_.nonEmpty)
+      case _ => false
+    val directoryValid = value.directoryStatus match
+      case InternalClassDirectoryStatusV5.PresentIncluded |
+          InternalClassDirectoryStatusV5.AbsentNotIncluded =>
+        value.classDirectory.exists(isRelativePublicPath)
+      case InternalClassDirectoryStatusV5.UnavailableUnsafe => value.classDirectory.isEmpty
+    val contributionValid = value.contributedToPresentationCompilerContext ==
+      (value.directoryStatus == InternalClassDirectoryStatusV5.PresentIncluded)
+    Either.cond(
+      projectValid && referenceValid && value.compileMapping.admitted && axisValid &&
+        value.effectiveScalaVersion.nonEmpty && value.configuration == "Compile" &&
+        directoryValid && contributionValid,
+      value,
+      "point-evidence v5 internal dependency fields are inconsistent"
+    )
+
+  private[reconciliation] def isRelativePublicPath(value: String): Boolean =
+    value.nonEmpty && !value.startsWith("/") && !value.matches("^[A-Za-z]:[\\\\/].*") &&
+      !value.split("/", -1).contains("..")
+
+final case class InternalDependencyExclusionEvidenceV5(
+    projectRef: String,
+    project: String,
+    role: SbtInternalDependencyRole,
+    compileMapping: SbtCompileDependencyMapping,
+    reason: String,
+    effectiveScalaVersion: Option[String]
+)
+
+object InternalDependencyExclusionEvidenceV5:
+  import InternalCompileDependencyEvidenceV5.given
+  given Encoder[InternalDependencyExclusionEvidenceV5] = deriveEncoder
+  given Decoder[InternalDependencyExclusionEvidenceV5] = deriveDecoder[InternalDependencyExclusionEvidenceV5].emap(validate)
+
+  private def validate(
+      value: InternalDependencyExclusionEvidenceV5
+  ): Either[String, InternalDependencyExclusionEvidenceV5] =
+    val projectValid = SbtProjectId.parse(value.project).isRight
+    val referenceValid = value.projectRef == s"ThisBuild/${value.project}" ||
+      value.projectRef == s"ExternalBuild/${value.project}"
+    val reasonValid = SbtInternalDependencyExclusionReason.parse(value.reason).isRight
+    Either.cond(
+      projectValid && referenceValid && reasonValid,
+      value,
+      "point-evidence v5 internal dependency exclusion fields are inconsistent"
+    )
+
+final case class PointContextEvidenceV5(
+    project: String,
+    configuration: String,
+    status: PointContextAcquisitionStatusV4,
+    requestedScalaVersion: Option[String],
+    effectiveScalaVersion: Option[String],
+    scalaAxisStatus: ScalaAxisStatusV4,
+    targetJavaContext: Option[String],
+    acquisitionProfile: PointContextAcquisitionProfileV5,
+    acquisitionEffect: PointContextAcquisitionEffectV4,
+    buildPerformed: TargetBuildPerformedV4,
+    possibleEffects: List[String],
+    pathStatus: TargetRootPathStatusV4,
+    classDirectory: Option[String],
+    semanticdbTargetRoot: Option[String],
+    selectedClassDirectoryStatus: SelectedClassDirectoryStatusV4,
+    compiledOutputFreshness: CompiledOutputFreshnessV4,
+    classpathBasis: PointClasspathBasisV5,
+    externalDependencyEntryCount: Option[Int],
+    internalDependencies: List[InternalCompileDependencyEvidenceV5],
+    internalDependencyExclusions: List[InternalDependencyExclusionEvidenceV5],
+    internalDependencyDiscoveredCount: Option[Int],
+    internalDependencyPresentIncludedCount: Option[Int],
+    internalDependencyAbsentNotIncludedCount: Option[Int],
+    internalDependencyUnavailableUnsafeCount: Option[Int],
+    internalDependencyExcludedCount: Option[Int],
+    presentationCompilerContextEntryCount: Option[Int],
+    contextCompleteness: PointContextCompletenessV5,
+    failure: Option[String]
+)
+
+object PointContextEvidenceV5:
+  import InternalCompileDependencyEvidenceV5.given
+  import InternalDependencyExclusionEvidenceV5.given
+  given Encoder[PointContextEvidenceV5] = Encoder.instance { value =>
+    Json.obj(
+      "project" -> value.project.asJson,
+      "configuration" -> value.configuration.asJson,
+      "status" -> value.status.asJson,
+      "requestedScalaVersion" -> value.requestedScalaVersion.asJson,
+      "effectiveScalaVersion" -> value.effectiveScalaVersion.asJson,
+      "scalaAxisStatus" -> value.scalaAxisStatus.asJson,
+      "targetJavaContext" -> value.targetJavaContext.asJson,
+      "acquisitionProfile" -> value.acquisitionProfile.asJson,
+      "acquisitionEffect" -> value.acquisitionEffect.asJson,
+      "buildPerformed" -> value.buildPerformed.asJson,
+      "possibleEffects" -> value.possibleEffects.asJson,
+      "pathStatus" -> value.pathStatus.asJson,
+      "classDirectory" -> value.classDirectory.asJson,
+      "semanticdbTargetRoot" -> value.semanticdbTargetRoot.asJson,
+      "selectedClassDirectoryStatus" -> value.selectedClassDirectoryStatus.asJson,
+      "compiledOutputFreshness" -> value.compiledOutputFreshness.asJson,
+      "classpathBasis" -> value.classpathBasis.asJson,
+      "externalDependencyEntryCount" -> value.externalDependencyEntryCount.asJson,
+      "internalDependencies" -> value.internalDependencies.asJson,
+      "internalDependencyExclusions" -> value.internalDependencyExclusions.asJson,
+      "internalDependencyDiscoveredCount" -> value.internalDependencyDiscoveredCount.asJson,
+      "internalDependencyPresentIncludedCount" -> value.internalDependencyPresentIncludedCount.asJson,
+      "internalDependencyAbsentNotIncludedCount" -> value.internalDependencyAbsentNotIncludedCount.asJson,
+      "internalDependencyUnavailableUnsafeCount" -> value.internalDependencyUnavailableUnsafeCount.asJson,
+      "internalDependencyExcludedCount" -> value.internalDependencyExcludedCount.asJson,
+      "presentationCompilerContextEntryCount" -> value.presentationCompilerContextEntryCount.asJson,
+      "contextCompleteness" -> value.contextCompleteness.asJson,
+      "failure" -> value.failure.asJson
+    )
+  }
+  given Decoder[PointContextEvidenceV5] = Decoder.instance { cursor =>
+    for
+      project <- cursor.get[String]("project")
+      configuration <- cursor.get[String]("configuration")
+      status <- cursor.get[PointContextAcquisitionStatusV4]("status")
+      requestedScalaVersion <- cursor.get[Option[String]]("requestedScalaVersion")
+      effectiveScalaVersion <- cursor.get[Option[String]]("effectiveScalaVersion")
+      scalaAxisStatus <- cursor.get[ScalaAxisStatusV4]("scalaAxisStatus")
+      targetJavaContext <- cursor.get[Option[String]]("targetJavaContext")
+      acquisitionProfile <- cursor.get[PointContextAcquisitionProfileV5]("acquisitionProfile")
+      acquisitionEffect <- cursor.get[PointContextAcquisitionEffectV4]("acquisitionEffect")
+      buildPerformed <- cursor.get[TargetBuildPerformedV4]("buildPerformed")
+      possibleEffects <- cursor.get[List[String]]("possibleEffects")
+      pathStatus <- cursor.get[TargetRootPathStatusV4]("pathStatus")
+      classDirectory <- cursor.get[Option[String]]("classDirectory")
+      semanticdbTargetRoot <- cursor.get[Option[String]]("semanticdbTargetRoot")
+      selectedClassDirectoryStatus <- cursor.get[SelectedClassDirectoryStatusV4]("selectedClassDirectoryStatus")
+      compiledOutputFreshness <- cursor.get[CompiledOutputFreshnessV4]("compiledOutputFreshness")
+      classpathBasis <- cursor.get[PointClasspathBasisV5]("classpathBasis")
+      externalDependencyEntryCount <- cursor.get[Option[Int]]("externalDependencyEntryCount")
+      internalDependencies <- cursor.get[List[InternalCompileDependencyEvidenceV5]]("internalDependencies")
+      internalDependencyExclusions <- cursor.get[List[InternalDependencyExclusionEvidenceV5]]("internalDependencyExclusions")
+      internalDependencyDiscoveredCount <- cursor.get[Option[Int]]("internalDependencyDiscoveredCount")
+      internalDependencyPresentIncludedCount <- cursor.get[Option[Int]]("internalDependencyPresentIncludedCount")
+      internalDependencyAbsentNotIncludedCount <- cursor.get[Option[Int]]("internalDependencyAbsentNotIncludedCount")
+      internalDependencyUnavailableUnsafeCount <- cursor.get[Option[Int]]("internalDependencyUnavailableUnsafeCount")
+      internalDependencyExcludedCount <- cursor.get[Option[Int]]("internalDependencyExcludedCount")
+      presentationCompilerContextEntryCount <- cursor.get[Option[Int]]("presentationCompilerContextEntryCount")
+      contextCompleteness <- cursor.get[PointContextCompletenessV5]("contextCompleteness")
+      failure <- cursor.get[Option[String]]("failure")
+    yield PointContextEvidenceV5(
+      project,
+      configuration,
+      status,
+      requestedScalaVersion,
+      effectiveScalaVersion,
+      scalaAxisStatus,
+      targetJavaContext,
+      acquisitionProfile,
+      acquisitionEffect,
+      buildPerformed,
+      possibleEffects,
+      pathStatus,
+      classDirectory,
+      semanticdbTargetRoot,
+      selectedClassDirectoryStatus,
+      compiledOutputFreshness,
+      classpathBasis,
+      externalDependencyEntryCount,
+      internalDependencies,
+      internalDependencyExclusions,
+      internalDependencyDiscoveredCount,
+      internalDependencyPresentIncludedCount,
+      internalDependencyAbsentNotIncludedCount,
+      internalDependencyUnavailableUnsafeCount,
+      internalDependencyExcludedCount,
+      presentationCompilerContextEntryCount,
+      contextCompleteness,
+      failure
+    )
+  }.emap(validateCounts)
+
+  private def validateCounts(value: PointContextEvidenceV5): Either[String, PointContextEvidenceV5] =
+    val present = value.internalDependencies.count(_.directoryStatus == InternalClassDirectoryStatusV5.PresentIncluded)
+    val absent = value.internalDependencies.count(_.directoryStatus == InternalClassDirectoryStatusV5.AbsentNotIncluded)
+    val unsafe = value.internalDependencies.count(_.directoryStatus == InternalClassDirectoryStatusV5.UnavailableUnsafe)
+    val contributionsValid = value.internalDependencies.forall { dependency =>
+      val shouldContribute = dependency.directoryStatus == InternalClassDirectoryStatusV5.PresentIncluded
+      dependency.contributedToPresentationCompilerContext == shouldContribute &&
+        (dependency.directoryStatus == InternalClassDirectoryStatusV5.UnavailableUnsafe) == dependency.classDirectory.isEmpty
+    }
+    val selected = if value.selectedClassDirectoryStatus == SelectedClassDirectoryStatusV4.PresentIncluded then 1 else 0
+    val representedAcquired =
+      value.status == PointContextAcquisitionStatusV4.Acquired &&
+        value.pathStatus == TargetRootPathStatusV4.Represented
+    val acquisitionFailed = value.status != PointContextAcquisitionStatusV4.Acquired
+    val requiredCounts = List(
+      value.externalDependencyEntryCount,
+      value.internalDependencyDiscoveredCount,
+      value.internalDependencyPresentIncludedCount,
+      value.internalDependencyAbsentNotIncludedCount,
+      value.internalDependencyUnavailableUnsafeCount,
+      value.internalDependencyExcludedCount,
+      value.presentationCompilerContextEntryCount
+    )
+    val representedStateValid = !representedAcquired || (
+      value.effectiveScalaVersion.exists(_.nonEmpty) &&
+        value.classDirectory.exists(InternalCompileDependencyEvidenceV5.isRelativePublicPath) &&
+        value.semanticdbTargetRoot.exists(InternalCompileDependencyEvidenceV5.isRelativePublicPath) &&
+        value.selectedClassDirectoryStatus != SelectedClassDirectoryStatusV4.UnavailableUnsafe &&
+        requiredCounts.forall(_.nonEmpty) && value.failure.isEmpty
+    )
+    val unsafeAcquiredStateValid = value.status != PointContextAcquisitionStatusV4.Acquired ||
+      value.pathStatus != TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique || (
+        value.classDirectory.isEmpty && value.semanticdbTargetRoot.isEmpty &&
+          value.selectedClassDirectoryStatus == SelectedClassDirectoryStatusV4.UnavailableUnsafe &&
+          requiredCounts.forall(_.isEmpty) && value.internalDependencies.isEmpty &&
+          value.internalDependencyExclusions.isEmpty && value.failure.exists(_.nonEmpty)
+      )
+    val failedStateValid = !acquisitionFailed || (
+      value.pathStatus == TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique &&
+        value.classDirectory.isEmpty && value.semanticdbTargetRoot.isEmpty &&
+        value.selectedClassDirectoryStatus == SelectedClassDirectoryStatusV4.UnavailableUnsafe &&
+        requiredCounts.forall(_.isEmpty) && value.internalDependencies.isEmpty &&
+        value.internalDependencyExclusions.isEmpty && value.failure.exists(_.nonEmpty)
+    )
+    val presentationValid = !representedAcquired || {
+      (value.presentationCompilerContextEntryCount, value.externalDependencyEntryCount) match
+        case (Some(total), Some(external)) => total == selected + present + external
+        case _ => false
+    }
+    Either.cond(
+      value.configuration == "Compile" &&
+        value.internalDependencies.size <= SbtInternalDependencyGraph.MaxDependencyProjects &&
+        value.internalDependencyExclusions.size <= SbtInternalDependencyGraph.MaxDependencyProjects &&
+        (!representedAcquired || (
+          value.internalDependencyDiscoveredCount.contains(value.internalDependencies.size) &&
+            value.internalDependencyPresentIncludedCount.contains(present) &&
+            value.internalDependencyAbsentNotIncludedCount.contains(absent) &&
+            value.internalDependencyUnavailableUnsafeCount.contains(unsafe) &&
+            value.internalDependencyExcludedCount.contains(value.internalDependencyExclusions.size)
+        )) && contributionsValid && presentationValid && representedStateValid &&
+        unsafeAcquiredStateValid && failedStateValid,
+      value,
+      "point-evidence v5 internal dependency receipt counts or contribution states are inconsistent"
+    )
+
+final case class PointEvidenceReportV5(
+    schemaVersion: String = PointEvidenceReportV5.SchemaVersion,
+    workspace: String,
+    sourceFile: String,
+    position: PointEvidencePosition,
+    discovery: SemanticdbForSourceReportV2,
+    targetContext: PointContextEvidenceV5,
+    targetSelection: PointTargetSelectionV4,
+    livePoint: PointLiveEvidence,
+    reconciliation: ReconciliationResultV2
+)
+
+object PointEvidenceReportV5:
+  val SchemaVersion = "semantic-scala.point-evidence-result.v5"
+  given Encoder[PointEvidenceReportV5] = deriveEncoder
+  given Decoder[PointEvidenceReportV5] = deriveDecoder[PointEvidenceReportV5].emap { value =>
+    Either.cond(
+      value.schemaVersion == SchemaVersion,
+      value,
+      s"point-evidence schemaVersion must be $SchemaVersion"
+    )
+  }
+
 private final case class PointTargetInspectionV4(
     workspace: Path,
     sourceFile: Path,
@@ -193,7 +542,8 @@ private final case class PointTargetInspectionV4(
     targetSelection: PointTargetSelectionV4,
     receipt: Option[SbtPointContextReceipt],
     contextSnapshot: Option[PointContextSnapshot],
-    selectedSnapshot: Option[ArtifactSnapshot]
+    selectedSnapshot: Option[ArtifactSnapshot],
+    includeExistingInternalOutputs: Boolean
 )
 
 final class PointEvidenceServiceV4 private (
@@ -204,6 +554,37 @@ final class PointEvidenceServiceV4 private (
   def inspect(
       request: SemanticPointEvidenceTargetRequestV4
   ): Either[String, PointEvidenceReportV4] =
+    inspectMode(request, includeExistingInternalOutputs = false).map(_._1)
+
+  private[reconciliation] def inspectV5(
+      request: SemanticPointEvidenceTargetRequestV5
+  ): Either[String, PointEvidenceReportV5] =
+    val v4Request = SemanticPointEvidenceTargetRequestV4(
+      request.workspace,
+      request.sourceFile,
+      request.line,
+      request.column,
+      request.project,
+      request.requestedScalaVersion,
+      request.targetJava
+    )
+    inspectMode(v4Request, includeExistingInternalOutputs = true).map { case (report, context) =>
+      PointEvidenceReportV5(
+        workspace = report.workspace,
+        sourceFile = report.sourceFile,
+        position = report.position,
+        discovery = report.discovery,
+        targetContext = context,
+        targetSelection = report.targetSelection,
+        livePoint = report.livePoint,
+        reconciliation = report.reconciliation
+      )
+    }
+
+  private def inspectMode(
+      request: SemanticPointEvidenceTargetRequestV4,
+      includeExistingInternalOutputs: Boolean
+  ): Either[String, (PointEvidenceReportV4, PointContextEvidenceV5)] =
     validate(request).flatMap { validated =>
       val source = SourceSnapshot.capture(validated.sourceFile)
       val acquired = acquirer.acquire(
@@ -211,17 +592,23 @@ final class PointEvidenceServiceV4 private (
           validated.workspace,
           validated.project,
           validated.requestedScalaVersion,
-          validated.targetJava
+          validated.targetJava,
+          includeExistingInternalOutputs
         )
       )
       SemanticdbForSource
         .inspectV2WithSnapshots(validated.workspace, validated.sourceFile, source)
         .map { discovery =>
-          val receiptMatches = acquired.toOption.exists(receiptMatchesRequest(validated, _))
+          val receiptMatches = acquired.toOption.exists(
+            receiptMatchesRequest(validated, _, includeExistingInternalOutputs)
+          )
           val contextSnapshot = acquired.toOption
             .filter(_ => receiptMatches)
-            .flatMap(receipt => PointContextSafety.capture(validated.workspace, receipt).toOption)
+            .flatMap(receipt => PointContextSafety
+              .capture(validated.workspace, receipt, includeExistingInternalOutputs)
+              .toOption)
           val targetContext = contextEvidence(validated, acquired, receiptMatches, contextSnapshot)
+          val targetContextV5 = contextEvidenceV5(validated, acquired, receiptMatches, contextSnapshot)
           val (selection, selectedSnapshot) = acquired match
             case Right(_) if !receiptMatches =>
               failed(
@@ -256,9 +643,10 @@ final class PointEvidenceServiceV4 private (
               selection,
               acquired.toOption,
               contextSnapshot,
-              selectedSnapshot
+              selectedSnapshot,
+              includeExistingInternalOutputs
             )
-          )
+          ) -> targetContextV5
         }
     }
 
@@ -286,12 +674,14 @@ final class PointEvidenceServiceV4 private (
 
   private def receiptMatchesRequest(
       request: SemanticPointEvidenceTargetRequestV4,
-      receipt: SbtPointContextReceipt
+      receipt: SbtPointContextReceipt,
+      includeExistingInternalOutputs: Boolean
   ): Boolean =
     receipt.project == request.project &&
       receipt.configuration == SbtClasspathConfiguration.Compile &&
       receipt.requestedScalaVersion == request.requestedScalaVersion &&
-      request.requestedScalaVersion.forall(_ == receipt.effectiveScalaVersion)
+      request.requestedScalaVersion.forall(_ == receipt.effectiveScalaVersion) &&
+      receipt.includeExistingInternalOutputs == includeExistingInternalOutputs
 
   private def contextEvidence(
       request: SemanticPointEvidenceTargetRequestV4,
@@ -359,6 +749,137 @@ final class PointEvidenceServiceV4 private (
           case SbtPointContextFailure.ScalaVersionMismatch(_) => PointContextAcquisitionStatusV4.ScalaAxisMismatch -> ScalaAxisStatusV4.MismatchFailure
           case _ => PointContextAcquisitionStatusV4.AcquisitionFailed -> ScalaAxisStatusV4.Unavailable
         common.copy(status = status, scalaAxisStatus = axisStatus, failure = Some(failureCode(failure)))
+
+  private def contextEvidenceV5(
+      request: SemanticPointEvidenceTargetRequestV4,
+      acquired: Either[SbtPointContextFailure, SbtPointContextReceipt],
+      receiptMatches: Boolean,
+      snapshot: Option[PointContextSnapshot]
+  ): PointContextEvidenceV5 =
+    val common = PointContextEvidenceV5(
+      project = request.project.value,
+      configuration = "Compile",
+      status = PointContextAcquisitionStatusV4.AcquisitionFailed,
+      requestedScalaVersion = request.requestedScalaVersion.map(_.value),
+      effectiveScalaVersion = None,
+      scalaAxisStatus = ScalaAxisStatusV4.Unavailable,
+      targetJavaContext = None,
+      acquisitionProfile = PointContextAcquisitionProfileV5.PartialExistingCompileOutputPointContext,
+      acquisitionEffect = PointContextAcquisitionEffectV4.TargetSourceOutputsNotRequested,
+      buildPerformed = TargetBuildPerformedV4.NotRequested,
+      possibleEffects = List(
+        "BuildDefinitionOrPluginLoading",
+        "DependencyResolution",
+        "MetadataOrCacheWrites"
+      ),
+      pathStatus = TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique,
+      classDirectory = None,
+      semanticdbTargetRoot = None,
+      selectedClassDirectoryStatus = SelectedClassDirectoryStatusV4.UnavailableUnsafe,
+      compiledOutputFreshness = CompiledOutputFreshnessV4.NotAssessed,
+      classpathBasis = PointClasspathBasisV5.ExistingSelectedAndInternalCompileOutputsPlusExternalDependencies,
+      externalDependencyEntryCount = None,
+      internalDependencies = Nil,
+      internalDependencyExclusions = Nil,
+      internalDependencyDiscoveredCount = None,
+      internalDependencyPresentIncludedCount = None,
+      internalDependencyAbsentNotIncludedCount = None,
+      internalDependencyUnavailableUnsafeCount = None,
+      internalDependencyExcludedCount = None,
+      presentationCompilerContextEntryCount = None,
+      contextCompleteness = PointContextCompletenessV5.PartialExistingCompileOutputs,
+      failure = None
+    )
+    acquired match
+      case Right(receipt) if receiptMatches =>
+        val internal = snapshot.toList.flatMap(_.internalDependencies.map(internalEvidence(request, _)))
+        val exclusions = receipt.internalDependencyExclusions.map(exclusionEvidence)
+        common.copy(
+          status = PointContextAcquisitionStatusV4.Acquired,
+          effectiveScalaVersion = Some(receipt.effectiveScalaVersion.value),
+          scalaAxisStatus = if receipt.requestedScalaVersion.nonEmpty then
+            ScalaAxisStatusV4.RequestedMatched
+          else ScalaAxisStatusV4.BuildDefault,
+          targetJavaContext = receipt.targetJavaContext,
+          pathStatus = if snapshot.nonEmpty then TargetRootPathStatusV4.Represented
+            else TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique,
+          classDirectory = snapshot.map(_.roots.classRelative),
+          semanticdbTargetRoot = snapshot.map(_.roots.semanticdbRelative),
+          selectedClassDirectoryStatus = snapshot.map(value =>
+            if value.classDirectoryIncluded then SelectedClassDirectoryStatusV4.PresentIncluded
+            else SelectedClassDirectoryStatusV4.AbsentNotIncluded
+          ).getOrElse(SelectedClassDirectoryStatusV4.UnavailableUnsafe),
+          externalDependencyEntryCount = snapshot.map(_.externalDependencyEntryCount),
+          internalDependencies = internal,
+          internalDependencyExclusions = snapshot.fold(List.empty[InternalDependencyExclusionEvidenceV5])(_ => exclusions),
+          internalDependencyDiscoveredCount = snapshot.map(_.internalDependencies.size),
+          internalDependencyPresentIncludedCount = snapshot.map(_.internalDependencies.count(
+            _.status == PointInternalDirectoryStatus.PresentIncluded
+          )),
+          internalDependencyAbsentNotIncludedCount = snapshot.map(_.internalDependencies.count(
+            _.status == PointInternalDirectoryStatus.AbsentNotIncluded
+          )),
+          internalDependencyUnavailableUnsafeCount = snapshot.map(_.internalDependencies.count(
+            _.status == PointInternalDirectoryStatus.UnavailableUnsafe
+          )),
+          internalDependencyExcludedCount = snapshot.map(_ => exclusions.size),
+          presentationCompilerContextEntryCount = snapshot.map(_.presentationEntries.size),
+          failure = Option.when(snapshot.isEmpty)("UnsafeOrNonUniqueRootsOrInputs")
+        )
+      case Right(receipt) =>
+        common.copy(
+          status = PointContextAcquisitionStatusV4.ScalaAxisMismatch,
+          effectiveScalaVersion = Some(receipt.effectiveScalaVersion.value),
+          scalaAxisStatus = ScalaAxisStatusV4.MismatchFailure,
+          targetJavaContext = receipt.targetJavaContext,
+          failure = Some("ScalaVersionMismatch")
+        )
+      case Left(failure) =>
+        val (status, axisStatus) = failure match
+          case SbtPointContextFailure.UnknownProject(_) =>
+            PointContextAcquisitionStatusV4.UnknownProject -> ScalaAxisStatusV4.Unavailable
+          case SbtPointContextFailure.ScalaSwitch(_) =>
+            PointContextAcquisitionStatusV4.ScalaSwitchFailed -> ScalaAxisStatusV4.SwitchFailure
+          case SbtPointContextFailure.ScalaVersionMismatch(_) =>
+            PointContextAcquisitionStatusV4.ScalaAxisMismatch -> ScalaAxisStatusV4.MismatchFailure
+          case _ => PointContextAcquisitionStatusV4.AcquisitionFailed -> ScalaAxisStatusV4.Unavailable
+        common.copy(status = status, scalaAxisStatus = axisStatus, failure = Some(failureCode(failure)))
+
+  private def internalEvidence(
+      request: SemanticPointEvidenceTargetRequestV4,
+      snapshot: PointInternalDependencySnapshot
+  ): InternalCompileDependencyEvidenceV5 =
+    val status = snapshot.status match
+      case PointInternalDirectoryStatus.PresentIncluded => InternalClassDirectoryStatusV5.PresentIncluded
+      case PointInternalDirectoryStatus.AbsentNotIncluded => InternalClassDirectoryStatusV5.AbsentNotIncluded
+      case PointInternalDirectoryStatus.UnavailableUnsafe => InternalClassDirectoryStatusV5.UnavailableUnsafe
+    InternalCompileDependencyEvidenceV5(
+      projectRef = snapshot.receipt.projectRef,
+      project = snapshot.receipt.project.value,
+      role = snapshot.receipt.role,
+      compileMapping = snapshot.receipt.compileMapping,
+      requestedScalaVersion = snapshot.receipt.requestedScalaVersion.map(_.value),
+      effectiveScalaVersion = snapshot.receipt.effectiveScalaVersion.value,
+      scalaAxisStatus = if request.requestedScalaVersion.nonEmpty then ScalaAxisStatusV4.RequestedMatched
+        else ScalaAxisStatusV4.BuildDefault,
+      configuration = "Compile",
+      classDirectory = snapshot.classRelative,
+      directoryStatus = status,
+      contributedToPresentationCompilerContext = status == InternalClassDirectoryStatusV5.PresentIncluded,
+      acquisitionEffect = InternalDependencyAcquisitionEffectV5.DependencySourceOutputsNotRequested
+    )
+
+  private def exclusionEvidence(
+      exclusion: SbtInternalDependencyExclusion
+  ): InternalDependencyExclusionEvidenceV5 =
+    InternalDependencyExclusionEvidenceV5(
+      exclusion.projectRef,
+      exclusion.project.value,
+      exclusion.role,
+      exclusion.compileMapping,
+      exclusion.reason.toString,
+      exclusion.effectiveScalaVersion.map(_.value)
+    )
 
   private def select(
       workspace: Path,
@@ -452,10 +973,13 @@ final class PointEvidenceServiceV4 private (
     beforeFinalCheck()
     val sourceChanged = changedSource(inspection.source, request.sourceFile)
     val currentContext = inspection.receipt
-      .filter(receiptMatchesRequest(request, _))
-      .flatMap(receipt => PointContextSafety.capture(request.workspace, receipt).toOption)
+      .filter(receiptMatchesRequest(request, _, inspection.includeExistingInternalOutputs))
+      .flatMap(receipt => PointContextSafety
+        .capture(request.workspace, receipt, inspection.includeExistingInternalOutputs)
+        .toOption)
     val rootsStable = (inspection.contextSnapshot, currentContext) match
-      case (Some(before), Some(after)) => before.roots == after.roots
+      case (Some(before), Some(after)) =>
+        before.roots == after.roots && before.internalDependencies == after.internalDependencies
       case (None, None) => true
       case _ => false
     val inputsStable = (inspection.contextSnapshot, currentContext) match
@@ -599,6 +1123,30 @@ object PointEvidenceServiceV4:
   ): PointEvidenceServiceV4 =
     new PointEvidenceServiceV4(acquirer, pointQuery, beforeFinalCheck)
 
+final class PointEvidenceServiceV5 private (delegate: PointEvidenceServiceV4):
+  def inspect(
+      request: SemanticPointEvidenceTargetRequestV5
+  ): Either[String, PointEvidenceReportV5] = delegate.inspectV5(request)
+
+object PointEvidenceServiceV5:
+  def apply(): PointEvidenceServiceV5 =
+    val compiler = PresentationCompilerService()
+    withDependencies(
+      SbtPointContextAcquirer.default,
+      (path, source, line, column, context) =>
+        compiler.symbolAtSnapshot(path, source, line, column, context),
+      () => ()
+    )
+
+  private[reconciliation] def withDependencies(
+      acquirer: SbtPointContextAcquirer,
+      pointQuery: (Path, String, Int, Int, PresentationCompilerContext) => Either[String, SymbolAtResult],
+      beforeFinalCheck: () => Unit
+  ): PointEvidenceServiceV5 =
+    new PointEvidenceServiceV5(
+      PointEvidenceServiceV4.withDependencies(acquirer, pointQuery, beforeFinalCheck)
+    )
+
 private final case class PointPathIdentity(path: Path, existed: Boolean, fileKey: Option[String])
 
 private final case class PointRootSnapshot(
@@ -612,14 +1160,28 @@ private final case class PointContextSnapshot(
     roots: PointRootSnapshot,
     classDirectoryIncluded: Boolean,
     externalDependencyEntryCount: Int,
+    internalDependencies: List[PointInternalDependencySnapshot],
     presentationEntries: List[Path],
     inputEvidence: List[SbtClasspathEntryEvidence]
+)
+
+private enum PointInternalDirectoryStatus:
+  case PresentIncluded
+  case AbsentNotIncluded
+  case UnavailableUnsafe
+
+private final case class PointInternalDependencySnapshot(
+    receipt: SbtInternalDependencyReceipt,
+    identity: Option[PointPathIdentity],
+    classRelative: Option[String],
+    status: PointInternalDirectoryStatus
 )
 
 private object PointContextSafety:
   def capture(
       workspace: Path,
-      receipt: SbtPointContextReceipt
+      receipt: SbtPointContextReceipt,
+      includeExistingInternalOutputs: Boolean = false
   ): Either[String, PointContextSnapshot] =
     for
       workspaceReal <- realWorkspace(workspace)
@@ -636,11 +1198,23 @@ private object PointContextSafety:
         "The selected class-directory presence did not match the receipt"
       )
       external <- validateExternal(receipt.externalDependencyClasspath)
-      presentation = distinctEntries(
+      internal <- if includeExistingInternalOutputs then
+        captureInternal(workspaceReal, receipt)
+      else Right(Nil)
+      internalEntries = internal.collect {
+        case PointInternalDependencySnapshot(_, Some(identity), _, PointInternalDirectoryStatus.PresentIncluded) =>
+          SbtClasspathEntry(identity.path, SbtClasspathEntryKind.Directory)
+      }
+      rawPresentation =
         Option.when(classIdentity.existed)(
           SbtClasspathEntry(classIdentity.path, SbtClasspathEntryKind.Directory)
-        ).toList ++ external
+        ).toList ++ internalEntries ++ external
+      _ <- Either.cond(
+        !includeExistingInternalOutputs || rawPresentation.map(_.path).distinct.size == rawPresentation.size,
+        (),
+        "The selected, internal, and external point-context entries are not unique"
       )
+      presentation = distinctEntries(rawPresentation)
       _ <- Either.cond(
         presentation.nonEmpty,
         (),
@@ -658,8 +1232,64 @@ private object PointContextSafety:
       ),
       classIdentity.existed,
       external.size,
+      internal,
       presentation.map(_.path),
       evidence
+    )
+
+  private def captureInternal(
+      workspaceReal: Path,
+      receipt: SbtPointContextReceipt
+  ): Either[String, List[PointInternalDependencySnapshot]] =
+    for
+      _ <- Either.cond(
+        receipt.internalDependencies.map(_.projectRef).distinct.size == receipt.internalDependencies.size,
+        (),
+        "The internal dependency project receipts are not unique"
+      )
+      snapshots <- receipt.internalDependencies.foldLeft[
+        Either[String, List[PointInternalDependencySnapshot]]
+      ](Right(Nil)) { (result, dependency) =>
+        result.flatMap { values =>
+          validateInternal(receipt, dependency).map { _ =>
+            val snapshot = safeRoot(
+              workspaceReal,
+              dependency.classDirectory,
+              s"internal Compile class directory for ${dependency.projectRef}"
+            ) match
+              case Right(identity) if identity.existed == dependency.classDirectoryPresent =>
+                PointInternalDependencySnapshot(
+                  dependency,
+                  Some(identity),
+                  Some(relative(workspaceReal, identity.path)),
+                  if identity.existed then PointInternalDirectoryStatus.PresentIncluded
+                  else PointInternalDirectoryStatus.AbsentNotIncluded
+                )
+              case _ =>
+                PointInternalDependencySnapshot(
+                  dependency,
+                  None,
+                  None,
+                  PointInternalDirectoryStatus.UnavailableUnsafe
+                )
+            values :+ snapshot
+          }
+        }
+      }
+    yield snapshots
+
+  private def validateInternal(
+      selected: SbtPointContextReceipt,
+      dependency: SbtInternalDependencyReceipt
+  ): Either[String, Unit] =
+    Either.cond(
+      dependency.projectRef == s"ThisBuild/${dependency.project.value}" &&
+        dependency.configuration == SbtClasspathConfiguration.Compile &&
+        dependency.compileMapping.admitted &&
+        dependency.requestedScalaVersion == selected.requestedScalaVersion &&
+        dependency.effectiveScalaVersion == selected.effectiveScalaVersion,
+      (),
+      s"The internal dependency receipt for ${dependency.projectRef} is not an admitted same-axis Compile output"
     )
 
   def owned(

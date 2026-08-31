@@ -121,13 +121,28 @@ requests only project/configuration/Scala-axis identity plus canonical class and
 SemanticDB roots. Its effect class is `TargetSourceOutputsNotRequested` and its
 build state is `NotRequested`; it does not request classpaths, products, or
 compilation. Checked-in sbt build/plugin loading, resolution, and metadata/cache
-writes remain possible. Target-aware point evidence emits v4 and requests only
+writes remain possible. Target-aware point evidence emits v4 by default and requests only
 the selected existing class directory when present plus target external
 dependencies. It does not request compilation, `fullClasspath`, products, or
 exported products and has no build fallback. Its context remains explicitly
 `PartialExistingOutputs`; workspace discovery remains separate and can still be
 ambiguous. Direct `reconcile-symbol` remains explicit-artifact,
 target-independent v2.
+
+An explicit target-aware point-evidence
+`--include-existing-internal-outputs` presence flag requires `--sbt-project`
+and emits v5. It retains the selected existing output, follows only
+`thisProject.dependencies`, and adds present safe same-axis internal Compile
+class directories before the v4 external dependencies. The deterministic
+receipt records admitted and excluded mappings, direct/transitive provenance,
+relative expected directories, presence, and bounded counts. It remains
+`PartialExistingCompileOutputs`; no selected/dependency compile,
+`fullClasspath`, products, `internalDependencyClasspath`, missing-output
+fallback, or compiler/plugin replay is requested.
+
+Graph discovery is separate from class-directory acquisition: an admitted
+project whose `Compile / classDirectory` setting is unavailable is typed as an
+exclusion without preventing traversal of its already-declared dependencies.
 
 Both target-aware v4 routes can explicitly select a cross-Scala axis. Requested
 and effective versions and their match status are reported from the same fresh
@@ -688,6 +703,10 @@ prove current sbt freshness or cover arbitrary build inputs.
 - Adding `--sbt-project <id>` emits target-aware `PointEvidenceReportV4` with
   top-level `schemaVersion` `semantic-scala.point-evidence-result.v4`.
   Optional `--sbt-scala-version <version>` supplies the requested axis.
+- Adding `--include-existing-internal-outputs` to that target request emits
+  `PointEvidenceReportV5` with top-level `schemaVersion`
+  `semantic-scala.point-evidence-result.v5`. The flag requires the project and
+  preserves the v4 route when omitted.
 - `symbols --semanticdb <path> --json` emits a `SemanticFileSummary` and keeps
   stdout JSON-only. Its top-level `schemaVersion` is
   `semantic-scala.symbols-result.v1`.
@@ -739,7 +758,9 @@ semantic-scala point-evidence --workspace . --file <path> --line <n> --col <n> -
 
 For the first three tools and the eighth `semantic_point_evidence` tool,
 optional MCP string inputs `sbtProject`, `sbtScalaVersion`, and `sbtJavaHome`
-map only to their corresponding CLI options. They use the same strict project,
+map only to their corresponding CLI options. Optional boolean
+`includeExistingInternalOutputs` exists only on the eighth tool; true requires
+`sbtProject` and selects the CLI v5 flag. They use the same strict project,
 version, and absolute-home policies; both dependent fields require
 `sbtProject`. These fields
 remain absent from tools 4-7, and the ordered registry remains exactly eight
@@ -769,13 +790,15 @@ SemanticDB occurrence data.
 `semantic_point_evidence` uses the relative `.scala` file and positive position
 policy, delegates to the CLI-owned composition, and requires
 `semantic-scala.point-evidence-result.v2` without target inputs or
-`semantic-scala.point-evidence-result.v4` with `sbtProject`. It never accepts a
+`semantic-scala.point-evidence-result.v4` with `sbtProject` and the boolean
+omitted/false, or `semantic-scala.point-evidence-result.v5` with the boolean
+true. It never accepts a
 caller-selected SemanticDB artifact. Target acquisition may execute checked-in
 sbt build/plugin code and populate resolution/metadata caches, but it does not
 request target compilation, `fullClasspath`, products, or exported products.
 Workspace discovery and target ownership remain separate; the partial receipt
 supplies selected-existing-output/external-dependency/JDK attribution without
-replaying target compiler flags or plugins. Both point-evidence families preserve captured source/artifact
+replaying target compiler flags or plugins. All point-evidence routes preserve captured source/artifact
 identity and typed freshness; stale evidence cannot become completed
 reconciliation. Direct reconcile stays explicit-artifact v2 and
 target-independent, and source mapping remains CLI-only.

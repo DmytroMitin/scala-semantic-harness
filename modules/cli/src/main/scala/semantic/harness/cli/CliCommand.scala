@@ -43,7 +43,8 @@ enum CliCommand:
     json: Boolean,
     sbtProject: Option[SbtProjectId] = None,
     sbtScalaVersion: Option[SbtScalaVersion] = None,
-    sbtJavaHome: Option[String] = None
+    sbtJavaHome: Option[String] = None,
+    includeExistingInternalOutputs: Boolean = false
   )
   case TastyPointEvidence(
     workspace: String,

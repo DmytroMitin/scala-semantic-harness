@@ -102,6 +102,108 @@ class SbtPointContextReceiptSuite extends munit.FunSuite:
       List(switch, unknown, timeout, missing).foreach(process => assertEquals(process.calls, 1))
     finally Files.deleteIfExists(workspace)
 
+  test("v5 protocol round-trips ordered present and absent same-axis internal Compile outputs"):
+    val workspace = Files.createTempDirectory("point-context-v5-protocol-")
+    val classes = Files.createDirectories(workspace.resolve("app/target/classes"))
+    val semanticdb = Files.createDirectories(workspace.resolve("app/target/meta"))
+    val direct = Files.createDirectories(workspace.resolve("macros/target/classes"))
+    val missing = workspace.resolve("core/target/classes")
+    val dependency = Files.createFile(workspace.resolve("dependency.jar"))
+    val axis = scalaVersion("2.13.18")
+    val request = SbtPointContextRequest(
+      workspace,
+      project("app"),
+      Some(axis),
+      includeExistingInternalOutputs = true
+    )
+    val receipt = SbtPointContextReceipt(
+      project("app"),
+      SbtClasspathConfiguration.Compile,
+      Some(axis),
+      axis,
+      classes,
+      semanticdb,
+      classDirectoryPresent = true,
+      List(SbtClasspathEntry(dependency, SbtClasspathEntryKind.Jar)),
+      None,
+      includeExistingInternalOutputs = true,
+      internalDependencies = List(
+        internal("macros", SbtInternalDependencyRole.Direct, axis, direct, present = true),
+        internal("core", SbtInternalDependencyRole.Transitive, axis, missing, present = false)
+      )
+    )
+    try
+      val rendered = SbtPointContextProtocol.render(receipt)
+      assert(rendered.startsWith(SbtPointContextProtocol.FormatV2 + "\n"), clue(rendered))
+      assertEquals(SbtPointContextProtocol.parse(rendered, request), Right(receipt))
+      assert(!Files.exists(missing))
+    finally deleteRecursively(workspace)
+
+  test("v5 injection traverses dependencies settings only while v4 injection remains unchanged"):
+    val workspace = Files.createTempDirectory("point-context-v5-injection-")
+    try
+      val v4 = SbtPointContextInjection.globalSettings(
+        SbtPointContextRequest(workspace, project("app"), Some(scalaVersion("2.13.18")))
+      )
+      val v5 = SbtPointContextInjection.globalSettings(
+        SbtPointContextRequest(
+          workspace,
+          project("app"),
+          Some(scalaVersion("2.13.18")),
+          includeExistingInternalOutputs = true
+        )
+      )
+      assert(!v4.contains("thisProject.dependencies"), clue(v4))
+      List("thisProject", ".dependencies", "Project.extract(state.value)", "Compile / classDirectory")
+        .foreach(required => assert(v5.contains(required), clue(v5)))
+      List(
+        "aggregate",
+        "fullClasspath",
+        "products",
+        "exportedProducts",
+        "internalDependencyClasspath",
+        "Compile / compile",
+        "compile.value"
+      ).foreach(forbidden => assert(!v5.contains(forbidden), clue(v5)))
+    finally Files.deleteIfExists(workspace)
+
+  test("v5 protocol rejects wrong-axis internal outputs and duplicate projects"):
+    val workspace = Files.createTempDirectory("point-context-v5-invalid-")
+    val classes = Files.createDirectories(workspace.resolve("app/classes"))
+    val semanticdb = Files.createDirectories(workspace.resolve("app/meta"))
+    val internalDir = Files.createDirectories(workspace.resolve("core/classes"))
+    val requested = scalaVersion("2.13.18")
+    val wrong = scalaVersion("2.12.21")
+    val request = SbtPointContextRequest(
+      workspace,
+      project("app"),
+      Some(requested),
+      includeExistingInternalOutputs = true
+    )
+    val base = SbtPointContextReceipt(
+      project("app"),
+      SbtClasspathConfiguration.Compile,
+      Some(requested),
+      requested,
+      classes,
+      semanticdb,
+      classDirectoryPresent = true,
+      Nil,
+      None,
+      includeExistingInternalOutputs = true,
+      internalDependencies = List(
+        internal("core", SbtInternalDependencyRole.Direct, wrong, internalDir, present = true)
+      )
+    )
+    try
+      assert(SbtPointContextProtocol.parse(SbtPointContextProtocol.render(base), request).isLeft)
+      val duplicate = base.copy(internalDependencies = List(
+        internal("core", SbtInternalDependencyRole.Direct, requested, internalDir, present = true),
+        internal("core", SbtInternalDependencyRole.Transitive, requested, internalDir, present = true)
+      ))
+      assert(SbtPointContextProtocol.parse(SbtPointContextProtocol.render(duplicate), request).isLeft)
+    finally deleteRecursively(workspace)
+
   private final case class CountingProcess(outcome: SbtPointContextProcessOutcome)
       extends SbtPointContextProcess:
     var calls = 0
@@ -123,6 +225,25 @@ class SbtPointContextReceiptSuite extends munit.FunSuite:
 
   private def encoded(value: String): String =
     java.util.Base64.getEncoder.encodeToString(value.getBytes(StandardCharsets.UTF_8))
+
+  private def internal(
+      value: String,
+      role: SbtInternalDependencyRole,
+      axis: SbtScalaVersion,
+      directory: Path,
+      present: Boolean
+  ): SbtInternalDependencyReceipt =
+    SbtInternalDependencyReceipt(
+      projectRef = s"ThisBuild/$value",
+      project = project(value),
+      role = role,
+      compileMapping = SbtCompileDependencyMapping.DefaultCompileToCompile,
+      requestedScalaVersion = Some(scalaVersion("2.13.18")),
+      effectiveScalaVersion = axis,
+      configuration = SbtClasspathConfiguration.Compile,
+      classDirectory = directory,
+      classDirectoryPresent = present
+    )
 
   private def deleteRecursively(root: Path): Unit =
     if Files.exists(root) then

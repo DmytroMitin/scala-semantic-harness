@@ -1,5 +1,7 @@
 package semantic.harness.reconciliation
 
+import io.circe.parser.decode
+import io.circe.syntax.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -15,6 +17,9 @@ import semantic.harness.presentation.SymbolAtResult
 import semantic.harness.sbt_runner.SbtClasspathConfiguration
 import semantic.harness.sbt_runner.SbtClasspathEntry
 import semantic.harness.sbt_runner.SbtClasspathEntryKind
+import semantic.harness.sbt_runner.SbtCompileDependencyMapping
+import semantic.harness.sbt_runner.SbtInternalDependencyReceipt
+import semantic.harness.sbt_runner.SbtInternalDependencyRole
 import semantic.harness.sbt_runner.SbtPointContextAcquirer
 import semantic.harness.sbt_runner.SbtPointContextFailure
 import semantic.harness.sbt_runner.SbtPointContextReceipt
@@ -75,6 +80,126 @@ class TargetAwarePointEvidenceV4Suite extends munit.FunSuite:
       assertEquals(contexts.flatMap(contextEntries), List(fixture.dependency))
       assertEquals(report.livePoint.status, PointLiveStatus.Unresolved)
       assert(!Files.exists(fixture.classes))
+    finally deleteRecursively(fixture.root)
+
+  test("explicit v5 adds ordered present same-axis internal outputs and retains missing outputs as partial receipt"):
+    val fixture = sharedFixture("target-v5-internal", classDirectoryPresent = true)
+    val macros = Files.createDirectories(fixture.root.resolve("macros/classes"))
+    val core = fixture.root.resolve("core/classes")
+    val unsafe = fixture.root.resolveSibling("outside-internal/classes")
+    val axis = scalaVersion("3.3.7")
+    val receipt = fixture.receipt.copy(
+      includeExistingInternalOutputs = true,
+      internalDependencies = List(
+        internal("macrosJVM", SbtInternalDependencyRole.Direct, axis, macros, present = true),
+        internal("coreJVM", SbtInternalDependencyRole.Transitive, axis, core, present = false),
+        internal("unsafeJVM", SbtInternalDependencyRole.Transitive, axis, unsafe, present = false)
+      )
+    )
+    var contexts = List.empty[PresentationCompilerContext]
+    try
+      val report = PointEvidenceServiceV5.withDependencies(
+        FixedAcquirer(Right(receipt)),
+        (_, _, _, _, context) =>
+          contexts = contexts :+ context
+          resolved(fixture.source),
+        () => ()
+      ).inspect(SemanticPointEvidenceTargetRequestV5(
+        fixture.root,
+        fixture.source,
+        3,
+        7,
+        project,
+        Some(axis)
+      )).fold(fail(_), identity)
+
+      assertEquals(report.schemaVersion, PointEvidenceReportV5.SchemaVersion)
+      assertEquals(
+        report.targetContext.classpathBasis,
+        PointClasspathBasisV5.ExistingSelectedAndInternalCompileOutputsPlusExternalDependencies
+      )
+      assertEquals(
+        report.targetContext.contextCompleteness,
+        PointContextCompletenessV5.PartialExistingCompileOutputs
+      )
+      assertEquals(report.targetContext.internalDependencyDiscoveredCount, Some(3))
+      assertEquals(report.targetContext.internalDependencyPresentIncludedCount, Some(1))
+      assertEquals(report.targetContext.internalDependencyAbsentNotIncludedCount, Some(1))
+      assertEquals(report.targetContext.internalDependencyUnavailableUnsafeCount, Some(1))
+      assertEquals(report.targetContext.presentationCompilerContextEntryCount, Some(3))
+      assertEquals(
+        report.targetContext.internalDependencies.map(value => value.project -> value.directoryStatus),
+        List(
+          "macrosJVM" -> InternalClassDirectoryStatusV5.PresentIncluded,
+          "coreJVM" -> InternalClassDirectoryStatusV5.AbsentNotIncluded,
+          "unsafeJVM" -> InternalClassDirectoryStatusV5.UnavailableUnsafe
+        )
+      )
+      assertEquals(
+        contexts.flatMap(contextEntries),
+        List(fixture.classes, macros, fixture.dependency)
+      )
+      assert(!Files.exists(core))
+      assertEquals(report.targetContext.buildPerformed, TargetBuildPerformedV4.NotRequested)
+      assertEquals(report.livePoint.status, PointLiveStatus.Resolved)
+
+      val json = report.asJson.noSpaces
+      assertEquals(decode[PointEvidenceReportV5](json), Right(report))
+      val wrongCountJson = report.copy(
+        targetContext = report.targetContext.copy(internalDependencyPresentIncludedCount = Some(2))
+      ).asJson.noSpaces
+      assert(decode[PointEvidenceReportV5](wrongCountJson).isLeft)
+
+      val missingCountJson = report.copy(
+        targetContext = report.targetContext.copy(internalDependencyPresentIncludedCount = None)
+      ).asJson.noSpaces
+      assert(decode[PointEvidenceReportV5](missingCountJson).isLeft)
+
+      val invalidInternalRefJson = report.copy(
+        targetContext = report.targetContext.copy(
+          internalDependencies = report.targetContext.internalDependencies.updated(
+            0,
+            report.targetContext.internalDependencies.head.copy(projectRef = "ExternalBuild/macrosJVM")
+          )
+        )
+      ).asJson.noSpaces
+      assert(decode[PointEvidenceReportV5](invalidInternalRefJson).isLeft)
+
+      val invalidExclusionJson = report.copy(
+        targetContext = report.targetContext.copy(
+          internalDependencyExclusions = List(InternalDependencyExclusionEvidenceV5(
+            projectRef = "ThisBuild/1invalid",
+            project = "1invalid",
+            role = SbtInternalDependencyRole.Direct,
+            compileMapping = SbtCompileDependencyMapping.DefaultCompileToCompile,
+            reason = "InventedReason",
+            effectiveScalaVersion = None
+          )),
+          internalDependencyExcludedCount = Some(1)
+        )
+      ).asJson.noSpaces
+      assert(decode[PointEvidenceReportV5](invalidExclusionJson).isLeft)
+
+      val validForeignExclusion = report.copy(
+        targetContext = report.targetContext.copy(
+          internalDependencyExclusions = List(InternalDependencyExclusionEvidenceV5(
+            projectRef = "ExternalBuild/foreignCore",
+            project = "foreignCore",
+            role = SbtInternalDependencyRole.Direct,
+            compileMapping = SbtCompileDependencyMapping.DefaultCompileToCompile,
+            reason = "ForeignBuildProjectRef",
+            effectiveScalaVersion = None
+          )),
+          internalDependencyExcludedCount = Some(1)
+        )
+      )
+      assertEquals(
+        decode[PointEvidenceReportV5](validForeignExclusion.asJson.noSpaces),
+        Right(validForeignExclusion)
+      )
+      assert(!json.contains(fixture.root.toString + "/macros/classes"), clue(json))
+      assert(!json.contains(unsafe.toString), clue(json))
+      assert(!json.contains(fixture.dependency.toString), clue(json))
     finally deleteRecursively(fixture.root)
 
   test("Fresh qualified Unverifiable stale multiple absent and unsafe ownership stay typed"):
@@ -196,6 +321,25 @@ class TargetAwarePointEvidenceV4Suite extends munit.FunSuite:
     range = Some(SourceRange(2, 2, 2, 12)),
     source = path.toString
   ))
+
+  private def internal(
+      value: String,
+      role: SbtInternalDependencyRole,
+      axis: SbtScalaVersion,
+      directory: Path,
+      present: Boolean
+  ): SbtInternalDependencyReceipt =
+    SbtInternalDependencyReceipt(
+      projectRef = s"ThisBuild/$value",
+      project = SbtProjectId.parse(value).fold(fail(_), identity),
+      role = role,
+      compileMapping = SbtCompileDependencyMapping.DefaultCompileToCompile,
+      requestedScalaVersion = Some(axis),
+      effectiveScalaVersion = axis,
+      configuration = SbtClasspathConfiguration.Compile,
+      classDirectory = directory,
+      classDirectoryPresent = present
+    )
 
   private def contextEntries(context: PresentationCompilerContext): List[Path] =
     context.classpath match

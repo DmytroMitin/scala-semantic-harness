@@ -12,7 +12,7 @@ freshness, or reconciliation.
 ## Request
 
 ```text
-semantic-scala point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
+semantic-scala point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs] [--json]
 ```
 
 The workspace must exist. The source must be an existing regular `.scala` file
@@ -68,13 +68,17 @@ proof.
 The exact eighth MCP tool is:
 
 ```text
-semantic_point_evidence(workspace, file, line, col[, sbtProject, sbtScalaVersion, sbtJavaHome])
+semantic_point_evidence(workspace, file, line, col[, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs])
 ```
 
 The adapter validates the workspace-relative source and positive position.
 Without target inputs it runs the v2 CLI route and accepts only
-`semantic-scala.point-evidence-result.v2`; with `sbtProject` it forwards the
-target options and accepts only `semantic-scala.point-evidence-result.v4`.
+`semantic-scala.point-evidence-result.v2`; with `sbtProject` and the internal
+output opt-in omitted/false it forwards the target options and accepts only
+`semantic-scala.point-evidence-result.v4`.
+Optional boolean `includeExistingInternalOutputs=true` requires `sbtProject`
+and selects only `semantic-scala.point-evidence-result.v5`. Omission or false
+does not change the v2/v4 routes.
 `sbtScalaVersion` and `sbtJavaHome` require `sbtProject`. Adapter or transport
 failure is distinct from every successful domain state above.
 
@@ -129,3 +133,46 @@ direct `reconcile-symbol` remains explicit-artifact, v2, and target-independent.
 
 The v3 schema and models remain frozen historical/review evidence and are no
 longer emitted by the current target-aware CLI or MCP route.
+
+## Explicit internal-existing-output v5
+
+Adding `--include-existing-internal-outputs` to a valid target-aware request
+emits `semantic-scala.point-evidence-result.v5`. The flag is a boolean presence
+flag, accepts no value, and requires `--sbt-project`. V5 preserves the v4
+selected-project receipt and adds a bounded ordered receipt for admitted
+internal Compile dependencies. Its basis is
+`ExistingSelectedAndInternalCompileOutputsPlusExternalDependencies` and its
+completeness is always `PartialExistingCompileOutputs`.
+
+The acquisition lifecycle reads the selected project's
+`thisProject.dependencies` setting and follows dependencies only, never
+aggregates. It performs deterministic depth-first traversal in declared edge
+order, deduplicates shared transitive project refs, and terminates cycles before
+acquiring output settings. A missing or unavailable class-directory setting is
+typed without truncating descendants already admitted by that graph. The output
+phase reads only each admitted dependency's `Compile / classDirectory` setting. Default
+mapping and unambiguous `Compile->Compile` mappings are admitted. Test-only,
+non-Compile, unsupported, and ambiguous mappings are excluded with typed
+provenance instead of guessed. This is a bounded Compile-to-Compile policy, not
+general sbt configuration algebra.
+
+The live context order is the selected existing class directory, then present
+admitted internal directories in receipt order, then the existing v4 external
+dependencies. Every admitted dependency remains in the receipt with requested
+and effective Scala axes, configuration, relative expected directory, mapping
+and direct/transitive provenance, acquisition effect, and either
+`PresentIncluded`, `AbsentNotIncluded`, or conservative `UnavailableUnsafe`
+state. Only present safe same-axis directories contribute to the Presentation
+Compiler context. Counts distinguish admitted, present, absent, unsafe, and
+excluded dependencies without claiming an arbitrary complete classpath.
+
+V5 does not request selected or dependency compilation, `products`,
+`exportedProducts`, `fullClasspath`, or `internalDependencyClasspath`; it does
+not create missing outputs or replay target compiler options/plugins. The
+receipt retains `buildPerformed=NotRequested`,
+`TargetSourceOutputsNotRequested`, and per-dependency
+`DependencySourceOutputsNotRequested`. Checked-in build/plugin loading,
+dependency resolution, task evaluation for settings, and metadata/cache writes
+remain possible. A resolved v5 point is bounded evidence under this partial
+existing-output context, not whole-project compile, generated-semantics, or
+workspace-completeness proof.

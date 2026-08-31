@@ -233,6 +233,50 @@ class CliParserSuite extends munit.FunSuite:
       "--sbt-scala-version", "3.3.8"
     )).isInstanceOf[ParseResult.Invalid])
 
+  test("point-evidence v5 requires the explicit boolean presence flag and a project"):
+    val base = List(
+      "point-evidence", "--workspace", ".", "--file", "Main.scala",
+      "--line", "1", "--col", "1"
+    )
+    assertEquals(
+      CliParser.parse(base ++ List(
+        "--sbt-project", "kernelJVM",
+        "--sbt-scala-version", "3.3.7",
+        "--sbt-java-home", "/opt/jdk",
+        "--include-existing-internal-outputs",
+        "--json"
+      )),
+      ParseResult.Parsed(CliCommand.PointEvidence(
+        "Main.scala",
+        ".",
+        1,
+        1,
+        json = true,
+        Some(project("kernelJVM")),
+        Some(scalaVersion("3.3.7")),
+        Some("/opt/jdk"),
+        includeExistingInternalOutputs = true
+      ))
+    )
+
+    val invalid = List(
+      base ++ List("--include-existing-internal-outputs"),
+      base ++ List("--sbt-project", "kernelJVM", "--include-existing-internal-outputs", "true"),
+      base ++ List(
+        "--sbt-project", "kernelJVM",
+        "--include-existing-internal-outputs",
+        "--include-existing-internal-outputs"
+      )
+    )
+    invalid.foreach(args => assert(CliParser.parse(args).isInstanceOf[ParseResult.Invalid], clue(args)))
+
+    val help = CliApp.run(List("help", "point-evidence"))
+    assertEquals(help.exitCode, 0)
+    assert(help.stdout.exists(_.contains("--include-existing-internal-outputs")))
+    assert(help.stdout.exists(_.contains("v5")))
+    assert(help.stdout.exists(_.contains("does not request compilation")))
+    assert(help.stdout.exists(_.contains("PartialExistingCompileOutputs")))
+
   test("parses the CLI-only fixed-Compile TASTy point evidence contract"):
     val args = List(
       "tasty-point-evidence",

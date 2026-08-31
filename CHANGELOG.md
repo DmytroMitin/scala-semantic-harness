@@ -8,6 +8,11 @@ release.
 
 ## Unreleased
 
+- Add an explicit target-aware point-evidence v5 opt-in that can use only
+  already-present same-axis internal Compile dependency outputs from a bounded
+  settings-only receipt. The default target route remains v4, the no-target
+  route remains v2, missing outputs are never built, and MCP remains exactly
+  eight tools.
 - Resume mutable `main` development at `0.1.0-alpha.3-SNAPSHOT` after the
   alpha-2 release. This does not publish or promise an alpha-3 artifact,
   channel, tag, or GitHub Release.

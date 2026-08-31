@@ -181,7 +181,178 @@ private[sbt_runner] object SbtPointContextInjection:
          |}
          |""".stripMargin
 
-  def globalSettings(request: SbtPointContextRequest): String = Settings
+  private val V5Settings =
+    SbtInjectedClasspathMaterialization.Settings +
+      s"""@transient val $Task = taskKey[Unit]("Export one bounded partial existing Compile-output point-context receipt")
+         |
+         |$Task := {
+         |  val selectedRef = thisProjectRef.value
+         |  val selectedProject = thisProject.value
+         |  val selectedClassDirectory = (Compile / classDirectory).value.getCanonicalFile
+         |  val selectedSemanticdbTargetRoot = (Compile / semanticdbTargetRoot).value.getCanonicalFile
+         |  val selectedExternalDependencies = (Compile / externalDependencyClasspath).value
+         |  val selectedScalaVersion = scalaVersion.value
+         |  val extracted = Project.extract(state.value)
+         |  val converter = fileConverter.value
+         |  val encoder = java.util.Base64.getEncoder
+         |  val identifier = "[A-Za-z][A-Za-z0-9_-]*"
+         |  val admittedMappings = Set("DefaultCompileToCompile", "ExplicitCompileToCompile")
+         |  def encoded(value: String): String =
+         |    encoder.encodeToString(value.getBytes(java.nio.charset.StandardCharsets.UTF_8))
+         |  def mapping(value: Option[String]): String = value match {
+         |    case None => "DefaultCompileToCompile"
+         |    case Some(raw) =>
+         |      val normalized = raw.trim.toLowerCase(java.util.Locale.ROOT)
+         |      if (normalized == "compile") "ExplicitCompileToCompile"
+         |      else if (normalized.isEmpty) "UnsupportedOrAmbiguous"
+         |      else {
+         |        val clauses = normalized.split(";", -1).toVector
+         |        val parsed = clauses.map(_.split("->", -1).toVector)
+         |        val valid = parsed.forall(parts =>
+         |          parts.size == 2 && parts(0).matches(identifier) && parts(1).matches(identifier)
+         |        )
+         |        if (valid && parsed.exists(parts => parts(0) == "compile" && parts(1) == "compile"))
+         |          "ExplicitCompileToCompile"
+         |        else if (valid || (!normalized.contains(";") && normalized.matches(identifier)))
+         |          "ExcludedNoCompileToCompile"
+         |        else "UnsupportedOrAmbiguous"
+         |      }
+         |  }
+         |  val directProjects = selectedProject.dependencies.iterator
+         |    .filter(dependency =>
+         |      dependency.project.build == selectedRef.build && admittedMappings(mapping(dependency.configuration))
+         |    )
+         |    .map(_.project)
+         |    .toSet
+         |  val visited = scala.collection.mutable.LinkedHashSet[String](selectedRef.project)
+         |  val active = scala.collection.mutable.LinkedHashSet[String](selectedRef.project)
+         |  val internalRows = scala.collection.mutable.ArrayBuffer.empty[String]
+         |  val excludedRows = scala.collection.mutable.ArrayBuffer.empty[String]
+         |  def role(from: ProjectRef, ref: ProjectRef): String =
+         |    if (from == selectedRef || directProjects(ref)) "Direct" else "Transitive"
+         |  def excluded(
+         |      refKind: String,
+         |      project: String,
+         |      dependencyRole: String,
+         |      mappingStatus: String,
+         |      reason: String,
+         |      effectiveScalaVersion: Option[String]
+         |  ): Unit = {
+         |    excludedRows += Seq(
+         |      "excludedInternal",
+         |      encoded(s"$$refKind/$$project"),
+         |      encoded(project),
+         |      dependencyRole,
+         |      mappingStatus,
+         |      reason,
+         |      encoded(effectiveScalaVersion.getOrElse(""))
+         |    ).mkString("\t")
+         |  }
+         |  def visit(from: ProjectRef, dependency: ClasspathDep[ProjectRef]): Unit = {
+         |    val ref = dependency.project
+         |    val project = ref.project
+         |    if (!project.matches(identifier)) sys.error("Internal dependency project ID cannot be represented safely")
+         |    val dependencyRole = role(from, ref)
+         |    val mappingStatus = mapping(dependency.configuration)
+         |    if (ref.build != selectedRef.build) {
+         |      excluded("ExternalBuild", project, dependencyRole, mappingStatus, "ForeignBuildProjectRef", None)
+         |    } else if (!admittedMappings(mappingStatus)) {
+         |      val reason = if (mappingStatus == "ExcludedNoCompileToCompile")
+         |        "NoCompileToCompileMapping"
+         |      else "UnsupportedOrAmbiguousMapping"
+         |      excluded("ThisBuild", project, dependencyRole, mappingStatus, reason, None)
+         |    } else if (active(project)) {
+         |      excluded("ThisBuild", project, dependencyRole, mappingStatus, "CycleToSelectedOrActiveProject", None)
+         |    } else if (!visited(project)) {
+         |      if (visited.size - 1 >= ${SbtInternalDependencyGraph.MaxDependencyProjects}) {
+         |        excluded("ThisBuild", project, dependencyRole, mappingStatus, "DependencyBoundExceeded", None)
+         |      } else {
+         |        visited += project
+         |        active += project
+         |        val dependencyProject = try {
+         |          Some(extracted.get(ref / thisProject))
+         |        } catch {
+         |          case scala.util.control.NonFatal(_) => None
+         |        }
+         |        dependencyProject match {
+         |        case None =>
+         |          excluded("ThisBuild", project, dependencyRole, mappingStatus, "ProjectSettingsUnavailable", None)
+         |        case Some(projectDefinition) =>
+         |          val dependencyScalaVersion = try {
+         |            Some(extracted.get(ref / scalaVersion))
+         |          } catch {
+         |            case scala.util.control.NonFatal(_) => None
+         |          }
+         |          dependencyScalaVersion match {
+         |          case None =>
+         |            excluded("ThisBuild", project, dependencyRole, mappingStatus, "ProjectSettingsUnavailable", None)
+         |          case Some(axis) if axis != selectedScalaVersion =>
+         |            excluded("ThisBuild", project, dependencyRole, mappingStatus, "ScalaAxisMismatch", Some(axis))
+         |          case Some(axis) =>
+         |            val dependencyClassDirectory = try {
+         |              Some(extracted.get(ref / Compile / classDirectory).getCanonicalFile)
+         |            } catch {
+         |              case scala.util.control.NonFatal(_) => None
+         |            }
+         |            dependencyClassDirectory match {
+         |            case None =>
+         |              excluded("ThisBuild", project, dependencyRole, mappingStatus, "ClassDirectorySettingUnavailable", Some(axis))
+         |            case Some(directory) =>
+         |              val requestedScala = sys.env.get("SEMANTIC_SCALA_REQUESTED_SCALA_VERSION").getOrElse("")
+         |              internalRows += Seq(
+         |                "internal",
+         |                encoded(s"ThisBuild/$$project"),
+         |                encoded(project),
+         |                dependencyRole,
+         |                mappingStatus,
+         |                encoded(requestedScala),
+         |                encoded(axis),
+         |                "Compile",
+         |                encoded(directory.getAbsolutePath),
+         |                directory.isDirectory.toString
+         |              ).mkString("\t")
+         |            }
+         |          }
+         |          projectDefinition.dependencies.foreach(visit(ref, _))
+         |        }
+         |        active -= project
+         |      }
+         |    }
+         |  }
+         |  selectedProject.dependencies.foreach(visit(selectedRef, _))
+         |  val entries = selectedExternalDependencies.map(entry =>
+         |    semanticScalaInternalClasspathFile(entry, converter)
+         |  ).map { entry =>
+         |    val kind =
+         |      if (entry.isDirectory) "Directory"
+         |      else if (entry.isFile) "Jar"
+         |      else "Unsupported"
+         |    s"entry\t$$kind\t$${encoded(entry.getAbsolutePath)}"
+         |  }
+         |  val requestedScala = sys.env.get("SEMANTIC_SCALA_REQUESTED_SCALA_VERSION").toSeq.map { value =>
+         |    s"requestedScalaVersion\t$${encoded(value)}"
+         |  }
+         |  val javaContext = sys.env.get("SEMANTIC_SCALA_TARGET_CONTEXT_JAVA").toSeq.map { value =>
+         |    s"javaContext\t$${encoded(value)}"
+         |  }
+         |  IO.writeLines(
+         |    file(sys.env("SEMANTIC_SCALA_POINT_CONTEXT_RECEIPT")),
+         |    Seq(
+         |      "${SbtPointContextProtocol.FormatV2}",
+         |      s"project\t$${encoded(selectedRef.project)}",
+         |      "configuration\tCompile"
+         |    ) ++ requestedScala ++ Seq(
+         |      s"effectiveScalaVersion\t$${encoded(selectedScalaVersion)}",
+         |      s"classDirectory\t$${encoded(selectedClassDirectory.getAbsolutePath)}",
+         |      s"semanticdbTargetRoot\t$${encoded(selectedSemanticdbTargetRoot.getAbsolutePath)}",
+         |      s"classDirectoryPresent\t$${selectedClassDirectory.isDirectory}"
+         |    ) ++ javaContext ++ entries ++ internalRows ++ excludedRows
+         |  )
+         |}
+         |""".stripMargin
+
+  def globalSettings(request: SbtPointContextRequest): String =
+    if request.includeExistingInternalOutputs then V5Settings else Settings
 
 private[sbt_runner] enum SbtPointContextProcessOutcome:
   case Completed(result: SbtRunResult)

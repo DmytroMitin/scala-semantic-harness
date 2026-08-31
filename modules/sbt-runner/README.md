@@ -66,6 +66,20 @@ sbt-1/sbt-2 converter boundary. Its receipt reports axis, root, presence, and
 redacted JDK facts without exposing raw paths publicly. Ordinary build/plugin
 loading, resolution, and metadata/cache effects remain possible.
 
+The explicit point-evidence v5 mode extends this separate path with a
+settings-only internal dependency receipt. It reads `thisProject.dependencies`
+only, never aggregates, and uses deterministic depth-first declared-edge order
+with deduplication and cycle termination. Graph discovery precedes output
+setting acquisition, so an unavailable class-directory setting is typed while
+the admitted graph traversal continues through that project's dependencies. Default and unambiguous
+Compile-to-Compile mappings are admitted; Test-only, non-Compile, unsupported,
+and ambiguous mappings are excluded rather than guessed. For admitted projects
+it reads only `Compile / classDirectory`; filesystem presence is checked after
+the receipt, and only present same-axis directories are later eligible for the
+Presentation Compiler context. It does not evaluate `fullClasspath`,
+`internalDependencyClasspath`, products, exported products, compile, or test,
+and does not create missing output directories.
+
 `SbtClasspathCacheService` adds three explicit orchestration modes:
 
 - `fresh` delegates to current acquisition and never accesses persistent

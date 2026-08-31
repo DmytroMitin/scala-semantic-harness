@@ -295,7 +295,8 @@ object CliParser:
     final case class Options(
       values: Map[String, String] = Map.empty,
       json: Boolean = false,
-      jsonSeen: Boolean = false
+      jsonSeen: Boolean = false,
+      includeExistingInternalOutputs: Boolean = false
     )
 
     def loop(rest: List[String], options: Options): Either[String, Options] =
@@ -304,6 +305,10 @@ object CliParser:
         case "--json" :: tail =>
           if options.jsonSeen then Left("Option may only be supplied once for point-evidence: --json")
           else loop(tail, options.copy(json = true, jsonSeen = true))
+        case "--include-existing-internal-outputs" :: tail =>
+          if options.includeExistingInternalOutputs then
+            Left("Option may only be supplied once for point-evidence: --include-existing-internal-outputs")
+          else loop(tail, options.copy(includeExistingInternalOutputs = true))
         case key :: value :: tail if key.startsWith("--") && !value.startsWith("--") =>
           if options.values.contains(key) then Left(s"Option may only be supplied once for point-evidence: $key")
           else loop(tail, options.copy(values = options.values.updated(key, value)))
@@ -325,7 +330,22 @@ object CliParser:
               line <- parsePositiveInt("point-evidence", "line", lineText)
               column <- parsePositiveInt("point-evidence", "col", columnText)
               target <- targetOptionsWithScalaVersion("point-evidence", options.values)
-            yield CliCommand.PointEvidence(file, workspace, line, column, options.json, target._1, target._2, target._3)
+              _ <- Either.cond(
+                !options.includeExistingInternalOutputs || target._1.nonEmpty,
+                (),
+                "--include-existing-internal-outputs requires --sbt-project for point-evidence"
+              )
+            yield CliCommand.PointEvidence(
+              file,
+              workspace,
+              line,
+              column,
+              options.json,
+              target._1,
+              target._2,
+              target._3,
+              options.includeExistingInternalOutputs
+            )
           case _ => Left(s"Invalid arguments for point-evidence: ${args.mkString(" ")}")
     } match
       case Right(command) => ParseResult.Parsed(command)

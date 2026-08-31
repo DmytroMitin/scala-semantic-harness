@@ -29,5 +29,5 @@ scripts/benchmark/prompts/semantic-disambiguation-1.semantic-harness.md	1237	a6c
 scripts/benchmark/prompts/semantic-misleading-1.semantic-harness.md	1237	22fe29812d2a465674b8c9f20756ace4b8143637741e48c3cbc2438a29eb5fa0	portable-condition-prompt
 scripts/benchmark/prompts/semantic-required-1.semantic-harness.md	1314	01d1dd39dfa6b1c03dc7c7ecdbb1cd216f47da3cedff79b24aac4348c5d82155	portable-condition-prompt
 scripts/benchmark/semantic-scala-packaged	420	51444d94515b9018ad959256d26f61af02c2328743b406bd99b8a7203c575510	packaged-cli-wrapper
-scripts/mcp/smoke-mcp-tools.py	41595	249530382e906b9c31999b20ad69294e2f989fc238bae46f605633dd94584b01	deterministic-mcp-smoke-validator
-skills/semantic-scala/SKILL.md	19342	473ce58728270018231f99221f16c1c1a3526cd778eb6151f820a01f92df7f8e	canonical-agent-policy
+scripts/mcp/smoke-mcp-tools.py	43847	a52f116e903f43e474219b89c5ef20f3bde93e67964864d4f911a0d222eec150	deterministic-mcp-smoke-validator
+skills/semantic-scala/SKILL.md	20292	fabc59b6128678c6bc6711751231a6d9c5b0a626e0f08a89adab74e233904937	canonical-agent-policy

@@ -8,7 +8,8 @@ final case class SbtPointContextRequest(
     workspace: Path,
     project: SbtProjectId,
     requestedScalaVersion: Option[SbtScalaVersion] = None,
-    targetJava: Option[ValidatedSbtJavaHome] = None
+    targetJava: Option[ValidatedSbtJavaHome] = None,
+    includeExistingInternalOutputs: Boolean = false
 )
 
 object SbtPointContextRequest:
@@ -33,7 +34,10 @@ final case class SbtPointContextReceipt(
     semanticdbTargetRoot: Path,
     classDirectoryPresent: Boolean,
     externalDependencyClasspath: List[SbtClasspathEntry],
-    targetJavaContext: Option[String]
+    targetJavaContext: Option[String],
+    includeExistingInternalOutputs: Boolean = false,
+    internalDependencies: List[SbtInternalDependencyReceipt] = Nil,
+    internalDependencyExclusions: List[SbtInternalDependencyExclusion] = Nil
 )
 
 enum SbtPointContextFailure:

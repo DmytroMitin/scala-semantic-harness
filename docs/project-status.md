@@ -80,6 +80,13 @@ classpath and does not replay target compiler flags or plugins. Frozen Cats
 Effect JVM/JS prepared and missing-output controls and a disposable two-project
 fixture qualify this bounded behavior. This is not general target discovery,
 release readiness, primitive uniqueness, or IDE/LSP superiority.
+An explicit target-aware v5 opt-in can also incorporate already-present
+same-axis internal Compile dependency outputs through a settings-only,
+fail-closed graph receipt. It keeps missing outputs absent, records deterministic
+provenance, and remains `PartialExistingCompileOutputs`; it does not compile,
+model arbitrary configuration algebra, or replay compiler options/plugins.
+Frozen cats-tagless 2.13/2.12 and missing-output controls qualify this bounded
+addition while the Cats Effect default v4 rows remain unchanged.
 
 ## Evidence and readiness
 

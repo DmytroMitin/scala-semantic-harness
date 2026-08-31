@@ -16,7 +16,8 @@ execution ledger and does not promise delivery dates.
   source artifact and preserves non-selection reasons.
 - Opt-in alpha-3 target-aware SemanticDB source mapping v4 with a validated
   optional Scala axis and a non-compiling root-only receipt, plus target-aware
-  point-evidence v4 with a non-compiling partial existing-output receipt.
+  point-evidence v4 with a non-compiling partial existing-output receipt and an
+  explicit v5 opt-in for bounded same-axis existing internal Compile outputs.
 - A CLI-only bounded post-compile TASTy point-evidence operation with a
   same-request selected-Compile receipt and exact stable Scala 3 child worker.
 - Bounded fixed-task sbt subprocess compatibility proven on sbt 1.12.15 and
@@ -191,6 +192,13 @@ privacy qualification. These tiers do not authorize release actions.
   multi-project controls remained explicitly partial and non-compiling. This
   is not general Scala.js, complete classpath, primitive-information, or
   IDE/LSP evidence.
+- Preserve the bounded cats-tagless v5 qualification: the explicit opt-in
+  follows only `thisProject.dependencies`, admits a small fail-closed
+  Compile-to-Compile mapping subset, includes only already-present same-axis
+  internal class directories, and remains `PartialExistingCompileOutputs`.
+  The exact annotation-class recovery, missing-output omission, and cross-axis
+  controls are not arbitrary classpath completeness, option/plugin replay, or
+  a claim that every sbt configuration is modeled.
 - Treat the post-compile TASTy lane as a current illustration of composition
   and provenance value: it normalizes selected-build ownership, point mapping,
   source/artifact identity, freshness, uncertainty, and no-replay boundaries.
