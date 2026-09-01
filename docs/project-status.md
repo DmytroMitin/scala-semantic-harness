@@ -94,7 +94,11 @@ relation, and content checks to contribute. On the same frozen cats-tagless
 target, clean v6 retained the annotation symbol, while the one-line producer
 rename, missing selected-axis analysis, wrong-axis-only analysis, and missing
 class directory all excluded the affected support without regenerating it.
-This is a bounded stale-support gate, not whole-target/build freshness.
+The reader now runs as one cache-first, on-demand bounded JDK 21 worker, keeping
+its Zinc graph off normal CLI/MCP process classpaths. Cold offline worker
+unavailability is Unverifiable rather than a build fallback. This is a bounded
+stale-support and runtime-placement result, not whole-target/build freshness,
+release readiness, or a total-disk-use reduction claim.
 
 ## Evidence and readiness
 

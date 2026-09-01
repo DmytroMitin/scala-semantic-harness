@@ -193,7 +193,16 @@ each admitted dependency's existing same-axis
 of the `sourceGenerators` setting in the same bounded sbt lifecycle. Reading
 that generator setting inspects task objects; it does not execute them.
 
-The reader uses the published Zinc 1.12.1 persistence/analysis API. It accepts
+The reader uses the published Zinc 1.12.1 persistence/analysis API inside one
+on-demand bounded JDK 21 child per v6 request. All admitted internals are sent
+as one batch through `semantic-scala-zinc-freshness-worker.v1`; no child is
+launched per dependency. The exact Scala 2.13.18/Zinc 1.12.1/JNA 5.14.0 graph
+is resolved cache-first. First uncached use may acquire it from Maven Central
+and populate the Coursier cache; a populated cache can run offline. A cold
+offline acquisition failure, timeout, nonzero exit, malformed/partial result,
+or protocol mismatch maps affected internals to fail-closed
+`Unverifiable / UnsupportedAnalysisFormatOrVersion` and never to Fresh.
+V2, v4, and v5 do not resolve or launch this worker. The reader accepts
 the supported binary analysis container and compiler-axis family only; a
 missing path/file, corrupt archive, unsupported layout/version, or axis
 mismatch is `Unverifiable`. It does not decode private archive bytes itself,
@@ -231,3 +240,9 @@ fresh or complete. File mtimes, directory timestamps, Git state, and mere
 existence are not freshness authority. Public JSON contains only safe relative
 analysis paths and aggregate counts, never raw Zinc databases or private
 absolute paths.
+
+The worker uses at most a 512 MiB heap, a 30-second whole-process deadline,
+bounded cleanup, 1 MiB request/response limits, and 4 KiB field limits. The
+normal staged/runtime classpath no longer contains the Zinc graph solely for
+v6. This is a normal distribution/classpath reduction, not a claim that total
+disk use falls after the separate on-demand cache is populated.

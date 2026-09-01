@@ -154,7 +154,10 @@ capabilities are admitted.
   stays explicitly partial; neither is target compiler-option/plugin replay.
 - Preserve v5 as the freshness-not-assessed compatibility route and v6 as a
   second explicit strict route. V6 reads existing same-axis Zinc analysis only,
-  excludes Stale and Unverifiable internal outputs, and remains partial.
+  excludes Stale and Unverifiable internal outputs, and remains partial. Its
+  pinned reader runs in one cache-first, on-demand bounded JDK 21 worker, so
+  v2/v4/v5 and ordinary CLI/MCP startup do not carry or acquire the Zinc graph;
+  cold offline strict-v6 use fails closed.
 - Add capabilities only after a decision-relevant gap is demonstrated against
   strong ordinary tooling.
 - Keep resource and output bounds explicit and tested.

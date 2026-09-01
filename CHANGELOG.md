@@ -12,7 +12,10 @@ release.
   existing same-axis Zinc compile analysis and permits only internal outputs
   proven Fresh by bounded content and relation checks to contribute. Stale and
   Unverifiable outputs are typed and excluded; v2/v4/v5 and exact-eight MCP are
-  preserved.
+  preserved. The pinned Zinc 1.12.1 reader now runs in one on-demand bounded
+  JDK 21 child per v6 request, so ordinary CLI/MCP classpaths no longer carry
+  the Zinc runtime graph. First uncached v6 use may fetch the exact graph from
+  Maven Central; cold offline failure remains a valid fail-closed v6 result.
 - Add an explicit target-aware point-evidence v5 opt-in that can use only
   already-present same-axis internal Compile dependency outputs from a bounded
   settings-only receipt. The default target route remains v4, the no-target

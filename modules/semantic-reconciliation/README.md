@@ -44,8 +44,9 @@ do not enter the compiler context, and the report remains
 claimed.
 
 The explicit v6 route adds a strict freshness gate over the same v5 graph. It
-reads existing same-axis `Compile / compileAnalysisFile` archives with the
-published Zinc 1.12.1 persistence API and compares bounded source/product
+reads existing same-axis `Compile / compileAnalysisFile` archives through one
+cache-first, on-demand, bounded JDK 21 worker using the published Zinc 1.12.1
+persistence API and compares bounded source/product
 inventories, relations, and content stamps. Exact configured source-root and
 generator-list provenance comes from the non-running sbt receipt; configured
 generators or managed-source residue fail closed. Archive, inventory, walk,

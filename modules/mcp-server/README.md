@@ -538,8 +538,11 @@ typed, and remains `PartialExistingCompileOutputs`. It does not request
 compilation, products, `fullClasspath`, or `internalDependencyClasspath`.
 With both booleans true, v6 reads existing same-axis compile-analysis files and
 allows only content-verified Fresh internal directories to contribute. Stale
-and Unverifiable entries are excluded, the context remains partial, and no
-compile or generator fallback occurs.
+and Unverifiable entries are excluded. The exact reader runs in one cache-first,
+on-demand bounded JDK 21 child for the request; MCP initialize, `tools/list`,
+and v2/v4/v5 do not resolve or launch it. A cold offline runtime miss maps to
+domain Unverifiable rather than MCP transport failure. The context remains
+partial, and no compile or generator fallback occurs.
 
 The server does not add arbitrary extra args, generic command execution,
 caching, broad workspace-root policy, direct module calls, or MCP tools beyond

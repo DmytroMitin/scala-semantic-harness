@@ -216,16 +216,19 @@ class TargetAwarePointEvidenceV4Suite extends munit.FunSuite:
     val analysis = Files.createDirectories(fixture.root.resolve("macros/target/zinc"))
       .resolve("inc_compile_3.zip")
     Files.write(analysis, Array[Byte](4, 5, 6))
-    val sourceId = "${BASE}/" + fixture.root.relativize(internalSource).toString.replace(java.io.File.separatorChar, '/')
-    val productId = "${BASE}/" + fixture.root.relativize(internalProduct).toString.replace(java.io.File.separatorChar, '/')
-    val analysisSnapshot = ZincAnalysisSnapshot(
-      compilerVersion = "3.3.7",
-      sourceStamps = Map(sourceId -> ZincContentStamp.current(internalSource)),
-      productStamps = Map(productId -> ZincContentStamp.current(internalProduct)),
-      sourceProducts = Map(sourceId -> Set(productId))
-    )
-    val assessor = InternalOutputFreshnessAssessor.withReader(new ZincAnalysisReader:
-      override def read(path: Path) = Right(analysisSnapshot)
+    var workerCalls = 0
+    val assessor = InternalOutputFreshnessAssessor.withRuntime(new ZincFreshnessWorkerRuntime:
+      override def assess(inputs: List[ZincFreshnessWorkerInput]) =
+        workerCalls += 1
+        val stale = Files.readString(internalSource) != "package macros\nclass Macro\n"
+        Right(inputs.map(input => input.callerId -> InternalOutputFreshnessAssessment(
+          if stale then InternalOutputFreshnessStatusV6.Stale else InternalOutputFreshnessStatusV6.Fresh,
+          if stale then InternalOutputFreshnessReasonV6.SourceContentMismatch
+          else InternalOutputFreshnessReasonV6.SourceAndProductContentMatch,
+          None,
+          Some(1),
+          Some(1)
+        )).toMap)
     )
     val axis = scalaVersion("3.3.7")
     val receipt = fixture.receipt.copy(
@@ -265,6 +268,7 @@ class TargetAwarePointEvidenceV4Suite extends munit.FunSuite:
     try
       val freshContexts = scala.collection.mutable.ListBuffer.empty[PresentationCompilerContext]
       val fresh = run(freshContexts)
+      assertEquals(workerCalls, 1)
       assertEquals(fresh.schemaVersion, PointEvidenceReportV6.SchemaVersion)
       assertEquals(fresh.targetContext.compiledOutputFreshness, CompiledOutputFreshnessV4.NotAssessed)
       assertEquals(fresh.targetContext.internalDependencyFreshIncludedCount, Some(1))
@@ -293,6 +297,7 @@ class TargetAwarePointEvidenceV4Suite extends munit.FunSuite:
         invalidated.targetSelection.status,
         PointTargetSelectionStatusV4.PointContextInputsChangedDuringRequest
       )
+      assertEquals(workerCalls, 2)
       assertEquals(invalidated.livePoint.status, PointLiveStatus.Unavailable)
       assertEquals(invalidated.targetContext.pathStatus, TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique)
       assertEquals(invalidated.targetContext.internalDependencies, Nil)

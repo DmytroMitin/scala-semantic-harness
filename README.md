@@ -276,8 +276,13 @@ same opt-in as optional boolean `includeExistingInternalOutputs`; the registry
 remains exactly eight.
 Adding `--require-fresh-internal-outputs` requires the v5 flag and emits v6.
 It reads only existing same-axis `Compile / compileAnalysisFile` archives and
-uses supported Zinc persistence APIs plus content stamps and source/product
-relations. The same settings-only receipt captures exact configured source
+uses supported Zinc persistence APIs in one on-demand bounded JDK 21 worker
+plus content stamps and source/product relations. The worker is not resolved
+or launched by v2/v4/v5 or ordinary MCP initialization. Its exact pinned Zinc
+1.12.1/Scala 2.13.18/JNA 5.14.0 graph is cache-first; first uncached strict-v6
+use may contact Maven Central and populate the Coursier cache, while a warm
+cache can run offline. Cold offline unavailability fails closed as
+`Unverifiable`, with no compile or linked-runtime fallback. The same settings-only receipt captures exact configured source
 roots and generator-list cardinality; configured generators, managed source
 residue, unavailable provenance, unsafe roots, or exceeded file/archive bounds
 fail closed as Unverifiable. Only internal directories proven `Fresh`
@@ -285,6 +290,9 @@ contribute; `Stale` and all `Unverifiable` states remain visible but excluded.
 This does not compile, run generators, use mtimes or Git state as freshness
 authority, or establish whole-target/build freshness. The matching MCP boolean is
 `requireFreshInternalOutputs` on the same eighth tool.
+Moving the graph off normal process classpaths reduces the ordinary staged and
+shipped dependency surface; it does not claim lower total disk use after the
+on-demand cache has been populated.
 `semanticdb-for-source` remains CLI-only, direct `reconcile-symbol` remains an
 explicit-artifact target-independent operation, and the MCP registry remains
 exactly eight tools.

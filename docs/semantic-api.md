@@ -147,14 +147,17 @@ exclusion without preventing traversal of its already-declared dependencies.
 A second presence flag, `--require-fresh-internal-outputs`, requires the v5
 flag and emits v6. The same bounded lifecycle additionally reads each admitted
 dependency's existing `Compile / compileAnalysisFile` and configured source
-directory/generator settings without running generator tasks. A Zinc 1.12.1
-persistence reader verifies the selected Scala axis, bounded exact configured
+directory/generator settings without running generator tasks. One cache-first,
+on-demand bounded JDK 21 child batches the admitted internals and uses the Zinc
+1.12.1 persistence reader to verify the selected Scala axis, bounded exact configured
 unmanaged-source inventory, absence of generator-dependent managed provenance,
 exact class-product inventory and relations, and bounded current content
 stamps. Only Fresh internal directories contribute;
 Stale, Unverifiable, absent, and unsafe entries are excluded without build or
 generator fallback. V6 remains `PartialExistingCompileOutputs` and makes no
-whole-target, build, or workspace freshness claim. See
+whole-target, build, or workspace freshness claim. First uncached v6 use may
+acquire the exact worker graph from Maven Central; cold offline unavailability
+is Unverifiable, while v2/v4/v5 never resolve or launch the worker. See
 [`docs/point-evidence.md`](point-evidence.md#strict-internal-output-freshness-v6)
 for the exact fail-closed coverage rule.
 

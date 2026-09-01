@@ -232,16 +232,20 @@ Apache-2.0 or LGPL-2.1-or-later and the project owner selected Apache-2.0. The
 review is technical evidence, not legal advice; the automated gate must not be
 weakened to infer legal clearance or publication authority.
 
-Current unreleased alpha-3 source development adds direct
-`org.scala-sbt:zinc-persist_2.13:1.12.1` to the existing semantic-reconciliation
-module for supported incremental-analysis reading. This creates no new module
-or GAV and introduces no SNAPSHOT or private repository dependency. The
-existing technically reviewed JNA 5.14.0 selection remains an explicit direct
-semantic-reconciliation dependency (with build-wide convergence) instead of
-accepting the older transitive Zinc/JLine candidate in a published consumer. Its full
-CLI/MCP runtime and license-attribution delta must be recaptured and reviewed
-as part of any separately authorized alpha-3 package qualification; this note
-is technical inventory, not legal clearance or publication authority.
+Current unreleased alpha-3 source development isolates strict-v6 incremental
+analysis in an unpublished, build-only Scala 2.13.18 worker. Its product-owned
+worker JAR is embedded in the existing semantic-reconciliation artifact, but
+its exact Zinc 1.12.1/JNA 5.14.0 dependency graph is not declared on normal
+published-module runtime POMs or staged CLI/MCP process classpaths. A strict-v6
+request resolves that 42-artifact, 38,241,533-byte graph cache-first from Maven
+Central and launches one bounded JDK 21 child; other routes do not. A first
+uncached use can increase the user's Coursier cache, so this design reduces the
+normal distribution/classpath surface rather than total post-v6 disk use.
+The worker graph and its license/NOTICE obligations still require normal
+technical review for any future alpha-3 package qualification. The existing
+JNA Apache-2.0 owner selection is retained as technical history, not legal
+clearance or publication authority. No public GAV or Coursier application was
+added.
 
 ## Readiness boundary
 

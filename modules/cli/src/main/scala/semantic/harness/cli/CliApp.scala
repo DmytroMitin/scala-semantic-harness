@@ -1144,6 +1144,8 @@ object CliApp:
             |With both internal-output flags, v6 reads each dependency's existing Compile / compileAnalysisFile.
             |The live context admits only Fresh internal outputs proven by supported Zinc content stamps and relations.
             |Stale, missing-analysis, unsupported, corrupt, unsafe, incomplete, and generator-unbounded states are excluded.
+            |Strict v6 batches freshness checks in one cache-first bounded JDK 21 worker. First uncached use may contact Maven Central.
+            |Cold offline worker unavailability is Unverifiable; v2/v4/v5 never resolve or launch the Zinc worker.
             |This strict v6 profile remains partial and does not claim that the selected target or whole build is fresh.
             |Receipt acquisition still evaluates checked-in sbt build/plugin code and may resolve dependencies or populate metadata/caches.
             |The live compiler does not replay target compiler options, plugins, or lifecycle.

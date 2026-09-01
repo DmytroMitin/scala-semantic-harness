@@ -29,10 +29,25 @@ lazy val munitVersion = "1.0.0"
 lazy val semanticdbVersion = "4.16.1"
 lazy val presentationCompilerVersion = "3.3.3"
 lazy val coursierInterfaceVersion = "1.0.28"
+lazy val workerCoursierInterfaceVersion = "1.0.18"
 lazy val zincVersion = "1.12.1"
 lazy val jnaVersion = "5.14.0"
+lazy val workerJarSha256 = "cffcddbee0795d436664185a0ca0e3206a6542b5d01bd0e487da3da23cbcfd69"
+lazy val workerDependencyInventorySha256 = "a95bb11bdb1e92b5a294767e24d9699f6dac9da328d419c8a8f7d9dfe97523d4"
 
-ThisBuild / dependencyOverrides += "net.java.dev.jna" % "jna" % jnaVersion
+def fileSha256(file: File): String = {
+  val digest = java.security.MessageDigest.getInstance("SHA-256")
+  val stream = new java.io.BufferedInputStream(new java.io.FileInputStream(file))
+  val buffer = new Array[Byte](8192)
+  try {
+    var read = stream.read(buffer)
+    while (read >= 0) {
+      if (read > 0) digest.update(buffer, 0, read)
+      read = stream.read(buffer)
+    }
+  } finally stream.close()
+  digest.digest().map(value => f"${value & 0xff}%02x").mkString
+}
 
 lazy val stage = taskKey[File]("Stage the semantic-scala CLI launcher")
 
@@ -72,6 +87,7 @@ lazy val root = (project in file("."))
     semanticdbReader,
     presentationCompiler,
     semanticReconciliation,
+    zincFreshnessWorker,
     mcpServer,
     fpAnalyzers,
     benchmark
@@ -200,7 +216,59 @@ lazy val semanticReconciliation = (project in file("modules/semantic-reconciliat
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
-      "org.scala-sbt" %% "zinc-persist" % zincVersion cross CrossVersion.for3Use2_13,
+      "io.get-coursier" % "interface" % workerCoursierInterfaceVersion,
+      "org.scalameta" %% "munit" % munitVersion % Test
+    ),
+    Compile / resourceGenerators += Def.task {
+      val workerJar = (zincFreshnessWorker / Compile / packageBin).value
+      val frozenInventoryFile = baseDirectory.value.getParentFile /
+        "zinc-freshness-worker" / "worker-dependencies.v1.tsv"
+      if (fileSha256(workerJar) != workerJarSha256)
+        sys.error(s"Worker JAR identity drifted: ${fileSha256(workerJar)}")
+      if (!frozenInventoryFile.isFile || fileSha256(frozenInventoryFile) != workerDependencyInventorySha256)
+        sys.error("Frozen worker dependency inventory bytes drifted")
+      val expectedInventory = IO.readLines(frozenInventoryFile).map { line =>
+        line.split("\\t", -1).toList match {
+          case path :: bytes :: sha256 :: Nil => (path, bytes.toLong, sha256)
+          case _ => sys.error("Frozen worker dependency inventory is malformed")
+        }
+      }
+      val controllerInventoryBytes = expectedInventory.sortBy(_._1.split('/').last).map {
+        case (path, bytes, _) => s"${path.split('/').last}\\t$bytes\n"
+      }.mkString.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+      val controllerInventorySha256 = java.security.MessageDigest.getInstance("SHA-256")
+        .digest(controllerInventoryBytes).map(value => f"${value & 0xff}%02x").mkString
+      if (controllerInventorySha256 != "c5abc92c5a51596c8f13142370bc2cdd1081d7c6e08e4fddbe3c83d6767fee36")
+        sys.error(s"Worker controller inventory identity drifted: $controllerInventorySha256")
+      val workerDependencies = (zincFreshnessWorker / Runtime / dependencyClasspath).value
+        .map(_.data).filter(_.getName.endsWith(".jar"))
+      val inventory = workerDependencies.map { file =>
+        val normalized = file.getAbsolutePath.replace(java.io.File.separatorChar, '/')
+        val marker = "/maven2/"
+        val index = normalized.indexOf(marker)
+        if (index < 0) sys.error(s"Worker dependency is not a Maven Central cache artifact: ${file.getName}")
+        (normalized.substring(index + marker.length), file.length, fileSha256(file))
+      }.sortBy(_._1)
+      if (inventory != expectedInventory || inventory.size != 42 || inventory.map(_._2).sum != 38241533L)
+        sys.error(s"Worker dependency inventory drifted: ${inventory.size} artifacts / ${inventory.map(_._2).sum} bytes")
+      val resourceRoot = (Compile / resourceManaged).value / "semantic/harness/reconciliation"
+      val normalizedDestination = resourceRoot / "semantic-scala-zinc-freshness-worker.jar"
+      val inventoryDestination = resourceRoot / "semantic-scala-zinc-freshness-worker-dependencies.tsv"
+      IO.copyFile(workerJar, normalizedDestination)
+      IO.copyFile(frozenInventoryFile, inventoryDestination)
+      Seq(normalizedDestination, inventoryDestination)
+    }.taskValue
+  )
+
+lazy val zincFreshnessWorker = (project in file("modules/zinc-freshness-worker"))
+  .settings(
+    scalaVersion := "2.13.18",
+    name := "semantic-scala-zinc-freshness-worker",
+    description := "Unpublished on-demand Zinc freshness worker",
+    publish / skip := true,
+    Compile / mainClass := Some("semantic.harness.reconciliation.worker.ZincFreshnessWorkerMain"),
+    libraryDependencies ++= Seq(
+      "org.scala-sbt" %% "zinc-persist" % zincVersion,
       "net.java.dev.jna" % "jna" % jnaVersion,
       "org.scalameta" %% "munit" % munitVersion % Test
     )

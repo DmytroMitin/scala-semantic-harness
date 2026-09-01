@@ -10,6 +10,7 @@ import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
+import java.security.MessageDigest
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 import semantic.harness.presentation.PresentationCompilerContext
@@ -1209,13 +1210,15 @@ final class PointEvidenceServiceV4 private (
         inspection.includeExistingInternalOutputs,
         inspection.requireFreshInternalOutputs
       ))
-      .flatMap(receipt => PointContextSafety
-        .capture(
+      .flatMap(receipt => PointContextSafety.capture(
           request.workspace,
           receipt,
           inspection.includeExistingInternalOutputs,
           inspection.requireFreshInternalOutputs,
-          freshnessAssessor
+          freshnessAssessor,
+          inspection.contextSnapshot.map(_.internalDependencies.flatMap(snapshot =>
+            snapshot.freshness.map(snapshot.receipt.projectRef -> _)
+          ).toMap)
         )
         .toOption)
     val rootsStable = (inspection.contextSnapshot, currentContext) match
@@ -1227,6 +1230,7 @@ final class PointEvidenceServiceV4 private (
     val inputsStable = (inspection.contextSnapshot, currentContext) match
       case (Some(before), Some(after)) =>
         before.inputEvidence == after.inputEvidence &&
+          before.freshnessInputEvidence == after.freshnessInputEvidence &&
           before.internalDependencies.map(_.inputIdentity) == after.internalDependencies.map(_.inputIdentity)
       case (None, None) => true
       case _ => false
@@ -1435,7 +1439,29 @@ private final case class PointContextSnapshot(
     externalDependencyEntryCount: Int,
     internalDependencies: List[PointInternalDependencySnapshot],
     presentationEntries: List[Path],
-    inputEvidence: List[SbtClasspathEntryEvidence]
+    inputEvidence: List[SbtClasspathEntryEvidence],
+    freshnessInputEvidence: Option[PointFreshnessInputEvidence]
+)
+
+private final case class PointFreshnessDirectoryIdentity(
+    projectRef: String,
+    role: String,
+    identity: PointPathIdentity
+)
+
+private final case class PointFreshnessFileEvidence(
+    projectRef: String,
+    path: Path,
+    existed: Boolean,
+    fileKey: Option[String],
+    bytes: Option[Long],
+    sha256: Option[String]
+)
+
+private final case class PointFreshnessInputEvidence(
+    directories: List[PointFreshnessDirectoryIdentity],
+    directoryContents: List[SbtClasspathEntryEvidence],
+    analysisFiles: List[PointFreshnessFileEvidence]
 )
 
 private enum PointInternalDirectoryStatus:
@@ -1465,7 +1491,8 @@ private object PointContextSafety:
       receipt: SbtPointContextReceipt,
       includeExistingInternalOutputs: Boolean = false,
       requireFreshInternalOutputs: Boolean = false,
-      freshnessAssessor: InternalOutputFreshnessAssessor = InternalOutputFreshnessAssessor.default
+      freshnessAssessor: InternalOutputFreshnessAssessor = InternalOutputFreshnessAssessor.default,
+      reusedFreshness: Option[Map[String, InternalOutputFreshnessAssessment]] = None
   ): Either[String, PointContextSnapshot] =
     for
       workspaceReal <- realWorkspace(workspace)
@@ -1495,9 +1522,13 @@ private object PointContextSafety:
           workspaceReal,
           receipt,
           requireFreshInternalOutputs,
-          freshnessAssessor
+          freshnessAssessor,
+          reusedFreshness
         )
       else Right(Nil)
+      freshnessEvidence <- if requireFreshInternalOutputs then
+        captureFreshnessInputEvidence(workspaceReal, internal).map(Some(_))
+      else Right(None)
       internalEntries = internal.collect {
         case PointInternalDependencySnapshot(
               _,
@@ -1539,14 +1570,16 @@ private object PointContextSafety:
       external.size,
       internal,
       presentation.map(_.path),
-      evidence
+      evidence,
+      freshnessEvidence
     )
 
   private def captureInternal(
       workspaceReal: Path,
       receipt: SbtPointContextReceipt,
       requireFreshInternalOutputs: Boolean,
-      freshnessAssessor: InternalOutputFreshnessAssessor
+      freshnessAssessor: InternalOutputFreshnessAssessor,
+      reusedFreshness: Option[Map[String, InternalOutputFreshnessAssessment]]
   ): Either[String, List[PointInternalDependencySnapshot]] =
     for
       _ <- Either.cond(
@@ -1554,7 +1587,7 @@ private object PointContextSafety:
         (),
         "The internal dependency project receipts are not unique"
       )
-      snapshots <- receipt.internalDependencies.foldLeft[
+      rawSnapshots <- receipt.internalDependencies.foldLeft[
         Either[String, List[PointInternalDependencySnapshot]]
       ](Right(Nil)) { (result, dependency) =>
         result.flatMap { values =>
@@ -1566,22 +1599,13 @@ private object PointContextSafety:
             ) match
               case Right(identity) if identity.existed == dependency.classDirectoryPresent &&
                   (!requireFreshInternalOutputs || !relative(workspaceReal, identity.path).contains('\\')) =>
-                val freshness = Option.when(requireFreshInternalOutputs)(
-                  freshnessAssessor.assess(
-                    workspaceReal,
-                    dependency.effectiveScalaVersion.value,
-                    dependency.classDirectory,
-                    dependency.compileAnalysisFile,
-                    dependency.sourceLayout
-                  )
-                )
                 PointInternalDependencySnapshot(
                   dependency,
                   Some(identity),
                   Some(relative(workspaceReal, identity.path)),
                   if identity.existed then PointInternalDirectoryStatus.PresentIncluded
                   else PointInternalDirectoryStatus.AbsentNotIncluded,
-                  freshness
+                  None
                 )
               case _ =>
                 PointInternalDependencySnapshot(
@@ -1601,7 +1625,132 @@ private object PointContextSafety:
           }
         }
       }
+      assessmentRequests = rawSnapshots.collect { case snapshot if snapshot.identity.nonEmpty =>
+        val dependency = snapshot.receipt
+        InternalOutputFreshnessRequest(
+          dependency.projectRef,
+          workspaceReal,
+          dependency.effectiveScalaVersion.value,
+          dependency.classDirectory,
+          dependency.compileAnalysisFile,
+          dependency.sourceLayout
+        )
+      }
+      assessments <- if !requireFreshInternalOutputs then Right(Map.empty)
+      else reusedFreshness match
+        case Some(values) => Either.cond(
+          values.keySet == rawSnapshots.map(_.receipt.projectRef).toSet,
+          values,
+          "The prior internal-output freshness batch could not be reused exactly"
+        )
+        case None => Right(freshnessAssessor.assessBatch(assessmentRequests))
+      snapshots = rawSnapshots.map { snapshot =>
+        if !requireFreshInternalOutputs || snapshot.freshness.nonEmpty then snapshot
+        else snapshot.copy(freshness = assessments.get(snapshot.receipt.projectRef))
+      }
     yield snapshots
+
+  private def captureFreshnessInputEvidence(
+      workspaceReal: Path,
+      snapshots: List[PointInternalDependencySnapshot]
+  ): Either[String, PointFreshnessInputEvidence] =
+    val directoryRequests = snapshots.flatMap { snapshot =>
+      val dependency = snapshot.receipt
+      val sourceDirectories = dependency.sourceLayout.toList.flatMap(layout =>
+        (layout.sourceDirectories ++ layout.unmanagedSourceDirectories ++ layout.managedSourceDirectories).distinct
+      )
+      (dependency.projectRef, "class-directory", dependency.classDirectory) ::
+        sourceDirectories.map(path => (dependency.projectRef, "source-directory", path))
+    }
+    for
+      directories <- directoryRequests.foldLeft[
+        Either[String, List[PointFreshnessDirectoryIdentity]]
+      ](Right(Nil)) { case (result, (projectRef, role, path)) =>
+        result.flatMap(values => safeRoot(workspaceReal, path, s"freshness $role").map(identity =>
+          values :+ PointFreshnessDirectoryIdentity(
+            projectRef,
+            role,
+            identity
+          )
+        ))
+      }
+      existingDirectories = directories.map(_.identity).filter(_.existed).map(_.path).distinct
+      contents <- if existingDirectories.isEmpty then Right(Nil)
+      else SbtClasspathEvidenceCollector.default.collectEntries(existingDirectories.map(path =>
+        SbtClasspathEntry(path, SbtClasspathEntryKind.Directory)
+      )).left.map(_ => "The internal freshness input directories could not be captured within bounds")
+      analysis <- captureAnalysisEvidence(workspaceReal, snapshots)
+    yield PointFreshnessInputEvidence(directories, contents, analysis)
+
+  private def captureAnalysisEvidence(
+      workspaceReal: Path,
+      snapshots: List[PointInternalDependencySnapshot]
+  ): Either[String, List[PointFreshnessFileEvidence]] =
+    snapshots.foldLeft[Either[String, (List[PointFreshnessFileEvidence], Long)]](Right(Nil -> 0L)) {
+      (result, snapshot) => result.flatMap { case (values, total) =>
+        snapshot.receipt.compileAnalysisFile match
+          case None => Right(values -> total)
+          case Some(candidate) => safeRegularFileEvidence(
+            workspaceReal,
+            snapshot.receipt.projectRef,
+            candidate
+          ).flatMap { evidence =>
+            val updated = Math.addExact(total, evidence.bytes.getOrElse(0L))
+            Either.cond(
+              updated <= 256L * 1024L * 1024L,
+              (values :+ evidence) -> updated,
+              "The internal freshness analysis inputs exceeded their aggregate byte bound"
+            )
+          }
+      }
+    }.map(_._1)
+
+  private def safeRegularFileEvidence(
+      workspaceReal: Path,
+      projectRef: String,
+      candidate: Path
+  ): Either[String, PointFreshnessFileEvidence] =
+    try
+      val normalized = candidate.toAbsolutePath.normalize()
+      if !normalized.startsWith(workspaceReal) || containsSymlink(workspaceReal, normalized) then
+        Left("An internal freshness analysis input was outside the safe workspace boundary")
+      else if !Files.exists(normalized, LinkOption.NOFOLLOW_LINKS) then
+        Right(PointFreshnessFileEvidence(projectRef, normalized, false, None, None, None))
+      else if !Files.isRegularFile(normalized, LinkOption.NOFOLLOW_LINKS) then
+        Left("An internal freshness analysis input was not a regular file")
+      else
+        val real = normalized.toRealPath()
+        val before = Files.readAttributes(real, classOf[BasicFileAttributes], LinkOption.NOFOLLOW_LINKS)
+        val size = before.size()
+        if size > 64L * 1024L * 1024L then
+          Left("An internal freshness analysis input exceeded its byte bound")
+        else
+          val digest = MessageDigest.getInstance("SHA-256")
+          val stream = Files.newInputStream(real)
+          val buffer = Array.ofDim[Byte](64 * 1024)
+          var readTotal = 0L
+          try
+            var read = stream.read(buffer)
+            while read >= 0 do
+              if read > 0 then
+                readTotal = Math.addExact(readTotal, read.toLong)
+                if readTotal > 64L * 1024L * 1024L then
+                  throw IllegalStateException("analysis input bound exceeded while reading")
+                digest.update(buffer, 0, read)
+              read = stream.read(buffer)
+          finally stream.close()
+          val after = Files.readAttributes(real, classOf[BasicFileAttributes], LinkOption.NOFOLLOW_LINKS)
+          if readTotal != size || after.size() != size || before.fileKey() != after.fileKey() then
+            Left("An internal freshness analysis input changed while it was captured")
+          else Right(PointFreshnessFileEvidence(
+            projectRef,
+            real,
+            true,
+            Option(after.fileKey()).map(_.toString),
+            Some(size),
+            Some(digest.digest().map(value => f"${value & 0xff}%02x").mkString)
+          ))
+    catch case _: Exception => Left("An internal freshness analysis input could not be captured safely")
 
   private def validateInternal(
       selected: SbtPointContextReceipt,
