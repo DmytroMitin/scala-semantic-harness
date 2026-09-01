@@ -9,6 +9,7 @@ Current command surfaces:
 semantic-scala reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path> --json
 semantic-scala point-evidence --workspace <dir> --file <path> --line <n> --col <n> --json
 semantic-scala point-evidence --workspace <dir> --file <path> --line <n> --col <n> --sbt-project <id> --include-existing-internal-outputs --json
+semantic-scala point-evidence --workspace <dir> --file <path> --line <n> --col <n> --sbt-project <id> --include-existing-internal-outputs --require-fresh-internal-outputs --json
 ```
 
 `reconcile-symbol` captures source and artifact content once and never asks the
@@ -41,6 +42,18 @@ internal outputs, then external dependencies. Missing and unsafe directories
 do not enter the compiler context, and the report remains
 `PartialExistingCompileOutputs`; no compile or arbitrary complete classpath is
 claimed.
+
+The explicit v6 route adds a strict freshness gate over the same v5 graph. It
+reads existing same-axis `Compile / compileAnalysisFile` archives with the
+published Zinc 1.12.1 persistence API and compares bounded source/product
+inventories, relations, and content stamps. Exact configured source-root and
+generator-list provenance comes from the non-running sbt receipt; configured
+generators or managed-source residue fail closed. Archive, inventory, walk,
+per-file, and aggregate content bounds prevent unbounded freshness reads. Only Fresh internal directories
+enter the live compiler context. Stale, missing, corrupt, unsupported, unsafe,
+incomplete, and generator-dependent states are typed and excluded without a
+compile or generation fallback. V6 remains `PartialExistingCompileOutputs` and
+does not claim whole-target or build freshness.
 
 ## Limits
 

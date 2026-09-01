@@ -204,6 +204,102 @@ class SbtPointContextReceiptSuite extends munit.FunSuite:
       assert(SbtPointContextProtocol.parse(SbtPointContextProtocol.render(duplicate), request).isLeft)
     finally deleteRecursively(workspace)
 
+  test("v6 protocol round-trips only the selected-axis analysis path without changing v5"):
+    val workspace = Files.createTempDirectory("point-context-v6-protocol-")
+    val classes = Files.createDirectories(workspace.resolve("app/target/classes"))
+    val semanticdb = Files.createDirectories(workspace.resolve("app/target/meta"))
+    val internalDir = Files.createDirectories(workspace.resolve("macros/target/classes"))
+    val analysis = Files.createDirectories(workspace.resolve("macros/target/zinc"))
+      .resolve("inc_compile_2.13.zip")
+    val axis = scalaVersion("2.13.18")
+    val strictRequest = SbtPointContextRequest(
+      workspace,
+      project("app"),
+      Some(axis),
+      includeExistingInternalOutputs = true,
+      requireFreshInternalOutputs = true
+    )
+    val strictReceipt = SbtPointContextReceipt(
+      project("app"),
+      SbtClasspathConfiguration.Compile,
+      Some(axis),
+      axis,
+      classes,
+      semanticdb,
+      classDirectoryPresent = true,
+      Nil,
+      None,
+      includeExistingInternalOutputs = true,
+      internalDependencies = List(
+        internal("macros", SbtInternalDependencyRole.Direct, axis, internalDir, present = true)
+          .copy(
+            compileAnalysisFile = Some(analysis),
+            sourceLayout = Some(SbtInternalSourceLayoutReceipt(
+              sourceDirectories = List(workspace.resolve("macros/src/main/scala"), workspace.resolve("macros/target/src_managed/main")),
+              unmanagedSourceDirectories = List(workspace.resolve("macros/src/main/scala")),
+              managedSourceDirectories = List(workspace.resolve("macros/target/src_managed/main")),
+              sourceGeneratorCount = 0
+            ))
+          )
+      ),
+      requireFreshInternalOutputs = true
+    )
+    val v5Request = strictRequest.copy(requireFreshInternalOutputs = false)
+    val v5Receipt = strictReceipt.copy(
+      requireFreshInternalOutputs = false,
+      internalDependencies = strictReceipt.internalDependencies.map(
+        _.copy(compileAnalysisFile = None, sourceLayout = None)
+      )
+    )
+    try
+      val rendered = SbtPointContextProtocol.render(strictReceipt)
+      assert(rendered.startsWith(SbtPointContextProtocol.FormatV3 + "\n"), clue(rendered))
+      assertEquals(SbtPointContextProtocol.parse(rendered, strictRequest), Right(strictReceipt))
+      assert(SbtPointContextProtocol.parse(rendered, v5Request).isLeft)
+      assertEquals(SbtPointContextProtocol.parse(SbtPointContextProtocol.render(v5Receipt), v5Request), Right(v5Receipt))
+    finally deleteRecursively(workspace)
+
+  test("v6 settings add only analysis and non-running source-layout provenance to the v5 receipt"):
+    val workspace = Files.createTempDirectory("point-context-v6-injection-")
+    val axis = scalaVersion("2.13.18")
+    try
+      val v5 = SbtPointContextInjection.globalSettings(
+        SbtPointContextRequest(workspace, project("app"), Some(axis), includeExistingInternalOutputs = true)
+      )
+      val v6 = SbtPointContextInjection.globalSettings(
+        SbtPointContextRequest(
+          workspace,
+          project("app"),
+          Some(axis),
+          includeExistingInternalOutputs = true,
+          requireFreshInternalOutputs = true
+        )
+      )
+      assert(!v5.contains("compileAnalysisFile"), clue(v5))
+      assert(v6.contains("Compile / compileAnalysisFile"), clue(v6))
+      assert(v6.contains("Compile / sourceDirectories"), clue(v6))
+      assert(v6.contains("Compile / unmanagedSourceDirectories"), clue(v6))
+      assert(v6.contains("Compile / managedSourceDirectories"), clue(v6))
+      assert(v6.contains("Compile / sourceGenerators"), clue(v6))
+      assert(!v6.contains("Compile / managedSources"), clue(v6))
+      List(
+        "fullClasspath",
+        "products",
+        "exportedProducts",
+        "internalDependencyClasspath",
+        "Compile / compile)",
+        "compile.value"
+      ).foreach(forbidden => assert(!v6.contains(forbidden), clue(v6)))
+
+      val invalid = SbtPointContextRequest(
+        workspace,
+        project("app"),
+        Some(axis),
+        requireFreshInternalOutputs = true
+      )
+      assert(SbtPointContextRequest.validate(invalid).isLeft)
+    finally Files.deleteIfExists(workspace)
+
   private final case class CountingProcess(outcome: SbtPointContextProcessOutcome)
       extends SbtPointContextProcess:
     var calls = 0

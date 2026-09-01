@@ -12,7 +12,7 @@ freshness, or reconciliation.
 ## Request
 
 ```text
-semantic-scala point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs] [--json]
+semantic-scala point-evidence --workspace <dir> --file <scala> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs [--require-fresh-internal-outputs]] [--json]
 ```
 
 The workspace must exist. The source must be an existing regular `.scala` file
@@ -68,7 +68,7 @@ proof.
 The exact eighth MCP tool is:
 
 ```text
-semantic_point_evidence(workspace, file, line, col[, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs])
+semantic_point_evidence(workspace, file, line, col[, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs, requireFreshInternalOutputs])
 ```
 
 The adapter validates the workspace-relative source and positive position.
@@ -79,6 +79,10 @@ output opt-in omitted/false it forwards the target options and accepts only
 Optional boolean `includeExistingInternalOutputs=true` requires `sbtProject`
 and selects only `semantic-scala.point-evidence-result.v5`. Omission or false
 does not change the v2/v4 routes.
+Optional `requireFreshInternalOutputs=true` requires both the project and
+`includeExistingInternalOutputs=true`, then accepts only
+`semantic-scala.point-evidence-result.v6`. Omission or false preserves the
+v2/v4/v5 route selected by the other fields.
 `sbtScalaVersion` and `sbtJavaHome` require `sbtProject`. Adapter or transport
 failure is distinct from every successful domain state above.
 
@@ -176,3 +180,54 @@ dependency resolution, task evaluation for settings, and metadata/cache writes
 remain possible. A resolved v5 point is bounded evidence under this partial
 existing-output context, not whole-project compile, generated-semantics, or
 workspace-completeness proof.
+
+## Strict internal-output freshness v6
+
+Adding `--require-fresh-internal-outputs` to the explicit v5 request emits
+`semantic-scala.point-evidence-result.v6`. The second presence flag requires
+both `--sbt-project` and `--include-existing-internal-outputs`. V6 retains the
+same graph, order, axis, ownership, and partial-context boundaries, but reads
+each admitted dependency's existing same-axis
+`Compile / compileAnalysisFile` path plus the configured `sourceDirectories`,
+`unmanagedSourceDirectories`, `managedSourceDirectories`, and the cardinality
+of the `sourceGenerators` setting in the same bounded sbt lifecycle. Reading
+that generator setting inspects task objects; it does not execute them.
+
+The reader uses the published Zinc 1.12.1 persistence/analysis API. It accepts
+the supported binary analysis container and compiler-axis family only; a
+missing path/file, corrupt archive, unsupported layout/version, or axis
+mismatch is `Unverifiable`. It does not decode private archive bytes itself,
+request compilation, generate sources, or fall back to another axis.
+
+`Fresh` means every safely represented source recorded by the admitted
+analysis still has the recorded content stamp, every recorded product is
+present beneath the dependency class directory with the recorded content
+stamp, source/product relations are internally consistent, the relation
+product set exactly equals the bounded current regular-file inventory beneath
+the dependency class directory, and the
+bounded inventory of the exact configured unmanaged source roots equals the
+recorded source set. The configured all-source roots must equal the union of
+the configured unmanaged and managed roots. Any configured source generator,
+any current source under a managed root, unavailable layout provenance, or an
+unsafe/outside root yields `GeneratedOrManagedSourceUnbounded` instead of
+Fresh. This deliberately refuses to run a generator.
+
+The reader accepts at most a 64 MiB analysis archive, 16 ZIP entries, 128 MiB
+per declared entry, and 256 MiB declared uncompressed aggregate. Parsed and
+current inventories allow at most 50,000 source/product/relation entries and
+100,000 walked filesystem entries. Content hashing reads at most 8 MiB per
+file and 256 MiB per source or product inventory. Exceeding a bound or an I/O
+race becomes typed `Unverifiable`, never Fresh.
+
+A content mismatch for a recorded source or product is `Stale`. Missing
+expected products, unsafe/outside paths, incomplete or unbounded inventories,
+inconsistent relations, and unsupported generated/managed layouts are
+`Unverifiable`. Only `PresentFreshIncluded` contributes to the live Presentation
+Compiler context. Stale, Unverifiable, absent, and unsafe entries remain typed
+in the receipt but do not contribute. The result stays
+`PartialExistingCompileOutputs`; Fresh does not mean that the selected target,
+whole build, arbitrary configurations, generated semantics, or workspace is
+fresh or complete. File mtimes, directory timestamps, Git state, and mere
+existence are not freshness authority. Public JSON contains only safe relative
+analysis paths and aggregate counts, never raw Zinc databases or private
+absolute paths.

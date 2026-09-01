@@ -9,14 +9,17 @@ final case class SbtPointContextRequest(
     project: SbtProjectId,
     requestedScalaVersion: Option[SbtScalaVersion] = None,
     targetJava: Option[ValidatedSbtJavaHome] = None,
-    includeExistingInternalOutputs: Boolean = false
+    includeExistingInternalOutputs: Boolean = false,
+    requireFreshInternalOutputs: Boolean = false
 )
 
 object SbtPointContextRequest:
   def validate(request: SbtPointContextRequest): Either[String, SbtPointContextRequest] =
     try
       val normalized = request.workspace.toAbsolutePath.normalize()
-      if !Files.exists(normalized, LinkOption.NOFOLLOW_LINKS) then
+      if request.requireFreshInternalOutputs && !request.includeExistingInternalOutputs then
+        Left("fresh internal outputs require existing internal outputs")
+      else if !Files.exists(normalized, LinkOption.NOFOLLOW_LINKS) then
         Left(s"sbt workspace does not exist: $normalized")
       else if Files.isSymbolicLink(normalized) then
         Left("sbt workspace symbolic links are not permitted")
@@ -37,7 +40,8 @@ final case class SbtPointContextReceipt(
     targetJavaContext: Option[String],
     includeExistingInternalOutputs: Boolean = false,
     internalDependencies: List[SbtInternalDependencyReceipt] = Nil,
-    internalDependencyExclusions: List[SbtInternalDependencyExclusion] = Nil
+    internalDependencyExclusions: List[SbtInternalDependencyExclusion] = Nil,
+    requireFreshInternalOutputs: Boolean = false
 )
 
 enum SbtPointContextFailure:

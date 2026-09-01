@@ -142,8 +142,21 @@ final case class SbtInternalDependencyReceipt(
     effectiveScalaVersion: SbtScalaVersion,
     configuration: SbtClasspathConfiguration,
     classDirectory: java.nio.file.Path,
-    classDirectoryPresent: Boolean
+    classDirectoryPresent: Boolean,
+    compileAnalysisFile: Option[java.nio.file.Path] = None,
+    sourceLayout: Option[SbtInternalSourceLayoutReceipt] = None
 )
+
+final case class SbtInternalSourceLayoutReceipt(
+    sourceDirectories: List[java.nio.file.Path],
+    unmanagedSourceDirectories: List[java.nio.file.Path],
+    managedSourceDirectories: List[java.nio.file.Path],
+    sourceGeneratorCount: Int
+)
+
+object SbtInternalSourceLayoutReceipt:
+  val MaxSourceDirectories = 128
+  val MaxSourceGenerators = 128
 
 final case class SbtInternalDependencyExclusion(
     projectRef: String,

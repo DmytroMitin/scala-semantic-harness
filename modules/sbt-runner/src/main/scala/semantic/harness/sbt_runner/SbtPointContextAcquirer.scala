@@ -181,9 +181,45 @@ private[sbt_runner] object SbtPointContextInjection:
          |}
          |""".stripMargin
 
-  private val V5Settings =
+  private def internalSettings(requireFreshInternalOutputs: Boolean): String =
+    val profileDescription = if requireFreshInternalOutputs then
+      "Export one bounded strict-freshness partial existing Compile-output point-context receipt"
+    else "Export one bounded partial existing Compile-output point-context receipt"
+    val format = if requireFreshInternalOutputs then SbtPointContextProtocol.FormatV3
+      else SbtPointContextProtocol.FormatV2
+    val analysisLookup = if requireFreshInternalOutputs then
+      s"""|              val dependencyAnalysisFile = try {
+         |                Some(extracted.runTask(ref / Compile / compileAnalysisFile, state.value)._2.getCanonicalFile)
+         |              } catch {
+         |                case scala.util.control.NonFatal(_) => None
+         |              }
+         |              val dependencySourceLayout = try {
+         |                def absolute(file: File): File = file.toPath.toAbsolutePath.normalize.toFile
+         |                val all = extracted.get(ref / Compile / sourceDirectories).map(absolute).distinct
+         |                val unmanaged = extracted.get(ref / Compile / unmanagedSourceDirectories).map(absolute).distinct
+         |                val managed = extracted.get(ref / Compile / managedSourceDirectories).map(absolute).distinct
+         |                val generators = extracted.get(ref / Compile / sourceGenerators).size
+         |                val bounded = Seq(all.size, unmanaged.size, managed.size).forall(
+         |                  _ <= ${SbtInternalSourceLayoutReceipt.MaxSourceDirectories}
+         |                ) && generators <= ${SbtInternalSourceLayoutReceipt.MaxSourceGenerators}
+         |                if (bounded) Some((all, unmanaged, managed, generators)) else None
+         |              } catch {
+         |                case scala.util.control.NonFatal(_) => None
+         |              }
+         |""".stripMargin
+    else "              val dependencyAnalysisFile = None\n              val dependencySourceLayout = None\n"
+    val analysisColumn = if requireFreshInternalOutputs then
+      """ ++ Seq(
+        encoded(dependencyAnalysisFile.fold("")(_.getAbsolutePath)),
+        dependencySourceLayout.isDefined.toString,
+        encoded(dependencySourceLayout.fold("")(_._1.map(_.getAbsolutePath).mkString("\u0000"))),
+        encoded(dependencySourceLayout.fold("")(_._2.map(_.getAbsolutePath).mkString("\u0000"))),
+        encoded(dependencySourceLayout.fold("")(_._3.map(_.getAbsolutePath).mkString("\u0000"))),
+        dependencySourceLayout.fold(0)(_._4).toString
+      )"""
+    else ""
     SbtInjectedClasspathMaterialization.Settings +
-      s"""@transient val $Task = taskKey[Unit]("Export one bounded partial existing Compile-output point-context receipt")
+      s"""@transient val $Task = taskKey[Unit]("$profileDescription")
          |
          |$Task := {
          |  val selectedRef = thisProjectRef.value
@@ -298,8 +334,9 @@ private[sbt_runner] object SbtPointContextInjection:
          |            case None =>
          |              excluded("ThisBuild", project, dependencyRole, mappingStatus, "ClassDirectorySettingUnavailable", Some(axis))
          |            case Some(directory) =>
+         |$analysisLookup
          |              val requestedScala = sys.env.get("SEMANTIC_SCALA_REQUESTED_SCALA_VERSION").getOrElse("")
-         |              internalRows += Seq(
+         |              internalRows += (Seq(
          |                "internal",
          |                encoded(s"ThisBuild/$$project"),
          |                encoded(project),
@@ -310,7 +347,7 @@ private[sbt_runner] object SbtPointContextInjection:
          |                "Compile",
          |                encoded(directory.getAbsolutePath),
          |                directory.isDirectory.toString
-         |              ).mkString("\t")
+         |              )$analysisColumn).mkString("\t")
          |            }
          |          }
          |          projectDefinition.dependencies.foreach(visit(ref, _))
@@ -338,7 +375,7 @@ private[sbt_runner] object SbtPointContextInjection:
          |  IO.writeLines(
          |    file(sys.env("SEMANTIC_SCALA_POINT_CONTEXT_RECEIPT")),
          |    Seq(
-         |      "${SbtPointContextProtocol.FormatV2}",
+         |      "$format",
          |      s"project\t$${encoded(selectedRef.project)}",
          |      "configuration\tCompile"
          |    ) ++ requestedScala ++ Seq(
@@ -351,8 +388,13 @@ private[sbt_runner] object SbtPointContextInjection:
          |}
          |""".stripMargin
 
+  private val V5Settings = internalSettings(requireFreshInternalOutputs = false)
+  private val V6Settings = internalSettings(requireFreshInternalOutputs = true)
+
   def globalSettings(request: SbtPointContextRequest): String =
-    if request.includeExistingInternalOutputs then V5Settings else Settings
+    if request.requireFreshInternalOutputs then V6Settings
+    else if request.includeExistingInternalOutputs then V5Settings
+    else Settings
 
 private[sbt_runner] enum SbtPointContextProcessOutcome:
   case Completed(result: SbtRunResult)

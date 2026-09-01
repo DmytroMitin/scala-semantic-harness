@@ -277,6 +277,53 @@ class CliParserSuite extends munit.FunSuite:
     assert(help.stdout.exists(_.contains("does not request compilation")))
     assert(help.stdout.exists(_.contains("PartialExistingCompileOutputs")))
 
+  test("point-evidence v6 requires both internal-output and strict freshness presence flags"):
+    val base = List(
+      "point-evidence", "--workspace", ".", "--file", "Main.scala",
+      "--line", "1", "--col", "1"
+    )
+    assertEquals(
+      CliParser.parse(base ++ List(
+        "--sbt-project", "kernelJVM",
+        "--sbt-scala-version", "3.3.7",
+        "--sbt-java-home", "/opt/jdk",
+        "--include-existing-internal-outputs",
+        "--require-fresh-internal-outputs",
+        "--json"
+      )),
+      ParseResult.Parsed(CliCommand.PointEvidence(
+        "Main.scala",
+        ".",
+        1,
+        1,
+        json = true,
+        Some(project("kernelJVM")),
+        Some(scalaVersion("3.3.7")),
+        Some("/opt/jdk"),
+        includeExistingInternalOutputs = true,
+        requireFreshInternalOutputs = true
+      ))
+    )
+
+    val invalid = List(
+      base ++ List("--require-fresh-internal-outputs"),
+      base ++ List("--sbt-project", "kernelJVM", "--require-fresh-internal-outputs"),
+      base ++ List("--include-existing-internal-outputs", "--require-fresh-internal-outputs"),
+      base ++ List(
+        "--sbt-project", "kernelJVM",
+        "--include-existing-internal-outputs",
+        "--require-fresh-internal-outputs",
+        "--require-fresh-internal-outputs"
+      )
+    )
+    invalid.foreach(args => assert(CliParser.parse(args).isInstanceOf[ParseResult.Invalid], clue(args)))
+
+    val help = CliApp.run(List("help", "point-evidence"))
+    assertEquals(help.exitCode, 0)
+    assert(help.stdout.exists(_.contains("--require-fresh-internal-outputs")))
+    assert(help.stdout.exists(_.contains("v6")))
+    assert(help.stdout.exists(_.contains("only Fresh")))
+
   test("parses the CLI-only fixed-Compile TASTy point evidence contract"):
     val args = List(
       "tasty-point-evidence",

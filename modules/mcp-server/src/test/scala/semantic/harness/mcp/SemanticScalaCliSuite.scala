@@ -12,6 +12,7 @@ import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.reconciliation.PointEvidenceReportV4
 import semantic.harness.reconciliation.PointEvidenceReportV5
+import semantic.harness.reconciliation.PointEvidenceReportV6
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -332,6 +333,49 @@ class SemanticScalaCliSuite extends munit.FunSuite:
         )
       assert(!rejected.ok)
       assert(rejected.error.exists(_.contains("requires sbtProject")), clue(rejected))
+    }
+
+  test("semantic_point_evidence strict freshness opt-in selects v6 argv and schema"):
+    withScalaWorkspace { (workspace, file) =>
+      val runner = RecordingRunner(successPayload(
+        success = true,
+        schemaVersion = PointEvidenceReportV6.SchemaVersion
+      ))
+      val result = SemanticScalaCli(Path.of("/tmp/semantic-scala"), runner).semanticPointEvidence(
+        workspace = workspace,
+        file = file,
+        line = 2,
+        col = 7,
+        sbtProject = Some("kernelJVM"),
+        sbtScalaVersion = Some("3.3.7"),
+        sbtJavaHome = Some("/opt/jdk"),
+        includeExistingInternalOutputs = true,
+        requireFreshInternalOutputs = true,
+        execution = ProcessExecution.default
+      )
+
+      assert(result.ok, clue(result))
+      assertEquals(result.schemaVersion, Some(PointEvidenceReportV6.SchemaVersion))
+      assertEquals(
+        runner.calls.head._1.takeRight(4),
+        List("/opt/jdk", "--include-existing-internal-outputs", "--require-fresh-internal-outputs", "--json")
+      )
+
+      val rejected = SemanticScalaCli(Path.of("semantic-scala"), RecordingRunner(pointEvidencePayload))
+        .semanticPointEvidence(
+          workspace = workspace,
+          file = file,
+          line = 2,
+          col = 7,
+          sbtProject = Some("kernelJVM"),
+          sbtScalaVersion = None,
+          sbtJavaHome = None,
+          includeExistingInternalOutputs = false,
+          requireFreshInternalOutputs = true,
+          execution = ProcessExecution.default
+        )
+      assert(!rejected.ok)
+      assert(rejected.error.exists(_.contains("requires includeExistingInternalOutputs")), clue(rejected))
     }
 
   test("semantic_point_evidence validates relative contained Scala input and positive position"):

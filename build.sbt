@@ -29,6 +29,10 @@ lazy val munitVersion = "1.0.0"
 lazy val semanticdbVersion = "4.16.1"
 lazy val presentationCompilerVersion = "3.3.3"
 lazy val coursierInterfaceVersion = "1.0.28"
+lazy val zincVersion = "1.12.1"
+lazy val jnaVersion = "5.14.0"
+
+ThisBuild / dependencyOverrides += "net.java.dev.jna" % "jna" % jnaVersion
 
 lazy val stage = taskKey[File]("Stage the semantic-scala CLI launcher")
 
@@ -196,6 +200,8 @@ lazy val semanticReconciliation = (project in file("modules/semantic-reconciliat
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
+      "org.scala-sbt" %% "zinc-persist" % zincVersion cross CrossVersion.for3Use2_13,
+      "net.java.dev.jna" % "jna" % jnaVersion,
       "org.scalameta" %% "munit" % munitVersion % Test
     )
   )

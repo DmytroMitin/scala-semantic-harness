@@ -43,7 +43,8 @@ orchestration framework, or MCP tool.
 - opt-in alpha-3 build-target-aware SemanticDB source mapping v4 with a
   validated Scala-axis selector and non-compiling root-only receipt, alongside
   target-aware point-evidence v4 with a non-compiling partial existing-output
-  receipt;
+  receipt, v5 optional existing internal outputs, and strict v6 freshness
+  gating for those internal outputs;
 - a CLI-only same-request post-compile TASTy point-evidence operation and
   strengthened sbt-backed Presentation Compiler context warnings;
 - bounded sbt 1.12.15 / 2.0.6 compatibility for the existing selected
@@ -87,6 +88,13 @@ provenance, and remains `PartialExistingCompileOutputs`; it does not compile,
 model arbitrary configuration algebra, or replay compiler options/plugins.
 Frozen cats-tagless 2.13/2.12 and missing-output controls qualify this bounded
 addition while the Cats Effect default v4 rows remain unchanged.
+The second explicit v6 opt-in reads existing same-axis Zinc compile analysis
+and permits only internal outputs that pass bounded source/product inventory,
+relation, and content checks to contribute. On the same frozen cats-tagless
+target, clean v6 retained the annotation symbol, while the one-line producer
+rename, missing selected-axis analysis, wrong-axis-only analysis, and missing
+class directory all excluded the affected support without regenerating it.
+This is a bounded stale-support gate, not whole-target/build freshness.
 
 ## Evidence and readiness
 

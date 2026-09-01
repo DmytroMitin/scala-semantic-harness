@@ -40,8 +40,8 @@ semantic-scala semanticdb-coverage --workspace <path>
 semantic-scala semanticdb-coverage --workspace <path> --json
 semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>]
 semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] --json
-semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>]
-semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] --json
+semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs [--require-fresh-internal-outputs]]
+semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs [--require-fresh-internal-outputs]] --json
 semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <workspace-relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
 semantic-scala symbols --semanticdb <path>
 semantic-scala symbols --semanticdb <path> --json
@@ -143,6 +143,20 @@ fallback, or compiler/plugin replay is requested.
 Graph discovery is separate from class-directory acquisition: an admitted
 project whose `Compile / classDirectory` setting is unavailable is typed as an
 exclusion without preventing traversal of its already-declared dependencies.
+
+A second presence flag, `--require-fresh-internal-outputs`, requires the v5
+flag and emits v6. The same bounded lifecycle additionally reads each admitted
+dependency's existing `Compile / compileAnalysisFile` and configured source
+directory/generator settings without running generator tasks. A Zinc 1.12.1
+persistence reader verifies the selected Scala axis, bounded exact configured
+unmanaged-source inventory, absence of generator-dependent managed provenance,
+exact class-product inventory and relations, and bounded current content
+stamps. Only Fresh internal directories contribute;
+Stale, Unverifiable, absent, and unsafe entries are excluded without build or
+generator fallback. V6 remains `PartialExistingCompileOutputs` and makes no
+whole-target, build, or workspace freshness claim. See
+[`docs/point-evidence.md`](point-evidence.md#strict-internal-output-freshness-v6)
+for the exact fail-closed coverage rule.
 
 Both target-aware v4 routes can explicitly select a cross-Scala axis. Requested
 and effective versions and their match status are reported from the same fresh
@@ -707,6 +721,10 @@ prove current sbt freshness or cover arbitrary build inputs.
   `PointEvidenceReportV5` with top-level `schemaVersion`
   `semantic-scala.point-evidence-result.v5`. The flag requires the project and
   preserves the v4 route when omitted.
+- Adding `--require-fresh-internal-outputs` with the internal-output flag emits
+  `PointEvidenceReportV6` with top-level `schemaVersion`
+  `semantic-scala.point-evidence-result.v6`. The strict flag requires both the
+  project and `--include-existing-internal-outputs`; omission preserves v5.
 - `symbols --semanticdb <path> --json` emits a `SemanticFileSummary` and keeps
   stdout JSON-only. Its top-level `schemaVersion` is
   `semantic-scala.symbols-result.v1`.
@@ -758,9 +776,11 @@ semantic-scala point-evidence --workspace . --file <path> --line <n> --col <n> -
 
 For the first three tools and the eighth `semantic_point_evidence` tool,
 optional MCP string inputs `sbtProject`, `sbtScalaVersion`, and `sbtJavaHome`
-map only to their corresponding CLI options. Optional boolean
-`includeExistingInternalOutputs` exists only on the eighth tool; true requires
-`sbtProject` and selects the CLI v5 flag. They use the same strict project,
+map only to their corresponding CLI options. Optional booleans
+`includeExistingInternalOutputs` and `requireFreshInternalOutputs` exist only
+on the eighth tool. The first selects v5 and requires `sbtProject`; the second
+selects strict v6 and requires both `sbtProject` and
+`includeExistingInternalOutputs=true`. They use the same strict project,
 version, and absolute-home policies; both dependent fields require
 `sbtProject`. These fields
 remain absent from tools 4-7, and the ordered registry remains exactly eight
@@ -791,8 +811,9 @@ SemanticDB occurrence data.
 policy, delegates to the CLI-owned composition, and requires
 `semantic-scala.point-evidence-result.v2` without target inputs or
 `semantic-scala.point-evidence-result.v4` with `sbtProject` and the boolean
-omitted/false, or `semantic-scala.point-evidence-result.v5` with the boolean
-true. It never accepts a
+omitted/false, `semantic-scala.point-evidence-result.v5` with only
+`includeExistingInternalOutputs=true`, or
+`semantic-scala.point-evidence-result.v6` when both booleans are true. It never accepts a
 caller-selected SemanticDB artifact. Target acquisition may execute checked-in
 sbt build/plugin code and populate resolution/metadata caches, but it does not
 request target compilation, `fullClasspath`, products, or exported products.

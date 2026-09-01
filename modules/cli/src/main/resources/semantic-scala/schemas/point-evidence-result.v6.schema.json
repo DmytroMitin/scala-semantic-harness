@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semantic-scala:schema:point-evidence-result:v6",
+  "title": "semantic-scala strict internal-output freshness point evidence result v6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "workspace", "sourceFile", "position", "discovery", "targetContext", "targetSelection", "livePoint", "reconciliation"],
+  "properties": {
+    "schemaVersion": { "const": "semantic-scala.point-evidence-result.v6" },
+    "workspace": { "type": "string" },
+    "sourceFile": { "type": "string" },
+    "position": { "$ref": "urn:semantic-scala:schema:point-evidence-result:v4#/$defs/rangePosition" },
+    "discovery": { "$ref": "urn:semantic-scala:schema:semanticdb-for-source:v2" },
+    "targetContext": { "$ref": "#/$defs/targetContext" },
+    "targetSelection": { "$ref": "urn:semantic-scala:schema:point-evidence-result:v4#/$defs/targetSelection" },
+    "livePoint": { "$ref": "urn:semantic-scala:schema:point-evidence-result:v4#/$defs/livePoint" },
+    "reconciliation": {
+      "oneOf": [
+        { "$ref": "urn:semantic-scala:schema:reconcile-symbol-result:v2" },
+        { "$ref": "urn:semantic-scala:schema:point-evidence-result:v4#/$defs/targetNotAttemptedReconciliation" }
+      ]
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*\\\\)(?!/)(?![A-Za-z]:[\\\\/])(?!.*(?:^|/)\\.\\.(?:/|$)).+"
+    },
+    "freshnessReason": {
+      "enum": [
+        "SourceAndProductContentMatch",
+        "SourceContentMismatch",
+        "ProductContentMismatch",
+        "AnalysisPathUnavailable",
+        "AnalysisFileMissing",
+        "UnsupportedAnalysisFormatOrVersion",
+        "CorruptOrUnreadableAnalysis",
+        "SourceInventoryIncompleteOrUnbounded",
+        "ProductInventoryIncompleteOrUnbounded",
+        "MissingExpectedProduct",
+        "UnsafeSourceOrProductPath",
+        "GeneratedOrManagedSourceUnbounded",
+        "ScalaAxisMismatch",
+        "DependencyClassDirectoryAbsent",
+        "DependencyClassDirectoryUnsafe",
+        "SourceProductRelationsInconsistent"
+      ]
+    },
+    "internalDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectRef", "project", "role", "compileMapping", "requestedScalaVersion",
+        "effectiveScalaVersion", "scalaAxisStatus", "configuration", "classDirectory",
+        "analysisFile", "directoryStatus", "freshnessStatus", "freshnessReason",
+        "recordedSourceCount", "recordedProductCount",
+        "contributedToPresentationCompilerContext", "acquisitionEffect"
+      ],
+      "properties": {
+        "projectRef": { "type": "string", "pattern": "^ThisBuild/[A-Za-z][A-Za-z0-9_-]*$" },
+        "project": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]*$" },
+        "role": { "enum": ["Direct", "Transitive"] },
+        "compileMapping": { "enum": ["DefaultCompileToCompile", "ExplicitCompileToCompile"] },
+        "requestedScalaVersion": { "type": ["string", "null"] },
+        "effectiveScalaVersion": { "type": "string", "minLength": 1 },
+        "scalaAxisStatus": { "enum": ["BuildDefault", "RequestedMatched"] },
+        "configuration": { "const": "Compile" },
+        "classDirectory": { "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }] },
+        "analysisFile": { "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }] },
+        "directoryStatus": {
+          "enum": ["PresentFreshIncluded", "PresentStaleExcluded", "PresentUnverifiableExcluded", "AbsentNotIncluded", "UnavailableUnsafe"]
+        },
+        "freshnessStatus": { "enum": ["Fresh", "Stale", "Unverifiable"] },
+        "freshnessReason": { "$ref": "#/$defs/freshnessReason" },
+        "recordedSourceCount": { "type": ["integer", "null"], "minimum": 0 },
+        "recordedProductCount": { "type": ["integer", "null"], "minimum": 0 },
+        "contributedToPresentationCompilerContext": { "type": "boolean" },
+        "acquisitionEffect": { "const": "DependencySourceOutputsNotRequested" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "scalaAxisStatus": { "const": "BuildDefault" } }, "required": ["scalaAxisStatus"] },
+          "then": { "properties": { "requestedScalaVersion": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "scalaAxisStatus": { "const": "RequestedMatched" } }, "required": ["scalaAxisStatus"] },
+          "then": { "properties": { "requestedScalaVersion": { "type": "string", "minLength": 1 } } }
+        },
+        {
+          "if": { "properties": { "directoryStatus": { "const": "PresentFreshIncluded" } }, "required": ["directoryStatus"] },
+          "then": { "properties": {
+            "classDirectory": { "$ref": "#/$defs/relativePath" },
+            "analysisFile": { "$ref": "#/$defs/relativePath" },
+            "freshnessStatus": { "const": "Fresh" },
+            "freshnessReason": { "const": "SourceAndProductContentMatch" },
+            "recordedSourceCount": { "type": "integer", "minimum": 1 },
+            "recordedProductCount": { "type": "integer", "minimum": 1 },
+            "contributedToPresentationCompilerContext": { "const": true }
+          } }
+        },
+        {
+          "if": { "properties": { "directoryStatus": { "const": "PresentStaleExcluded" } }, "required": ["directoryStatus"] },
+          "then": { "properties": {
+            "classDirectory": { "$ref": "#/$defs/relativePath" },
+            "analysisFile": { "$ref": "#/$defs/relativePath" },
+            "freshnessStatus": { "const": "Stale" },
+            "freshnessReason": { "enum": ["SourceContentMismatch", "ProductContentMismatch"] },
+            "recordedSourceCount": { "type": "integer", "minimum": 1 },
+            "recordedProductCount": { "type": "integer", "minimum": 1 },
+            "contributedToPresentationCompilerContext": { "const": false }
+          } }
+        },
+        {
+          "if": { "properties": { "directoryStatus": { "const": "PresentUnverifiableExcluded" } }, "required": ["directoryStatus"] },
+          "then": { "properties": {
+            "classDirectory": { "$ref": "#/$defs/relativePath" },
+            "freshnessStatus": { "const": "Unverifiable" },
+            "freshnessReason": { "not": { "enum": ["SourceAndProductContentMatch", "SourceContentMismatch", "ProductContentMismatch", "DependencyClassDirectoryAbsent", "DependencyClassDirectoryUnsafe"] } },
+            "contributedToPresentationCompilerContext": { "const": false }
+          } }
+        },
+        {
+          "if": { "properties": { "freshnessReason": { "const": "AnalysisPathUnavailable" } }, "required": ["freshnessReason"] },
+          "then": { "properties": {
+            "recordedSourceCount": { "type": "null" },
+            "recordedProductCount": { "type": "null" }
+          } }
+        },
+        {
+          "if": { "properties": { "freshnessReason": { "enum": ["AnalysisFileMissing", "UnsupportedAnalysisFormatOrVersion", "CorruptOrUnreadableAnalysis"] } }, "required": ["freshnessReason"] },
+          "then": { "properties": {
+            "analysisFile": { "$ref": "#/$defs/relativePath" },
+            "recordedSourceCount": { "type": "null" },
+            "recordedProductCount": { "type": "null" }
+          } }
+        },
+        {
+          "if": { "properties": { "freshnessReason": { "enum": ["SourceInventoryIncompleteOrUnbounded", "ProductInventoryIncompleteOrUnbounded", "MissingExpectedProduct", "UnsafeSourceOrProductPath", "GeneratedOrManagedSourceUnbounded", "ScalaAxisMismatch", "SourceProductRelationsInconsistent"] } }, "required": ["freshnessReason"] },
+          "then": { "properties": {
+            "analysisFile": { "$ref": "#/$defs/relativePath" },
+            "recordedSourceCount": { "type": "integer", "minimum": 0 },
+            "recordedProductCount": { "type": "integer", "minimum": 0 }
+          } }
+        },
+        {
+          "if": { "properties": { "directoryStatus": { "const": "AbsentNotIncluded" } }, "required": ["directoryStatus"] },
+          "then": { "properties": {
+            "classDirectory": { "$ref": "#/$defs/relativePath" },
+            "freshnessStatus": { "const": "Unverifiable" },
+            "freshnessReason": { "const": "DependencyClassDirectoryAbsent" },
+            "recordedSourceCount": { "type": "null" },
+            "recordedProductCount": { "type": "null" },
+            "contributedToPresentationCompilerContext": { "const": false }
+          } }
+        },
+        {
+          "if": { "properties": { "directoryStatus": { "const": "UnavailableUnsafe" } }, "required": ["directoryStatus"] },
+          "then": { "properties": {
+            "classDirectory": { "type": "null" },
+            "analysisFile": { "type": "null" },
+            "freshnessStatus": { "const": "Unverifiable" },
+            "freshnessReason": { "const": "DependencyClassDirectoryUnsafe" },
+            "recordedSourceCount": { "type": "null" },
+            "recordedProductCount": { "type": "null" },
+            "contributedToPresentationCompilerContext": { "const": false }
+          } }
+        }
+      ]
+    },
+    "targetContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project", "configuration", "status", "requestedScalaVersion", "effectiveScalaVersion",
+        "scalaAxisStatus", "targetJavaContext", "acquisitionProfile", "acquisitionEffect",
+        "buildPerformed", "possibleEffects", "pathStatus", "classDirectory",
+        "semanticdbTargetRoot", "selectedClassDirectoryStatus", "compiledOutputFreshness",
+        "classpathBasis", "externalDependencyEntryCount", "internalDependencies",
+        "internalDependencyExclusions", "internalDependencyDiscoveredCount",
+        "internalDependencyFreshIncludedCount", "internalDependencyStaleExcludedCount",
+        "internalDependencyUnverifiableExcludedCount", "internalDependencyAbsentNotIncludedCount",
+        "internalDependencyUnavailableUnsafeCount", "internalDependencyExcludedCount",
+        "presentationCompilerContextEntryCount", "contextCompleteness", "failure"
+      ],
+      "properties": {
+        "project": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]*$" },
+        "configuration": { "const": "Compile" },
+        "status": { "enum": ["Acquired", "AcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch"] },
+        "requestedScalaVersion": { "type": ["string", "null"] },
+        "effectiveScalaVersion": { "type": ["string", "null"] },
+        "scalaAxisStatus": { "enum": ["BuildDefault", "RequestedMatched", "SwitchFailure", "MismatchFailure", "Unavailable"] },
+        "targetJavaContext": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "acquisitionProfile": { "const": "StrictFreshInternalCompileOutputPointContext" },
+        "acquisitionEffect": { "const": "TargetSourceOutputsNotRequested" },
+        "buildPerformed": { "const": "NotRequested" },
+        "possibleEffects": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "BuildDefinitionOrPluginLoading" },
+            { "const": "DependencyResolution" },
+            { "const": "MetadataOrCacheWrites" }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "pathStatus": { "enum": ["Represented", "UnavailableUnsafeOrNonUnique"] },
+        "classDirectory": { "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }] },
+        "semanticdbTargetRoot": { "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }] },
+        "selectedClassDirectoryStatus": { "enum": ["PresentIncluded", "AbsentNotIncluded", "UnavailableUnsafe"] },
+        "compiledOutputFreshness": { "const": "NotAssessed" },
+        "classpathBasis": { "const": "ExistingSelectedAndFreshInternalCompileOutputsPlusExternalDependencies" },
+        "externalDependencyEntryCount": { "type": ["integer", "null"], "minimum": 0 },
+        "internalDependencies": { "type": "array", "maxItems": 128, "items": { "$ref": "#/$defs/internalDependency" } },
+        "internalDependencyExclusions": { "type": "array", "maxItems": 128, "items": { "$ref": "urn:semantic-scala:schema:point-evidence-result:v5#/$defs/internalDependencyExclusion" } },
+        "internalDependencyDiscoveredCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "internalDependencyFreshIncludedCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "internalDependencyStaleExcludedCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "internalDependencyUnverifiableExcludedCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "internalDependencyAbsentNotIncludedCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "internalDependencyUnavailableUnsafeCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "internalDependencyExcludedCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 128 },
+        "presentationCompilerContextEntryCount": { "type": ["integer", "null"], "minimum": 1 },
+        "contextCompleteness": { "const": "PartialExistingCompileOutputs" },
+        "failure": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "Acquired" }, "scalaAxisStatus": { "const": "BuildDefault" } }, "required": ["status", "scalaAxisStatus"] },
+          "then": { "properties": {
+            "requestedScalaVersion": { "type": "null" },
+            "effectiveScalaVersion": { "type": "string", "minLength": 1 }
+          } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "Acquired" }, "scalaAxisStatus": { "const": "RequestedMatched" } }, "required": ["status", "scalaAxisStatus"] },
+          "then": { "properties": {
+            "requestedScalaVersion": { "type": "string", "minLength": 1 },
+            "effectiveScalaVersion": { "type": "string", "minLength": 1 }
+          } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "Acquired" } }, "required": ["status"] },
+          "then": { "properties": { "scalaAxisStatus": { "enum": ["BuildDefault", "RequestedMatched"] } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "ScalaSwitchFailed" } }, "required": ["status"] },
+          "then": { "properties": {
+            "requestedScalaVersion": { "type": "string", "minLength": 1 },
+            "effectiveScalaVersion": { "type": "null" },
+            "scalaAxisStatus": { "const": "SwitchFailure" }
+          } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "ScalaAxisMismatch" } }, "required": ["status"] },
+          "then": { "properties": {
+            "requestedScalaVersion": { "type": "string", "minLength": 1 },
+            "scalaAxisStatus": { "const": "MismatchFailure" }
+          } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["AcquisitionFailed", "UnknownProject"] } }, "required": ["status"] },
+          "then": { "properties": {
+            "effectiveScalaVersion": { "type": "null" },
+            "scalaAxisStatus": { "const": "Unavailable" }
+          } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "Acquired" }, "pathStatus": { "const": "Represented" } }, "required": ["status", "pathStatus"] },
+          "then": { "properties": {
+            "effectiveScalaVersion": { "type": "string", "minLength": 1 },
+            "classDirectory": { "$ref": "#/$defs/relativePath" },
+            "semanticdbTargetRoot": { "$ref": "#/$defs/relativePath" },
+            "selectedClassDirectoryStatus": { "enum": ["PresentIncluded", "AbsentNotIncluded"] },
+            "externalDependencyEntryCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyDiscoveredCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyFreshIncludedCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyStaleExcludedCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyUnverifiableExcludedCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyAbsentNotIncludedCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyUnavailableUnsafeCount": { "type": "integer", "minimum": 0 },
+            "internalDependencyExcludedCount": { "type": "integer", "minimum": 0 },
+            "presentationCompilerContextEntryCount": { "type": "integer", "minimum": 1 },
+            "failure": { "type": "null" }
+          } }
+        },
+        {
+          "if": { "properties": { "pathStatus": { "const": "UnavailableUnsafeOrNonUnique" } }, "required": ["pathStatus"] },
+          "then": { "properties": {
+            "classDirectory": { "type": "null" },
+            "semanticdbTargetRoot": { "type": "null" },
+            "selectedClassDirectoryStatus": { "const": "UnavailableUnsafe" },
+            "externalDependencyEntryCount": { "type": "null" },
+            "internalDependencies": { "maxItems": 0 },
+            "internalDependencyExclusions": { "maxItems": 0 },
+            "internalDependencyDiscoveredCount": { "type": "null" },
+            "internalDependencyFreshIncludedCount": { "type": "null" },
+            "internalDependencyStaleExcludedCount": { "type": "null" },
+            "internalDependencyUnverifiableExcludedCount": { "type": "null" },
+            "internalDependencyAbsentNotIncludedCount": { "type": "null" },
+            "internalDependencyUnavailableUnsafeCount": { "type": "null" },
+            "internalDependencyExcludedCount": { "type": "null" },
+            "presentationCompilerContextEntryCount": { "type": "null" },
+            "failure": { "type": "string", "minLength": 1 }
+          } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["AcquisitionFailed", "UnknownProject", "ScalaSwitchFailed", "ScalaAxisMismatch"] } }, "required": ["status"] },
+          "then": { "properties": {
+            "pathStatus": { "const": "UnavailableUnsafeOrNonUnique" },
+            "classDirectory": { "type": "null" },
+            "semanticdbTargetRoot": { "type": "null" },
+            "selectedClassDirectoryStatus": { "const": "UnavailableUnsafe" },
+            "externalDependencyEntryCount": { "type": "null" },
+            "internalDependencies": { "maxItems": 0 },
+            "internalDependencyExclusions": { "maxItems": 0 },
+            "internalDependencyDiscoveredCount": { "type": "null" },
+            "internalDependencyFreshIncludedCount": { "type": "null" },
+            "internalDependencyStaleExcludedCount": { "type": "null" },
+            "internalDependencyUnverifiableExcludedCount": { "type": "null" },
+            "internalDependencyAbsentNotIncludedCount": { "type": "null" },
+            "internalDependencyUnavailableUnsafeCount": { "type": "null" },
+            "internalDependencyExcludedCount": { "type": "null" },
+            "presentationCompilerContextEntryCount": { "type": "null" },
+            "failure": { "type": "string", "minLength": 1 }
+          } }
+        }
+      ]
+    }
+  }
+}

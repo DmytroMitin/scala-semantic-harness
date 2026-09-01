@@ -8,6 +8,11 @@ release.
 
 ## Unreleased
 
+- Add an explicit strict target-aware point-evidence v6 profile. It reads only
+  existing same-axis Zinc compile analysis and permits only internal outputs
+  proven Fresh by bounded content and relation checks to contribute. Stale and
+  Unverifiable outputs are typed and excluded; v2/v4/v5 and exact-eight MCP are
+  preserved.
 - Add an explicit target-aware point-evidence v5 opt-in that can use only
   already-present same-axis internal Compile dependency outputs from a bounded
   settings-only receipt. The default target route remains v4, the no-target

@@ -314,7 +314,8 @@ Tool input:
   "sbtProject": "app",
   "sbtScalaVersion": "3.3.7",
   "sbtJavaHome": "/absolute/path/to/installed-jdk",
-  "includeExistingInternalOutputs": true
+  "includeExistingInternalOutputs": true,
+  "requireFreshInternalOutputs": true
 }
 ```
 
@@ -330,6 +331,9 @@ validated target options and accepts only
 `semantic-scala.point-evidence-result.v4`. Optional boolean
 `includeExistingInternalOutputs=true` requires the project and accepts only
 `semantic-scala.point-evidence-result.v5`; omitted/false preserves v2/v4.
+`requireFreshInternalOutputs=true` additionally requires the internal-output
+boolean and accepts only `semantic-scala.point-evidence-result.v6`; omitted or
+false preserves the selected v2/v4/v5 route.
 Target-context acquisition evaluates
 checked-in sbt build/plugin code and can resolve dependencies or populate
 metadata/caches, but does not request target compilation, `fullClasspath`,
@@ -532,6 +536,10 @@ The settings-only route follows admitted Compile dependencies, includes only
 present same-axis class directories, keeps missing/unsafe/excluded entries
 typed, and remains `PartialExistingCompileOutputs`. It does not request
 compilation, products, `fullClasspath`, or `internalDependencyClasspath`.
+With both booleans true, v6 reads existing same-axis compile-analysis files and
+allows only content-verified Fresh internal directories to contribute. Stale
+and Unverifiable entries are excluded, the context remains partial, and no
+compile or generator fallback occurs.
 
 The server does not add arbitrary extra args, generic command execution,
 caching, broad workspace-root policy, direct module calls, or MCP tools beyond

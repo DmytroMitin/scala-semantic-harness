@@ -543,18 +543,24 @@ private final case class PointTargetInspectionV4(
     receipt: Option[SbtPointContextReceipt],
     contextSnapshot: Option[PointContextSnapshot],
     selectedSnapshot: Option[ArtifactSnapshot],
-    includeExistingInternalOutputs: Boolean
+    includeExistingInternalOutputs: Boolean,
+    requireFreshInternalOutputs: Boolean
 )
 
 final class PointEvidenceServiceV4 private (
     acquirer: SbtPointContextAcquirer,
     pointQuery: (Path, String, Int, Int, PresentationCompilerContext) => Either[String, SymbolAtResult],
-    beforeFinalCheck: () => Unit
+    beforeFinalCheck: () => Unit,
+    freshnessAssessor: InternalOutputFreshnessAssessor
 ):
   def inspect(
       request: SemanticPointEvidenceTargetRequestV4
   ): Either[String, PointEvidenceReportV4] =
-    inspectMode(request, includeExistingInternalOutputs = false).map(_._1)
+    inspectMode(
+      request,
+      includeExistingInternalOutputs = false,
+      requireFreshInternalOutputs = false
+    ).map(_._1)
 
   private[reconciliation] def inspectV5(
       request: SemanticPointEvidenceTargetRequestV5
@@ -568,8 +574,41 @@ final class PointEvidenceServiceV4 private (
       request.requestedScalaVersion,
       request.targetJava
     )
-    inspectMode(v4Request, includeExistingInternalOutputs = true).map { case (report, context) =>
+    inspectMode(
+      v4Request,
+      includeExistingInternalOutputs = true,
+      requireFreshInternalOutputs = false
+    ).map { case (report, context, _) =>
       PointEvidenceReportV5(
+        workspace = report.workspace,
+        sourceFile = report.sourceFile,
+        position = report.position,
+        discovery = report.discovery,
+        targetContext = context,
+        targetSelection = report.targetSelection,
+        livePoint = report.livePoint,
+        reconciliation = report.reconciliation
+      )
+    }
+
+  private[reconciliation] def inspectV6(
+      request: SemanticPointEvidenceTargetRequestV6
+  ): Either[String, PointEvidenceReportV6] =
+    val v4Request = SemanticPointEvidenceTargetRequestV4(
+      request.workspace,
+      request.sourceFile,
+      request.line,
+      request.column,
+      request.project,
+      request.requestedScalaVersion,
+      request.targetJava
+    )
+    inspectMode(
+      v4Request,
+      includeExistingInternalOutputs = true,
+      requireFreshInternalOutputs = true
+    ).map { case (report, _, context) =>
+      PointEvidenceReportV6(
         workspace = report.workspace,
         sourceFile = report.sourceFile,
         position = report.position,
@@ -583,8 +622,9 @@ final class PointEvidenceServiceV4 private (
 
   private def inspectMode(
       request: SemanticPointEvidenceTargetRequestV4,
-      includeExistingInternalOutputs: Boolean
-  ): Either[String, (PointEvidenceReportV4, PointContextEvidenceV5)] =
+      includeExistingInternalOutputs: Boolean,
+      requireFreshInternalOutputs: Boolean
+  ): Either[String, (PointEvidenceReportV4, PointContextEvidenceV5, PointContextEvidenceV6)] =
     validate(request).flatMap { validated =>
       val source = SourceSnapshot.capture(validated.sourceFile)
       val acquired = acquirer.acquire(
@@ -593,22 +633,35 @@ final class PointEvidenceServiceV4 private (
           validated.project,
           validated.requestedScalaVersion,
           validated.targetJava,
-          includeExistingInternalOutputs
+          includeExistingInternalOutputs,
+          requireFreshInternalOutputs
         )
       )
       SemanticdbForSource
         .inspectV2WithSnapshots(validated.workspace, validated.sourceFile, source)
         .map { discovery =>
           val receiptMatches = acquired.toOption.exists(
-            receiptMatchesRequest(validated, _, includeExistingInternalOutputs)
+            receiptMatchesRequest(
+              validated,
+              _,
+              includeExistingInternalOutputs,
+              requireFreshInternalOutputs
+            )
           )
           val contextSnapshot = acquired.toOption
             .filter(_ => receiptMatches)
             .flatMap(receipt => PointContextSafety
-              .capture(validated.workspace, receipt, includeExistingInternalOutputs)
+              .capture(
+                validated.workspace,
+                receipt,
+                includeExistingInternalOutputs,
+                requireFreshInternalOutputs,
+                freshnessAssessor
+              )
               .toOption)
           val targetContext = contextEvidence(validated, acquired, receiptMatches, contextSnapshot)
           val targetContextV5 = contextEvidenceV5(validated, acquired, receiptMatches, contextSnapshot)
+          val targetContextV6 = contextEvidenceV6(validated, acquired, receiptMatches, contextSnapshot)
           val (selection, selectedSnapshot) = acquired match
             case Right(_) if !receiptMatches =>
               failed(
@@ -631,7 +684,7 @@ final class PointEvidenceServiceV4 private (
             case Left(_) =>
               failed(PointTargetSelectionStatusV4.TargetContextAcquisitionFailed, "The partial point context could not be acquired") -> None
 
-          complete(
+          val report = complete(
             validated,
             PointTargetInspectionV4(
               validated.workspace,
@@ -644,9 +697,40 @@ final class PointEvidenceServiceV4 private (
               acquired.toOption,
               contextSnapshot,
               selectedSnapshot,
-              includeExistingInternalOutputs
+              includeExistingInternalOutputs,
+              requireFreshInternalOutputs
             )
-          ) -> targetContextV5
+          )
+          val strictContextInvalidated = requireFreshInternalOutputs && Set(
+            PointTargetSelectionStatusV4.PointContextInputsChangedDuringRequest,
+            PointTargetSelectionStatusV4.TargetRootsOrAxisChangedDuringRequest
+          ).contains(report.targetSelection.status)
+          val finalReport = if strictContextInvalidated then report.copy(
+            livePoint = PointLiveEvidence(
+              PointLiveStatus.Unavailable,
+              None,
+              Some("Strict internal-output freshness changed during the request")
+            )
+          ) else report
+          val finalContextV6 = if strictContextInvalidated then targetContextV6.copy(
+            pathStatus = TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique,
+            classDirectory = None,
+            semanticdbTargetRoot = None,
+            selectedClassDirectoryStatus = SelectedClassDirectoryStatusV4.UnavailableUnsafe,
+            externalDependencyEntryCount = None,
+            internalDependencies = Nil,
+            internalDependencyExclusions = Nil,
+            internalDependencyDiscoveredCount = None,
+            internalDependencyFreshIncludedCount = None,
+            internalDependencyStaleExcludedCount = None,
+            internalDependencyUnverifiableExcludedCount = None,
+            internalDependencyAbsentNotIncludedCount = None,
+            internalDependencyUnavailableUnsafeCount = None,
+            internalDependencyExcludedCount = None,
+            presentationCompilerContextEntryCount = None,
+            failure = Some("PointContextInputsChangedDuringRequest")
+          ) else targetContextV6
+          (finalReport, targetContextV5, finalContextV6)
         }
     }
 
@@ -675,13 +759,15 @@ final class PointEvidenceServiceV4 private (
   private def receiptMatchesRequest(
       request: SemanticPointEvidenceTargetRequestV4,
       receipt: SbtPointContextReceipt,
-      includeExistingInternalOutputs: Boolean
+      includeExistingInternalOutputs: Boolean,
+      requireFreshInternalOutputs: Boolean
   ): Boolean =
     receipt.project == request.project &&
       receipt.configuration == SbtClasspathConfiguration.Compile &&
       receipt.requestedScalaVersion == request.requestedScalaVersion &&
       request.requestedScalaVersion.forall(_ == receipt.effectiveScalaVersion) &&
-      receipt.includeExistingInternalOutputs == includeExistingInternalOutputs
+      receipt.includeExistingInternalOutputs == includeExistingInternalOutputs &&
+      receipt.requireFreshInternalOutputs == requireFreshInternalOutputs
 
   private def contextEvidence(
       request: SemanticPointEvidenceTargetRequestV4,
@@ -869,6 +955,150 @@ final class PointEvidenceServiceV4 private (
       acquisitionEffect = InternalDependencyAcquisitionEffectV5.DependencySourceOutputsNotRequested
     )
 
+  private def contextEvidenceV6(
+      request: SemanticPointEvidenceTargetRequestV4,
+      acquired: Either[SbtPointContextFailure, SbtPointContextReceipt],
+      receiptMatches: Boolean,
+      snapshot: Option[PointContextSnapshot]
+  ): PointContextEvidenceV6 =
+    val common = PointContextEvidenceV6(
+      project = request.project.value,
+      configuration = "Compile",
+      status = PointContextAcquisitionStatusV4.AcquisitionFailed,
+      requestedScalaVersion = request.requestedScalaVersion.map(_.value),
+      effectiveScalaVersion = None,
+      scalaAxisStatus = ScalaAxisStatusV4.Unavailable,
+      targetJavaContext = None,
+      acquisitionProfile = PointContextAcquisitionProfileV6.StrictFreshInternalCompileOutputPointContext,
+      acquisitionEffect = PointContextAcquisitionEffectV4.TargetSourceOutputsNotRequested,
+      buildPerformed = TargetBuildPerformedV4.NotRequested,
+      possibleEffects = List(
+        "BuildDefinitionOrPluginLoading",
+        "DependencyResolution",
+        "MetadataOrCacheWrites"
+      ),
+      pathStatus = TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique,
+      classDirectory = None,
+      semanticdbTargetRoot = None,
+      selectedClassDirectoryStatus = SelectedClassDirectoryStatusV4.UnavailableUnsafe,
+      compiledOutputFreshness = CompiledOutputFreshnessV4.NotAssessed,
+      classpathBasis = PointClasspathBasisV6.ExistingSelectedAndFreshInternalCompileOutputsPlusExternalDependencies,
+      externalDependencyEntryCount = None,
+      internalDependencies = Nil,
+      internalDependencyExclusions = Nil,
+      internalDependencyDiscoveredCount = None,
+      internalDependencyFreshIncludedCount = None,
+      internalDependencyStaleExcludedCount = None,
+      internalDependencyUnverifiableExcludedCount = None,
+      internalDependencyAbsentNotIncludedCount = None,
+      internalDependencyUnavailableUnsafeCount = None,
+      internalDependencyExcludedCount = None,
+      presentationCompilerContextEntryCount = None,
+      contextCompleteness = PointContextCompletenessV5.PartialExistingCompileOutputs,
+      failure = None
+    )
+    acquired match
+      case Right(receipt) if receiptMatches =>
+        val internal = snapshot.toList.flatMap(_.internalDependencies.map(internalEvidenceV6(request, _)))
+        val exclusions = receipt.internalDependencyExclusions.map(exclusionEvidence)
+        common.copy(
+          status = PointContextAcquisitionStatusV4.Acquired,
+          effectiveScalaVersion = Some(receipt.effectiveScalaVersion.value),
+          scalaAxisStatus = if receipt.requestedScalaVersion.nonEmpty then
+            ScalaAxisStatusV4.RequestedMatched
+          else ScalaAxisStatusV4.BuildDefault,
+          targetJavaContext = receipt.targetJavaContext,
+          pathStatus = if snapshot.nonEmpty then TargetRootPathStatusV4.Represented
+            else TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique,
+          classDirectory = snapshot.map(_.roots.classRelative),
+          semanticdbTargetRoot = snapshot.map(_.roots.semanticdbRelative),
+          selectedClassDirectoryStatus = snapshot.map(value =>
+            if value.classDirectoryIncluded then SelectedClassDirectoryStatusV4.PresentIncluded
+            else SelectedClassDirectoryStatusV4.AbsentNotIncluded
+          ).getOrElse(SelectedClassDirectoryStatusV4.UnavailableUnsafe),
+          externalDependencyEntryCount = snapshot.map(_.externalDependencyEntryCount),
+          internalDependencies = internal,
+          internalDependencyExclusions = snapshot.fold(List.empty[InternalDependencyExclusionEvidenceV5])(_ => exclusions),
+          internalDependencyDiscoveredCount = snapshot.map(_.internalDependencies.size),
+          internalDependencyFreshIncludedCount = snapshot.map(_.internalDependencies.count(value =>
+            value.freshness.exists(_.status == InternalOutputFreshnessStatusV6.Fresh)
+          )),
+          internalDependencyStaleExcludedCount = snapshot.map(_.internalDependencies.count(value =>
+            value.freshness.exists(_.status == InternalOutputFreshnessStatusV6.Stale)
+          )),
+          internalDependencyUnverifiableExcludedCount = snapshot.map(_.internalDependencies.count(value =>
+            value.status == PointInternalDirectoryStatus.PresentIncluded &&
+              value.freshness.exists(_.status == InternalOutputFreshnessStatusV6.Unverifiable)
+          )),
+          internalDependencyAbsentNotIncludedCount = snapshot.map(_.internalDependencies.count(
+            _.status == PointInternalDirectoryStatus.AbsentNotIncluded
+          )),
+          internalDependencyUnavailableUnsafeCount = snapshot.map(_.internalDependencies.count(
+            _.status == PointInternalDirectoryStatus.UnavailableUnsafe
+          )),
+          internalDependencyExcludedCount = snapshot.map(_ => exclusions.size),
+          presentationCompilerContextEntryCount = snapshot.map(_.presentationEntries.size),
+          failure = Option.when(snapshot.isEmpty)("UnsafeOrNonUniqueRootsOrInputs")
+        )
+      case Right(receipt) =>
+        common.copy(
+          status = PointContextAcquisitionStatusV4.ScalaAxisMismatch,
+          effectiveScalaVersion = Some(receipt.effectiveScalaVersion.value),
+          scalaAxisStatus = ScalaAxisStatusV4.MismatchFailure,
+          targetJavaContext = receipt.targetJavaContext,
+          failure = Some("ScalaVersionMismatch")
+        )
+      case Left(failure) =>
+        val (status, axisStatus) = failure match
+          case SbtPointContextFailure.UnknownProject(_) =>
+            PointContextAcquisitionStatusV4.UnknownProject -> ScalaAxisStatusV4.Unavailable
+          case SbtPointContextFailure.ScalaSwitch(_) =>
+            PointContextAcquisitionStatusV4.ScalaSwitchFailed -> ScalaAxisStatusV4.SwitchFailure
+          case SbtPointContextFailure.ScalaVersionMismatch(_) =>
+            PointContextAcquisitionStatusV4.ScalaAxisMismatch -> ScalaAxisStatusV4.MismatchFailure
+          case _ => PointContextAcquisitionStatusV4.AcquisitionFailed -> ScalaAxisStatusV4.Unavailable
+        common.copy(status = status, scalaAxisStatus = axisStatus, failure = Some(failureCode(failure)))
+
+  private def internalEvidenceV6(
+      request: SemanticPointEvidenceTargetRequestV4,
+      snapshot: PointInternalDependencySnapshot
+  ): InternalCompileDependencyEvidenceV6 =
+    val freshness = snapshot.freshness.getOrElse(InternalOutputFreshnessAssessment(
+      InternalOutputFreshnessStatusV6.Unverifiable,
+      InternalOutputFreshnessReasonV6.AnalysisPathUnavailable,
+      None,
+      None,
+      None
+    ))
+    val directoryStatus = snapshot.status match
+      case PointInternalDirectoryStatus.AbsentNotIncluded => InternalClassDirectoryStatusV6.AbsentNotIncluded
+      case PointInternalDirectoryStatus.UnavailableUnsafe => InternalClassDirectoryStatusV6.UnavailableUnsafe
+      case PointInternalDirectoryStatus.PresentIncluded => freshness.status match
+        case InternalOutputFreshnessStatusV6.Fresh => InternalClassDirectoryStatusV6.PresentFreshIncluded
+        case InternalOutputFreshnessStatusV6.Stale => InternalClassDirectoryStatusV6.PresentStaleExcluded
+        case InternalOutputFreshnessStatusV6.Unverifiable => InternalClassDirectoryStatusV6.PresentUnverifiableExcluded
+    InternalCompileDependencyEvidenceV6(
+      projectRef = snapshot.receipt.projectRef,
+      project = snapshot.receipt.project.value,
+      role = snapshot.receipt.role,
+      compileMapping = snapshot.receipt.compileMapping,
+      requestedScalaVersion = snapshot.receipt.requestedScalaVersion.map(_.value),
+      effectiveScalaVersion = snapshot.receipt.effectiveScalaVersion.value,
+      scalaAxisStatus = if request.requestedScalaVersion.nonEmpty then ScalaAxisStatusV4.RequestedMatched
+        else ScalaAxisStatusV4.BuildDefault,
+      configuration = "Compile",
+      classDirectory = snapshot.classRelative,
+      analysisFile = freshness.analysisFile,
+      directoryStatus = directoryStatus,
+      freshnessStatus = freshness.status,
+      freshnessReason = freshness.reason,
+      recordedSourceCount = freshness.recordedSourceCount,
+      recordedProductCount = freshness.recordedProductCount,
+      contributedToPresentationCompilerContext =
+        directoryStatus == InternalClassDirectoryStatusV6.PresentFreshIncluded,
+      acquisitionEffect = InternalDependencyAcquisitionEffectV5.DependencySourceOutputsNotRequested
+    )
+
   private def exclusionEvidence(
       exclusion: SbtInternalDependencyExclusion
   ): InternalDependencyExclusionEvidenceV5 =
@@ -973,17 +1203,31 @@ final class PointEvidenceServiceV4 private (
     beforeFinalCheck()
     val sourceChanged = changedSource(inspection.source, request.sourceFile)
     val currentContext = inspection.receipt
-      .filter(receiptMatchesRequest(request, _, inspection.includeExistingInternalOutputs))
+      .filter(receiptMatchesRequest(
+        request,
+        _,
+        inspection.includeExistingInternalOutputs,
+        inspection.requireFreshInternalOutputs
+      ))
       .flatMap(receipt => PointContextSafety
-        .capture(request.workspace, receipt, inspection.includeExistingInternalOutputs)
+        .capture(
+          request.workspace,
+          receipt,
+          inspection.includeExistingInternalOutputs,
+          inspection.requireFreshInternalOutputs,
+          freshnessAssessor
+        )
         .toOption)
     val rootsStable = (inspection.contextSnapshot, currentContext) match
       case (Some(before), Some(after)) =>
-        before.roots == after.roots && before.internalDependencies == after.internalDependencies
+        before.roots == after.roots &&
+          before.internalDependencies.map(_.rootIdentity) == after.internalDependencies.map(_.rootIdentity)
       case (None, None) => true
       case _ => false
     val inputsStable = (inspection.contextSnapshot, currentContext) match
-      case (Some(before), Some(after)) => before.inputEvidence == after.inputEvidence
+      case (Some(before), Some(after)) =>
+        before.inputEvidence == after.inputEvidence &&
+          before.internalDependencies.map(_.inputIdentity) == after.internalDependencies.map(_.inputIdentity)
       case (None, None) => true
       case _ => false
     val artifactStable = (inspection.targetSelection.selectedArtifact, inspection.selectedSnapshot) match
@@ -1113,15 +1357,17 @@ object PointEvidenceServiceV4:
       SbtPointContextAcquirer.default,
       (path, source, line, column, context) =>
         compiler.symbolAtSnapshot(path, source, line, column, context),
-      () => ()
+      () => (),
+      InternalOutputFreshnessAssessor.default
     )
 
   private[reconciliation] def withDependencies(
       acquirer: SbtPointContextAcquirer,
       pointQuery: (Path, String, Int, Int, PresentationCompilerContext) => Either[String, SymbolAtResult],
-      beforeFinalCheck: () => Unit
+      beforeFinalCheck: () => Unit,
+      freshnessAssessor: InternalOutputFreshnessAssessor = InternalOutputFreshnessAssessor.default
   ): PointEvidenceServiceV4 =
-    new PointEvidenceServiceV4(acquirer, pointQuery, beforeFinalCheck)
+    new PointEvidenceServiceV4(acquirer, pointQuery, beforeFinalCheck, freshnessAssessor)
 
 final class PointEvidenceServiceV5 private (delegate: PointEvidenceServiceV4):
   def inspect(
@@ -1135,17 +1381,44 @@ object PointEvidenceServiceV5:
       SbtPointContextAcquirer.default,
       (path, source, line, column, context) =>
         compiler.symbolAtSnapshot(path, source, line, column, context),
-      () => ()
+      () => (),
+      InternalOutputFreshnessAssessor.default
     )
 
   private[reconciliation] def withDependencies(
       acquirer: SbtPointContextAcquirer,
       pointQuery: (Path, String, Int, Int, PresentationCompilerContext) => Either[String, SymbolAtResult],
-      beforeFinalCheck: () => Unit
+      beforeFinalCheck: () => Unit,
+      freshnessAssessor: InternalOutputFreshnessAssessor = InternalOutputFreshnessAssessor.default
   ): PointEvidenceServiceV5 =
     new PointEvidenceServiceV5(
-      PointEvidenceServiceV4.withDependencies(acquirer, pointQuery, beforeFinalCheck)
+      PointEvidenceServiceV4.withDependencies(acquirer, pointQuery, beforeFinalCheck, freshnessAssessor)
     )
+
+final class PointEvidenceServiceV6 private (delegate: PointEvidenceServiceV4):
+  def inspect(
+      request: SemanticPointEvidenceTargetRequestV6
+  ): Either[String, PointEvidenceReportV6] = delegate.inspectV6(request)
+
+object PointEvidenceServiceV6:
+  def apply(): PointEvidenceServiceV6 =
+    val compiler = PresentationCompilerService()
+    withDependencies(
+      SbtPointContextAcquirer.default,
+      (path, source, line, column, context) =>
+        compiler.symbolAtSnapshot(path, source, line, column, context),
+      () => (),
+      InternalOutputFreshnessAssessor.default
+    )
+
+  private[reconciliation] def withDependencies(
+      acquirer: SbtPointContextAcquirer,
+      pointQuery: (Path, String, Int, Int, PresentationCompilerContext) => Either[String, SymbolAtResult],
+      beforeFinalCheck: () => Unit,
+      freshnessAssessor: InternalOutputFreshnessAssessor
+  ): PointEvidenceServiceV6 = new PointEvidenceServiceV6(
+    PointEvidenceServiceV4.withDependencies(acquirer, pointQuery, beforeFinalCheck, freshnessAssessor)
+  )
 
 private final case class PointPathIdentity(path: Path, existed: Boolean, fileKey: Option[String])
 
@@ -1174,23 +1447,42 @@ private final case class PointInternalDependencySnapshot(
     receipt: SbtInternalDependencyReceipt,
     identity: Option[PointPathIdentity],
     classRelative: Option[String],
-    status: PointInternalDirectoryStatus
-)
+    status: PointInternalDirectoryStatus,
+    freshness: Option[InternalOutputFreshnessAssessment] = None
+):
+  def rootIdentity = (
+    receipt.copy(compileAnalysisFile = None, sourceLayout = None),
+    identity,
+    classRelative,
+    status
+  )
+
+  def inputIdentity = (receipt.compileAnalysisFile, receipt.sourceLayout, freshness)
 
 private object PointContextSafety:
   def capture(
       workspace: Path,
       receipt: SbtPointContextReceipt,
-      includeExistingInternalOutputs: Boolean = false
+      includeExistingInternalOutputs: Boolean = false,
+      requireFreshInternalOutputs: Boolean = false,
+      freshnessAssessor: InternalOutputFreshnessAssessor = InternalOutputFreshnessAssessor.default
   ): Either[String, PointContextSnapshot] =
     for
       workspaceReal <- realWorkspace(workspace)
       classIdentity <- safeRoot(workspaceReal, receipt.classDirectory, "class directory")
       semanticdbIdentity <- safeRoot(workspaceReal, receipt.semanticdbTargetRoot, "SemanticDB target root")
+      classRelative = relative(workspaceReal, classIdentity.path)
+      semanticdbRelative = relative(workspaceReal, semanticdbIdentity.path)
       _ <- Either.cond(
         classIdentity.path != semanticdbIdentity.path,
         (),
         "The selected target output roots are not unique"
+      )
+      _ <- Either.cond(
+        !requireFreshInternalOutputs ||
+          (!classRelative.contains('\\') && !semanticdbRelative.contains('\\')),
+        (),
+        "The selected target output roots cannot be represented safely in point-evidence v6"
       )
       _ <- Either.cond(
         classIdentity.existed == receipt.classDirectoryPresent,
@@ -1199,10 +1491,23 @@ private object PointContextSafety:
       )
       external <- validateExternal(receipt.externalDependencyClasspath)
       internal <- if includeExistingInternalOutputs then
-        captureInternal(workspaceReal, receipt)
+        captureInternal(
+          workspaceReal,
+          receipt,
+          requireFreshInternalOutputs,
+          freshnessAssessor
+        )
       else Right(Nil)
       internalEntries = internal.collect {
-        case PointInternalDependencySnapshot(_, Some(identity), _, PointInternalDirectoryStatus.PresentIncluded) =>
+        case PointInternalDependencySnapshot(
+              _,
+              Some(identity),
+              _,
+              PointInternalDirectoryStatus.PresentIncluded,
+              freshness
+            ) if !requireFreshInternalOutputs || freshness.exists(
+              _.status == InternalOutputFreshnessStatusV6.Fresh
+            ) =>
           SbtClasspathEntry(identity.path, SbtClasspathEntryKind.Directory)
       }
       rawPresentation =
@@ -1227,8 +1532,8 @@ private object PointContextSafety:
       PointRootSnapshot(
         classIdentity,
         semanticdbIdentity,
-        relative(workspaceReal, classIdentity.path),
-        relative(workspaceReal, semanticdbIdentity.path)
+        classRelative,
+        semanticdbRelative
       ),
       classIdentity.existed,
       external.size,
@@ -1239,7 +1544,9 @@ private object PointContextSafety:
 
   private def captureInternal(
       workspaceReal: Path,
-      receipt: SbtPointContextReceipt
+      receipt: SbtPointContextReceipt,
+      requireFreshInternalOutputs: Boolean,
+      freshnessAssessor: InternalOutputFreshnessAssessor
   ): Either[String, List[PointInternalDependencySnapshot]] =
     for
       _ <- Either.cond(
@@ -1257,20 +1564,38 @@ private object PointContextSafety:
               dependency.classDirectory,
               s"internal Compile class directory for ${dependency.projectRef}"
             ) match
-              case Right(identity) if identity.existed == dependency.classDirectoryPresent =>
+              case Right(identity) if identity.existed == dependency.classDirectoryPresent &&
+                  (!requireFreshInternalOutputs || !relative(workspaceReal, identity.path).contains('\\')) =>
+                val freshness = Option.when(requireFreshInternalOutputs)(
+                  freshnessAssessor.assess(
+                    workspaceReal,
+                    dependency.effectiveScalaVersion.value,
+                    dependency.classDirectory,
+                    dependency.compileAnalysisFile,
+                    dependency.sourceLayout
+                  )
+                )
                 PointInternalDependencySnapshot(
                   dependency,
                   Some(identity),
                   Some(relative(workspaceReal, identity.path)),
                   if identity.existed then PointInternalDirectoryStatus.PresentIncluded
-                  else PointInternalDirectoryStatus.AbsentNotIncluded
+                  else PointInternalDirectoryStatus.AbsentNotIncluded,
+                  freshness
                 )
               case _ =>
                 PointInternalDependencySnapshot(
                   dependency,
                   None,
                   None,
-                  PointInternalDirectoryStatus.UnavailableUnsafe
+                  PointInternalDirectoryStatus.UnavailableUnsafe,
+                  Option.when(requireFreshInternalOutputs)(InternalOutputFreshnessAssessment(
+                    InternalOutputFreshnessStatusV6.Unverifiable,
+                    InternalOutputFreshnessReasonV6.DependencyClassDirectoryUnsafe,
+                    None,
+                    None,
+                    None
+                  ))
                 )
             values :+ snapshot
           }

@@ -232,6 +232,17 @@ Apache-2.0 or LGPL-2.1-or-later and the project owner selected Apache-2.0. The
 review is technical evidence, not legal advice; the automated gate must not be
 weakened to infer legal clearance or publication authority.
 
+Current unreleased alpha-3 source development adds direct
+`org.scala-sbt:zinc-persist_2.13:1.12.1` to the existing semantic-reconciliation
+module for supported incremental-analysis reading. This creates no new module
+or GAV and introduces no SNAPSHOT or private repository dependency. The
+existing technically reviewed JNA 5.14.0 selection remains an explicit direct
+semantic-reconciliation dependency (with build-wide convergence) instead of
+accepting the older transitive Zinc/JLine candidate in a published consumer. Its full
+CLI/MCP runtime and license-attribution delta must be recaptured and reviewed
+as part of any separately authorized alpha-3 package qualification; this note
+is technical inventory, not legal clearance or publication authority.
+
 ## Readiness boundary
 
 `SUPPORTED_DISTRIBUTION_USABILITY = READY` for the exact

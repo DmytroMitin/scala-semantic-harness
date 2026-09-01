@@ -8,6 +8,7 @@ import scala.util.Try
 object SbtPointContextProtocol:
   val Format = "semantic-scala.internal-point-context-receipt.v1"
   val FormatV2 = "semantic-scala.internal-point-context-receipt.v2"
+  val FormatV3 = "semantic-scala.internal-point-context-receipt.v3"
   val MaxProtocolBytes = 64 * 1024
 
   private val Required = Set(
@@ -28,7 +29,10 @@ object SbtPointContextProtocol:
   )
 
   def render(receipt: SbtPointContextReceipt): String =
-    val marker = if receipt.includeExistingInternalOutputs then FormatV2 else Format
+    val marker =
+      if receipt.requireFreshInternalOutputs then FormatV3
+      else if receipt.includeExistingInternalOutputs then FormatV2
+      else Format
     val fields = List(
       marker,
       s"project\t${encode(receipt.project.value)}",
@@ -45,7 +49,7 @@ object SbtPointContextProtocol:
       s"entry\t${SbtClasspathEntryKind.value(entry.kind)}\t${encode(entry.path.toString)}"
     )
     val internals = receipt.internalDependencies.map { entry =>
-      List(
+      val common = List(
         "internal",
         encode(entry.projectRef),
         encode(entry.project.value),
@@ -56,7 +60,19 @@ object SbtPointContextProtocol:
         SbtClasspathConfiguration.value(entry.configuration),
         encode(entry.classDirectory.toString),
         entry.classDirectoryPresent.toString
-      ).mkString("\t")
+      )
+      val freshness = Option.when(receipt.requireFreshInternalOutputs) {
+        val layout = entry.sourceLayout
+        List(
+          encode(entry.compileAnalysisFile.fold("")(_.toString)),
+          layout.isDefined.toString,
+          encodePathList(layout.toList.flatMap(_.sourceDirectories)),
+          encodePathList(layout.toList.flatMap(_.unmanagedSourceDirectories)),
+          encodePathList(layout.toList.flatMap(_.managedSourceDirectories)),
+          layout.fold(0)(_.sourceGeneratorCount).toString
+        )
+      }.toList.flatten
+      (common ++ freshness).mkString("\t")
     }
     val exclusions = receipt.internalDependencyExclusions.map { entry =>
       List(
@@ -79,11 +95,18 @@ object SbtPointContextProtocol:
       Left("Invalid sbt point-context receipt: protocol exceeds byte limit")
     else
       val lines = value.linesIterator.toList
-      val expectedMarker = if request.includeExistingInternalOutputs then FormatV2 else Format
+      val expectedMarker =
+        if request.requireFreshInternalOutputs then FormatV3
+        else if request.includeExistingInternalOutputs then FormatV2
+        else Format
       if lines.headOption != Some(expectedMarker) then
         Left("Invalid sbt point-context receipt: unsupported protocol marker")
       else
-        parseLines(lines.drop(1), request.includeExistingInternalOutputs).flatMap { parsed =>
+        parseLines(
+          lines.drop(1),
+          request.includeExistingInternalOutputs,
+          request.requireFreshInternalOutputs
+        ).flatMap { parsed =>
           val fields = parsed.fields
           val missing = Required.diff(fields.keySet)
           if missing.nonEmpty then
@@ -150,13 +173,15 @@ object SbtPointContextProtocol:
               javaContext,
               request.includeExistingInternalOutputs,
               internals,
-              exclusions
+              exclusions,
+              request.requireFreshInternalOutputs
             )
         }
 
   private def parseLines(
       lines: List[String],
-      allowInternal: Boolean
+      allowInternal: Boolean,
+      requireFreshInternalOutputs: Boolean
   ): Either[String, ParsedLines] =
     lines.foldLeft[Either[String, ParsedLines]](
       Right(ParsedLines(Map.empty, Nil, Nil, Nil))
@@ -170,7 +195,8 @@ object SbtPointContextProtocol:
               )
               path <- decodePath(pathValue, "external dependency classpath entry")
             yield parsed.copy(entries = parsed.entries :+ SbtClasspathEntry(path, kind))
-          case values @ ("internal" :: _) if allowInternal && values.size == 10 =>
+          case values @ ("internal" :: _)
+              if allowInternal && values.size == (if requireFreshInternalOutputs then 16 else 10) =>
             Right(parsed.copy(internals = parsed.internals :+ values.tail))
           case values @ ("excludedInternal" :: _) if allowInternal && values.size == 7 =>
             Right(parsed.copy(exclusions = parsed.exclusions :+ values.tail))
@@ -189,7 +215,8 @@ object SbtPointContextProtocol:
   ): Either[String, List[SbtInternalDependencyReceipt]] =
     rows.foldLeft[Either[String, List[SbtInternalDependencyReceipt]]](Right(Nil)) {
       case (result, projectRefRaw :: projectRaw :: roleRaw :: mappingRaw :: requestedRaw ::
-            effectiveRaw :: configurationRaw :: classDirectoryRaw :: presentRaw :: Nil) =>
+            effectiveRaw :: configurationRaw :: classDirectoryRaw :: presentRaw :: tail)
+          if tail.size == (if request.requireFreshInternalOutputs then 6 else 0) =>
         for
           values <- result
           projectRef <- decode(projectRefRaw)
@@ -208,6 +235,18 @@ object SbtPointContextProtocol:
           _ <- require(configurationRaw == SbtClasspathConfiguration.CompileValue, "internal configuration mismatch")
           classDirectory <- decodePath(classDirectoryRaw, "internal class directory")
           present <- parsePresence(presentRaw, "internal class directory")
+          analysisFile <- tail.headOption match
+            case Some(analysisRaw) =>
+              decode(analysisRaw).flatMap { value =>
+                if value.isEmpty then Right(None)
+                else decodePath(analysisRaw, "internal Compile analysis file").map(Some(_))
+              }
+            case None => Right(None)
+          sourceLayout <- tail.drop(1) match
+            case availableRaw :: allRaw :: unmanagedRaw :: managedRaw :: generatorCountRaw :: Nil =>
+              parseSourceLayout(availableRaw, allRaw, unmanagedRaw, managedRaw, generatorCountRaw)
+            case Nil => Right(None)
+            case _ => Left("Invalid sbt point-context receipt: malformed internal source layout")
         yield values :+ SbtInternalDependencyReceipt(
           projectRef,
           project,
@@ -217,10 +256,60 @@ object SbtPointContextProtocol:
           effective,
           SbtClasspathConfiguration.Compile,
           classDirectory,
-          present
+          present,
+          analysisFile,
+          sourceLayout
         )
       case (_, _) => Left("Invalid sbt point-context receipt: malformed internal dependency")
     }
+
+  private def parseSourceLayout(
+      availableRaw: String,
+      allRaw: String,
+      unmanagedRaw: String,
+      managedRaw: String,
+      generatorCountRaw: String
+  ): Either[String, Option[SbtInternalSourceLayoutReceipt]] =
+    for
+      available <- parsePresence(availableRaw, "internal source layout")
+      all <- decodePathList(allRaw, "internal source directories")
+      unmanaged <- decodePathList(unmanagedRaw, "internal unmanaged source directories")
+      managed <- decodePathList(managedRaw, "internal managed source directories")
+      generators <- Try(generatorCountRaw.toInt).toEither.left.map(_ =>
+        "Invalid sbt point-context receipt: invalid internal source generator count"
+      )
+      _ <- require(
+        List(all, unmanaged, managed).forall(_.size <= SbtInternalSourceLayoutReceipt.MaxSourceDirectories),
+        "internal source directory count exceeds the fixed bound"
+      )
+      _ <- require(
+        generators >= 0 && generators <= SbtInternalSourceLayoutReceipt.MaxSourceGenerators,
+        "internal source generator count exceeds the fixed bound"
+      )
+      _ <- require(
+        List(all, unmanaged, managed).forall(paths => paths.distinct.size == paths.size),
+        "internal source directory is duplicated"
+      )
+      _ <- require(
+        available || (all.isEmpty && unmanaged.isEmpty && managed.isEmpty && generators == 0),
+        "unavailable internal source layout carries fabricated values"
+      )
+    yield Option.when(available)(SbtInternalSourceLayoutReceipt(all, unmanaged, managed, generators))
+
+  private def encodePathList(paths: List[Path]): String =
+    encode(paths.map(_.toString).mkString("\u0000"))
+
+  private def decodePathList(value: String, label: String): Either[String, List[Path]] =
+    decode(value).flatMap { decoded =>
+      if decoded.isEmpty then Right(Nil)
+      else decoded.split("\u0000", -1).toList.foldRight[Either[String, List[Path]]](Right(Nil)) {
+        (raw, result) => for path <- decodeRawPath(raw, label); tail <- result yield path :: tail
+      }
+    }
+
+  private def decodeRawPath(value: String, label: String): Either[String, Path] =
+    Try(Path.of(value)).toEither.left.map(_ => s"Invalid sbt point-context receipt: invalid $label path")
+      .flatMap(path => require(path.isAbsolute, s"$label path is not absolute").map(_ => path))
 
   private def parseExclusions(
       rows: List[List[String]],

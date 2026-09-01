@@ -20,6 +20,7 @@ import semantic.harness.sbt_runner.SbtClasspathEntryKind
 import semantic.harness.sbt_runner.SbtCompileDependencyMapping
 import semantic.harness.sbt_runner.SbtInternalDependencyReceipt
 import semantic.harness.sbt_runner.SbtInternalDependencyRole
+import semantic.harness.sbt_runner.SbtInternalSourceLayoutReceipt
 import semantic.harness.sbt_runner.SbtPointContextAcquirer
 import semantic.harness.sbt_runner.SbtPointContextFailure
 import semantic.harness.sbt_runner.SbtPointContextReceipt
@@ -200,6 +201,179 @@ class TargetAwarePointEvidenceV4Suite extends munit.FunSuite:
       assert(!json.contains(fixture.root.toString + "/macros/classes"), clue(json))
       assert(!json.contains(unsafe.toString), clue(json))
       assert(!json.contains(fixture.dependency.toString), clue(json))
+    finally deleteRecursively(fixture.root)
+
+  test("strict v6 includes only Fresh internal output and retains Stale provenance without contribution"):
+    val fixture = sharedFixture("target-v6-freshness-gate", classDirectoryPresent = true)
+    val internalSource = fixture.root.resolve("macros/src/main/scala/macros/Macro.scala")
+    Files.createDirectories(internalSource.getParent)
+    Files.writeString(internalSource, "package macros\nclass Macro\n")
+    val internalClasses = Files.createDirectories(fixture.root.resolve("macros/target/classes/macros"))
+      .getParent
+    val internalProduct = Files.createDirectories(internalClasses.resolve("macros"))
+      .resolve("Macro.class")
+    Files.write(internalProduct, Array[Byte](1, 2, 3))
+    val analysis = Files.createDirectories(fixture.root.resolve("macros/target/zinc"))
+      .resolve("inc_compile_3.zip")
+    Files.write(analysis, Array[Byte](4, 5, 6))
+    val sourceId = "${BASE}/" + fixture.root.relativize(internalSource).toString.replace(java.io.File.separatorChar, '/')
+    val productId = "${BASE}/" + fixture.root.relativize(internalProduct).toString.replace(java.io.File.separatorChar, '/')
+    val analysisSnapshot = ZincAnalysisSnapshot(
+      compilerVersion = "3.3.7",
+      sourceStamps = Map(sourceId -> ZincContentStamp.current(internalSource)),
+      productStamps = Map(productId -> ZincContentStamp.current(internalProduct)),
+      sourceProducts = Map(sourceId -> Set(productId))
+    )
+    val assessor = InternalOutputFreshnessAssessor.withReader(new ZincAnalysisReader:
+      override def read(path: Path) = Right(analysisSnapshot)
+    )
+    val axis = scalaVersion("3.3.7")
+    val receipt = fixture.receipt.copy(
+      includeExistingInternalOutputs = true,
+      requireFreshInternalOutputs = true,
+      internalDependencies = List(
+        internal("macrosJVM", SbtInternalDependencyRole.Direct, axis, internalClasses, present = true)
+          .copy(
+            compileAnalysisFile = Some(analysis),
+            sourceLayout = Some(SbtInternalSourceLayoutReceipt(
+              sourceDirectories = List(fixture.root.resolve("macros/src/main/scala"), fixture.root.resolve("macros/target/src_managed/main")),
+              unmanagedSourceDirectories = List(fixture.root.resolve("macros/src/main/scala")),
+              managedSourceDirectories = List(fixture.root.resolve("macros/target/src_managed/main")),
+              sourceGeneratorCount = 0
+            ))
+          )
+      )
+    )
+
+    def run(contexts: scala.collection.mutable.ListBuffer[PresentationCompilerContext]) =
+      PointEvidenceServiceV6.withDependencies(
+        FixedAcquirer(Right(receipt)),
+        (_, _, _, _, context) =>
+          contexts += context
+          resolved(fixture.source),
+        () => (),
+        assessor
+      ).inspect(SemanticPointEvidenceTargetRequestV6(
+        fixture.root,
+        fixture.source,
+        3,
+        7,
+        project,
+        Some(axis)
+      )).fold(fail(_), identity)
+
+    try
+      val freshContexts = scala.collection.mutable.ListBuffer.empty[PresentationCompilerContext]
+      val fresh = run(freshContexts)
+      assertEquals(fresh.schemaVersion, PointEvidenceReportV6.SchemaVersion)
+      assertEquals(fresh.targetContext.compiledOutputFreshness, CompiledOutputFreshnessV4.NotAssessed)
+      assertEquals(fresh.targetContext.internalDependencyFreshIncludedCount, Some(1))
+      assertEquals(fresh.targetContext.internalDependencyStaleExcludedCount, Some(0))
+      assertEquals(
+        fresh.targetContext.internalDependencies.head.directoryStatus,
+        InternalClassDirectoryStatusV6.PresentFreshIncluded
+      )
+      assert(contextEntries(freshContexts.head).contains(internalClasses))
+      assertEquals(decode[PointEvidenceReportV6](fresh.asJson.noSpaces), Right(fresh))
+
+      val invalidated = PointEvidenceServiceV6.withDependencies(
+        FixedAcquirer(Right(receipt)),
+        (_, _, _, _, _) => resolved(fixture.source),
+        () => Files.writeString(internalSource, "package macros\nclass ChangedDuringRequest\n"),
+        assessor
+      ).inspect(SemanticPointEvidenceTargetRequestV6(
+        fixture.root,
+        fixture.source,
+        3,
+        7,
+        project,
+        Some(axis)
+      )).fold(fail(_), identity)
+      assertEquals(
+        invalidated.targetSelection.status,
+        PointTargetSelectionStatusV4.PointContextInputsChangedDuringRequest
+      )
+      assertEquals(invalidated.livePoint.status, PointLiveStatus.Unavailable)
+      assertEquals(invalidated.targetContext.pathStatus, TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique)
+      assertEquals(invalidated.targetContext.internalDependencies, Nil)
+      assertEquals(invalidated.targetContext.internalDependencyFreshIncludedCount, None)
+      assertEquals(decode[PointEvidenceReportV6](invalidated.asJson.noSpaces), Right(invalidated))
+      Files.writeString(internalSource, "package macros\nclass Macro\n")
+
+      Files.writeString(internalSource, "package macros\nclass MacroChanged\n")
+      val staleContexts = scala.collection.mutable.ListBuffer.empty[PresentationCompilerContext]
+      val stale = run(staleContexts)
+      assertEquals(stale.targetContext.internalDependencyFreshIncludedCount, Some(0))
+      assertEquals(stale.targetContext.internalDependencyStaleExcludedCount, Some(1))
+      assertEquals(
+        stale.targetContext.internalDependencies.head.freshnessReason,
+        InternalOutputFreshnessReasonV6.SourceContentMismatch
+      )
+      assert(!stale.targetContext.internalDependencies.head.contributedToPresentationCompilerContext)
+      assert(!contextEntries(staleContexts.head).contains(internalClasses))
+
+      val backslashClasses = Files.createDirectories(fixture.root.resolve("kernel/jvm\\classes"))
+      val unrepresentable = PointEvidenceServiceV6.withDependencies(
+        FixedAcquirer(Right(receipt.copy(
+          classDirectory = backslashClasses,
+          classDirectoryPresent = true
+        ))),
+        (_, _, _, _, _) => resolved(fixture.source),
+        () => (),
+        assessor
+      ).inspect(SemanticPointEvidenceTargetRequestV6(
+        fixture.root,
+        fixture.source,
+        3,
+        7,
+        project,
+        Some(axis)
+      )).fold(fail(_), identity)
+      assertEquals(unrepresentable.targetContext.pathStatus, TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique)
+      assertEquals(unrepresentable.livePoint.status, PointLiveStatus.Unavailable)
+      assertEquals(decode[PointEvidenceReportV6](unrepresentable.asJson.noSpaces), Right(unrepresentable))
+
+      val fabricated = stale.copy(targetContext = stale.targetContext.copy(
+        internalDependencies = stale.targetContext.internalDependencies.map(
+          _.copy(contributedToPresentationCompilerContext = true)
+        )
+      ))
+      assert(decode[PointEvidenceReportV6](fabricated.asJson.noSpaces).isLeft)
+
+      val fabricatedAbsent = stale.copy(targetContext = stale.targetContext.copy(
+        internalDependencies = stale.targetContext.internalDependencies.map(
+          _.copy(
+            directoryStatus = InternalClassDirectoryStatusV6.AbsentNotIncluded,
+            freshnessStatus = InternalOutputFreshnessStatusV6.Unverifiable,
+            freshnessReason = InternalOutputFreshnessReasonV6.AnalysisFileMissing
+          )
+        ),
+        internalDependencyStaleExcludedCount = Some(0),
+        internalDependencyAbsentNotIncludedCount = Some(1)
+      ))
+      assert(decode[PointEvidenceReportV6](fabricatedAbsent.asJson.noSpaces).isLeft)
+
+      val fabricatedTopLevelFailure = stale.copy(targetContext = stale.targetContext.copy(
+        pathStatus = TargetRootPathStatusV4.UnavailableUnsafeOrNonUnique
+      ))
+      assert(decode[PointEvidenceReportV6](fabricatedTopLevelFailure.asJson.noSpaces).isLeft)
+
+      val fabricatedDependencyAxis = fresh.copy(targetContext = fresh.targetContext.copy(
+        internalDependencies = fresh.targetContext.internalDependencies.map(
+          _.copy(requestedScalaVersion = Some("2.12.21"))
+        )
+      ))
+      assert(decode[PointEvidenceReportV6](fabricatedDependencyAxis.asJson.noSpaces).isLeft)
+
+      val fabricatedTopLevelAxis = fresh.copy(targetContext = fresh.targetContext.copy(
+        requestedScalaVersion = Some("2.12.21")
+      ))
+      assert(decode[PointEvidenceReportV6](fabricatedTopLevelAxis.asJson.noSpaces).isLeft)
+
+      val staleWithoutAnalysis = stale.copy(targetContext = stale.targetContext.copy(
+        internalDependencies = stale.targetContext.internalDependencies.map(_.copy(analysisFile = None))
+      ))
+      assert(decode[PointEvidenceReportV6](staleWithoutAnalysis.asJson.noSpaces).isLeft)
     finally deleteRecursively(fixture.root)
 
   test("Fresh qualified Unverifiable stale multiple absent and unsafe ownership stay typed"):

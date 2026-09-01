@@ -61,7 +61,8 @@ from the alpha-2 packaged contract.
 - alpha-3 SNAPSHOT opt-in build-target-aware SemanticDB source mapping v4 with
   a validated optional Scala axis and root-only receipt, alongside target-aware
   point-evidence v4 with a non-compiling partial existing-output context and
-  explicit v5 existing-internal-Compile-output opt-in;
+  explicit v5 existing-internal-Compile-output opt-in, plus strict v6
+  content-fresh internal-output gating;
 - an alpha-3 SNAPSHOT CLI-only, same-request post-compile TASTy point-evidence
   operation with exact stable Scala 3 child-inspector provenance;
 - bounded alpha-3 SNAPSHOT sbt-backed command, classpath, and TASTy-receipt
@@ -232,7 +233,7 @@ boundary.
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --json
 ./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --json
 ./semantic-scala semanticdb-for-source --file src/main/scala/example/Main.scala --workspace . --sbt-project app [--sbt-scala-version 3.3.7] --json
-./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --sbt-project app [--sbt-scala-version 3.3.7] [--include-existing-internal-outputs] --json
+./semantic-scala point-evidence --file src/main/scala/example/Main.scala --workspace . --line 6 --col 16 --sbt-project app [--sbt-scala-version 3.3.7] [--include-existing-internal-outputs [--require-fresh-internal-outputs]] --json
 ./semantic-scala tasty-point-evidence --workspace . --sbt-project app --file src/main/scala/example/Main.scala --line 6 --col 16 [--sbt-java-home /absolute/path/to/installed-jdk] --json
 ./semantic-scala symbols --semanticdb path/to/Main.scala.semanticdb --json
 ./semantic-scala usages --workspace . --manifest semantic-usages.json --symbol 'example/Foo#bar().' --json
@@ -273,6 +274,17 @@ are never built. V5 stays `PartialExistingCompileOutputs`, does not request
 replay target compiler flags/plugins. The existing eighth MCP tool exposes the
 same opt-in as optional boolean `includeExistingInternalOutputs`; the registry
 remains exactly eight.
+Adding `--require-fresh-internal-outputs` requires the v5 flag and emits v6.
+It reads only existing same-axis `Compile / compileAnalysisFile` archives and
+uses supported Zinc persistence APIs plus content stamps and source/product
+relations. The same settings-only receipt captures exact configured source
+roots and generator-list cardinality; configured generators, managed source
+residue, unavailable provenance, unsafe roots, or exceeded file/archive bounds
+fail closed as Unverifiable. Only internal directories proven `Fresh`
+contribute; `Stale` and all `Unverifiable` states remain visible but excluded.
+This does not compile, run generators, use mtimes or Git state as freshness
+authority, or establish whole-target/build freshness. The matching MCP boolean is
+`requireFreshInternalOutputs` on the same eighth tool.
 `semanticdb-for-source` remains CLI-only, direct `reconcile-symbol` remains an
 explicit-artifact target-independent operation, and the MCP registry remains
 exactly eight tools.

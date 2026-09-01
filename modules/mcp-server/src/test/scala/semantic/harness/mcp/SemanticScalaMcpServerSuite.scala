@@ -12,6 +12,7 @@ import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.reconciliation.PointEvidenceReportV4
 import semantic.harness.reconciliation.PointEvidenceReportV5
+import semantic.harness.reconciliation.PointEvidenceReportV6
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 import scala.jdk.CollectionConverters.*
 
@@ -191,6 +192,10 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       pointEvidence.hcursor.downField("inputSchema").downField("properties").downField("includeExistingInternalOutputs").downField("type").as[String].toOption,
       Some("boolean")
     )
+    assertEquals(
+      pointEvidence.hcursor.downField("inputSchema").downField("properties").downField("requireFreshInternalOutputs").downField("type").as[String].toOption,
+      Some("boolean")
+    )
 
   test("tools/call semantic_point_evidence returns the CLI report through the standard wrapper"):
     withScalaWorkspace { (workspace, file) =>
@@ -257,6 +262,32 @@ class SemanticScalaMcpServerSuite extends munit.FunSuite:
       val nonBoolean = responseJson(
         serverWith(pointEvidencePayload),
         s"""{"jsonrpc":"2.0","id":27,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","includeExistingInternalOutputs":"true"}}}"""
+      )
+      assertEquals(nonBoolean.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
+    }
+
+  test("tools/call semantic_point_evidence strict freshness opt-in selects v6 and validates dependencies"):
+    withScalaWorkspace { (workspace, file) =>
+      val response = responseJson(
+        serverWith(successPayload(success = true, schemaVersion = PointEvidenceReportV6.SchemaVersion)),
+        s"""{"jsonrpc":"2.0","id":28,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","includeExistingInternalOutputs":true,"requireFreshInternalOutputs":true}}}"""
+      )
+      val wrapper = structuredContent(response)
+      assertEquals(wrapper.hcursor.downField("schemaVersion").as[String].toOption, Some(PointEvidenceReportV6.SchemaVersion))
+      assertEquals(
+        wrapper.hcursor.downField("command").as[List[String]].toOption.map(_.takeRight(3)),
+        Some(List("--include-existing-internal-outputs", "--require-fresh-internal-outputs", "--json"))
+      )
+
+      val missingInclude = responseJson(
+        serverWith(pointEvidencePayload),
+        s"""{"jsonrpc":"2.0","id":29,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","requireFreshInternalOutputs":true}}}"""
+      )
+      assertEquals(missingInclude.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
+
+      val nonBoolean = responseJson(
+        serverWith(pointEvidencePayload),
+        s"""{"jsonrpc":"2.0","id":30,"method":"tools/call","params":{"name":"semantic_point_evidence","arguments":{"workspace":"${workspace.toString}","file":"$file","line":2,"col":7,"sbtProject":"kernelJVM","includeExistingInternalOutputs":true,"requireFreshInternalOutputs":"true"}}}"""
       )
       assertEquals(nonBoolean.hcursor.downField("error").downField("code").as[Int].toOption, Some(-32602))
     }

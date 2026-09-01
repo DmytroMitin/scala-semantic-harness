@@ -296,7 +296,8 @@ object CliParser:
       values: Map[String, String] = Map.empty,
       json: Boolean = false,
       jsonSeen: Boolean = false,
-      includeExistingInternalOutputs: Boolean = false
+      includeExistingInternalOutputs: Boolean = false,
+      requireFreshInternalOutputs: Boolean = false
     )
 
     def loop(rest: List[String], options: Options): Either[String, Options] =
@@ -309,6 +310,10 @@ object CliParser:
           if options.includeExistingInternalOutputs then
             Left("Option may only be supplied once for point-evidence: --include-existing-internal-outputs")
           else loop(tail, options.copy(includeExistingInternalOutputs = true))
+        case "--require-fresh-internal-outputs" :: tail =>
+          if options.requireFreshInternalOutputs then
+            Left("Option may only be supplied once for point-evidence: --require-fresh-internal-outputs")
+          else loop(tail, options.copy(requireFreshInternalOutputs = true))
         case key :: value :: tail if key.startsWith("--") && !value.startsWith("--") =>
           if options.values.contains(key) then Left(s"Option may only be supplied once for point-evidence: $key")
           else loop(tail, options.copy(values = options.values.updated(key, value)))
@@ -335,6 +340,16 @@ object CliParser:
                 (),
                 "--include-existing-internal-outputs requires --sbt-project for point-evidence"
               )
+              _ <- Either.cond(
+                !options.requireFreshInternalOutputs || options.includeExistingInternalOutputs,
+                (),
+                "--require-fresh-internal-outputs requires --include-existing-internal-outputs for point-evidence"
+              )
+              _ <- Either.cond(
+                !options.requireFreshInternalOutputs || target._1.nonEmpty,
+                (),
+                "--require-fresh-internal-outputs requires --sbt-project for point-evidence"
+              )
             yield CliCommand.PointEvidence(
               file,
               workspace,
@@ -344,7 +359,8 @@ object CliParser:
               target._1,
               target._2,
               target._3,
-              options.includeExistingInternalOutputs
+              options.includeExistingInternalOutputs,
+              options.requireFreshInternalOutputs
             )
           case _ => Left(s"Invalid arguments for point-evidence: ${args.mkString(" ")}")
     } match

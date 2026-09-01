@@ -79,6 +79,34 @@ class SbtPointContextInjectionIntegrationSuite extends munit.FunSuite:
       assert(!receipt.internalDependencies.exists(_.project.value == "aggregateOnly"))
       assert(!receipt.internalDependencyExclusions.exists(_.project.value == "aggregateOnly"))
       assert(Files.exists(invalidSource))
+
+      val strictReceipt = ProcessSbtPointContextAcquirer(
+        120.seconds,
+        SbtPointContextProcess.default
+      ).acquire(request.copy(requireFreshInternalOutputs = true)).fold(
+        failure => fail(failure.toString),
+        identity
+      )
+      assertEquals(
+        strictReceipt.internalDependencies.map(_.project.value),
+        receipt.internalDependencies.map(_.project.value)
+      )
+      assert(strictReceipt.internalDependencies.forall(_.compileAnalysisFile.nonEmpty))
+      assert(strictReceipt.internalDependencies.flatMap(_.compileAnalysisFile).forall(path => !Files.exists(path)))
+      assert(strictReceipt.internalDependencies.forall(_.sourceLayout.nonEmpty))
+      assertEquals(
+        strictReceipt.internalDependencies.find(_.project.value == "macros")
+          .flatMap(_.sourceLayout).map(_.sourceGeneratorCount),
+        Some(1)
+      )
+      assertEquals(
+        strictReceipt.internalDependencies.filterNot(_.project.value == "macros")
+          .flatMap(_.sourceLayout).map(_.sourceGeneratorCount).distinct,
+        List(0)
+      )
+      assert(!Files.exists(workspace.resolve("generator-ran")))
+      assertEquals(strictReceipt.requireFreshInternalOutputs, true)
+      assert(Files.exists(invalidSource))
     finally deleteRecursively(workspace)
 
   private val buildDefinition =
@@ -90,7 +118,13 @@ class SbtPointContextInjectionIntegrationSuite extends munit.FunSuite:
       |
       |lazy val core = project.in(file("core")).settings(Compile / classDirectory := file("outputs/core"))
       |lazy val macros = project.in(file("macros"))
-      |  .settings(Compile / classDirectory := file("outputs/macros"))
+      |  .settings(
+      |    Compile / classDirectory := file("outputs/macros"),
+      |    Compile / sourceGenerators += Def.task {
+      |      IO.write(file("generator-ran"), "generator was executed")
+      |      Seq.empty[File]
+      |    }.taskValue
+      |  )
       |  .dependsOn(core)
       |lazy val laws = project.in(file("laws"))
       |  .settings(Compile / classDirectory := file("outputs/laws"))

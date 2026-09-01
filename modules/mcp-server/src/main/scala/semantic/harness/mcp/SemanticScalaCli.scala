@@ -21,6 +21,7 @@ import semantic.harness.reconciliation.PointEvidenceReportV2
 import semantic.harness.reconciliation.PointEvidenceReportV3
 import semantic.harness.reconciliation.PointEvidenceReportV4
 import semantic.harness.reconciliation.PointEvidenceReportV5
+import semantic.harness.reconciliation.PointEvidenceReportV6
 import semantic.harness.sbt_runner.SbtScalaVersion
 import semantic.harness.semanticdb_reader.SemanticFileSummary
 
@@ -276,7 +277,8 @@ final case class SemanticScalaCli(
       sbtScalaVersion,
       sbtJavaHome,
       includeExistingInternalOutputs = false,
-      execution
+      requireFreshInternalOutputs = false,
+      execution = execution
     )
 
   def semanticPointEvidence(
@@ -288,6 +290,30 @@ final case class SemanticScalaCli(
     sbtScalaVersion: Option[String],
     sbtJavaHome: Option[String],
     includeExistingInternalOutputs: Boolean,
+    execution: ProcessExecution
+  ): McpToolResult = semanticPointEvidence(
+    workspace,
+    file,
+    line,
+    col,
+    sbtProject,
+    sbtScalaVersion,
+    sbtJavaHome,
+    includeExistingInternalOutputs,
+    requireFreshInternalOutputs = false,
+    execution = execution
+  )
+
+  def semanticPointEvidence(
+    workspace: Path,
+    file: String,
+    line: Int,
+    col: Int,
+    sbtProject: Option[String],
+    sbtScalaVersion: Option[String],
+    sbtJavaHome: Option[String],
+    includeExistingInternalOutputs: Boolean,
+    requireFreshInternalOutputs: Boolean,
     execution: ProcessExecution
   ): McpToolResult =
     val validatedProject = sbtProject match
@@ -310,6 +336,8 @@ final case class SemanticScalaCli(
       _ <- Either.cond(javaHome.isEmpty || project.nonEmpty, (), "sbtJavaHome requires sbtProject for semantic_point_evidence")
       _ <- Either.cond(scalaVersion.isEmpty || project.nonEmpty, (), "sbtScalaVersion requires sbtProject for semantic_point_evidence")
       _ <- Either.cond(!includeExistingInternalOutputs || project.nonEmpty, (), "includeExistingInternalOutputs requires sbtProject for semantic_point_evidence")
+      _ <- Either.cond(!requireFreshInternalOutputs || includeExistingInternalOutputs, (), "requireFreshInternalOutputs requires includeExistingInternalOutputs for semantic_point_evidence")
+      _ <- Either.cond(!requireFreshInternalOutputs || project.nonEmpty, (), "requireFreshInternalOutputs requires sbtProject for semantic_point_evidence")
     yield (project, scalaVersion, javaHome)
     val args = selected.toOption.fold(SemanticScalaCli.pointEvidenceArgs(file, line, col)) {
       case (project, scalaVersion, javaHome) =>
@@ -320,7 +348,8 @@ final case class SemanticScalaCli(
           project,
           scalaVersion,
           javaHome,
-          includeExistingInternalOutputs
+          includeExistingInternalOutputs,
+          requireFreshInternalOutputs
         )
     }
     val command = cliCommand(args)
@@ -342,7 +371,8 @@ final case class SemanticScalaCli(
         case None =>
           val (project, _, javaHome) = selected.toOption.get
           val expected =
-            if includeExistingInternalOutputs then PointEvidenceReportV5.SchemaVersion
+            if requireFreshInternalOutputs then PointEvidenceReportV6.SchemaVersion
+            else if includeExistingInternalOutputs then PointEvidenceReportV5.SchemaVersion
             else if project.nonEmpty then PointEvidenceReportV4.SchemaVersion
             else PointEvidenceReportV2.SchemaVersion
           val result =
@@ -709,13 +739,15 @@ object SemanticScalaCli:
       sbtProject: Option[String] = None,
       sbtScalaVersion: Option[String] = None,
       sbtJavaHome: Option[String] = None,
-      includeExistingInternalOutputs: Boolean = false
+      includeExistingInternalOutputs: Boolean = false,
+      requireFreshInternalOutputs: Boolean = false
   ): List[String] =
     List("point-evidence", "--workspace", ".", "--file", file, "--line", line.toString, "--col", col.toString) ++
       sbtProject.toList.flatMap(value => List("--sbt-project", value)) ++
       sbtScalaVersion.toList.flatMap(value => List("--sbt-scala-version", value)) ++
       sbtJavaHome.toList.flatMap(value => List("--sbt-java-home", value)) ++
       Option.when(includeExistingInternalOutputs)("--include-existing-internal-outputs").toList ++
+      Option.when(requireFreshInternalOutputs)("--require-fresh-internal-outputs").toList ++
       List("--json")
 
   def default: SemanticScalaCli =

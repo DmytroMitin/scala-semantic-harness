@@ -17,7 +17,8 @@ execution ledger and does not promise delivery dates.
 - Opt-in alpha-3 target-aware SemanticDB source mapping v4 with a validated
   optional Scala axis and a non-compiling root-only receipt, plus target-aware
   point-evidence v4 with a non-compiling partial existing-output receipt and an
-  explicit v5 opt-in for bounded same-axis existing internal Compile outputs.
+  explicit v5 opt-in for bounded same-axis existing internal Compile outputs,
+  plus strict v6 gating for content-verified Fresh internal output.
 - A CLI-only bounded post-compile TASTy point-evidence operation with a
   same-request selected-Compile receipt and exact stable Scala 3 child worker.
 - Bounded fixed-task sbt subprocess compatibility proven on sbt 1.12.15 and
@@ -151,6 +152,9 @@ capabilities are admitted.
   attribution without target compilation, while point evidence v4 requests only
   an existing selected class directory plus target external dependencies and
   stays explicitly partial; neither is target compiler-option/plugin replay.
+- Preserve v5 as the freshness-not-assessed compatibility route and v6 as a
+  second explicit strict route. V6 reads existing same-axis Zinc analysis only,
+  excludes Stale and Unverifiable internal outputs, and remains partial.
 - Add capabilities only after a decision-relevant gap is demonstrated against
   strong ordinary tooling.
 - Keep resource and output bounds explicit and tested.
@@ -199,6 +203,10 @@ privacy qualification. These tiers do not authorize release actions.
   The exact annotation-class recovery, missing-output omission, and cross-axis
   controls are not arbitrary classpath completeness, option/plugin replay, or
   a claim that every sbt configuration is modeled.
+- Preserve the bounded cats-tagless v6 qualifier: clean supported Zinc content
+  and relation evidence admits the required internal output, while source
+  mutation, missing selected-axis analysis, wrong-axis-only analysis, or a
+  missing class directory excludes that support without compiling it.
 - Treat the post-compile TASTy lane as a current illustration of composition
   and provenance value: it normalizes selected-build ownership, point mapping,
   source/artifact identity, freshness, uncertainty, and no-replay boundaries.

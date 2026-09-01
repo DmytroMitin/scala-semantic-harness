@@ -39,8 +39,11 @@ import semantic.harness.reconciliation.PointEvidenceReportV4
 import semantic.harness.reconciliation.PointEvidenceServiceV4
 import semantic.harness.reconciliation.PointEvidenceReportV5
 import semantic.harness.reconciliation.PointEvidenceServiceV5
+import semantic.harness.reconciliation.PointEvidenceReportV6
+import semantic.harness.reconciliation.PointEvidenceServiceV6
 import semantic.harness.reconciliation.SemanticPointEvidenceTargetRequestV4
 import semantic.harness.reconciliation.SemanticPointEvidenceTargetRequestV5
+import semantic.harness.reconciliation.SemanticPointEvidenceTargetRequestV6
 import semantic.harness.reconciliation.SemanticdbForSourceReportV3
 import semantic.harness.reconciliation.SemanticdbForSourceServiceV3
 import semantic.harness.reconciliation.SemanticdbForSourceTargetRequest
@@ -192,8 +195,8 @@ object CliApp:
         semanticdbCoverage(workspace, json, projectDir)
       case CliCommand.SemanticdbForSource(file, workspace, json, sbtProject, sbtScalaVersion, sbtJavaHome) =>
         semanticdbForSource(file, workspace, sbtProject, sbtScalaVersion, sbtJavaHome, json, projectDir)
-      case CliCommand.PointEvidence(file, workspace, line, column, json, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs) =>
-        pointEvidence(file, workspace, line, column, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs, json, projectDir)
+      case CliCommand.PointEvidence(file, workspace, line, column, json, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs, requireFreshInternalOutputs) =>
+        pointEvidence(file, workspace, line, column, sbtProject, sbtScalaVersion, sbtJavaHome, includeExistingInternalOutputs, requireFreshInternalOutputs, json, projectDir)
       case CliCommand.TastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json) =>
         tastyPointEvidence(workspace, sbtProject, file, line, column, sbtJavaHome, json, projectDir)
       case CliCommand.Symbols(semanticdb, json) =>
@@ -444,6 +447,7 @@ object CliApp:
     sbtScalaVersion: Option[SbtScalaVersion],
     sbtJavaHome: Option[String],
     includeExistingInternalOutputs: Boolean,
+    requireFreshInternalOutputs: Boolean,
     json: Boolean,
     projectDir: Path
   ): CliResult =
@@ -464,7 +468,9 @@ object CliApp:
     else
       sbtProject match
         case None =>
-          if includeExistingInternalOutputs then
+          if requireFreshInternalOutputs then
+            CliResult(None, Some("--require-fresh-internal-outputs requires --sbt-project for point-evidence"), 1)
+          else if includeExistingInternalOutputs then
             CliResult(None, Some("--include-existing-internal-outputs requires --sbt-project for point-evidence"), 1)
           else
             PointEvidenceServiceV2()
@@ -477,7 +483,25 @@ object CliApp:
           validatedSbtJavaHome(sbtJavaHome) match
             case Left(message) => CliResult(None, Some(message), 1)
             case Right(targetJava) =>
-              if includeExistingInternalOutputs then
+              if requireFreshInternalOutputs && !includeExistingInternalOutputs then
+                CliResult(None, Some("--require-fresh-internal-outputs requires --include-existing-internal-outputs for point-evidence"), 1)
+              else if requireFreshInternalOutputs then
+                PointEvidenceServiceV6().inspect(
+                  SemanticPointEvidenceTargetRequestV6(
+                    workspacePath,
+                    sourcePath,
+                    line,
+                    column,
+                    project,
+                    sbtScalaVersion,
+                    targetJava
+                  )
+                ) match
+                  case Right(report) =>
+                    if json then CliResult(Some(report.asJson.noSpaces), None, 0)
+                    else CliResult(Some(pointEvidenceSummaryV6(report)), None, 0)
+                  case Left(message) => CliResult(None, Some(message), 1)
+              else if includeExistingInternalOutputs then
                 PointEvidenceServiceV5().inspect(
                   SemanticPointEvidenceTargetRequestV5(
                     workspacePath,
@@ -928,6 +952,9 @@ object CliApp:
   private def pointEvidenceSummaryV5(report: PointEvidenceReportV5): String =
     s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.targetSelection.status}, ${report.livePoint.status}, ${report.targetContext.contextCompleteness}, ${report.reconciliation.outcome}"
 
+  private def pointEvidenceSummaryV6(report: PointEvidenceReportV6): String =
+    s"${report.sourceFile}:${report.position.line}:${report.position.column}: ${report.targetSelection.status}, ${report.livePoint.status}, ${report.targetContext.contextCompleteness}, ${report.reconciliation.outcome}"
+
   private def semanticdbCoverageSummary(report: SemanticdbCoverageReport): String =
     s"${report.workspace}: ${report.coverageStatus}, ${report.coveredSourceFiles}/${report.sourceFiles} inventory source(s) covered; freshness and build-target completeness are not assessed"
 
@@ -971,7 +998,7 @@ object CliApp:
       |  semantic-scala semanticdb-status --workspace <path> [--schema-version v1|v2] [--json]
       |  semantic-scala semanticdb-coverage --workspace <path> [--json]
       |  semantic-scala semanticdb-for-source --file <path> --workspace <path> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--json]
-      |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs] [--json]
+      |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs [--require-fresh-internal-outputs]] [--json]
       |  semantic-scala tasty-point-evidence --workspace <dir> --sbt-project <id> --file <relative.scala> --line <n> --col <n> [--sbt-java-home <absolute-directory>] --json
       |  semantic-scala symbols --semanticdb <path> [--json]
       |  semantic-scala usages --workspace <path> --manifest <relative.json> --symbol <global-symbol> [selectors] [--json]
@@ -1099,7 +1126,7 @@ object CliApp:
       case "point-evidence" =>
         Some(
           """Usage:
-            |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs] [--json]
+            |  semantic-scala point-evidence --file <path> --workspace <path> --line <n> --col <n> [--sbt-project <id>] [--sbt-scala-version <version>] [--sbt-java-home <absolute-directory>] [--include-existing-internal-outputs [--require-fresh-internal-outputs]] [--json]
             |
             |Composes existing SemanticDB discovery with one live presentation-compiler point query.
             |The source must be contained by the explicit workspace. Input positions are one-based UTF-16.
@@ -1114,6 +1141,10 @@ object CliApp:
             |same-axis internal Compile class directories discovered from thisProject.dependencies; aggregates are ignored.
             |This settings-only v5 mode does not request compilation, products, fullClasspath, or internalDependencyClasspath.
             |Its context remains PartialExistingCompileOutputs; absent or unsafe dependency outputs stay typed and are not built.
+            |With both internal-output flags, v6 reads each dependency's existing Compile / compileAnalysisFile.
+            |The live context admits only Fresh internal outputs proven by supported Zinc content stamps and relations.
+            |Stale, missing-analysis, unsupported, corrupt, unsafe, incomplete, and generator-unbounded states are excluded.
+            |This strict v6 profile remains partial and does not claim that the selected target or whole build is fresh.
             |Receipt acquisition still evaluates checked-in sbt build/plugin code and may resolve dependencies or populate metadata/caches.
             |The live compiler does not replay target compiler options, plugins, or lifecycle.
             |--sbt-java-home requires --sbt-project and applies only to the receipt's child sbt process.
