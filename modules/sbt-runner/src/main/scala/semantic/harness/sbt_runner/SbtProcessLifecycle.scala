@@ -40,15 +40,14 @@ private[sbt_runner] object SbtProcessLifecycle:
       timeout: FiniteDuration
   ): SbtProcessOutcome =
     Files.createDirectories(runtimeDirectory)
-    val builder = ProcessBuilder(commandVector(globalBase, command)*)
-      .directory(workspace.toFile)
-      .redirectErrorStream(false)
-    val environment = builder.environment()
-    environmentEntries.foreach { case (name, value) => environment.put(name, value) }
-    targetJava.foreach(SbtJavaEnvironment.configure(environment, _))
-    SbtSandbox.configure(environment)
-    environment.put("XDG_RUNTIME_DIR", runtimeDirectory.toString)
-
+    val builder = processBuilder(
+      workspace,
+      globalBase,
+      runtimeDirectory,
+      command,
+      targetJava,
+      environmentEntries
+    )
     Try(builder.start()).toEither match
       case Left(exception) =>
         SbtProcessOutcome.FailedToStart(sanitize(message(exception), workspace, targetJava))
@@ -68,6 +67,24 @@ private[sbt_runner] object SbtProcessLifecycle:
             SbtRunResult(command, process.exitValue(), stdout, stderr)
           )
         else SbtProcessOutcome.TimedOut(stdout, stderr)
+
+  private[sbt_runner] def processBuilder(
+      workspace: Path,
+      globalBase: Path,
+      runtimeDirectory: Path,
+      command: String,
+      targetJava: Option[ValidatedSbtJavaHome],
+      environmentEntries: Map[String, String]
+  ): ProcessBuilder =
+    val builder = ProcessBuilder(commandVector(globalBase, command)*)
+      .directory(workspace.toFile)
+      .redirectErrorStream(false)
+    val environment = builder.environment()
+    environmentEntries.foreach { case (name, value) => environment.put(name, value) }
+    targetJava.foreach(SbtJavaEnvironment.configure(environment, _))
+    SbtSandbox.configure(environment)
+    environment.put("XDG_RUNTIME_DIR", runtimeDirectory.toString)
+    builder
 
   private def terminateOwnedTree(process: Process): Unit =
     val descendants = process.descendants().iterator().asScala.toList.reverse

@@ -11,6 +11,12 @@ class Sbt207RunnerLifecycleIntegrationSuite extends munit.FunSuite:
 
   test("sbt 2.0.7 selected operations are structured fresh and repeatable"):
     val workspace = copyFixture()
+    val sandbox = Files.createTempDirectory("sbt-2.0.7-runner-lifecycle-sandbox-")
+    val hostileGlobal = Files.createTempDirectory("sbt-2.0.7-runner-hostile-global-")
+    val sandboxEnvironment = Map(
+      "SEMANTIC_SCALA_SANDBOX_DIR" -> sandbox.toString,
+      "SBT_OPTS" -> s"-Drunner.marker=true --sbt-dir $hostileGlobal"
+    )
     val passing = project("passing")
     val failing = project("failing")
     val runner = ProcessSbtRunner(120.seconds)
@@ -23,25 +29,27 @@ class Sbt207RunnerLifecycleIntegrationSuite extends munit.FunSuite:
       SbtTastyCompileProcess.default
     )
     try
-      val compileRun = runner.compile(workspace, Some(passing), None)
+      val compileRun = runner.compileWithEnvironment(workspace, Some(passing), None, sandboxEnvironment)
       val compile = ReportConverter.compileReport(compileRun)
       assertEquals(compile.success, true, clue(compileRun))
 
-      val passingRun = runner.test(workspace, Some(passing), None)
+      val passingRun = runner.testWithEnvironment(workspace, Some(passing), None, sandboxEnvironment)
       val passingTests = ReportConverter.testReport(passingRun)
       assertEquals(passingTests.success, true, clue(passingRun))
       assertEquals(passingTests.total, 3)
       assertEquals(passingTests.passed, 2)
       assertEquals(passingTests.failed, 0)
 
-      val failingTests = ReportConverter.testReport(runner.test(workspace, Some(failing), None))
+      val failingTests = ReportConverter.testReport(
+        runner.testWithEnvironment(workspace, Some(failing), None, sandboxEnvironment)
+      )
       assertEquals(failingTests.success, false)
       assertEquals(failingTests.total, 1)
       assertEquals(failingTests.passed, 0)
       assertEquals(failingTests.failed, 1)
 
       val unknown = ReportConverter.compileReport(
-        runner.compile(workspace, Some(project("unknownProject")), None)
+        runner.compileWithEnvironment(workspace, Some(project("unknownProject")), None, sandboxEnvironment)
       )
       assertEquals(unknown.success, false)
 
@@ -63,7 +71,10 @@ class Sbt207RunnerLifecycleIntegrationSuite extends munit.FunSuite:
       )
       assertEquals(receipt.map(_.compileStatus), Right(SbtTastyCompileStatus.Succeeded))
       assertEquals(receipt.map(_.sourceIncluded), Right(true))
-    finally deleteRecursively(workspace)
+    finally
+      deleteRecursively(workspace)
+      deleteRecursively(sandbox)
+      deleteRecursively(hostileGlobal)
 
   private def copyFixture(): Path =
     val source = Path.of(getClass.getResource("/sbt-2.0.7-runner-lifecycle").toURI)

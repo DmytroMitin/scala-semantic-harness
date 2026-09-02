@@ -37,20 +37,37 @@ final case class ProcessSbtRunner(
       project: Option[SbtProjectId],
       targetJava: Option[ValidatedSbtJavaHome]
   ): SbtRunResult =
-    run(projectDir, project, targetJava, SbtFixedTask.Compile)
+    run(projectDir, project, targetJava, SbtFixedTask.Compile, Map.empty)
 
   override def test(
       projectDir: Path,
       project: Option[SbtProjectId],
       targetJava: Option[ValidatedSbtJavaHome]
   ): SbtRunResult =
-    run(projectDir, project, targetJava, SbtFixedTask.Test)
+    run(projectDir, project, targetJava, SbtFixedTask.Test, Map.empty)
+
+  private[sbt_runner] def compileWithEnvironment(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome],
+      environmentEntries: Map[String, String]
+  ): SbtRunResult =
+    run(projectDir, project, targetJava, SbtFixedTask.Compile, environmentEntries)
+
+  private[sbt_runner] def testWithEnvironment(
+      projectDir: Path,
+      project: Option[SbtProjectId],
+      targetJava: Option[ValidatedSbtJavaHome],
+      environmentEntries: Map[String, String]
+  ): SbtRunResult =
+    run(projectDir, project, targetJava, SbtFixedTask.Test, environmentEntries)
 
   private def run(
       projectDir: Path,
       project: Option[SbtProjectId],
       targetJava: Option[ValidatedSbtJavaHome],
-      task: SbtFixedTask
+      task: SbtFixedTask,
+      environmentEntries: Map[String, String]
   ): SbtRunResult =
     val temporaryRoot = Files.createTempDirectory("ss-sbt-run-")
     val globalBase = Files.createDirectory(temporaryRoot.resolve("g"))
@@ -59,7 +76,7 @@ final case class ProcessSbtRunner(
     val selectedTask = if task == SbtFixedTask.Test then SbtFixedTask.StructuredTest else task
     val command = SbtCommandSequence.build(project, selectedTask)
     try
-      val environment =
+      val operationEnvironment =
         if task == SbtFixedTask.Test then
           Files.writeString(
             globalBase.resolve("global.sbt"),
@@ -76,7 +93,7 @@ final case class ProcessSbtRunner(
         runtimeDirectory,
         command,
         targetJava,
-        environment,
+        environmentEntries ++ operationEnvironment,
         timeout
       ) match
         case SbtProcessOutcome.Completed(result) if task == SbtFixedTask.Test =>
@@ -99,6 +116,13 @@ final case class ProcessSbtRunner(
 
 private[sbt_runner] object SbtSandbox:
   def configure(environment: java.util.Map[String, String]): Unit =
+    val inheritedOptions = Option(environment.get("SBT_OPTS"))
+      .map(removeGlobalBaseOptions)
+      .filter(_.nonEmpty)
+    inheritedOptions match
+      case Some(options) => environment.put("SBT_OPTS", options)
+      case None => environment.remove("SBT_OPTS")
+
     Option(environment.get("SEMANTIC_SCALA_SANDBOX_DIR")).filter(_.nonEmpty).foreach { value =>
       val sandbox = Path.of(value).toAbsolutePath.normalize()
       val ivyHome = sandbox.resolve("ivy2")
@@ -120,13 +144,37 @@ private[sbt_runner] object SbtSandbox:
 
       val sandboxOptions = Seq(
         s"-Dsbt.boot.directory=${sandbox.resolve("boot")}",
-        s"-Dsbt.global.base=${sandbox.resolve("global")}",
         s"-Dsbt.ivy.home=$ivyHome",
         "-Dsbt.server.forcestart=true"
       ).mkString(" ")
-      val existingOptions = Option(environment.get("SBT_OPTS")).filter(_.nonEmpty)
-      environment.put("SBT_OPTS", existingOptions.fold(sandboxOptions)(options => s"$options $sandboxOptions"))
+      environment.put("SBT_OPTS", inheritedOptions.fold(sandboxOptions)(options => s"$options $sandboxOptions"))
     }
+
+  private def removeGlobalBaseOptions(options: String): String =
+    val optionsWithValue = Set("-sbt-dir", "--sbt-dir")
+    val standaloneOptions = Set("-no-global", "--no-global")
+    val noShareOptions = Set("-no-share", "--no-share")
+    val noShareBoot = "-Dsbt.boot.directory=project/.boot"
+    val noShareIvy = "-Dsbt.ivy.home=project/.ivy"
+
+    @annotation.tailrec
+    def retain(remaining: List[String], retained: List[String]): List[String] =
+      remaining match
+        case option :: value :: tail if optionsWithValue.contains(option) && !value.startsWith("-") =>
+          retain(tail, retained)
+        case option :: tail if optionsWithValue.contains(option) => retain(tail, retained)
+        case option :: tail if noShareOptions.contains(option) =>
+          retain(tail, noShareIvy :: noShareBoot :: retained)
+        case option :: tail
+            if standaloneOptions.contains(option) ||
+              optionsWithValue.exists(prefix => option.startsWith(s"$prefix=")) ||
+              option == "-Dsbt.global.base" ||
+              option.startsWith("-Dsbt.global.base=") =>
+          retain(tail, retained)
+        case option :: tail => retain(tail, option :: retained)
+        case Nil => retained.reverse
+
+    retain(options.split("\\s+").filter(_.nonEmpty).toList, Nil).mkString(" ")
 
   private def copyDirectoryIfMissing(source: Path, destination: Path): Unit =
     if Files.isDirectory(source) && !Files.exists(destination) then

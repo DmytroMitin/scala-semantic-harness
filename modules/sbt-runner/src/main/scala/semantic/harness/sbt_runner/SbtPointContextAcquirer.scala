@@ -413,7 +413,9 @@ private[sbt_runner] trait SbtPointContextProcess:
 private[sbt_runner] object SbtPointContextProcess:
   val default: SbtPointContextProcess = ProcessSbtPointContextProcess()
 
-private final case class ProcessSbtPointContextProcess() extends SbtPointContextProcess:
+private[sbt_runner] final case class ProcessSbtPointContextProcess(
+    environmentEntries: Map[String, String] = Map.empty
+) extends SbtPointContextProcess:
   override def run(
       request: SbtPointContextRequest,
       globalBase: Path,
@@ -421,7 +423,7 @@ private final case class ProcessSbtPointContextProcess() extends SbtPointContext
       task: SbtFixedTask,
       timeout: FiniteDuration
   ): SbtPointContextProcessOutcome =
-    val environment = Map(
+    val operationEnvironment = Map(
       "SEMANTIC_SCALA_POINT_CONTEXT_RECEIPT" -> receiptFile.toString
     ) ++ request.requestedScalaVersion.map(axis =>
       "SEMANTIC_SCALA_REQUESTED_SCALA_VERSION" -> axis.value
@@ -434,7 +436,7 @@ private final case class ProcessSbtPointContextProcess() extends SbtPointContext
       globalBase.getParent.resolve("r"),
       SbtCommandSequence.selected(request.project, task, request.requestedScalaVersion),
       request.targetJava,
-      environment,
+      environmentEntries ++ operationEnvironment,
       timeout
     ) match
       case SbtProcessOutcome.Completed(result) => SbtPointContextProcessOutcome.Completed(result)

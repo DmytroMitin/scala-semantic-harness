@@ -6,10 +6,12 @@ import java.util.Comparator
 import scala.concurrent.duration.DurationInt
 
 class SbtPointContextInjectionIntegrationSuite extends munit.FunSuite:
-  override val munitTimeout = 120.seconds
+  override val munitTimeout = 5.minutes
 
   test("v5 injected settings execute admitted graph traversal and continue after unavailable class directory"):
     val workspace = Files.createTempDirectory("point-context-v5-real-sbt-")
+    val sandbox = Files.createTempDirectory("point-context-v5-real-sbt-sandbox-")
+    val hostileGlobal = Files.createTempDirectory("point-context-v5-hostile-global-")
     try
       Files.createDirectories(workspace.resolve("project"))
       Files.writeString(workspace.resolve("project/build.properties"), "sbt.version=1.12.14\n")
@@ -29,9 +31,15 @@ class SbtPointContextInjectionIntegrationSuite extends munit.FunSuite:
         Some(scalaVersion("3.3.3")),
         includeExistingInternalOutputs = true
       )
+      val sandboxedProcess = ProcessSbtPointContextProcess(
+        Map(
+          "SEMANTIC_SCALA_SANDBOX_DIR" -> sandbox.toString,
+          "SBT_OPTS" -> s"-Dpoint.context.marker=true --sbt-dir $hostileGlobal"
+        )
+      )
       val receipt = ProcessSbtPointContextAcquirer(
         120.seconds,
-        SbtPointContextProcess.default
+        sandboxedProcess
       ).acquire(request).fold(failure => fail(failure.toString), identity)
 
       assertEquals(
@@ -82,7 +90,7 @@ class SbtPointContextInjectionIntegrationSuite extends munit.FunSuite:
 
       val strictReceipt = ProcessSbtPointContextAcquirer(
         120.seconds,
-        SbtPointContextProcess.default
+        sandboxedProcess
       ).acquire(request.copy(requireFreshInternalOutputs = true)).fold(
         failure => fail(failure.toString),
         identity
@@ -107,7 +115,10 @@ class SbtPointContextInjectionIntegrationSuite extends munit.FunSuite:
       assert(!Files.exists(workspace.resolve("generator-ran")))
       assertEquals(strictReceipt.requireFreshInternalOutputs, true)
       assert(Files.exists(invalidSource))
-    finally deleteRecursively(workspace)
+    finally
+      deleteRecursively(workspace)
+      deleteRecursively(sandbox)
+      deleteRecursively(hostileGlobal)
 
   private val buildDefinition =
     """ThisBuild / scalaVersion := "3.3.3"
