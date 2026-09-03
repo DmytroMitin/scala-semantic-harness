@@ -99,10 +99,13 @@ not the documented baseline.
 Scala 3 describes the harness implementation, not a blanket target-language
 promise. A bounded JDK 21 matrix has verified build/test/error delegation,
 SemanticDB discovery/symbol/usages, and syntax-first effect summaries on Scala
-2.13.18 and Scala 3.3.8 fixtures. Presentation Compiler operations still use
-the pinned Scala 3.3 compiler: they resolved the matrix's shared-syntax Scala 2
-points, but this is not general Scala 2 dialect or compiler support.
-Reconciliation and point evidence inherit that dynamic-source limitation. See
+2.13.18 and Scala 3.3.8 fixtures. The harness is built with Scala 3.9.0 and its
+dynamic point operations use the linked Scala 3.9.0 Presentation Compiler.
+That host compiler resolved the matrix's shared-syntax Scala 2 points, but this
+is not general Scala 2 dialect or compiler support. Target builds still use
+their selected target compiler; static SemanticDB and post-compile TASTy
+evidence remain target-artifact evidence. Reconciliation and point evidence
+inherit the dynamic-source limitation. See
 [`docs/project-status.md`](docs/project-status.md) and
 [`docs/semantic-api.md`](docs/semantic-api.md) for the exact boundary.
 

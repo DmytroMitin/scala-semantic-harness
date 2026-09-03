@@ -30,12 +30,15 @@ private control repositories or controller history.
 The harness is implemented in Scala 3, while target compatibility is
 capability-specific. Build/test commands delegate to the target's own build.
 SemanticDB readers consume explicit version-appropriate artifacts. Syntax-first
-analysis depends on accepted source syntax. Dynamic symbol/type operations use
-the harness's pinned Scala 3.3 presentation compiler rather than a native Scala
-2 compiler. The separate CLI-only post-compile TASTy lane first owns one target
-`Compile` request, then compiles and runs a product-owned inspector against the
-acquired exact stable Scala 3 line in bounded child JVMs. Target compiler
-options and plugins are not replayed by that inspector.
+analysis depends on accepted source syntax. The harness is compiled with Scala
+3.9.0, and dynamic symbol/type operations use its linked Scala 3.9.0
+Presentation Compiler rather than the target compiler or a native Scala 2
+compiler. Build/test delegation still uses the selected target compiler.
+Static SemanticDB evidence reads target artifacts. The separate CLI-only
+post-compile TASTy lane first owns one target `Compile` request, then compiles
+and runs a product-owned inspector against the acquired exact stable Scala 3
+line in bounded child JVMs. Neither dynamic point queries nor the inspector
+replay target compiler options or plugins.
 
 A bounded JDK 21 fixture matrix verified build/test/error, SemanticDB,
 effect-summary, and exact-eight MCP projection on Scala 2.13.18 and Scala 3.3.8.

@@ -32,6 +32,8 @@ orchestration framework, or MCP tool.
 ## Implemented foundation
 
 - Scala 3 CLI with structured compile, test, and diagnostic results;
+- Scala 3.9.0 harness and linked Presentation Compiler host lane, kept distinct
+  from target build, SemanticDB-artifact, and TASTy-inspector authority;
 - explicit target-JDK selection for existing sbt-backed operations while the
   harness stays on its supported JDK 21 runtime;
 - SemanticDB inventory, coverage, symbol, and exact-symbol usage evidence;

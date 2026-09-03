@@ -1,5 +1,5 @@
 ThisBuild / organization := "com.github.dmytromitin"
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.9.0"
 ThisBuild / version := "0.1.0-alpha.3-SNAPSHOT"
 ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/scala-semantic-harness"))
 ThisBuild / licenses := List(
@@ -27,7 +27,7 @@ ThisBuild / pomIncludeRepository := (_ => false)
 lazy val circeVersion = "0.14.9"
 lazy val munitVersion = "1.0.0"
 lazy val semanticdbVersion = "4.16.1"
-lazy val presentationCompilerVersion = "3.3.3"
+lazy val presentationCompilerVersion = "3.9.0"
 lazy val coursierInterfaceVersion = "1.0.28"
 lazy val workerCoursierInterfaceVersion = "1.0.18"
 lazy val zincVersion = "1.12.1"

@@ -59,8 +59,11 @@ class PresentationCompilerServiceSuite extends munit.FunSuite:
     assertEquals(symbol.source, path.toString)
 
   test("symbolAtSnapshot accepts and validates one explicit target classpath context"):
+    val currentBuildClasses = Path.of(
+      classOf[PresentationCompilerService].getProtectionDomain.getCodeSource.getLocation.toURI
+    )
     val context = PresentationCompilerContext.explicit(
-      List(Path.of("modules/presentation-compiler/target/scala-3.3.3/classes")),
+      List(currentBuildClasses),
       Some(Path.of("."))
     )
     val result = PresentationCompilerService()

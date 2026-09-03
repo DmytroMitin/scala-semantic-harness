@@ -225,8 +225,9 @@ privacy qualification. These tiers do not authorize release actions.
   3.3.8 JDK 21 fixture matrix.
 - Keep build/test delegation, SemanticDB, syntax-first, Presentation Compiler,
   reconciliation/composition, and MCP compatibility claims separate.
-- Treat common-syntax Scala 2 success through the pinned Scala 3.3 presentation
-  compiler as bounded evidence, not general Scala 2 compiler support.
+- Keep the Scala 3.9.0 harness/Presentation Compiler host lane distinct from
+  target compiler authority. Treat common-syntax Scala 2 success through that
+  host compiler as bounded evidence, not general Scala 2 compiler support.
 - Preserve the first real-project Stage-A matrix on
   `scala/scala-java8-compat` at exact commit
   `a95da8c799baf6a9aea1ef539de8120ee0fbbbed`: its unchanged Scala 2.13.18 root

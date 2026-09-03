@@ -119,11 +119,12 @@ present, followed by distinct target external dependencies. Missing class
 output is omitted and never triggers compilation. The report always exposes
 `PartialExistingOutputs`, so `Resolved` does not imply a complete target
 classpath and `Unresolved` may reflect missing internal project products. No
-other target or platform output is inferred. The harness Presentation Compiler
-does not replay the target compiler version, flags, compiler plugins, or plugin
-lifecycle. Public JSON reports relative roots, presence and entry counts, and
-redacted JDK context; it never exposes raw classpaths, dependency-cache paths,
-or Java home.
+other target or platform output is inferred. Live queries use the harness's
+linked Scala 3.9.0 Presentation Compiler; they do not switch to or replay the
+target compiler version, flags, compiler plugins, or plugin lifecycle. Static
+selection continues to describe the selected target SemanticDB artifact.
+Public JSON reports relative roots, presence and entry counts, and redacted JDK
+context; it never exposes raw classpaths, dependency-cache paths, or Java home.
 
 Every request starts a fresh sbt lifecycle, so it cannot inherit an interactive
 `++` selection from an earlier process. Requested and effective axes and their

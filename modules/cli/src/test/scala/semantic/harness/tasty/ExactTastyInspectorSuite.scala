@@ -5,16 +5,16 @@ import java.nio.file.Path
 class ExactTastyInspectorSuite extends munit.FunSuite:
   test("exact target Scala worker inspects a real TASTy artifact in a child JVM"):
     val workspace = Path.of(sys.props("user.dir")).toRealPath()
+    val currentScalaVersion = scala.util.Properties.versionNumberString
+    val testClasses = Path.of(getClass.getProtectionDomain.getCodeSource.getLocation.toURI)
     val source = workspace.resolve(
       "modules/cli/src/test/scala/semantic/harness/tasty/SimpleTastyFixture.scala"
     )
-    val tasty = workspace.resolve(
-      "modules/cli/target/scala-3.3.3/test-classes/semantic/harness/tasty/SimpleTastyFixture.tasty"
-    )
+    val tasty = testClasses.resolve("semantic/harness/tasty/SimpleTastyFixture.tasty")
     val candidate = TastyArtifactCandidate(tasty, "SimpleTastyFixture.tasty", java.nio.file.Files.size(tasty), "a" * 64)
 
     val result = ExactTastyInspector.default.inspect(
-      targetScalaVersion = "3.3.3",
+      targetScalaVersion = currentScalaVersion,
       workspace = workspace,
       source = source,
       line = 4,
@@ -24,7 +24,7 @@ class ExactTastyInspectorSuite extends munit.FunSuite:
 
     assert(result.isRight, result.left.toOption.map(_.toString).getOrElse(""))
     val evidence = result.toOption.get
-    assertEquals(evidence.scalaVersion, "3.3.3")
+    assertEquals(evidence.scalaVersion, currentScalaVersion)
     assertEquals(evidence.inspectedCount, 1)
     assert(evidence.trees.nonEmpty)
     assert(evidence.trees.head.tree.renderedType.exists(_.endsWith("String")))

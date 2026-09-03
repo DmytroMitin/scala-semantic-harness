@@ -5,6 +5,12 @@ Scala 3 source point. It provides normalized, bounded post-compile evidence
 without adding a ninth MCP tool or replaying a target compiler plugin in the
 inspector.
 
+The harness host and linked Presentation Compiler use Scala 3.9.0, but this
+operation takes its compiler authority from the selected target receipt. Its
+product-owned inspector is compiled and run against that target's acquired
+exact stable Scala 3 line; it does not reuse the host compiler version as a
+substitute.
+
 ```bash
 semantic-scala tasty-point-evidence \
   --workspace <dir> \

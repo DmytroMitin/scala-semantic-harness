@@ -16,6 +16,10 @@ immutable `0.1.0-alpha.2` lightweight tag and GitHub prerelease identify the
 source that reproduced all 32 Maven Central primaries byte-for-byte. Mutable
 `main` reports `0.1.0-alpha.3-SNAPSHOT`, but no alpha-3 artifact, channel, tag,
 or GitHub Release exists; alpha-2 remains the supported packaged route.
+The alpha-3 SNAPSHOT source build uses Scala 3.9.0 for the harness and its
+linked Presentation Compiler. This does not alter the immutable alpha-2 Maven
+or Coursier bytes, and it does not make live queries dynamically select a
+target compiler.
 
 The alpha-2 GitHub Release provides source identity, release notes, and normal
 GitHub-generated source archives with zero uploaded project assets. Maven

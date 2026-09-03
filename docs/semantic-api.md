@@ -1007,9 +1007,11 @@ reconcile positions, invalid `.semanticdb` paths, and unknown tools.
 
 ## Dynamic Semantic Query Limits
 
-- Dynamic point queries use the Scala 3 presentation compiler directly.
-- The pinned Scala 3.3 presentation compiler resolved the shared-syntax points
-  in one Scala 2.13.18 fixture, but it is not a native Scala 2 presentation
+- Dynamic point queries use the linked Scala 3.9.0 Presentation Compiler
+  directly. This is the harness host lane, not a request to use the target's
+  compiler.
+- The Scala 3.9.0 Presentation Compiler resolved the shared-syntax points in
+  one Scala 2.13.18 fixture, but it is not a native Scala 2 presentation
   compiler. That result does not establish support for Scala-2-specific syntax,
   macros, compiler plugins, or arbitrary project classpaths.
 - The CLI accepts one explicit `.scala` source file path.
@@ -1046,7 +1048,7 @@ expression, an `Option[Extracted]` signature, and Circe `asJson`. Removing the
 sole staged entry owning a sibling type or Circe syntax changed the matched
 query to neutral `Unresolved`; workspace-only comparisons were also
 unresolved. Repeated sanitized capture was byte-identical. These remain
-Scala/presentation-compiler 3.3.3-dependent renderings, not canonical type
+Scala/Presentation-Compiler 3.9.0-dependent renderings, not canonical type
 identity. No `infer-type` MCP tool exists.
 
 Compiled sibling output was sufficient for the selected checked-in sources.
