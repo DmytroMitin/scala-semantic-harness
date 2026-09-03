@@ -97,7 +97,8 @@ Retain only the bounded, non-secret context needed to understand the result:
 - shareable commit or revision;
 - Scala version and sbt version or other build tool;
 - harness JDK and selected target JDK, when relevant;
-- selected sbt project and configuration, when relevant;
+- selected sbt project, configuration, and requested/effective Scala axis, when
+  relevant;
 - source-relative file plus one-based line and UTF-16 column, when relevant;
 - semantic-scala CLI version and whether CLI, MCP, or the skill was used;
 - exact semantic-scala command or MCP tool name;
@@ -115,8 +116,10 @@ or private source and artifacts without permission.
 The current supported packaged route is exactly `0.1.0-alpha.2`; follow
 [`agent-onboarding.md`](agent-onboarding.md) and
 [`distribution.md`](distribution.md). Mutable `main` reports
-`0.1.0-alpha.3-SNAPSHOT`. Its project/JDK selectors and TASTy evidence are
-development-source behavior until a later release; no alpha-3 artifact,
+`0.1.0-alpha.3-SNAPSHOT`. Its Scala 3.9 harness/Presentation Compiler host lane,
+target-aware v4, existing-internal-output v5, strict-freshness v6, project/JDK
+selectors, and TASTy evidence are development-source behavior until a later
+release; no alpha-3 artifact,
 channel, tag, or GitHub Release is claimed. Label source-built alpha-3 SNAPSHOT
 feedback explicitly and include the tested revision when shareable. Alpha-3 is
 not being cut merely to align the supported package with mutable `main`;

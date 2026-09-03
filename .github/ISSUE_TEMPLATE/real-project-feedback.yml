@@ -32,8 +32,9 @@ body:
   - type: input
     id: toolchain
     attributes:
-      label: Scala, build tool, and JDK
-      placeholder: Scala 3.3.7, sbt 1.12.14, harness JDK 21, target JDK 17
+      label: Toolchain and selected target context
+      description: Include the selected project, configuration, and requested/effective Scala axis when relevant.
+      placeholder: Scala 3.3.7, sbt 1.12.14, harness JDK 21, target JDK 17, project core / Compile
     validations:
       required: true
   - type: input

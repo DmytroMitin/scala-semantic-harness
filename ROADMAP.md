@@ -39,13 +39,16 @@ execution ledger and does not promise delivery dates.
    Central primaries, while the deterministic two-application public URL
    channel remains pinned to alpha-2. Mutable `main` is
    `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
-2. Continue fresh Scala/product development and bounded real-project validation
-   before the planned early-September community announcement, while making
-   real-project, user, and community feedback a primary source for the next
-   decision-relevant gaps. Alpha-2 remains
-   the supported package; alpha-3 remains SNAPSHOT development and is not cut
-   merely to align packaging with mutable `main`. Alpha-3 consideration is
-   intentionally nearer that announcement and remains subject to explicit
+2. Make external early-user decisions the primary admission source for new
+   semantic capability or adoption work before the planned early-September
+   community announcement. Recent bounded decision-gap intakes in one current
+   compiler-plugin project and three foreign Scala OSS projects admitted no new
+   semantic capability, so repeatedly mining repository batches is not the
+   immediate gap-generation strategy. Reports where ordinary tooling is
+   sufficient or semantic-scala adds no value remain useful evidence. Alpha-2
+   remains the supported package; alpha-3 remains SNAPSHOT development and is
+   not cut merely to align packaging with mutable `main`. Alpha-3 consideration
+   is intentionally nearer that announcement and remains subject to explicit
    qualification and release authority. Evaluate concrete Scala decisions
    against the compiler,
    build/test, IDE/LSP, and standard artifact tools already available to the
@@ -125,6 +128,22 @@ selection, and material decision improvement therefore remain separate. The
 automatic S/G comparative rerun sequence is closed; do not rerun it merely to
 force a complete or favorable matrix.
 
+Strict-v6 freshness remains mechanically qualified on its bounded cats-tagless
+case. In one later stale-output qualification path, an agent naturally selected
+semantic-scala, corrected an initial Scala-axis mismatch from the typed result,
+and used strict v6 to classify the producer output stale with complete
+`SourceContentMismatch` evidence without compiling or rebuilding. This is
+useful descriptive natural-selection evidence, not a causal treatment result.
+
+The attempted cats-tagless causal A/C comparison did not produce a valid
+comparison. Its preregistered isolation contract required a cell-private
+environment and complete command-boundary telemetry; method qualification
+found consultation of shared per-user JVM state outside the declared cell tree
+and stopped before the scored paths. The benchmark family is closed rather than
+repeatedly weakening that contract. This is not a semantic-scala defect, does
+not establish an actual cross-cell mutable-state leak, and adds no causal
+superiority claim.
+
 The evidence-broker / decision-layer hypothesis remains open but opportunity
 gated. The completed cases gave the combined arm no distinct primary fact or
 criterion unavailable to the strongest single arm, so their null results are
@@ -134,10 +153,19 @@ and the combined packet has preregistered room to improve correctness, safety,
 or materially reduce orchestration friction. Do not implement a Metals backend
 or invent a benchmark criterion merely to manufacture that opportunity.
 
-The next gap source shifts toward bounded real-project, user, and community
-feedback against strong ordinary tooling. That emphasis does not stop fresh
-product development or compatibility validation; it governs which new semantic
-capabilities are admitted.
+Two further bounded decision-gap intakes also found no strong-baseline loss that
+admitted a semantic capability. One current compiler-plugin project intake
+screened five material decisions. One foreign-OSS intake screened ten real
+decisions across Chimney, Scala CLI, and Cats Effect and deep-screened two.
+Neither intake confirmed a semantic gap. These are scoped null results, not a
+general redundancy claim.
+
+External early-user feedback on concrete agent coding and review decisions is
+therefore the primary next admission source. Wait for a real failure, unsafe
+choice, ambiguity, material orchestration burden, or compatibility/adoption
+friction, then intake that exact decision against strong ordinary tooling.
+This does not freeze maintenance, concrete compatibility fixes, documentation
+fixes, or other evidence-driven work.
 
 ## Semantic evidence quality
 
@@ -241,9 +269,9 @@ privacy qualification. These tiers do not authorize release actions.
   compile passed. Current alpha-3 SNAPSHOT development can now select that row
   through the CLI and exact-eight MCP adapter; immutable alpha-2 cannot.
 - Treat both projects as bounded partial evidence. The concrete routing gap is
-  closed in current development, but older macro/plugin-heavy stress targets
-  still need separate evidence so build shape or ecosystem bitrot is not
-  mistaken for semantic compatibility.
+  closed in current development. Older macro/plugin-heavy stress targets remain
+  compatibility questions when a concrete case requires them; they are not an
+  immediate semantic-gap mining queue.
 - Preserve the bounded sbt-generation matrix: disposable sbt 2.0.6 and 2.0.7
   multi-project fixtures pass selected compile/errors/test, structured counts,
   fail-closed unknown-project routing, sbt-backed classpath acquisition, and
@@ -315,6 +343,9 @@ privacy qualification. These tiers do not authorize release actions.
   changes.
 - Require a separately designed controlled comparison before making stronger
   effectiveness or superiority claims.
+- Keep the cats-tagless causal A/C family closed after its preregistered
+  isolation method did not qualify; do not reinterpret descriptive selection or
+  strict-v6 mechanics as a causal comparison.
 
 ## Public-alpha readiness
 
