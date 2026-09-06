@@ -12,8 +12,10 @@ No user-facing changes are recorded after the alpha-3 release candidate.
 
 ## 0.1.0-alpha.3 (release candidate)
 
-This candidate is not yet published, tagged, or available through the public
-Coursier channel. Exact `0.1.0-alpha.2` remains the supported packaged route.
+The exact eight-module candidate is published on Maven Central and selected by
+the checked-in Coursier channel. Its local fresh-cache channel-to-Central proof
+passed, but actual public raw-URL qualification, a Git tag, and a GitHub Release
+remain pending. Exact `0.1.0-alpha.2` remains the supported packaged route.
 
 - **Additive:** add validated `--sbt-project` selection to compile, test,
   errors, target-aware SemanticDB/source mapping, point evidence, and

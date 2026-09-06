@@ -2,8 +2,10 @@
 
 This is the shortest supported route from a fresh JDK 21 environment to
 `semantic-scala` in an agent client. The supported packaged version is exactly
-`0.1.0-alpha.2`. The current tree is alpha-3 release-candidate source; its optional
-project selector and target-JDK selector are not alpha-2 features.
+`0.1.0-alpha.2`. Exact Alpha 3 artifacts are public on Maven Central and the
+checked-in channel selects them, but its actual public raw-URL route is not yet
+independently qualified; its optional project selector and target-JDK selector
+are not Alpha 2 features.
 
 ## 1. Install the CLI and MCP server
 
@@ -12,15 +14,17 @@ Install Coursier using its
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
   semantic-scala semantic-scala-mcp
 semantic-scala version
 ```
 
-The version command must report `0.1.0-alpha.2`. The channel is currently
-pinned to immutable Maven Central artifacts for that version. JDK 21 is the
-supported harness runtime. Target-workspace sbt is additionally required by
-build-executing commands such as `compile`, `errors`, and `test`.
+The version command must report `0.1.0-alpha.2`. This immutable tag-pinned
+channel is independently qualified against Maven Central. The mutable `main`
+channel selects exact Alpha 3 after its candidate commit is published, but is
+not the supported route until its separate public-URL qualification passes.
+JDK 21 is the supported harness runtime. Target-workspace sbt is additionally
+required by build-executing commands such as `compile`, `errors`, and `test`.
 
 Choose one or both integration modes:
 

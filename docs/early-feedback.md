@@ -119,10 +119,11 @@ The current supported packaged route is exactly `0.1.0-alpha.2`; follow
 release-candidate version `0.1.0-alpha.3`. Its Scala 3.9
 harness/Presentation Compiler host lane,
 target-aware v4, existing-internal-output v5, strict-freshness v6, project/JDK
-selectors, and TASTy evidence remain candidate-source behavior until a later
-release; no alpha-3 Central artifact,
-public channel, tag, or GitHub Release is claimed. Label source-built alpha-3 candidate
-feedback explicitly and include the tested revision when shareable. Alpha-3 is
+selectors, and TASTy evidence are available in the exact Alpha 3 artifacts now
+public on Maven Central and selected by the checked-in channel candidate. The
+candidate passed local channel-to-Central runtime qualification, but no fresh
+actual-public-URL qualification, tag, or GitHub Release is claimed. Label Alpha
+3 feedback explicitly and include the tested revision when shareable. Alpha-3 is
 not being cut merely to align the supported package with mutable `main`;
 release consideration is intentionally deferred toward qualification nearer
 the planned early-September community announcement and remains separately

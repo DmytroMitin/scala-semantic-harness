@@ -108,7 +108,7 @@ class CoursierChannelTest(unittest.TestCase):
             result = self.run_tool(
                 "generate-url",
                 "--version",
-                "0.1.0-alpha.2",
+                "0.1.0-alpha.3",
                 "--output",
                 str(output),
             )
@@ -119,7 +119,7 @@ class CoursierChannelTest(unittest.TestCase):
                     "semantic-scala": {
                         "repositories": ["central"],
                         "dependencies": [
-                            "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.2"
+                            "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.3"
                         ],
                         "mainClass": "semantic.harness.cli.Main",
                         "launcherType": "bootstrap",
@@ -128,7 +128,7 @@ class CoursierChannelTest(unittest.TestCase):
                     "semantic-scala-mcp": {
                         "repositories": ["central"],
                         "dependencies": [
-                            "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.2"
+                            "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.3"
                         ],
                         "mainClass": "semantic.harness.mcp.Main",
                         "launcherType": "bootstrap",
@@ -141,7 +141,7 @@ class CoursierChannelTest(unittest.TestCase):
             validation = self.run_tool(
                 "validate-url",
                 "--version",
-                "0.1.0-alpha.2",
+                "0.1.0-alpha.3",
                 "--channel",
                 str(output),
             )
@@ -151,7 +151,7 @@ class CoursierChannelTest(unittest.TestCase):
         validation = self.run_tool(
             "validate-url",
             "--version",
-            "0.1.0-alpha.2",
+            "0.1.0-alpha.3",
             "--channel",
             str(CANONICAL_CHANNEL),
         )
@@ -161,7 +161,7 @@ class CoursierChannelTest(unittest.TestCase):
             generation = self.run_tool(
                 "generate-url",
                 "--version",
-                "0.1.0-alpha.2",
+                "0.1.0-alpha.3",
                 "--output",
                 str(generated),
             )
@@ -173,7 +173,7 @@ class CoursierChannelTest(unittest.TestCase):
             "semantic-scala": {
                 "repositories": ["central"],
                 "dependencies": [
-                    "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.2"
+                    "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.3"
                 ],
                 "mainClass": "semantic.harness.cli.Main",
                 "launcherType": "bootstrap",
@@ -182,7 +182,7 @@ class CoursierChannelTest(unittest.TestCase):
             "semantic-scala-mcp": {
                 "repositories": ["central"],
                 "dependencies": [
-                    "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.2"
+                    "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.3"
                 ],
                 "mainClass": "semantic.harness.mcp.Main",
                 "launcherType": "bootstrap",
@@ -219,7 +219,7 @@ class CoursierChannelTest(unittest.TestCase):
                     "semantic-scala": {
                         **valid["semantic-scala"],
                         "dependencies": [
-                            "io.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.2"
+                            "io.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.3"
                         ],
                     },
                 }
@@ -230,7 +230,7 @@ class CoursierChannelTest(unittest.TestCase):
                     "semantic-scala": {
                         **valid["semantic-scala"],
                         "dependencies": [
-                            "com.github.dmytromitin:semantic-harness-core_3:0.1.0-alpha.2"
+                            "com.github.dmytromitin:semantic-harness-core_3:0.1.0-alpha.3"
                         ],
                     },
                 }
@@ -253,7 +253,7 @@ class CoursierChannelTest(unittest.TestCase):
                     result = self.run_tool(
                         "validate-url",
                         "--version",
-                        "0.1.0-alpha.2",
+                        "0.1.0-alpha.3",
                         "--channel",
                         str(channel),
                     )
@@ -268,7 +268,7 @@ class CoursierChannelTest(unittest.TestCase):
             result = self.run_tool(
                 "generate-url",
                 "--version",
-                "0.1.0-alpha.2",
+                "0.1.0-alpha.3",
                 "--output",
                 str(existing),
             )
@@ -283,7 +283,7 @@ class CoursierChannelTest(unittest.TestCase):
             result = self.run_tool(
                 "generate-url",
                 "--version",
-                "0.1.0-alpha.2",
+                "0.1.0-alpha.3",
                 "--output",
                 str(symlink),
             )

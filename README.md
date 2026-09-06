@@ -20,12 +20,14 @@ commits. The earlier mixed development history is retained separately in a
 private archive and is not part of this public repository.
 
 The current tree reports exact release-candidate version `0.1.0-alpha.3`.
-The immutable `0.1.0-alpha.2` lightweight Git tag and
-GitHub prerelease identify the source that reproduced all 32 primary files
-already published on Maven Central byte-for-byte. The supported packaged route
-remains the exact alpha-2 Maven/Coursier application route; the alpha-3
-candidate is not yet on Maven Central or the public channel and has no tag or
-GitHub Release.
+The exact eight-module `0.1.0-alpha.3` release is published on Maven Central,
+and the checked-in two-application Coursier channel selects it. That channel
+has passed a local fresh-cache install/runtime/update/uninstall proof against
+public Central only, but not yet the separate outsider-like proof through the
+actual public raw-GitHub URL. Alpha 3 therefore has no supported-distribution
+READY claim yet and still has no Git tag or GitHub Release. The immutable
+`0.1.0-alpha.2` tag and prerelease retain the independently qualified supported
+route and source identity for its 32 Central primaries.
 
 ## Agent quick start
 
@@ -34,7 +36,7 @@ CLI and generic stdio MCP server first:
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
   semantic-scala semantic-scala-mcp
 semantic-scala version
 ```
@@ -47,8 +49,10 @@ not supported; install the canonical skill from the `0.1.0-alpha.2` tag.
 [`docs/agent-onboarding.md`](docs/agent-onboarding.md) gives copy-ready Codex,
 Claude Code, Cursor, and VS Code/Copilot recipes, exact local qualification
 statuses, skill installation, the CLI/MCP surface matrix, and troubleshooting.
-Alpha-3 candidate-only project and target-JDK selectors are explicitly excluded
-from the alpha-2 packaged contract.
+Alpha-3 project and target-JDK selectors are explicitly excluded from the
+alpha-2 packaged contract. The mutable `main` channel selects Alpha 3 after
+these candidate bytes are published, but remains pending fresh public-URL
+qualification.
 
 ## What is included
 
@@ -76,7 +80,8 @@ from the alpha-2 packaged contract.
 - source templates and a deterministic assembler for a self-contained Agent
   Plugins 1.0 package containing that skill and the exact-eight MCP server; and
 - a supported, independently qualified exact-eight Maven/Coursier application
-  route for exact version `0.1.0-alpha.2`.
+  route for exact version `0.1.0-alpha.2`, plus an Alpha 3 checked-in channel
+  candidate locally qualified against public Maven Central.
 
 ## Modules
 
@@ -188,14 +193,14 @@ For repeated use, prefer the staged launcher at
 
 ## Maven/Coursier distribution
 
-The source-build route above remains supported and externally verified. The
-exact eight-module `0.1.0-alpha.2` runtime is also published under final group
-`com.github.dmytromitin` on Maven Central, and its complete public repository
-shape has been verified against the reviewed bytes. A fresh outsider-like JDK
-21 environment independently installed both applications from the actual
-project-owned raw GitHub URL, exercised the CLI and generic stdio MCP runtime,
-updated through retained public-channel metadata, and uninstalled cleanly.
-That exact Maven Central plus Coursier URL route is therefore supported.
+The source-build route above remains supported and externally verified. Exact
+eight-module Alpha 2 and Alpha 3 runtimes are published under final group
+`com.github.dmytromitin` on Maven Central, with their complete public repository
+shapes verified against reviewed bytes. Alpha 2 additionally passed a fresh
+outsider-like install from the actual project-owned raw GitHub URL and remains
+the supported packaged route. The checked-in channel now selects exact Alpha 3
+and has passed local fresh-cache install/runtime/update/uninstall against public
+Central only; actual public raw-URL qualification remains pending.
 
 The Central publication contains exactly the eight implementation modules,
 never the root aggregate or benchmark, and the public channel uses
@@ -211,7 +216,7 @@ Install only the CLI:
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
   semantic-scala
 ```
 
@@ -219,7 +224,7 @@ Or install the CLI and stdio MCP server together:
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
   semantic-scala semantic-scala-mcp
 ```
 
@@ -438,10 +443,10 @@ compatibility boundaries, and admit features only from concrete gaps. Real
 project reports are welcome using the bounded comparison packet in
 [`docs/early-feedback.md`](docs/early-feedback.md), especially missing
 decision-relevant evidence or materially useful composition of compiler,
-build/test, IDE/LSP, and artifact facts. Alpha-2 remains the supported packaged
-release while the current tree is an exact alpha-3 release candidate. Central
-validation, publication, the public channel switch, tag, and GitHub prerelease
-remain separate explicitly authorized tasks.
+build/test, IDE/LSP, and artifact facts. Alpha 2 remains the supported packaged
+release while exact Alpha 3 is public on Central and selected by the checked-in
+channel candidate. Fresh actual-public-URL qualification, a tag, and a GitHub
+prerelease remain separate explicitly authorized tasks.
 
 ## Project policies
 

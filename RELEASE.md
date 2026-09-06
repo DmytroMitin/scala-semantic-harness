@@ -12,9 +12,10 @@ Coursier URL route under JDK 21.
 `0.1.0-alpha.1` is the first published source-only prerelease. Tagged releases
 use Semantic Versioning. Released `0.1.0-alpha.2` identifies the exact source
 that reproduced the 32 primary Maven Central files byte-for-byte. The current
-tree reports exact release-candidate version `0.1.0-alpha.3`; that identity does
-not mean an alpha-3 artifact, channel, tag, or GitHub Release is public. Before
-1.0, minor releases may make breaking changes when the changelog and migration
+tree reports exact release-candidate version `0.1.0-alpha.3`; its exact eight
+modules are public on Maven Central and the checked-in channel selects them,
+but public raw-URL qualification, a tag, and a GitHub Release remain absent.
+Before 1.0, minor releases may make breaking changes when the changelog and migration
 notes identify them; patch releases should remain backward compatible within
 the documented public contract.
 
@@ -47,10 +48,11 @@ Future binary and package channels still require separate reproducibility,
 dependency-attribution and license, installation, and runtime gates.
 
 The exact `0.1.0-alpha.3` candidate preserves the same eight application
-implementation modules and keeps the public Coursier channel pinned to
-alpha-2. Candidate preparation and local qualification do not authorize
-Central upload or publish, a channel change, a Git tag, a GitHub Release, or an
-announcement. Those transitions require separate gates and authority.
+implementation modules. Those modules are public on Maven Central, and the
+checked-in Coursier channel selects Alpha 3 after this product change is
+published. Its local channel-to-Central runtime proof does not establish the
+later actual-public-URL qualification or authorize a Git tag, GitHub Release,
+or announcement. Those transitions require separate gates and authority.
 
 The `com.github.dmytromitin` exact-eight Maven/Coursier route implements those
 gates, including explicit provisional-group rejection,
@@ -59,13 +61,15 @@ install/update/uninstall. The immutable `0.1.0-alpha.2` lightweight tag and
 GitHub prerelease identify the source that reproduces the alpha-2 Maven Central
 primaries byte-for-byte. Technical review dispositioned all 16 unique flagged
 runtime rows without establishing a bundled NOTICE action, and the owner
-selected Apache-2.0 for resolver-fetched JNA 5.14.0. The deterministic
-project-owned Coursier URL channel is public, remains pinned to alpha-2, and is
-independently qualified from both live-main and commit-pinned URLs in fresh JDK
-21 states against Maven Central only. Exact CLI version, no-override MCP,
+selected Apache-2.0 for resolver-fetched JNA 5.14.0. The immutable Alpha 2
+channel at its release tag is independently qualified from fresh JDK 21 states
+against Maven Central only. Exact CLI version, no-override MCP,
 ordered eight tools, bounded read-only runtime, retained-channel update, and
-uninstall passed. Published Central coordinates are immutable: corrections
-roll forward to a new reviewed version and are never overwritten or deleted.
+uninstall passed. The checked-in Alpha 3 channel candidate has the same local
+runtime gates but remains outside that READY claim until its actual public URL
+is independently qualified. Published Central coordinates are immutable:
+corrections roll forward to a new reviewed version and are never overwritten
+or deleted.
 
 The `0.1.0-alpha.2` GitHub Release provides source identity, release notes, and
 the normal GitHub-generated source archives. It has zero uploaded project

@@ -1,7 +1,7 @@
 {
   "semantic-scala": {
     "dependencies": [
-      "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.2"
+      "com.github.dmytromitin:semantic-scala-cli_3:0.1.0-alpha.3"
     ],
     "javaOptions": [
       "-XX:+PerfDisableSharedMem"
@@ -14,7 +14,7 @@
   },
   "semantic-scala-mcp": {
     "dependencies": [
-      "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.2"
+      "com.github.dmytromitin:semantic-harness-mcp-server_3:0.1.0-alpha.3"
     ],
     "javaOptions": [
       "-XX:+PerfDisableSharedMem"

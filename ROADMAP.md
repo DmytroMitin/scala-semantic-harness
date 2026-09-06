@@ -34,12 +34,13 @@ execution ledger and does not promise delivery dates.
 
 ## Near-term priorities
 
-1. Preserve exact `0.1.0-alpha.2` release coherence: its lightweight tag and
-   GitHub prerelease identify the source that reproduces all 32 immutable Maven
-   Central primaries, while the deterministic two-application public URL
-   channel remains pinned to alpha-2. The current tree is exact
-   `0.1.0-alpha.3` release-candidate source; no alpha-3 Central artifact,
-   channel, tag, or GitHub Release is implied.
+1. Preserve exact release coherence: the `0.1.0-alpha.2` tag and prerelease
+   identify the source that reproduces its 32 immutable Central primaries and
+   retain the independently qualified supported route. Exact `0.1.0-alpha.3`
+   artifacts are public on Central, and the checked-in two-application channel
+   selects them with local channel-to-Central runtime proof. Fresh qualification
+   through the actual public raw URL, an Alpha 3 tag, and a GitHub Release remain
+   pending separate gates.
 2. Make external early-user decisions the primary admission source for new
    semantic capability or adoption work before the planned early-September
    community announcement. Recent bounded decision-gap intakes in one current
@@ -48,8 +49,9 @@ execution ledger and does not promise delivery dates.
    immediate gap-generation strategy. Reports where ordinary tooling is
    sufficient or semantic-scala adds no value remain useful evidence. Alpha-2
    remains the supported package. Alpha-3 is a release candidate rather than a
-   supported route and remains subject to explicit local qualification,
-   Central validation, publication, channel, and release authority. Evaluate
+   supported route. Alpha-3 Central publication and local channel qualification
+   are complete, while public-URL qualification and release authority remain.
+   Evaluate
    concrete Scala decisions
    against the compiler,
    build/test, IDE/LSP, and standard artifact tools already available to the

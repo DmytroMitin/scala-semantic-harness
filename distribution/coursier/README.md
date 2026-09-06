@@ -2,14 +2,14 @@
 
 `channel.json` is the deterministic public URL-channel candidate for
 `semantic-scala` and `semantic-scala-mcp`. It points only to the immutable
-`com.github.dmytromitin:*:0.1.0-alpha.2` Maven Central artifacts. The `_3`
+`com.github.dmytromitin:*:0.1.0-alpha.3` Maven Central artifacts. The `_3`
 modules are application implementation artifacts, not a stable embeddable API.
 
 Validate the checked release channel with:
 
 ```text
 python3 scripts/distribution/coursier-channel.py validate-url \
-  --version 0.1.0-alpha.2 \
+  --version 0.1.0-alpha.3 \
   --channel distribution/coursier/channel.json
 ```
 
@@ -29,6 +29,7 @@ is separate: build-oracle commands such as `compile`, `errors`, and `test`
 require it, while installation and syntax-first/read-only operations do not
 inherently require target-workspace sbt.
 
-Independent installation from the actual public raw GitHub URL remains a
-separate qualification gate. Preparing and locally serving these exact bytes
-does not make `SUPPORTED_DISTRIBUTION_USABILITY` ready.
+Independent Alpha 3 installation from the actual public raw GitHub URL remains
+a separate qualification gate. Preparing and locally serving these exact bytes
+does not extend `SUPPORTED_DISTRIBUTION_USABILITY = READY` beyond the
+historically qualified Alpha 2 route.

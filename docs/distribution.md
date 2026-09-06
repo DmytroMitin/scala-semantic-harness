@@ -2,21 +2,23 @@
 
 ## Current state
 
-The modular Maven/Coursier primary runtime is implemented, locally validated,
-and published on Maven Central at exact version `0.1.0-alpha.2`.
-All eight public module POM/main/source/documentation artifacts, signatures,
+The modular Maven/Coursier primary runtime is implemented and published on
+Maven Central at exact versions `0.1.0-alpha.2` and `0.1.0-alpha.3`. For Alpha
+3, all eight public module POM/main/source/documentation artifacts, signatures,
 and checksum sidecars were verified against the reviewed release bytes. The
-project-owned public Coursier URL channel has also passed an independent fresh
-JDK 21 install/runtime/update/uninstall qualification, so this exact
-application route is supported alongside the source build.
+checked-in two-application channel selects Alpha 3 and has passed a local fresh
+JDK 21 install/runtime/update/uninstall proof against public Central only.
+The actual public raw-URL Alpha 3 route has not yet been independently
+qualified, so the supported packaged route remains exact Alpha 2.
 For client-specific MCP and skill setup, start with
 [`agent-onboarding.md`](agent-onboarding.md).
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged. The
 immutable `0.1.0-alpha.2` lightweight tag and GitHub prerelease identify the
 source that reproduced all 32 Maven Central primaries byte-for-byte. The
-current tree reports exact release-candidate version `0.1.0-alpha.3`, but no
-alpha-3 Central artifact, public channel, tag, or GitHub Release exists;
-alpha-2 remains the supported packaged route. The alpha-3 candidate source
+current tree reports exact release-candidate version `0.1.0-alpha.3`; its
+Central artifacts are public and the checked-in channel selects them, but no
+fresh actual-public-URL qualification, tag, or GitHub Release exists. The
+alpha-3 candidate source
 build uses Scala 3.9.0 for the harness and its
 linked Presentation Compiler. This does not alter the immutable alpha-2 Maven
 or Coursier bytes, and it does not make live queries dynamically select a
@@ -40,8 +42,9 @@ distinguishes newly provisioned personal GitHub groups such as
 `io.github.<username>` from existing OSSRH namespaces, which
 [were migrated into the Central Publisher Portal](https://central.sonatype.org/pages/ossrh-eol/)
 after OSSRH shut down.
-The exact alpha-2 release under this group has been published on Maven Central.
-Exactly these Scala 3 application implementation artifacts are public:
+The exact Alpha 2 and Alpha 3 releases under this group have been published on
+Maven Central. Exactly these Scala 3 application implementation artifacts are
+public for Alpha 3:
 
 ```text
 semantic-harness-core_3
@@ -68,23 +71,26 @@ These coordinates package application implementation. They do not define a
 supported embeddable-library API or promise binary compatibility among the
 internal modules.
 
-## Public URL channel and install shape
+## URL channel and install shape
 
-The exact Maven version is public. `distribution/coursier/channel.json` is the
-canonical deterministic URL channel with exactly these two applications:
+The exact Alpha 3 Maven version is public. `distribution/coursier/channel.json`
+is the canonical deterministic channel candidate with exactly these two
+applications:
 
 ```text
 semantic-scala
 semantic-scala-mcp
 ```
 
-The baseline is JDK 21. Install Coursier by following its
+The baseline is JDK 21. Until the Alpha 3 public raw-URL qualification passes,
+the supported Alpha 2 route uses its immutable tag-pinned channel. Install
+Coursier by following its
 [authoritative installation guidance](https://get-coursier.io/docs/cli-installation),
 then install only the CLI:
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
   semantic-scala
 ```
 
@@ -92,7 +98,7 @@ Or install the CLI and MCP server together:
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
   semantic-scala semantic-scala-mcp
 ```
 
@@ -145,7 +151,8 @@ published the desired bytes:
 https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/<published-commit-sha>/distribution/coursier/channel.json
 ```
 
-The alpha channel names exact `0.1.0-alpha.2` dependencies. Published Maven
+The checked-in channel names exact `0.1.0-alpha.3` dependencies. The immutable
+Alpha 2 tag-pinned channel retains exact `0.1.0-alpha.2`. Published Maven
 coordinates are immutable and must never be overwritten or deleted; a
 correction rolls forward to a newly reviewed version.
 
@@ -205,7 +212,7 @@ tree under Amazon Corretto 21.0.11 and sbt 1.12.14. Its exact eight-module,
 downloaded Maven Central bytes. Root and benchmark remained non-publishable,
 the internal POM DAG remained byte-identical, and no legacy namespace appeared.
 
-The URL-channel preparation proof used JDK 21.0.12 and Coursier 2.1.25-M25.
+The Alpha 2 URL-channel preparation proof used JDK 21.0.12 and Coursier 2.1.25-M25.
 A disposable loopback HTTP server served bytes identical to the canonical
 channel while a fresh outside-checkout cache resolved only the channel URL and
 public Maven Central. Initial install and update both passed exact CLI version,
@@ -224,6 +231,16 @@ one bounded `semantic_effect_summary`, retained-channel update, repeated smoke,
 and uninstall. The commit-pinned lane independently repeated install, CLI/MCP
 runtime, read-only smoke, and uninstall. Neither lane required credentials,
 local Maven state, a checkout launcher, or private/control material.
+
+The Alpha 3 checked-in channel candidate has SHA-256
+`4180d2ac9018ae4eb2a84a5096f4d52d5136458d11322c3e72c844e163fe03fc`.
+Under Corretto 21.0.11 and Coursier 2.1.25-M26, a disposable loopback URL,
+empty install root, and empty Coursier cache installed both applications from
+public Maven Central only. Exact CLI/MCP version, no-override ordered eight-tool
+MCP, matching CLI/MCP effect-summary schemas, a no-build Alpha 3 v2
+point-evidence boundary, retained-channel update, repeated smoke, uninstall,
+and checkout/private-path independence passed. This is local candidate-byte
+qualification, not the pending actual public raw-URL qualification.
 
 ## Dependency and attribution review
 
@@ -272,5 +289,6 @@ Registry availability, native/container/npm/PyPI packaging, Agent Plugin or
 skill adoption, a stable embeddable-library API, broad Scala compatibility,
 semantic superiority, or 1.0 stability. Source/Maven byte coherence is proven,
 and the exact source identity is published as the lightweight alpha-2 tag and
-GitHub prerelease. The exact alpha-3 candidate does not alter or replace this
-supported route before separately authorized publication and channel gates.
+GitHub prerelease. The exact Alpha 3 candidate is public on Central and locally
+qualified through the checked-in channel bytes, but does not extend this READY
+state before a separately authorized fresh actual-public-URL qualification.

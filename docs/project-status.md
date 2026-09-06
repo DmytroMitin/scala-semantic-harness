@@ -130,11 +130,13 @@ score.
 `4a384cce0553815bf33d5d72fc0379c4d18e0d59`, tree
 `2c260f1f07c938435b7a76b085bd2b8f3c4dbbb8`, whose source reproduces all 32
 immutable Maven Central primary files byte-for-byte. The current tree reports
-exact release-candidate version `0.1.0-alpha.3`; no alpha-3 Central artifact,
-public channel, tag, or Release exists.
-The deterministic project-owned Coursier URL channel remains pinned to alpha-2
-and has passed independent live-main and commit-pinned fresh-cache installation,
-CLI/MCP runtime, update, read-only, and uninstall checks under JDK 21. General
+exact release-candidate version `0.1.0-alpha.3`; its exact eight modules are
+public on Maven Central and selected by the checked-in channel candidate, while
+no Alpha 3 tag or Release exists. That candidate passed local fresh-cache
+installation, CLI/MCP runtime, update, read-only, and uninstall checks under
+JDK 21 against public Central only. The actual public raw-URL Alpha 3 route has
+not yet been independently qualified, so the supported-distribution READY row
+remains scoped to the historically qualified Alpha 2 route. General
 agent-skill adoption effectiveness, broader semantic superiority, complete
 Scala 2 support, and 1.0 stability remain unproven.
 
@@ -189,6 +191,6 @@ compatibility, and compiler-plugin semantics remain evidence-partial. The two
 independent compiler-plugin cases preserve their bounded qualifier, while the
 strongest frozen ordinary-tool comparison found fact-equivalent point evidence
 and therefore no demonstrated primitive fact advantage. The supported package
-remains alpha-2; alpha-3 candidate behavior remains unreleased source behavior.
-Central validation, publication, the public channel switch, tag, and GitHub
-prerelease require separate authority.
+remains Alpha 2. Exact Alpha 3 artifacts are public on Central and its
+checked-in channel candidate is locally qualified; actual public-URL
+qualification, a tag, and a GitHub prerelease require separate authority.
