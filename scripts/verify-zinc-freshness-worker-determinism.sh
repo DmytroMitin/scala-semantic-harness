@@ -5,14 +5,18 @@ repository_root=$(cd "$(dirname "$0")/.." && pwd)
 temporary_root=$(mktemp -d)
 trap 'rm -rf "$temporary_root"' EXIT
 
-artifact="$repository_root/modules/zinc-freshness-worker/target/scala-2.13/semantic-scala-zinc-freshness-worker_2.13-0.1.0-alpha.3-SNAPSHOT.jar"
 expected_sha256=cffcddbee0795d436664185a0ca0e3206a6542b5d01bd0e487da3da23cbcfd69
 
 build_copy() {
   destination=$1
   (cd "$repository_root" && sbt -batch zincFreshnessWorker/clean zincFreshnessWorker/Compile/packageBin)
-  test -f "$artifact"
-  cp "$artifact" "$destination"
+  artifact_root="$repository_root/modules/zinc-freshness-worker/target/scala-2.13"
+  mapfile -t artifacts < <(
+    find "$artifact_root" -maxdepth 1 -type f \
+      -name 'semantic-scala-zinc-freshness-worker_2.13-*.jar' | sort
+  )
+  test "${#artifacts[@]}" -eq 1
+  cp "${artifacts[0]}" "$destination"
 }
 
 build_copy "$temporary_root/worker-first.jar"

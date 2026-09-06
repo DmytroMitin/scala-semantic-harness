@@ -11,9 +11,9 @@ Coursier URL route under JDK 21.
 
 `0.1.0-alpha.1` is the first published source-only prerelease. Tagged releases
 use Semantic Versioning. Released `0.1.0-alpha.2` identifies the exact source
-that reproduced the 32 primary Maven Central files byte-for-byte. Mutable
-`main` now reports `0.1.0-alpha.3-SNAPSHOT`; that development identity does not
-publish or promise an alpha-3 artifact, channel, tag, or GitHub Release. Before
+that reproduced the 32 primary Maven Central files byte-for-byte. The current
+tree reports exact release-candidate version `0.1.0-alpha.3`; that identity does
+not mean an alpha-3 artifact, channel, tag, or GitHub Release is public. Before
 1.0, minor releases may make breaking changes when the changelog and migration
 notes identify them; patch releases should remain backward compatible within
 the documented public contract.
@@ -45,6 +45,12 @@ marketplace upload.
 
 Future binary and package channels still require separate reproducibility,
 dependency-attribution and license, installation, and runtime gates.
+
+The exact `0.1.0-alpha.3` candidate preserves the same eight application
+implementation modules and keeps the public Coursier channel pinned to
+alpha-2. Candidate preparation and local qualification do not authorize
+Central upload or publish, a channel change, a Git tag, a GitHub Release, or an
+announcement. Those transitions require separate gates and authority.
 
 The `com.github.dmytromitin` exact-eight Maven/Coursier route implements those
 gates, including explicit provisional-group rejection,

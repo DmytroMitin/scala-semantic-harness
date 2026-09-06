@@ -11,7 +11,7 @@ The complete alpha-2 CLI/MCP classification is maintained in
 parity. A future `MCP_CANDIDATE_NOT_ADMITTED` operation would require a
 decision-relevant use hypothesis; no current alpha-2 command has that status.
 
-The command synopsis below describes mutable alpha-3 SNAPSHOT development.
+The command synopsis below describes the exact alpha-3 release candidate.
 The optional `--sbt-project` and `--sbt-java-home` forms are not present in the
 supported immutable `0.1.0-alpha.2` package.
 
@@ -305,6 +305,22 @@ Current schema-versioned payloads:
 - `reconcile-symbol --file <path> --line <n> --col <n> --semanticdb <path>
   --json`: `semantic-scala.reconcile-symbol-result.v2`
 - `effect-summary --json`: `semantic-scala.effect-summary.v1`
+
+### Migrating an alpha-2 consumer
+
+Alpha-3 changes three existing default result contracts rather than retaining
+their alpha-2 v1 wire shapes:
+
+- `semanticdb-for-source` moves from
+  `semantic-scala.semanticdb-for-source.v1` to v2;
+- `reconcile-symbol` moves from
+  `semantic-scala.reconcile-symbol-result.v1` to v2; and
+- `point-evidence` moves from `semantic-scala.point-evidence-result.v1` to v2.
+
+CLI and MCP consumers must accept the new schema identifiers and decode the v2
+source-freshness and typed-reconciliation fields. Alpha-3 does not negotiate or
+emit the old v1 form on those default routes. Target-aware v4, existing-output
+v5, and strict-freshness v6 point evidence are additional explicit routes.
 
 Current pre-versioned payloads:
 

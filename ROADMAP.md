@@ -37,8 +37,9 @@ execution ledger and does not promise delivery dates.
 1. Preserve exact `0.1.0-alpha.2` release coherence: its lightweight tag and
    GitHub prerelease identify the source that reproduces all 32 immutable Maven
    Central primaries, while the deterministic two-application public URL
-   channel remains pinned to alpha-2. Mutable `main` is
-   `0.1.0-alpha.3-SNAPSHOT`; no alpha-3 artifact or release is implied.
+   channel remains pinned to alpha-2. The current tree is exact
+   `0.1.0-alpha.3` release-candidate source; no alpha-3 Central artifact,
+   channel, tag, or GitHub Release is implied.
 2. Make external early-user decisions the primary admission source for new
    semantic capability or adoption work before the planned early-September
    community announcement. Recent bounded decision-gap intakes in one current
@@ -46,10 +47,10 @@ execution ledger and does not promise delivery dates.
    semantic capability, so repeatedly mining repository batches is not the
    immediate gap-generation strategy. Reports where ordinary tooling is
    sufficient or semantic-scala adds no value remain useful evidence. Alpha-2
-   remains the supported package; alpha-3 remains SNAPSHOT development and is
-   not cut merely to align packaging with mutable `main`. Alpha-3 consideration
-   is intentionally nearer that announcement and remains subject to explicit
-   qualification and release authority. Evaluate concrete Scala decisions
+   remains the supported package. Alpha-3 is a release candidate rather than a
+   supported route and remains subject to explicit local qualification,
+   Central validation, publication, channel, and release authority. Evaluate
+   concrete Scala decisions
    against the compiler,
    build/test, IDE/LSP, and standard artifact tools already available to the
    user; retain the bounded context described in
@@ -86,7 +87,7 @@ execution ledger and does not promise delivery dates.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
-   SNAPSHOT project and target-JDK selectors admitted from their evidence.
+   candidate project and target-JDK selectors admitted from their evidence.
    Continue to treat a selected row/runtime as bounded build evidence, not
    whole-workspace success, automatic project discovery, or general alternate
    JDK support.
@@ -266,7 +267,7 @@ privacy qualification. These tiers do not authorize release actions.
   `core2_13` production row produced target-owned SemanticDB and passed static
   symbols, syntax-first analysis, bounded dynamic lookup, exact reconciliation,
   complete point evidence, and exact-eight MCP projection. Its direct row
-  compile passed. Current alpha-3 SNAPSHOT development can now select that row
+  compile passed. The current alpha-3 candidate can select that row
   through the CLI and exact-eight MCP adapter; immutable alpha-2 cannot.
 - Treat both projects as bounded partial evidence. The concrete routing gap is
   closed in current development. Older macro/plugin-heavy stress targets remain

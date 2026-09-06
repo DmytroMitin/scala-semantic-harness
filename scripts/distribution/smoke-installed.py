@@ -30,6 +30,21 @@ class SmokeError(RuntimeError):
     pass
 
 
+def validate_cli_effect_summary(stdout: str) -> str:
+    try:
+        payload = json.loads(stdout)
+    except json.JSONDecodeError as error:
+        raise SmokeError("read-only installed CLI output was not JSON") from error
+    if not isinstance(payload, dict):
+        raise SmokeError("read-only installed CLI output was not an object")
+    schema = payload.get("schemaVersion")
+    if schema != "semantic-scala.effect-summary.v1":
+        raise SmokeError(f"read-only installed CLI payload mismatch: {payload}")
+    if not payload.get("methods"):
+        raise SmokeError("read-only installed CLI result had no methods")
+    return schema
+
+
 def send(process: subprocess.Popen[str], message: dict[str, Any]) -> None:
     if process.stdin is None:
         raise SmokeError("MCP stdin unavailable")
@@ -57,7 +72,7 @@ def run(install: Path, fixture: Path, version: str) -> dict[str, object]:
     environment = os.environ.copy()
     environment.pop("SEMANTIC_SCALA_CLI", None)
     environment["PATH"] = f"{install}{os.pathsep}{environment.get('PATH', '')}"
-    cli = subprocess.run(
+    cli_version = subprocess.run(
         ["semantic-scala", "--version"],
         cwd=fixture,
         env=environment,
@@ -66,8 +81,31 @@ def run(install: Path, fixture: Path, version: str) -> dict[str, object]:
         timeout=TIMEOUT_SECONDS,
         check=False,
     )
-    if cli.returncode != 0 or cli.stdout.strip() != version:
-        raise SmokeError(f"installed CLI version mismatch: {cli.stdout!r} {cli.stderr!r}")
+    if cli_version.returncode != 0 or cli_version.stdout.strip() != version:
+        raise SmokeError(
+            f"installed CLI version mismatch: {cli_version.stdout!r} {cli_version.stderr!r}"
+        )
+
+    cli_operation = subprocess.run(
+        [
+            "semantic-scala",
+            "effect-summary",
+            "--file",
+            "src/UserRepo.scala",
+            "--json",
+        ],
+        cwd=fixture,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=TIMEOUT_SECONDS,
+        check=False,
+    )
+    if cli_operation.returncode != 0:
+        raise SmokeError(
+            f"read-only installed CLI operation failed: {cli_operation.stderr!r}"
+        )
+    cli_schema = validate_cli_effect_summary(cli_operation.stdout)
 
     process = subprocess.Popen(
         ["semantic-scala-mcp"],
@@ -93,7 +131,7 @@ def run(install: Path, fixture: Path, version: str) -> dict[str, object]:
                 "params": {
                     "protocolVersion": "2025-06-18",
                     "capabilities": {},
-                    "clientInfo": {"name": "task148-local-proof", "version": "1"},
+                    "clientInfo": {"name": "local-distribution-proof", "version": "1"},
                 },
             },
         )
@@ -135,6 +173,8 @@ def run(install: Path, fixture: Path, version: str) -> dict[str, object]:
         return {
             "version": version,
             "tools": names,
+            "cliReadOnlyCommand": "effect-summary",
+            "cliReadOnlySchema": cli_schema,
             "readOnlyTool": "semantic_effect_summary",
             "readOnlySchema": payload["schemaVersion"],
             "cliOverridePresent": False,

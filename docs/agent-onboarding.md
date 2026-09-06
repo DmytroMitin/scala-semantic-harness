@@ -2,7 +2,7 @@
 
 This is the shortest supported route from a fresh JDK 21 environment to
 `semantic-scala` in an agent client. The supported packaged version is exactly
-`0.1.0-alpha.2`. Mutable `main` is alpha-3 SNAPSHOT development; its optional
+`0.1.0-alpha.2`. The current tree is alpha-3 release-candidate source; its optional
 project selector and target-JDK selector are not alpha-2 features.
 
 ## 1. Install the CLI and MCP server
@@ -215,12 +215,12 @@ command-count parity is not a goal.
 | `infer-type-batch` | `CLI_ONLY_BY_DESIGN` | — |
 | `help`, `version` | `CLI_ONLY_BY_DESIGN` | — |
 
-Mutable alpha-3 SNAPSHOT development additionally provides
+The alpha-3 candidate additionally provides
 `tasty-point-evidence` as `CLI_ONLY_BY_DESIGN`. It owns a fresh selected
 `Compile` request and has no ninth MCP tool. It is not present in the immutable
 alpha-2 package or supported alpha-2 installation route.
 
-Alpha-3 SNAPSHOT also adds optional `sbtProject` plus dependent
+The alpha-3 candidate also adds optional `sbtProject` plus dependent
 `sbtScalaVersion` and `sbtJavaHome` inputs to the existing
 `semantic_point_evidence` tool. No target inputs preserve v2; target inputs
 select v4 through a fixed partial-existing-output Compile receipt. Acquisition
@@ -262,6 +262,6 @@ separate approval. If MCP attachment fails, verify JDK 21, run
 For update behavior, source identity, uninstall, and Coursier warning
 interpretation, see [`distribution.md`](distribution.md). For detailed result
 semantics and uncertainty, see [`semantic-api.md`](semantic-api.md). Users
-evaluating the installed alpha-2 route or alpha-3 SNAPSHOT source behavior on a
+evaluating the installed alpha-2 route or alpha-3 candidate source behavior on a
 real project can retain a bounded comparison packet using
 [`early-feedback.md`](early-feedback.md).

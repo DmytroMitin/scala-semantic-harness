@@ -13,10 +13,11 @@ For client-specific MCP and skill setup, start with
 [`agent-onboarding.md`](agent-onboarding.md).
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged. The
 immutable `0.1.0-alpha.2` lightweight tag and GitHub prerelease identify the
-source that reproduced all 32 Maven Central primaries byte-for-byte. Mutable
-`main` reports `0.1.0-alpha.3-SNAPSHOT`, but no alpha-3 artifact, channel, tag,
-or GitHub Release exists; alpha-2 remains the supported packaged route.
-The alpha-3 SNAPSHOT source build uses Scala 3.9.0 for the harness and its
+source that reproduced all 32 Maven Central primaries byte-for-byte. The
+current tree reports exact release-candidate version `0.1.0-alpha.3`, but no
+alpha-3 Central artifact, public channel, tag, or GitHub Release exists;
+alpha-2 remains the supported packaged route. The alpha-3 candidate source
+build uses Scala 3.9.0 for the harness and its
 linked Presentation Compiler. This does not alter the immutable alpha-2 Maven
 or Coursier bytes, and it does not make live queries dynamically select a
 target compiler.
@@ -39,7 +40,7 @@ distinguishes newly provisioned personal GitHub groups such as
 `io.github.<username>` from existing OSSRH namespaces, which
 [were migrated into the Central Publisher Portal](https://central.sonatype.org/pages/ossrh-eol/)
 after OSSRH shut down.
-The exact candidate under this group has been published on Maven Central.
+The exact alpha-2 release under this group has been published on Maven Central.
 Exactly these Scala 3 application implementation artifacts are public:
 
 ```text
@@ -169,20 +170,26 @@ proof. Given a clean source tree and JDK 21, it:
    repository;
 2. publishes the same primary artifacts from a second independent clean build
    and requires byte-identical POM, main, source, and documentation artifacts;
-3. creates a temporary synthetic OpenPGP identity, verifies local detached
-   signatures and SHA-256/SHA-512 sidecars, and deletes all key material;
+3. optionally creates a temporary synthetic OpenPGP identity for a full local
+   release-shape proof; `--primaries-only` performs no signing and validates
+   only the 32 POM/main/source/documentation candidate files;
 4. validates the exact GAV allowlist, internal dependency DAG, Central metadata,
    and absence of root/benchmark artifacts;
 5. generates exact-version local descriptors and installs both applications
    through Coursier into an empty temporary install root and cache;
-6. outside the checkout, verifies the exact CLI/MCP version, initializes MCP
-   without either CLI override, checks the ordered eight tools, and runs a
-   bounded `semantic_effect_summary` call on a copied fixture;
+6. outside the checkout, verifies the exact CLI/MCP version, runs a bounded
+   CLI `effect-summary`, initializes MCP without either CLI override, checks
+   the ordered eight tools, and runs a bounded `semantic_effect_summary` call
+   on a copied fixture;
 7. checks launcher bytes for checkout/control coupling, performs Coursier
    update, repeats the installed smoke, uninstalls both commands, and confirms
    their launchers are gone; and
-8. deletes repositories, channel, cache, install root, fixture, reports, logs,
-   and synthetic keyring through its temporary-root cleanup.
+8. optionally writes sanitized manifests/reports to a new `--evidence-dir`,
+   then deletes repositories, channel, cache, install root, fixture, logs, and
+   any synthetic keyring through its temporary-root cleanup.
+
+The proof derives exactly one non-SNAPSHOT version from the candidate
+`build.sbt`; missing, ambiguous, moving, and SNAPSHOT versions fail closed.
 
 The admitted local proof used Coursier 2.1.25-M25 and exact candidate version
 `0.1.0-alpha.2`. It produced 32 primary files across eight modules and a
@@ -236,7 +243,7 @@ Apache-2.0 or LGPL-2.1-or-later and the project owner selected Apache-2.0. The
 review is technical evidence, not legal advice; the automated gate must not be
 weakened to infer legal clearance or publication authority.
 
-Current unreleased alpha-3 source development isolates strict-v6 incremental
+The exact alpha-3 candidate isolates strict-v6 incremental
 analysis in an unpublished, build-only Scala 2.13.18 worker. Its product-owned
 worker JAR is embedded in the existing semantic-reconciliation artifact, but
 its exact Zinc 1.12.1/JNA 5.14.0 dependency graph is not declared on normal
@@ -245,11 +252,14 @@ request resolves that 42-artifact, 38,241,533-byte graph cache-first from Maven
 Central and launches one bounded JDK 21 child; other routes do not. A first
 uncached use can increase the user's Coursier cache, so this design reduces the
 normal distribution/classpath surface rather than total post-v6 disk use.
-The worker graph and its license/NOTICE obligations still require normal
-technical review for any future alpha-3 package qualification. The existing
-JNA Apache-2.0 owner selection is retained as technical history, not legal
-clearance or publication authority. No public GAV or Coursier application was
-added.
+The alpha-3 candidate audit content-bound all 42 worker artifacts to the frozen
+inventory and reviewed their POM metadata, inherited parent metadata, and
+packaged legal files. Its flags were the dual-license JNA row, Apache-family
+Log4j NOTICE/LICENSE/DEPENDENCIES files, and child POMs whose licenses are
+inherited from reviewed parent POMs. No unresolved technical disposition or
+project-bundled NOTICE action remained. The existing JNA Apache-2.0 owner
+selection is retained as technical history, not legal clearance or publication
+authority. No public GAV or Coursier application was added.
 
 ## Readiness boundary
 
@@ -262,5 +272,5 @@ Registry availability, native/container/npm/PyPI packaging, Agent Plugin or
 skill adoption, a stable embeddable-library API, broad Scala compatibility,
 semantic superiority, or 1.0 stability. Source/Maven byte coherence is proven,
 and the exact source identity is published as the lightweight alpha-2 tag and
-GitHub prerelease. Mutable alpha-3 SNAPSHOT development does not alter or
-replace this supported route.
+GitHub prerelease. The exact alpha-3 candidate does not alter or replace this
+supported route before separately authorized publication and channel gates.

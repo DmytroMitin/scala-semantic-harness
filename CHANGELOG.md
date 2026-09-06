@@ -8,22 +8,62 @@ release.
 
 ## Unreleased
 
-- Add an explicit strict target-aware point-evidence v6 profile. It reads only
-  existing same-axis Zinc compile analysis and permits only internal outputs
-  proven Fresh by bounded content and relation checks to contribute. Stale and
-  Unverifiable outputs are typed and excluded; v2/v4/v5 and exact-eight MCP are
-  preserved. The pinned Zinc 1.12.1 reader now runs in one on-demand bounded
-  JDK 21 child per v6 request, so ordinary CLI/MCP classpaths no longer carry
-  the Zinc runtime graph. First uncached v6 use may fetch the exact graph from
-  Maven Central; cold offline failure remains a valid fail-closed v6 result.
-- Add an explicit target-aware point-evidence v5 opt-in that can use only
-  already-present same-axis internal Compile dependency outputs from a bounded
-  settings-only receipt. The default target route remains v4, the no-target
-  route remains v2, missing outputs are never built, and MCP remains exactly
-  eight tools.
-- Resume mutable `main` development at `0.1.0-alpha.3-SNAPSHOT` after the
-  alpha-2 release. This does not publish or promise an alpha-3 artifact,
-  channel, tag, or GitHub Release.
+No user-facing changes are recorded after the alpha-3 release candidate.
+
+## 0.1.0-alpha.3 (release candidate)
+
+This candidate is not yet published, tagged, or available through the public
+Coursier channel. Exact `0.1.0-alpha.2` remains the supported packaged route.
+
+- **Additive:** add validated `--sbt-project` selection to compile, test,
+  errors, target-aware SemanticDB/source mapping, point evidence, and
+  sbt-backed type/TASTy operations. Add `--sbt-java-home` to the eight
+  sbt-backed forms and `--sbt-scala-version` to target-aware source mapping and
+  point evidence. These selectors remain bounded target-build facts.
+- **Explicit prerelease compatibility change:** the existing no-target
+  `semanticdb-for-source`, `reconcile-symbol`, and `point-evidence` JSON/MCP
+  results move from schema v1 to v2. The v2 payloads add source freshness and
+  typed reconciliation outcomes, so consumers must update accepted schema IDs
+  and decode the v2 shapes; alpha-3 does not emit the v1 shapes for these
+  routes. The CLI commands and corresponding members of the exact-eight MCP
+  registry remain available.
+- **Additive:** add target-aware source mapping v3/v4 and point-evidence v4 on
+  top of the new snapshot-consistent source-content freshness model.
+- **Additive:** add point-evidence v5 as an explicit
+  `--include-existing-internal-outputs` opt-in for already-present same-axis
+  internal Compile outputs. Add strict v6 behind the further
+  `--require-fresh-internal-outputs` opt-in; only Fresh internal outputs may
+  contribute, while Stale and Unverifiable outputs are typed and excluded
+  without compiling them.
+- **Additive:** add CLI-only `tasty-point-evidence`, which owns one selected
+  Compile and inspects receipt-bound TASTy using the exact stable target Scala
+  3 line. It is intentionally absent from MCP, whose ordered registry remains
+  exactly eight tools.
+- **Compatible behavior correction:** add sbt 2-compatible virtual-file
+  materialization, selected-row command sequencing, foreground server
+  lifecycle handling, structured test-count preservation, and the isolated
+  sbt global-base fix. Maintained sbt 1 behavior remains covered.
+- **Explicit prerelease compatibility change:** move the harness build and
+  linked Presentation Compiler host from Scala 3.3.3 to Scala 3.9.0. Dynamic
+  point renderings remain version-dependent bounded evidence; this is not a
+  blanket target-language compatibility promise.
+- **Internal-only:** move strict-v6 Zinc 1.12.1 reading into one on-demand
+  bounded JDK 21 worker per request. The worker JAR and its frozen 42-artifact
+  dependency inventory are embedded/acquired by the existing applications;
+  the worker is not a ninth Maven module. First uncached v6 use may contact
+  Maven Central, and cold offline failure remains fail-closed.
+- **Internal-only:** semantic-reconciliation now declares the existing
+  sbt-runner module plus Coursier interface `1.0.18`; the CLI continues to
+  declare Coursier interface `1.0.28`, while the resolved Scala-3.9/PC runtime
+  graph selects `1.0.29-M4`. These are packaging/runtime dependency changes,
+  not new public GAVs.
+- **Internal-only:** retain exactly the existing eight publishable application
+  implementation modules under `com.github.dmytromitin`; root, benchmark,
+  Zinc worker, and generated Agent Plugin packages remain unpublished.
+- **Documentation-only:** add agent onboarding and early-feedback workflows,
+  synchronize bounded evidence/readiness wording, and document the new target,
+  freshness, TASTy, Scala 3.9, and sbt lifecycle boundaries without upgrading
+  partial semantic-value or compatibility evidence.
 
 ## 0.1.0-alpha.2
 
