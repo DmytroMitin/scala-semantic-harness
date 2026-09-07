@@ -101,10 +101,10 @@ Its MCP configuration still delegates every tool call to the bundled CLI and
 does not widen the exact-eight registry.
 
 The exact Alpha 3 Maven artifacts are public on Central. The checked-in
-project-owned Coursier URL-channel candidate selects them and is locally
-qualified against public Central. After the owner publishes this product
-change, public `main` will expose those bytes; independent fresh qualification
-from that actual public URL remains a separate gate.
+project-owned public `main` Coursier channel selects them and has independently
+passed fresh JDK 21 install/runtime/update/uninstall against public Central,
+plus commit-pinned reproduction. Alpha 2 retains its immutable qualified route;
+Alpha 3 Git/GitHub release coherence remains a separate gate.
 Generated distributions are ignored build outputs. Root `plugin.json`, root
 `mcp.json`, `${PLUGIN_ROOT}` expansion, and `skills/*/SKILL.md` discovery are
 the portable core. Repository `.agents` and `.claude` wrappers remain separate

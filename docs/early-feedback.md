@@ -113,7 +113,8 @@ or private source and artifacts without permission.
 
 ## Supported installation boundary
 
-The current supported packaged route is exactly `0.1.0-alpha.2`; follow
+The current supported packaged route is exactly `0.1.0-alpha.3`; Alpha 2
+retains its immutable qualified route. Follow
 [`agent-onboarding.md`](agent-onboarding.md) and
 [`distribution.md`](distribution.md). The current tree reports exact
 release-candidate version `0.1.0-alpha.3`. Its Scala 3.9
@@ -121,13 +122,11 @@ harness/Presentation Compiler host lane,
 target-aware v4, existing-internal-output v5, strict-freshness v6, project/JDK
 selectors, and TASTy evidence are available in the exact Alpha 3 artifacts now
 public on Maven Central and selected by the checked-in channel candidate. The
-candidate passed local channel-to-Central runtime qualification, but no fresh
-actual-public-URL qualification, tag, or GitHub Release is claimed. Label Alpha
-3 feedback explicitly and include the tested revision when shareable. Alpha-3 is
-not being cut merely to align the supported package with mutable `main`;
-release consideration is intentionally deferred toward qualification nearer
-the planned early-September community announcement and remains separately
-authorized.
+public route passed fresh JDK 21 install/runtime/update/uninstall qualification
+and commit-pinned reproduction. No Alpha 3 tag or GitHub Release is claimed.
+Label Alpha 3 feedback explicitly and include the tested revision when shareable.
+Git/GitHub release coherence remains a separate gate and must reproduce all 32
+published Central primaries from the then-current source tree before tagging.
 
 ## Especially valuable now
 

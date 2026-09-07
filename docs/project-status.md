@@ -111,7 +111,7 @@ score.
 | --- | --- | --- |
 | Public alpha product readiness | `READY` | Apache-2.0, focused newcomer/release policies, a 245-file allowlist, an independently initialized one-commit candidate, current-tree and reachable-history scans, fresh-clone validation, and public-ref/object proof pass for an experimental source alpha. This dimension alone does not establish supported distribution. |
 | External installation usability | `READY` | An anonymous public HTTPS clone was staged from the documented JDK 21/sbt/Python/Git source contract, then Claude Code 2.1.220 used an explicit session-local MCP configuration to discover exactly eight tools and return a bounded `semantic_effect_summary` result. The temporary configuration was removable and no supported binary, package-manager, marketplace, or conformant Agent Plugins client route is implied. |
-| Supported distribution usability | `READY` | Fresh outsider-like JDK 21 states consumed the actual public channel plus Maven Central only. Exact `0.1.0-alpha.2` CLI version, no-override ordered eight-tool MCP, bounded read-only schema, retained-channel update, uninstall, anonymous access, and checkout/private-path independence passed. A fresh Coursier 2.1.25-M26 install/update replay and Codex CLI 0.149.0 client call now also pass. This state is limited to that exact application route and does not imply adoption, embeddable-library stability, broad Scala compatibility, or other package formats. |
+| Supported distribution usability | `READY` | Fresh outsider-like JDK 21 states consumed the actual public channel plus Maven Central only. Exact `0.1.0-alpha.2` CLI version, no-override ordered eight-tool MCP, bounded read-only schema, retained-channel update, uninstall, anonymous access, and checkout/private-path independence passed. A fresh Coursier 2.1.25-M26 install/update replay and Codex CLI 0.149.0 client call also pass for Alpha 2. Exact Alpha 3 independently passed public-main install/runtime/update/uninstall, CLI/MCP versions, ordered eight tools, both read-only schemas, no-build v2 sanity, and fresh commit-pinned reproduction under Corretto 21.0.11 / Coursier 2.1.25-M26. Alpha 3 is current on `main`; Alpha 2 remains at its immutable tag URL. This state is limited to these two exact application routes and does not imply adoption, embeddable-library stability, broad Scala compatibility, or other package formats. |
 | Skill discoverability/installability | `READY` | The immutable alpha-2 canonical skill was installed byte-for-byte in disposable project-local locations and discovered by Codex CLI 0.149.0 and Claude Code 2.1.220. Codex explicitly selected it and completed one bounded MCP call. READY is narrowly scoped to those two project-local discovery/install paths; Cursor remains an official unqualified recipe and VS Code/Copilot was unavailable. It does not establish autonomous adoption effectiveness. |
 | Semantic primitive marginal utility | `EVIDENCE_PARTIAL` | Bounded evidence identifies useful symbol, provenance, usage, and reconciliation behavior, but no general advantage over a strong direct-tool baseline is established. On one frozen Macro-Paradise target, fresh Compile plus standard exact-version Scala `-print-tasty`, source-offset mapping, and `javap` recovered fact-equivalent point evidence. That scoped comparison demonstrated no primitive-level fact advantage for the implemented post-compile TASTy lane; it does not establish general redundancy across projects, plugins, compiler versions, or ordinary-tool conditions. |
 | Composition/orchestration marginal utility | `READY` | This state is scoped to controlled coherent composition. Deterministic contract evidence plus independent real-project trials on `quasiquotes-scala3` and Cats Effect show that point evidence preserves direct discovery, live, reconciliation, selection, routing, and typed non-attempt facts while materially reducing caller merge and unsafe-selection risk. On one frozen public Cats Effect target, Codex CLI 0.149.1 with `gpt-5.4` received fact-equivalent primitive inputs in two low-reasoning C/D pairs and one preregistered medium-reasoning C/D pair. Coherent `point-evidence` preserved exact typed non-attempt attribution materially better in both configurations; low reasoning also showed fewer final classification/merge mistakes. Both arms made zero unsafe artifact selections and zero false static/live agreement claims. The TASTy lane further illustrates normalized selected-build ownership, point mapping, source/artifact identity, freshness, uncertainty, and no-replay provenance even where ordinary tools can recover the individual facts. Later natural-surface competitive evidence is tracked separately below and does not erase or broaden this controlled result. These bounded live-agent results maintain rather than upgrade `READY` and do not establish general client/model/provider/repository superiority, latency advantage, broad IDE/LSP superiority, primitive marginal utility, Scala 2 compatibility, or skill/adoption benefit. |
@@ -132,11 +132,11 @@ score.
 immutable Maven Central primary files byte-for-byte. The current tree reports
 exact release-candidate version `0.1.0-alpha.3`; its exact eight modules are
 public on Maven Central and selected by the checked-in channel candidate, while
-no Alpha 3 tag or Release exists. That candidate passed local fresh-cache
-installation, CLI/MCP runtime, update, read-only, and uninstall checks under
-JDK 21 against public Central only. The actual public raw-URL Alpha 3 route has
-not yet been independently qualified, so the supported-distribution READY row
-remains scoped to the historically qualified Alpha 2 route. General
+no Alpha 3 tag or Release exists. Fresh outsider-like installation from the
+actual public `main` URL passed CLI/MCP runtime, update, read-only, no-build v2,
+and uninstall checks under JDK 21 against public Central only. A separate fresh
+commit-pinned lane also passed. Supported-distribution READY now covers both
+exact routes and preserves Alpha 2's historical qualification. General
 agent-skill adoption effectiveness, broader semantic superiority, complete
 Scala 2 support, and 1.0 stability remain unproven.
 
@@ -190,7 +190,8 @@ automatic skill-retuning loops are closed. Skill adoption, Scala target
 compatibility, and compiler-plugin semantics remain evidence-partial. The two
 independent compiler-plugin cases preserve their bounded qualifier, while the
 strongest frozen ordinary-tool comparison found fact-equivalent point evidence
-and therefore no demonstrated primitive fact advantage. The supported package
-remains Alpha 2. Exact Alpha 3 artifacts are public on Central and its
-checked-in channel candidate is locally qualified; actual public-URL
-qualification, a tag, and a GitHub prerelease require separate authority.
+and therefore no demonstrated primitive fact advantage. Both exact Alpha 2 and
+Alpha 3 packaged routes are independently qualified, with Alpha 3 current on
+public `main`. Alpha 3 Git/GitHub release coherence is the next gate: freshly
+reproduce all 32 published Central primaries from the then-current source tree
+before creating a tag or GitHub prerelease.

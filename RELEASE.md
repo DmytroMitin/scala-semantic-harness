@@ -14,7 +14,8 @@ use Semantic Versioning. Released `0.1.0-alpha.2` identifies the exact source
 that reproduced the 32 primary Maven Central files byte-for-byte. The current
 tree reports exact release-candidate version `0.1.0-alpha.3`; its exact eight
 modules are public on Maven Central and the checked-in channel selects them,
-but public raw-URL qualification, a tag, and a GitHub Release remain absent.
+with fresh public raw-URL installation and runtime independently qualified.
+An Alpha 3 tag and GitHub Release remain absent.
 Before 1.0, minor releases may make breaking changes when the changelog and migration
 notes identify them; patch releases should remain backward compatible within
 the documented public contract.
@@ -49,10 +50,11 @@ dependency-attribution and license, installation, and runtime gates.
 
 The exact `0.1.0-alpha.3` candidate preserves the same eight application
 implementation modules. Those modules are public on Maven Central, and the
-checked-in Coursier channel selects Alpha 3 after this product change is
-published. Its local channel-to-Central runtime proof does not establish the
-later actual-public-URL qualification or authorize a Git tag, GitHub Release,
-or announcement. Those transitions require separate gates and authority.
+public `main` Coursier channel selects Alpha 3. Fresh JDK 21 public-URL
+install/runtime/update/uninstall and commit-pinned reproduction passed.
+Git/GitHub release coherence remains the next gate and must freshly reproduce
+all 32 published Central primaries from the then-current source tree before
+tagging. No Alpha 3 Git tag, GitHub Release, or announcement is implied.
 
 The `com.github.dmytromitin` exact-eight Maven/Coursier route implements those
 gates, including explicit provisional-group rejection,
@@ -65,9 +67,9 @@ selected Apache-2.0 for resolver-fetched JNA 5.14.0. The immutable Alpha 2
 channel at its release tag is independently qualified from fresh JDK 21 states
 against Maven Central only. Exact CLI version, no-override MCP,
 ordered eight tools, bounded read-only runtime, retained-channel update, and
-uninstall passed. The checked-in Alpha 3 channel candidate has the same local
-runtime gates but remains outside that READY claim until its actual public URL
-is independently qualified. Published Central coordinates are immutable:
+uninstall passed. Alpha 3 independently passed these gates through the actual
+public `main` URL plus a fresh commit-pinned reproduction, extending bounded
+READY to both exact application routes. Published Central coordinates are immutable:
 corrections roll forward to a new reviewed version and are never overwritten
 or deleted.
 

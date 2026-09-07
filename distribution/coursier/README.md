@@ -29,7 +29,9 @@ is separate: build-oracle commands such as `compile`, `errors`, and `test`
 require it, while installation and syntax-first/read-only operations do not
 inherently require target-workspace sbt.
 
-Independent Alpha 3 installation from the actual public raw GitHub URL remains
-a separate qualification gate. Preparing and locally serving these exact bytes
-does not extend `SUPPORTED_DISTRIBUTION_USABILITY = READY` beyond the
-historically qualified Alpha 2 route.
+Independent Alpha 3 installation from the actual public raw GitHub `main` URL
+passed fresh JDK 21 runtime/update/uninstall checks and commit-pinned
+reproduction. `SUPPORTED_DISTRIBUTION_USABILITY = READY` covers both exact
+Alpha 2 and Alpha 3 application routes. Alpha 2 retains its immutable tag URL;
+Alpha 3 has no Git tag or GitHub Release yet. See the
+[distribution qualification](../../docs/distribution.md#readiness-boundary).

@@ -38,9 +38,10 @@ execution ledger and does not promise delivery dates.
    identify the source that reproduces its 32 immutable Central primaries and
    retain the independently qualified supported route. Exact `0.1.0-alpha.3`
    artifacts are public on Central, and the checked-in two-application channel
-   selects them with local channel-to-Central runtime proof. Fresh qualification
-   through the actual public raw URL, an Alpha 3 tag, and a GitHub Release remain
-   pending separate gates.
+   selects them with independent fresh public-URL install/runtime/update/uninstall
+   proof and commit-pinned reproduction. Alpha 3 Git/GitHub release coherence
+   remains the next gate: freshly reproduce all 32 published Central primaries
+   from the then-current source tree before creating its tag or GitHub Release.
 2. Make external early-user decisions the primary admission source for new
    semantic capability or adoption work before the planned early-September
    community announcement. Recent bounded decision-gap intakes in one current
@@ -48,9 +49,9 @@ execution ledger and does not promise delivery dates.
    semantic capability, so repeatedly mining repository batches is not the
    immediate gap-generation strategy. Reports where ordinary tooling is
    sufficient or semantic-scala adds no value remain useful evidence. Alpha-2
-   remains the supported package. Alpha-3 is a release candidate rather than a
-   supported route. Alpha-3 Central publication and local channel qualification
-   are complete, while public-URL qualification and release authority remain.
+   retains its immutable supported route. Alpha-3 is now the current supported
+   packaged route on public `main`; its Git tag and GitHub Release remain
+   subject to a separate source/Maven coherence gate.
    Evaluate
    concrete Scala decisions
    against the compiler,

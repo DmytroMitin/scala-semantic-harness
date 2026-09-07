@@ -1,11 +1,11 @@
 # Agent-first onboarding
 
 This is the shortest supported route from a fresh JDK 21 environment to
-`semantic-scala` in an agent client. The supported packaged version is exactly
-`0.1.0-alpha.2`. Exact Alpha 3 artifacts are public on Maven Central and the
-checked-in channel selects them, but its actual public raw-URL route is not yet
-independently qualified; its optional project selector and target-JDK selector
-are not Alpha 2 features.
+`semantic-scala` in an agent client. The current supported packaged version is
+exactly `0.1.0-alpha.3` through the independently qualified public `main` channel
+and Maven Central. Exact Alpha 2 retains its qualified immutable tag-pinned
+route; Alpha 3's optional project and target-JDK selectors are not Alpha 2
+features. Alpha 3 has no Git tag or GitHub Release yet.
 
 ## 1. Install the CLI and MCP server
 
@@ -14,21 +14,22 @@ Install Coursier using its
 
 ```bash
 cs install --default-channels=false \
-  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.2/distribution/coursier/channel.json \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json \
   semantic-scala semantic-scala-mcp
 semantic-scala version
 ```
 
-The version command must report `0.1.0-alpha.2`. This immutable tag-pinned
-channel is independently qualified against Maven Central. The mutable `main`
-channel selects exact Alpha 3 after its candidate commit is published, but is
-not the supported route until its separate public-URL qualification passes.
+The version command must report `0.1.0-alpha.3`. This public `main` channel
+passed fresh install/runtime/update/uninstall against Maven Central. The
+[distribution guide](distribution.md) retains immutable Alpha 2 and commit-pinned
+Alpha 3 reproduction routes. Existing client-specific and skill qualification
+results below keep their stated Alpha 2 scope.
 JDK 21 is the supported harness runtime. Target-workspace sbt is additionally
 required by build-executing commands such as `compile`, `errors`, and `test`.
 
 Choose one or both integration modes:
 
-- **CLI** provides the complete alpha-2 command surface and is the fallback
+- **CLI** provides the complete command surface of the installed release and is the fallback
   when a client cannot attach the MCP server.
 - **MCP** provides a deliberately curated eight-tool agent surface. It is not
   intended to mirror every CLI command.

@@ -13,9 +13,11 @@ No user-facing changes are recorded after the alpha-3 release candidate.
 ## 0.1.0-alpha.3 (release candidate)
 
 The exact eight-module candidate is published on Maven Central and selected by
-the checked-in Coursier channel. Its local fresh-cache channel-to-Central proof
-passed, but actual public raw-URL qualification, a Git tag, and a GitHub Release
-remain pending. Exact `0.1.0-alpha.2` remains the supported packaged route.
+the public `main` Coursier channel. Fresh outsider-like JDK 21 public-URL
+install/runtime/update/uninstall and commit-pinned reproduction passed. Both
+exact Alpha 2 and Alpha 3 application routes are supported within this bounded
+contract. Alpha 2 retains its immutable tag-pinned route; an Alpha 3 Git tag
+and GitHub Release remain pending a separate release-coherence gate.
 
 - **Additive:** add validated `--sbt-project` selection to compile, test,
   errors, target-aware SemanticDB/source mapping, point evidence, and
