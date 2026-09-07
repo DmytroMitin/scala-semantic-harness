@@ -116,17 +116,18 @@ or private source and artifacts without permission.
 The current supported packaged route is exactly `0.1.0-alpha.3`; Alpha 2
 retains its immutable qualified route. Follow
 [`agent-onboarding.md`](agent-onboarding.md) and
-[`distribution.md`](distribution.md). The current tree reports exact
-release-candidate version `0.1.0-alpha.3`. Its Scala 3.9
+[`distribution.md`](distribution.md). Mutable source `main` reports
+`0.1.0-alpha.4-SNAPSHOT` for development only, with no Alpha 4 packaged route
+or release-readiness claim. The released Alpha 3 Scala 3.9
 harness/Presentation Compiler host lane,
 target-aware v4, existing-internal-output v5, strict-freshness v6, project/JDK
 selectors, and TASTy evidence are available in the exact Alpha 3 artifacts now
-public on Maven Central and selected by the checked-in channel candidate. The
+public on Maven Central and selected by the checked-in released channel. The
 public route passed fresh JDK 21 install/runtime/update/uninstall qualification
-and commit-pinned reproduction. No Alpha 3 tag or GitHub Release is claimed.
-Label Alpha 3 feedback explicitly and include the tested revision when shareable.
-Git/GitHub release coherence remains a separate gate and must reproduce all 32
-published Central primaries from the then-current source tree before tagging.
+and commit-pinned reproduction. The Alpha 3 lightweight tag and GitHub
+prerelease preserve source whose two clean builds reproduced all 32 published
+Central primaries. Label feedback with the tested released version or source
+revision when shareable.
 
 ## Especially valuable now
 

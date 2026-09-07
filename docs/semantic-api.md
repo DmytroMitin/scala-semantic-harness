@@ -11,7 +11,7 @@ The complete alpha-2 CLI/MCP classification is maintained in
 parity. A future `MCP_CANDIDATE_NOT_ADMITTED` operation would require a
 decision-relevant use hypothesis; no current alpha-2 command has that status.
 
-The command synopsis below describes the exact alpha-3 release candidate.
+The command synopsis below describes the exact Alpha 3 release.
 The optional `--sbt-project` and `--sbt-java-home` forms are not present in the
 supported immutable `0.1.0-alpha.2` package.
 

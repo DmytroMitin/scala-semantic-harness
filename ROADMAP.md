@@ -39,19 +39,21 @@ execution ledger and does not promise delivery dates.
    retain the independently qualified supported route. Exact `0.1.0-alpha.3`
    artifacts are public on Central, and the checked-in two-application channel
    selects them with independent fresh public-URL install/runtime/update/uninstall
-   proof and commit-pinned reproduction. Alpha 3 Git/GitHub release coherence
-   remains the next gate: freshly reproduce all 32 published Central primaries
-   from the then-current source tree before creating its tag or GitHub Release.
+   proof and commit-pinned reproduction. The Alpha 3 lightweight tag and GitHub
+   prerelease identify source whose two clean builds reproduced all 32 Central
+   primaries. Mutable source `main` is `0.1.0-alpha.4-SNAPSHOT` for development
+   only, with no Alpha 4 package, supported channel, tag, Release, or readiness
+   claim. Release machinery is no longer the immediate strategic focus.
 2. Make external early-user decisions the primary admission source for new
-   semantic capability or adoption work before the planned early-September
-   community announcement. Recent bounded decision-gap intakes in one current
-   compiler-plugin project and three foreign Scala OSS projects admitted no new
+   semantic capability or adoption work. Recent bounded decision-gap intakes in
+   one current compiler-plugin project and three foreign Scala OSS projects admitted no new
    semantic capability, so repeatedly mining repository batches is not the
    immediate gap-generation strategy. Reports where ordinary tooling is
    sufficient or semantic-scala adds no value remain useful evidence. Alpha-2
    retains its immutable supported route. Alpha-3 is now the current supported
-   packaged route on public `main`; its Git tag and GitHub Release remain
-   subject to a separate source/Maven coherence gate.
+   packaged route on the public `main` channel, with immutable tagged source
+   and a GitHub prerelease. The channel remains pinned to Alpha 3 independently
+   of the Alpha 4 SNAPSHOT source-development version.
    Evaluate
    concrete Scala decisions
    against the compiler,
@@ -270,7 +272,7 @@ privacy qualification. These tiers do not authorize release actions.
   `core2_13` production row produced target-owned SemanticDB and passed static
   symbols, syntax-first analysis, bounded dynamic lookup, exact reconciliation,
   complete point evidence, and exact-eight MCP projection. Its direct row
-  compile passed. The current alpha-3 candidate can select that row
+  compile passed. The current Alpha 3 release can select that row
   through the CLI and exact-eight MCP adapter; immutable alpha-2 cannot.
 - Treat both projects as bounded partial evidence. The concrete routing gap is
   closed in current development. Older macro/plugin-heavy stress targets remain

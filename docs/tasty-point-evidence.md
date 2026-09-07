@@ -1,6 +1,6 @@
 # TASTy point evidence
 
-`tasty-point-evidence` is an opt-in CLI-only alpha-3 candidate operation for one
+`tasty-point-evidence` is an opt-in CLI-only Alpha 3 operation for one
 Scala 3 source point. It provides normalized, bounded post-compile evidence
 without adding a ninth MCP tool or replaying a target compiler plugin in the
 inspector.

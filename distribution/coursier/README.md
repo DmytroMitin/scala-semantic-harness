@@ -33,5 +33,9 @@ Independent Alpha 3 installation from the actual public raw GitHub `main` URL
 passed fresh JDK 21 runtime/update/uninstall checks and commit-pinned
 reproduction. `SUPPORTED_DISTRIBUTION_USABILITY = READY` covers both exact
 Alpha 2 and Alpha 3 application routes. Alpha 2 retains its immutable tag URL;
-Alpha 3 has no Git tag or GitHub Release yet. See the
+Alpha 3 now has an immutable lightweight tag and GitHub prerelease. Its
+[tag-pinned channel](https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.3/distribution/coursier/channel.json)
+has the same released bytes. Mutable source development is
+`0.1.0-alpha.4-SNAPSHOT`; this channel remains pinned to Alpha 3 and does not
+establish an Alpha 4 packaged route. See the
 [distribution qualification](../../docs/distribution.md#readiness-boundary).

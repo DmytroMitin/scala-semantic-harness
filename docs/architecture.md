@@ -104,7 +104,10 @@ The exact Alpha 3 Maven artifacts are public on Central. The checked-in
 project-owned public `main` Coursier channel selects them and has independently
 passed fresh JDK 21 install/runtime/update/uninstall against public Central,
 plus commit-pinned reproduction. Alpha 2 retains its immutable qualified route;
-Alpha 3 Git/GitHub release coherence remains a separate gate.
+Alpha 3 has immutable tagged source and a GitHub prerelease whose source
+reproduces its 32 Central primaries. Mutable source development uses
+`0.1.0-alpha.4-SNAPSHOT`; the released channel remains pinned to Alpha 3 and
+no Alpha 4 packaged route is established.
 Generated distributions are ignored build outputs. Root `plugin.json`, root
 `mcp.json`, `${PLUGIN_ROOT}` expansion, and `skills/*/SKILL.md` discovery are
 the portable core. Repository `.agents` and `.claude` wrappers remain separate

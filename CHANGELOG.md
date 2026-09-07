@@ -8,16 +8,20 @@ release.
 
 ## Unreleased
 
-No user-facing changes are recorded after the alpha-3 release candidate.
+Source development now uses `0.1.0-alpha.4-SNAPSHOT`. No user-facing features
+are recorded after the Alpha 3 release, and no Alpha 4 package or release is
+claimed.
 
-## 0.1.0-alpha.3 (release candidate)
+## 0.1.0-alpha.3
 
-The exact eight-module candidate is published on Maven Central and selected by
+The exact eight-module release is published on Maven Central and selected by
 the public `main` Coursier channel. Fresh outsider-like JDK 21 public-URL
 install/runtime/update/uninstall and commit-pinned reproduction passed. Both
 exact Alpha 2 and Alpha 3 application routes are supported within this bounded
-contract. Alpha 2 retains its immutable tag-pinned route; an Alpha 3 Git tag
-and GitHub Release remain pending a separate release-coherence gate.
+contract. Alpha 2 retains its immutable tag-pinned route. The Alpha 3
+lightweight tag identifies `075a60bfb7d7677d7fdfcc2369c9ffe41c8b32a8`; two
+clean builds reproduced all 32 public Maven primaries. The GitHub prerelease
+provides generated source archives and zero uploaded project assets.
 
 - **Additive:** add validated `--sbt-project` selection to compile, test,
   errors, target-aware SemanticDB/source mapping, point evidence, and

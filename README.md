@@ -19,13 +19,19 @@ constructed, audited clean root followed only by reviewed public-product
 commits. The earlier mixed development history is retained separately in a
 private archive and is not part of this public repository.
 
-The current tree reports exact release-candidate version `0.1.0-alpha.3`.
+Mutable source `main` reports `0.1.0-alpha.4-SNAPSHOT` for source development
+only. No Alpha 4 Central artifact, supported channel, tag, GitHub Release, or
+release-readiness claim is established.
 The exact eight-module `0.1.0-alpha.3` release is published on Maven Central,
 and the public `main` two-application Coursier channel selects it. Fresh
 outsider-like JDK 21 install/runtime/update/uninstall through the actual public
 raw-GitHub URL and Maven Central passed, as did commit-pinned reproduction.
 Both exact Alpha 2 and Alpha 3 application routes now have bounded supported-
-distribution READY evidence. Alpha 3 still has no Git tag or GitHub Release. The immutable
+distribution READY evidence. The immutable `0.1.0-alpha.3` lightweight tag
+identifies commit `075a60bfb7d7677d7fdfcc2369c9ffe41c8b32a8`, whose two clean
+builds reproduced all 32 public Maven primaries. Its
+[GitHub prerelease](https://github.com/DmytroMitin/scala-semantic-harness/releases/tag/0.1.0-alpha.3)
+has zero uploaded project assets and normal generated source archives. The immutable
 `0.1.0-alpha.2` tag and prerelease retain the independently qualified supported
 route and source identity for its 32 Central primaries.
 
@@ -62,14 +68,14 @@ Alpha 2 remains reproducible through its immutable tag-pinned channel.
   artifact;
 - a public point-evidence composition that preserves source-artifact discovery,
   safe selection, live symbol evidence, and conditional reconciliation;
-- alpha-3 candidate opt-in build-target-aware SemanticDB source mapping v4 with
+- Alpha 3 opt-in build-target-aware SemanticDB source mapping v4 with
   a validated optional Scala axis and root-only receipt, alongside target-aware
   point-evidence v4 with a non-compiling partial existing-output context and
   explicit v5 existing-internal-Compile-output opt-in, plus strict v6
   content-fresh internal-output gating;
-- an alpha-3 candidate CLI-only, same-request post-compile TASTy point-evidence
+- an Alpha 3 CLI-only, same-request post-compile TASTy point-evidence
   operation with exact stable Scala 3 child-inspector provenance;
-- bounded alpha-3 candidate sbt-backed command, classpath, and TASTy-receipt
+- bounded Alpha 3 sbt-backed command, classpath, and TASTy-receipt
   compatibility proven on sbt 1.12.15 and 2.0.6 fixtures;
 - conservative syntax-first FP effect summaries;
 - a stdio MCP server exposing exactly eight public tools;
@@ -121,13 +127,13 @@ degraded point evidence. A bounded production row of `scalacenter/scalafix`
 produced target-owned SemanticDB; static symbol discovery, bounded dynamic
 lookup, exact static/dynamic reconciliation, complete point evidence, and the
 ordered exact-eight MCP projection passed. Scalafix's aggregated sbt build also
-exposed that the alpha-2 build oracle cannot select one project row. Current
-alpha-3 candidate closes that routing gap with an optional validated
+exposed that the alpha-2 build oracle cannot select one project row. The
+Alpha 3 release closes that routing gap with an optional validated
 project selector; the immutable alpha-2 distribution remains unchanged. These
 two projects are complementary bounded evidence, not general Scala 2 support or
 semantic superiority.
 
-The alpha-3 candidate sbt subprocess boundary sends project selection plus
+The Alpha 3 release sbt subprocess boundary sends project selection plus
 one product-owned task as a single fixed command sequence. Its injected
 classpath/receipt adapters use sbt's `fileConverter` for sbt 2 virtual
 references and preserve sbt 1 file-backed entries. Readable extensionless sbt 2
@@ -251,7 +257,7 @@ boundary.
 ./semantic-scala effect-summary --file path/to/UserRepo.scala --json
 ```
 
-Target-aware source mapping and point evidence are explicit alpha-3 candidate
+Target-aware source mapping and point evidence are explicit Alpha 3
 options. Omitting target options preserves the v2 workspace-wide behavior,
 including truthful ambiguity. With `--sbt-project`, source mapping emits v4 and
 uses a fixed root-only Compile receipt containing target identity,
@@ -442,9 +448,9 @@ project reports are welcome using the bounded comparison packet in
 [`docs/early-feedback.md`](docs/early-feedback.md), especially missing
 decision-relevant evidence or materially useful composition of compiler,
 build/test, IDE/LSP, and artifact facts. Both exact Alpha 2 and Alpha 3 packaged
-routes are independently qualified. Alpha 3 Git/GitHub release coherence is the
-next release gate: reproduce all 32 published Central primaries from the
-then-current source tree before creating a tag or GitHub prerelease.
+routes are independently qualified and retain immutable source-release identity.
+External early-user feedback is the primary next input for semantic-value
+admission; the Alpha 4 SNAPSHOT source identity adds no packaged route.
 
 ## Project policies
 

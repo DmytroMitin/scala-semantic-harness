@@ -15,16 +15,18 @@ For client-specific MCP and skill setup, start with
 The source-only `0.1.0-alpha.1` tag and GitHub prerelease are unchanged. The
 immutable `0.1.0-alpha.2` lightweight tag and GitHub prerelease identify the
 source that reproduced all 32 Maven Central primaries byte-for-byte. The
-current tree reports exact release-candidate version `0.1.0-alpha.3`; its
-Central artifacts and actual public channel route are independently qualified,
-but no Alpha 3 tag or GitHub Release exists. The
-alpha-3 candidate source
-build uses Scala 3.9.0 for the harness and its
+Alpha 3 lightweight tag and GitHub prerelease identify exact commit
+`075a60bfb7d7677d7fdfcc2369c9ffe41c8b32a8`, whose two clean builds reproduced
+all 32 Central primaries. Mutable source `main` reports
+`0.1.0-alpha.4-SNAPSHOT` for development only; no Alpha 4 Central artifact,
+supported channel, tag, GitHub Release, or release-readiness claim is
+established. The released Alpha 3 and current source builds use Scala 3.9.0
+for the harness and its
 linked Presentation Compiler. This does not alter the immutable alpha-2 Maven
 or Coursier bytes, and it does not make live queries dynamically select a
 target compiler.
 
-The alpha-2 GitHub Release provides source identity, release notes, and normal
+The Alpha 2 and Alpha 3 GitHub prereleases provide source identity, release notes, and normal
 GitHub-generated source archives with zero uploaded project assets. Maven
 Central remains the immutable channel for the signed implementation files.
 
@@ -269,7 +271,7 @@ Apache-2.0 or LGPL-2.1-or-later and the project owner selected Apache-2.0. The
 review is technical evidence, not legal advice; the automated gate must not be
 weakened to infer legal clearance or publication authority.
 
-The exact alpha-3 candidate isolates strict-v6 incremental
+The exact Alpha 3 release isolates strict-v6 incremental
 analysis in an unpublished, build-only Scala 2.13.18 worker. Its product-owned
 worker JAR is embedded in the existing semantic-reconciliation artifact, but
 its exact Zinc 1.12.1/JNA 5.14.0 dependency graph is not declared on normal
@@ -297,7 +299,8 @@ run, update, and uninstall independently through the qualified release routes. I
 Registry availability, native/container/npm/PyPI packaging, Agent Plugin or
 skill adoption, a stable embeddable-library API, broad Scala compatibility,
 semantic superiority, or 1.0 stability. Alpha 2 source/Maven byte coherence is
-proven and published at its lightweight tag and GitHub prerelease. Alpha 3 has
-no Git tag or GitHub Release yet; READY does not imply that release coherence.
-The next release gate must reproduce all 32 published Alpha 3 Central primaries
-byte-for-byte from the then-current source tree before tagging.
+proven and published at its lightweight tag and GitHub prerelease. Alpha 3
+source/Maven coherence is also proven by two clean builds and preserved at its
+immutable lightweight tag and GitHub prerelease. This source proof belongs to
+the released tree; Alpha 4 SNAPSHOT development does not establish an Alpha 4
+packaged route.

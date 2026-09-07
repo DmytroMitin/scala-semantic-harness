@@ -12,10 +12,13 @@ Coursier URL route under JDK 21.
 `0.1.0-alpha.1` is the first published source-only prerelease. Tagged releases
 use Semantic Versioning. Released `0.1.0-alpha.2` identifies the exact source
 that reproduced the 32 primary Maven Central files byte-for-byte. The current
-tree reports exact release-candidate version `0.1.0-alpha.3`; its exact eight
-modules are public on Maven Central and the checked-in channel selects them,
+mutable source tree reports `0.1.0-alpha.4-SNAPSHOT` for development only.
+Released `0.1.0-alpha.3` has a lightweight tag and GitHub prerelease at
+`075a60bfb7d7677d7fdfcc2369c9ffe41c8b32a8`; two clean builds reproduced all
+32 public Central primaries. The checked-in channel remains pinned to Alpha 3,
 with fresh public raw-URL installation and runtime independently qualified.
-An Alpha 3 tag and GitHub Release remain absent.
+No Alpha 4 Central artifact, supported channel, tag, GitHub Release, or
+release-readiness claim is established.
 Before 1.0, minor releases may make breaking changes when the changelog and migration
 notes identify them; patch releases should remain backward compatible within
 the documented public contract.
@@ -48,13 +51,15 @@ marketplace upload.
 Future binary and package channels still require separate reproducibility,
 dependency-attribution and license, installation, and runtime gates.
 
-The exact `0.1.0-alpha.3` candidate preserves the same eight application
+The exact `0.1.0-alpha.3` release preserves the same eight application
 implementation modules. Those modules are public on Maven Central, and the
 public `main` Coursier channel selects Alpha 3. Fresh JDK 21 public-URL
 install/runtime/update/uninstall and commit-pinned reproduction passed.
-Git/GitHub release coherence remains the next gate and must freshly reproduce
-all 32 published Central primaries from the then-current source tree before
-tagging. No Alpha 3 Git tag, GitHub Release, or announcement is implied.
+Its immutable tagged source reproduces all 32 published Central primaries.
+The Alpha 3 GitHub prerelease has normal generated source archives and zero
+uploaded project assets. Maven Central remains the artifact distribution
+channel. The Alpha 4 SNAPSHOT source build has a distinct development identity
+and is not expected to reproduce Alpha 3 artifact bytes.
 
 The `com.github.dmytromitin` exact-eight Maven/Coursier route implements those
 gates, including explicit provisional-group rejection,
