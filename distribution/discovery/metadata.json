@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "semantic-scala.discovery.v1",
+  "name": "semantic-scala",
+  "displayName": "semantic-scala",
+  "description": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
+  "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "documentation": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
+  "license": "Apache-2.0",
+  "categories": [
+    "developer-tools",
+    "code-analysis",
+    "scala"
+  ],
+  "tags": [
+    "scala",
+    "semanticdb",
+    "compiler",
+    "build-tools",
+    "model-context-protocol",
+    "agent-skill"
+  ],
+  "supportedVersion": "0.1.0-alpha.3",
+  "mcp": {
+    "transport": "stdio",
+    "command": "semantic-scala-mcp",
+    "toolCount": 8
+  },
+  "skill": {
+    "name": "semantic-scala",
+    "canonicalPath": "skills/semantic-scala/SKILL.md",
+    "installCommand": "npx skills add https://github.com/DmytroMitin/scala-semantic-harness --skill semantic-scala"
+  },
+  "distribution": {
+    "applications": [
+      "semantic-scala",
+      "semantic-scala-mcp"
+    ],
+    "coursierChannel": "https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/main/distribution/coursier/channel.json",
+    "tagPinnedCoursierChannel": "https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.3/distribution/coursier/channel.json"
+  },
+  "feedbackUrl": "https://github.com/DmytroMitin/scala-semantic-harness/issues/new?template=real-project-feedback.yml"
+}

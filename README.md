@@ -371,6 +371,18 @@ qualification is in
 maintenance guidance is in
 [`docs/agent-skill-semantic-scala.md`](docs/agent-skill-semantic-scala.md).
 
+For a current repository-sourced installation, select the single canonical
+skill explicitly:
+
+```bash
+npx skills add https://github.com/DmytroMitin/scala-semantic-harness --skill semantic-scala
+```
+
+This installs guidance only; install the supported runtime separately. The
+qualified command, stable catalog metadata, registry boundaries, and native
+plugin follow-ups are documented in
+[`docs/discoverability.md`](docs/discoverability.md).
+
 ## Agent Plugin package
 
 After staging the CLI and MCP server, generate a fresh relocatable package:

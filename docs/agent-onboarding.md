@@ -50,7 +50,21 @@ The recommended combinations are:
 4. **Manual CLI** is the troubleshooting and automation fallback, not the
    primary interactive experience.
 
-## 2. Install the immutable alpha-2 skill
+## 2. Install the skill
+
+For the current canonical repository skill, run from the target project root:
+
+```bash
+npx skills add https://github.com/DmytroMitin/scala-semantic-harness --skill semantic-scala
+```
+
+Qualification with `skills` CLI 1.7.0 found exactly one candidate named
+`semantic-scala` and installed bytes identical to the canonical file. This
+command follows current repository guidance; it does not install the runtime or
+freeze a released skill revision. See [`discoverability.md`](discoverability.md)
+for the bounded qualification and catalog scope.
+
+### Immutable alpha-2 skill alternative
 
 Install the canonical file from the immutable release tag, not mutable `main`.
 For Codex, Cursor, and clients that discover `.agents/skills`, run from the

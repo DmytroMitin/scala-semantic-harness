@@ -3,6 +3,17 @@
 The authoritative, client-neutral policy is
 [`skills/semantic-scala/SKILL.md`](../skills/semantic-scala/SKILL.md).
 
+Install the current canonical repository skill with:
+
+```bash
+npx skills add https://github.com/DmytroMitin/scala-semantic-harness --skill semantic-scala
+```
+
+The route was qualified with `skills` CLI 1.7.0 and installed the canonical
+file byte-for-byte. It installs guidance, not the Scala runtime, and follows the
+current repository state. Stable discovery metadata and external-catalog scope
+are in [`discoverability.md`](discoverability.md).
+
 For an external project using the supported `0.1.0-alpha.2` distribution,
 install the canonical file from the immutable tag. Do not fetch mutable `main`:
 

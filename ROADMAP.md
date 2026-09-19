@@ -28,6 +28,9 @@ execution ledger and does not promise delivery dates.
 - Syntax-first FP effect summaries.
 - A CLI-backed stdio MCP server with exactly eight tools.
 - Public semantic-scala skill policy and repository wrappers.
+- A qualified one-candidate `npx skills add` route for the canonical skill,
+  plus checked-in stable discovery metadata with explicit catalog and native
+  plugin boundaries.
 - Agent-first alpha-2 installation, MCP, and immutable-skill recipes with a
   client qualification matrix and explicit CLI/MCP surface asymmetry.
 - Examples, CI, benchmark fixtures, and methodology.
@@ -89,6 +92,10 @@ execution ledger and does not promise delivery dates.
    semantic CLI in one combined condition, and gained sharper provenance without
    changing the decision. Adoption effectiveness therefore remains partial and
    immediate automatic skill retuning is not admitted.
+   Keep external discovery as a separate packaging concern: the current Maven
+   and Coursier artifacts are not direct official-MCP-Registry package types,
+   and native OpenAI or Claude plugin wrappers require their own validation
+   before any directory submission.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
