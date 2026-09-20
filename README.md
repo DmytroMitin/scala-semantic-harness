@@ -383,6 +383,22 @@ qualified command, stable catalog metadata, registry boundaries, and native
 plugin follow-ups are documented in
 [`docs/discoverability.md`](docs/discoverability.md).
 
+## MCP Registry package candidate
+
+The repository includes a deterministic MCPB packaging surface for the exact
+`0.1.0-alpha.3` CLI and MCP server. The Linux x86_64 candidate carries a
+package-local Corretto 21 runtime and static entry points, so it does not call
+an undeclared host `java`. It preserves ordinary host access to the target
+Scala workspace and its build tools. Qualification is limited to Linux x86_64
+with a compatible GNU-libc environment and system zlib; it is not a claim for
+every Linux libc or distribution.
+
+The package is a locally validated candidate, not a published release asset or
+MCP Registry listing. Its maintained manifest and Registry record candidate are
+under `packaging/mcpb/semantic-scala/` and `distribution/mcp-registry/`. See
+[`docs/mcpb-package.md`](docs/mcpb-package.md) for the exact-tag build,
+determinism, validation, platform boundary, and publication prerequisites.
+
 ## Agent Plugin package
 
 After staging the CLI and MCP server, generate a fresh relocatable package:
@@ -417,6 +433,11 @@ benchmark reproducibility beyond its stated small-sample gate.
 
 ## Current limitations
 
+- The MCPB candidate is validated only for Linux x86_64 and is not uploaded or
+  installable from the official MCP Registry. Other operating systems and
+  architectures require separately built and tested assets. The tested bundle
+  requires a compatible GNU-libc environment and system zlib even though it
+  requires no host Java.
 - A generated self-contained Agent Plugins package has bounded structural,
   official-schema, determinism, and relocated-runtime evidence, but no
   supported release channel or conformant installed-client adoption proof.

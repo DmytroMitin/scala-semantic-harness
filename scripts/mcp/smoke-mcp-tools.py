@@ -841,9 +841,12 @@ def validate_unknown_tool(process: subprocess.Popen[str], selector: selectors.Ba
 
 
 def run() -> None:
-    root = repo_root()
+    root = configured_path("SEMANTIC_SCALA_SMOKE_ROOT", repo_root())
     mcp_path = configured_path("SEMANTIC_SCALA_MCP", root / "modules/mcp-server/target/stage/bin/semantic-scala-mcp")
     cli_path = configured_path("SEMANTIC_SCALA_CLI", root / "modules/cli/target/stage/bin/semantic-scala")
+    profile = os.environ.get("SEMANTIC_SCALA_SMOKE_PROFILE", "full")
+    if profile not in {"full", "registry-read-only"}:
+        raise SmokeFailure(f"unsupported SEMANTIC_SCALA_SMOKE_PROFILE: {profile}")
 
     require_executable(mcp_path, "SEMANTIC_SCALA_MCP")
     require_executable(cli_path, "SEMANTIC_SCALA_CLI")
@@ -857,6 +860,10 @@ def run() -> None:
 
         initialize(process, selector)
         list_tools(process, selector)
+        if profile == "registry-read-only":
+            validate_effect_summary_fixture(process, selector, root)
+            print("PASS registry read-only representative profile")
+            return
         validate_success_workspace(process, selector, root)
         validate_failure_workspace(process, selector, root)
         validate_errors_success_workspace(process, selector, root)

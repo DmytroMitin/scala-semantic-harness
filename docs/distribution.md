@@ -31,9 +31,13 @@ GitHub-generated source archives with zero uploaded project assets. Maven
 Central remains the immutable channel for the signed implementation files.
 
 A project-owned single-file Coursier URL channel is available from public
-`main`. No Coursier contrib entry, MCPB package, MCP Registry entry, native
-binary, container, npm/PyPI wrapper, Agent Plugin runtime distribution, or
-skill distribution is claimed by this support result.
+`main`. A separate Linux x86_64 MCPB package candidate can be built locally
+from exact Alpha 3 and was qualified on compatible GNU libc with system zlib,
+but no MCPB release asset or MCP Registry entry is published. No Coursier
+contrib entry, native binary release, container,
+npm/PyPI wrapper, Agent Plugin runtime distribution, or skill distribution is
+claimed by this support result. The candidate contract is documented in
+[`mcpb-package.md`](mcpb-package.md).
 
 ## Exact implementation graph
 

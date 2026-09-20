@@ -93,9 +93,12 @@ execution ledger and does not promise delivery dates.
    changing the decision. Adoption effectiveness therefore remains partial and
    immediate automatic skill retuning is not admitted.
    Keep external discovery as a separate packaging concern: the current Maven
-   and Coursier artifacts are not direct official-MCP-Registry package types,
-   and native OpenAI or Claude plugin wrappers require their own validation
-   before any directory submission.
+   and Coursier artifacts are not direct official-MCP-Registry package types.
+   Preserve the locally validated exact-Alpha-3 Linux x86_64 MCPB and
+   `server.json` candidates, but require separate authority and immutable-asset
+   verification before release attachment or Registry publication. Native
+   OpenAI or Claude plugin wrappers still require their own validation before
+   any directory submission.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
@@ -327,6 +330,10 @@ privacy qualification. These tiers do not authorize release actions.
 
 ## Installation and packaging
 
+- Maintain deterministic exact-Alpha-3 Linux x86_64 MCPB assembly with its
+  package-local JDK 21 runtime, static launchers, runtime notices, exact-eight
+  relocated smoke, and matching unpublished Registry candidate. Treat other
+  platforms and publication as separate gates.
 - Maintain the exact-eight modular Maven graph, current Central publishing
   architecture, final group `com.github.dmytromitin`, exact-version
   two-application Coursier source, explicit legacy-group rejection, and

@@ -30,10 +30,14 @@ local stdio server. Skill installation does not change the eight-tool registry.
 ## Registry and plugin status
 
 The existing Maven Central artifacts and Coursier channel are not package types
-accepted directly by the official MCP Registry. A future registry submission
-therefore requires a separately versioned MCPB or OCI distribution, a matching
-`server.json`, and validation with the official publisher CLI. No such registry
-artifact or listing is currently supported.
+accepted directly by the official MCP Registry. The repository now has a
+separate exact-Alpha-3 MCPB candidate, a matching
+`distribution/mcp-registry/server.alpha3.candidate.json`, deterministic
+two-build evidence, and local official-tool validation. The candidate is
+Linux x86_64 with compatible GNU libc and system zlib only, and is not
+published: its planned GitHub Release URL does not exist, and no official
+Registry listing is currently supported. See
+[`mcpb-package.md`](mcpb-package.md).
 
 The generated [Agent Plugin package](agent-plugin.md) is useful packaging
 evidence, but it is not itself a listing in a public plugin directory. Current
