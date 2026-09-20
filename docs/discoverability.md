@@ -57,9 +57,14 @@ with distinct contracts:
   and `${CLAUDE_PLUGIN_ROOT}` paths around the same exact runtime.
 
 Both are deterministic generated candidates with byte-identical canonical
-skill content and relocated exact-eight smoke evidence. Neither is submitted,
-listed, or a supported install channel. The client-neutral skill remains
-authoritative.
+skill content and relocated exact-eight smoke evidence. Codex CLI `0.154.0`
+also passed a disposable local-marketplace install, packaged-skill load,
+bundled-MCP registration, and one read-only client-mediated semantic call.
+Claude Code `2.1.220` passed disposable direct and marketplace loading through
+skill discovery and MCP startup, but its client-mediated semantic-use gate was
+blocked by the available expired OAuth session; no new login was initiated.
+Neither candidate is publicly submitted, listed, or a supported public install
+channel. The client-neutral skill remains authoritative.
 
 ## Scope of catalog claims
 

@@ -3,8 +3,12 @@
 ## Status and boundary
 
 The repository can assemble locally validated OpenAI/Codex and Claude Code
-plugin candidates from the exact published `0.1.0-alpha.3` MCPB. Neither
-candidate has been submitted, listed, installed from a marketplace, or
+plugin candidates from the exact published `0.1.0-alpha.3` MCPB. A disposable
+local Codex marketplace installation has now passed real-client skill and MCP
+adoption. Claude Code direct and disposable local-marketplace loading reached
+plugin, skill, and MCP startup, but its live semantic-use gate remains
+unqualified because the available OAuth session was expired and no new login
+was authorized. Neither candidate has been publicly submitted, listed, or
 published as a release asset.
 
 Both candidates contain:
@@ -115,6 +119,28 @@ the portable manifests passed the current Agent Plugins 1.0 JSON schemas.
 Claude Code `2.1.220` passed `claude plugin validate <path> --strict`. That
 installed version predates the validator's JSON-output option, so the retained
 local result is textual rather than machine JSON.
+
+## Real-client qualification
+
+Observed on 2026-09-20 with Codex CLI `0.154.0` and Claude Code `2.1.220`.
+
+Codex passed the supported disposable local-marketplace flow under an isolated
+`CODEX_HOME`: marketplace add/list, plugin install/list, packaged-skill loading,
+bundled MCP registration, and a real `semantic_effect_summary` call all passed.
+The call returned adapter `ok: true` for a read-only one-file fixture, and the
+complete fixture remained unchanged. Plugin and marketplace removal left no
+active disposable integration. The owner's normal Codex plugin state and
+configuration were unchanged. This qualifies local installed-client plumbing;
+it does not create a public listing or a supported public install channel.
+
+Claude Code passed strict native and local-marketplace validation, direct
+`--plugin-dir` loading, disposable marketplace add/install/list, one packaged
+skill discovery, and plugin-local MCP startup under an isolated
+`CLAUDE_CONFIG_DIR`. A fresh model turn could not run because the existing OAuth
+refresh token was expired. No new authentication flow was initiated, so no
+Claude client-mediated semantic call is claimed. Cleanup removed the disposable
+plugin and marketplace, the fixture remained unchanged, and the owner's normal
+Claude plugin state and settings were unchanged.
 
 ## Generated layouts
 

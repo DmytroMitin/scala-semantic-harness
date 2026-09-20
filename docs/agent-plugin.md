@@ -112,8 +112,11 @@ format, with a Codex compatibility overlay still supported. Claude Code retains
 its distinct native manifest and placeholder conventions. The repository's
 [native candidates](native-plugin-packages.md) transform the exact published
 Alpha-3 MCPB into those current layouts and validate their bundled local
-runtime. No live marketplace installation or public listing ran; structural
-validation and direct protocol smoke still do not establish adoption.
+runtime. Disposable local-marketplace treatments now establish bounded Codex
+installed-client adoption and Claude plugin, skill, and MCP startup, while
+Claude client-mediated semantic use remains unqualified. No public listing
+ran. The generic portable package's structural validation and direct protocol
+smoke still do not establish adoption by a conformant installed client.
 
 The project source is licensed under Apache-2.0. No supported binary/package
 version or client-installation channel is selected here; generated binary
