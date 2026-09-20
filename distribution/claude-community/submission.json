@@ -1,0 +1,106 @@
+{
+  "$schema": "semantic-scala.claude-community-submission-preparation.v1",
+  "observedOn": "2026-09-20",
+  "status": "blocked-by-plugin-distribution-model",
+  "terminalState": "CLAUDE_COMMUNITY_SUBMISSION_BLOCKED_BY_PLUGIN_DISTRIBUTION_MODEL",
+  "identity": {
+    "name": "semantic-scala",
+    "displayName": "semantic-scala",
+    "version": "0.1.0-alpha.3",
+    "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+    "license": "Apache-2.0",
+    "qualifiedSourceCommit": "d8b30b338f54d33fce04f0b4918dc15b250bec6f"
+  },
+  "listing": {
+    "shortDescription": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
+    "longDescription": [
+      "semantic-scala helps coding agents consult structured Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence instead of relying only on source text.",
+      "The Claude Code plugin contains one agent skill and one local stdio MCP server exposing exactly eight bounded tools. It works against local workspaces and can invoke local build or test commands only when the corresponding tool is explicitly selected.",
+      "Version 0.1.0-alpha.3 is an experimental Linux x86_64 package for compatible GNU-libc environments with system zlib. It includes a package-local Java runtime and requires no host Java. It is not a replacement for the Scala compiler, sbt, tests, Metals, or an IDE."
+    ],
+    "category": "development",
+    "keywords": [
+      "scala",
+      "semanticdb",
+      "compiler",
+      "build-tools",
+      "model-context-protocol",
+      "agent-skill"
+    ]
+  },
+  "publicUrls": {
+    "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+    "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
+    "support": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
+    "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/d8b30b338f54d33fce04f0b4918dc15b250bec6f/LICENSE"
+  },
+  "qualifiedCandidate": {
+    "contentSha256": "72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b",
+    "fileCount": 3730,
+    "totalBytes": 339741892,
+    "sourceMcpbSha256": "f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d",
+    "sourceMcpbBytes": 285603142
+  },
+  "sourceRoute": {
+    "selected": null,
+    "separatePublisherMarketplaceRepositoryRequired": false,
+    "communityReviewAcceptedSourceModel": {
+      "observedOn": "2026-09-20",
+      "externalSourceTypes": [
+        "github",
+        "url",
+        "git-subdir"
+      ],
+      "requiresCloneableGitSource": true,
+      "requiresFortyCharacterLowercaseCommitSha": true,
+      "qualifiedPublicSourceAvailable": false
+    },
+    "maintainedGitSubdirectory": {
+      "path": "packaging/claude-plugin/semantic-scala",
+      "schemaSupported": true,
+      "installable": false,
+      "reason": "The maintained subdirectory is a source template and does not contain the canonical skill or bundled runtime payload."
+    },
+    "generatedGitTree": {
+      "schemaSupported": true,
+      "currentlyPublished": false,
+      "reason": "The complete 339741892-byte generated tree is intentionally ignored build material and is not present at a public pinned commit."
+    },
+    "generatedArchive": {
+      "scope": "generic-Claude-marketplace-alternative-not-current-community-review-source",
+      "schemaSupportedSinceClaudeCode": "2.1.224",
+      "maximumBytes": 268435456,
+      "measuredDeflate9Bytes": 285354435,
+      "exceedsMaximumByBytes": 16918979,
+      "currentlyPublished": false,
+      "installable": false
+    },
+    "publishedMcpb": {
+      "url": "https://github.com/DmytroMitin/scala-semantic-harness/releases/download/0.1.0-alpha.3/semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb",
+      "bytes": 285603142,
+      "isClaudePluginArchive": false,
+      "withinClaudeArchiveLimit": false
+    }
+  },
+  "validation": {
+    "installedClaudeCodeVersion": "2.1.220",
+    "disposableCurrentClaudeCodeVersion": "2.1.278",
+    "strictPluginValidation": "pass",
+    "strictDisposableMarketplaceValidation": "pass",
+    "installedClientQualification": "accepted-from-task-249",
+    "runtimeRetreatmentRequired": false
+  },
+  "assets": {
+    "icon": "not-required-by-public-contract",
+    "screenshots": "not-required-by-public-contract",
+    "hiddenFormRequirements": "unknown-until-login"
+  },
+  "humanOnly": {
+    "authentication": "required",
+    "termsAndAttestations": "unknown-until-login-and-owner-review",
+    "countryOrRegion": "unknown-until-login",
+    "draftSaving": "not-publicly-documented",
+    "fee": "no-fee-stated-in-public-documentation",
+    "finalSubmit": "not-authorized"
+  }
+}

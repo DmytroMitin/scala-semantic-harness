@@ -1,0 +1,37 @@
+{
+  "$schema": "semantic-scala.claude-community-asset-inventory.v1",
+  "observedOn": "2026-09-20",
+  "assets": [
+    {
+      "kind": "pluginManifest",
+      "path": "packaging/claude-plugin/semantic-scala/.claude-plugin/plugin.json",
+      "status": "prepared-and-current-validator-pass"
+    },
+    {
+      "kind": "listingCopy",
+      "path": "distribution/claude-community/submission.json",
+      "status": "prepared-for-owner-review"
+    },
+    {
+      "kind": "reviewerTestPlan",
+      "path": "distribution/claude-community/reviewer-test-plan.md",
+      "status": "prepared-but-blocked-on-public-install-route"
+    },
+    {
+      "kind": "technicalDataHandlingNote",
+      "path": "distribution/claude-community/privacy-data-handling.md",
+      "status": "prepared-not-legal-policy"
+    },
+    {
+      "kind": "icon",
+      "status": "not-required-by-public-contract",
+      "postLoginRequirement": "unknown"
+    },
+    {
+      "kind": "screenshots",
+      "status": "not-required-by-public-contract",
+      "postLoginRequirement": "unknown"
+    }
+  ],
+  "thirdPartyBrandAssetsIncluded": false
+}

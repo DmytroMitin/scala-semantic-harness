@@ -433,6 +433,14 @@ Code `2.1.220` passed a disposable local-marketplace install, packaged-skill
 load, plugin-local MCP connection, and one read-only client-mediated semantic
 call after an explicit owner login checkpoint. No public marketplace,
 directory, release asset, or external submission was created.
+Current Claude community submission preparation found no installable public
+commit-pinned Git source for that exact candidate: the maintained repository
+path is only a template, while the complete generated plugin is not present at
+a public commit. As supplementary generic-marketplace evidence, a fresh
+exact-candidate zip also exceeds Claude Code's 256 MiB archive limit. The owner
+packet is retained under
+[`distribution/claude-community/`](distribution/claude-community/), but public
+submission remains blocked pending a separately authorized distribution route.
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and
 platform limits.
@@ -464,6 +472,10 @@ benchmark reproducibility beyond its stated small-sample gate.
   bounded disposable installed-client skill and MCP-use qualification. They
   are not public listings or supported public install channels. OpenAI public
   MCP submission still requires a separately authorized public HTTPS service.
+  Claude community submission is additionally blocked because the exact
+  generated plugin is not present at a public, commit-pinned Git source accepted
+  by the current community review pipeline. Its fresh deflate-9 archive also
+  exceeds Claude Code's generic-marketplace 256 MiB archive limit.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

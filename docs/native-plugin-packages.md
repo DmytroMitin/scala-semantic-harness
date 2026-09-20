@@ -52,9 +52,19 @@ service; neither exists here.
 Claude Code uses `.claude-plugin/plugin.json`, root `.mcp.json`,
 `skills/<name>/SKILL.md`, and `${CLAUDE_PLUGIN_ROOT}` for package-local paths.
 The candidate follows that layout and bundles the local stdio server directly.
+Claude Code's generic marketplace format can use Git, npm, HTTPS archive, and
+command-produced sources. The current public community review pipeline is
+narrower: it validates cloneable `github`, `url`, or `git-subdir` sources pinned
+to a 40-character lowercase commit SHA. The maintained template is not a complete
+installable plugin, and the complete generated candidate is absent from any
+public pinned commit. As supplementary evidence, a fresh deflate-9 zip of the
+exact candidate measured 285,354,435 bytes, above the generic marketplace's
+256 MiB archive limit. No currently published source therefore installs the
+qualified candidate through the community catalog.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
+- [Claude Code marketplace documentation](https://code.claude.com/docs/en/plugin-marketplaces)
 
 ## Build and validate
 
@@ -211,20 +221,28 @@ attestations.
 
 The future human entry point is the
 [Claude plugin submission form](https://platform.claude.com/plugins/submit).
-Run `claude plugin validate ./semantic-scala --strict` again with the then-
-current CLI before opening the form. The submitter signs in to Claude Console,
-reviews current terms and review requirements, provides the repository and
-listing materials, and submits to the `claude-community` review lane. The
-official `claude-plugins-official` marketplace remains separately curated and
-has no general application process. Current first-party documentation does not
-identify a submission fee; verify that again before action. A draft or review
-request can be abandoned before listing; after acceptance, verify the pinned
-commit and public catalog entry before claiming installability.
+The exact candidate passed strict validation with a disposable current Claude
+Code `2.1.278`, but the submission form must not be opened as an action path
+yet. The maintained Git subdirectory omits generated runtime content, and no
+complete candidate exists at a public commit SHA for the current community
+review pipeline. Separately, the exact complete zip is 16,918,979 bytes above
+the generic marketplace's current 256 MiB archive cap. See the
+[owner preparation packet](../distribution/claude-community/submission.md).
+
+After a separate task publishes and validates an installable source, the human
+submitter can sign in to Claude Console, review then-current terms and review
+requirements, provide the repository and listing materials, and submit to the
+`claude-community` review lane. The official `claude-plugins-official`
+marketplace remains separately curated and has no general application process.
+Current first-party documentation does not identify a submission fee; verify
+that again before action. After acceptance, verify the pinned commit and public
+catalog entry before claiming installability.
 
 Prepared facts are the strict-valid manifest, local stdio configuration,
 canonical skill, exact runtime provenance, platform boundary, and deterministic
-inventory. Marketplace submission, authentication, terms acceptance, review,
-and any public listing remain human-only actions.
+inventory, listing copy, reviewer plan, and technical data-handling note.
+Marketplace authentication, terms acceptance, review, and any public listing
+remain human-only actions after the distribution blocker is resolved.
 
 ## Catalog pause
 

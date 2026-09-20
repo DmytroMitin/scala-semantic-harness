@@ -67,6 +67,16 @@ read-only `semantic_effect_summary` call. Neither candidate is publicly
 submitted, listed, or a supported public install channel. The client-neutral
 skill remains authoritative.
 
+The current Claude community preparation packet is under
+[`distribution/claude-community/`](../distribution/claude-community/). It is a
+truthful blocked packet, not a submission-ready listing: the repository's
+maintained Claude path is only a source template, and no complete candidate is
+available at a public commit-pinned Git source accepted by the current
+community review pipeline. A fresh exact-candidate deflate-9 zip also exceeds
+Claude Code's generic-marketplace 256 MiB archive limit. A separately authorized
+installable distribution route must be published and validated before community
+submission.
+
 ## Scope of catalog claims
 
 Catalog indexes and submission rules change independently of this repository.
