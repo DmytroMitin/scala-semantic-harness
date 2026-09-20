@@ -429,10 +429,10 @@ passed native manifest validation, canonical-skill byte checks, two-build
 inventory equality, and a relocated no-host-Java exact-eight runtime smoke.
 Codex CLI `0.154.0` additionally passed a disposable local-marketplace install,
 skill load, bundled-MCP registration, and one read-only semantic call. Claude
-Code `2.1.220` passed disposable direct and marketplace loading through skill
-discovery and MCP startup, but its live semantic-use gate was blocked by the
-available expired OAuth session and no new login was initiated. No public
-marketplace, directory, release asset, or external submission was created.
+Code `2.1.220` passed a disposable local-marketplace install, packaged-skill
+load, plugin-local MCP connection, and one read-only client-mediated semantic
+call after an explicit owner login checkpoint. No public marketplace,
+directory, release asset, or external submission was created.
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and
 platform limits.
@@ -460,12 +460,10 @@ benchmark reproducibility beyond its stated small-sample gate.
   official-schema, determinism, and relocated-runtime evidence, but no
   supported release channel or conformant installed-client adoption proof.
 - The OpenAI/Codex and Claude Code native packages are locally validated
-  Linux x86_64 candidates assembled from the exact Alpha-3 MCPB. Codex has a
-  bounded disposable installed-client qualification; Claude has direct and
-  marketplace load evidence but no completed client-mediated semantic call.
-  They are not public listings or supported public install channels. OpenAI
-  public MCP submission still requires a separately authorized public HTTPS
-  service.
+  Linux x86_64 candidates assembled from the exact Alpha-3 MCPB. Both have
+  bounded disposable installed-client skill and MCP-use qualification. They
+  are not public listings or supported public install channels. OpenAI public
+  MCP submission still requires a separately authorized public HTTPS service.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

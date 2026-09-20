@@ -32,10 +32,9 @@ execution ledger and does not promise delivery dates.
   plus checked-in stable discovery metadata with explicit catalog and native
   plugin boundaries.
 - Deterministic locally validated OpenAI/Codex and Claude Code native plugin
-  candidates assembled from the exact published Alpha-3 MCPB. Codex has a
-  bounded disposable installed-client qualification; Claude has direct and
-  marketplace loading evidence but no completed client-mediated semantic call.
-  No external submission or public install-channel claim exists.
+  candidates assembled from the exact published Alpha-3 MCPB. Both have
+  bounded disposable installed-client skill and MCP-use qualification. No
+  external submission or public install-channel claim exists.
 - Agent-first alpha-2 installation, MCP, and immutable-skill recipes with a
   client qualification matrix and explicit CLI/MCP surface asymmetry.
 - Examples, CI, benchmark fixtures, and methodology.
@@ -104,10 +103,9 @@ execution ledger and does not promise delivery dates.
    record. Require separate authority and equivalent verification for any later
    publication. Native OpenAI/Codex and Claude Code plugin candidates now have
    local manifest, determinism, and relocated-runtime validation. Codex also
-   has bounded disposable installed-client skill and MCP-use proof; Claude's
-   installed-client use qualification remains open after an expired-auth
-   blocker. Directory submission remains a separate explicitly authorized
-   human gate.
+   has bounded disposable installed-client skill and MCP-use proof; Claude now
+   has the equivalent proof after an explicit owner login checkpoint. Directory
+   submission remains a separate explicitly authorized human gate.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
@@ -356,9 +354,8 @@ privacy qualification. These tiers do not authorize release actions.
 - Maintain a clean external source-installation walkthrough through a
   documented project-local or session-local MCP client route.
 - Preserve the locally validated native OpenAI/Codex and Claude Code candidate
-  transforms and the bounded Codex installed-client qualification. Keep
-  Claude client-mediated semantic use, public marketplace submission, review,
-  and publication as separate gates.
+  transforms and both bounded installed-client qualifications. Keep public
+  marketplace submission, review, and publication as separate gates.
 - Keep the public Maven/Coursier route independently reproducible without
   turning the application into a promised embeddable library API.
 - Preserve clean-environment CLI and generic stdio MCP validation; skill

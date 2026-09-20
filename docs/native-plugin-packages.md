@@ -5,10 +5,10 @@
 The repository can assemble locally validated OpenAI/Codex and Claude Code
 plugin candidates from the exact published `0.1.0-alpha.3` MCPB. A disposable
 local Codex marketplace installation has now passed real-client skill and MCP
-adoption. Claude Code direct and disposable local-marketplace loading reached
-plugin, skill, and MCP startup, but its live semantic-use gate remains
-unqualified because the available OAuth session was expired and no new login
-was authorized. Neither candidate has been publicly submitted, listed, or
+adoption. Claude Code has now passed the equivalent disposable
+local-marketplace installation, skill discovery, plugin-local MCP connection,
+and one read-only client-mediated semantic call after an explicit owner login
+checkpoint. Neither candidate has been publicly submitted, listed, or
 published as a release asset.
 
 Both candidates contain:
@@ -133,14 +133,17 @@ active disposable integration. The owner's normal Codex plugin state and
 configuration were unchanged. This qualifies local installed-client plumbing;
 it does not create a public listing or a supported public install channel.
 
-Claude Code passed strict native and local-marketplace validation, direct
-`--plugin-dir` loading, disposable marketplace add/install/list, one packaged
-skill discovery, and plugin-local MCP startup under an isolated
-`CLAUDE_CONFIG_DIR`. A fresh model turn could not run because the existing OAuth
-refresh token was expired. No new authentication flow was initiated, so no
-Claude client-mediated semantic call is claimed. Cleanup removed the disposable
-plugin and marketplace, the fixture remained unchanged, and the owner's normal
-Claude plugin state and settings were unchanged.
+Claude Code passed strict native and local-marketplace validation, disposable
+marketplace add/install/list, packaged-skill discovery, and plugin-local MCP
+connection under an isolated `CLAUDE_CONFIG_DIR`. After the owner completed the
+official login checkpoint, a fresh client session invoked exactly one
+`semantic_effect_summary` call through the installed plugin. The adapter
+returned `ok: true`, schema `semantic-scala.effect-summary.v1`, method `value`
+in `Fixture`, and declared return type `Option[Int]`. Cleanup removed the
+disposable plugin, marketplace, and task-scoped cache logs; the fixture
+remained unchanged, and the owner's normal Claude plugin and settings state
+remained unchanged. This qualifies local installed-client plumbing; it does
+not create a public listing or a supported public install channel.
 
 ## Generated layouts
 
