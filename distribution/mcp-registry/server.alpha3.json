@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.DmytroMitin/semantic-scala",
+  "title": "semantic-scala",
+  "description": "Bounded Scala compiler, build, test, type, effect, symbol, and SemanticDB evidence for agents.",
+  "version": "0.1.0-alpha.3",
+  "websiteUrl": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "repository": {
+    "url": "https://github.com/DmytroMitin/scala-semantic-harness",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/DmytroMitin/scala-semantic-harness/releases/download/0.1.0-alpha.3/semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb",
+      "version": "0.1.0-alpha.3",
+      "fileSha256": "f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

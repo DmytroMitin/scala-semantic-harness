@@ -1,18 +1,27 @@
-# MCPB package candidate
+# MCPB package
 
 ## Status and boundary
 
-semantic-scala has a locally validated MCPB candidate for exact
-`0.1.0-alpha.3` on **Linux x86_64**. It is not a release asset and is not an
-official MCP Registry listing. The planned immutable URL in
-[`server.alpha3.candidate.json`](../distribution/mcp-registry/server.alpha3.candidate.json)
-does not exist until a separately authorized publication attaches the asset.
+semantic-scala publishes an MCPB for exact `0.1.0-alpha.3` on **Linux
+x86_64**. The byte-qualified bundle is attached to the existing Alpha-3
+prerelease and its exact record is active in the official MCP Registry under
+`io.github.DmytroMitin/semantic-scala`. The maintained publication record is
+[`server.alpha3.json`](../distribution/mcp-registry/server.alpha3.json); the
+adjacent candidate file is retained as historical prepublication input.
+
+The public asset is
+[`semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb`](https://github.com/DmytroMitin/scala-semantic-harness/releases/download/0.1.0-alpha.3/semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb),
+285,603,142 bytes with SHA-256
+`f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d`.
+The unchanged release notes predate this attachment and still contain a stale
+statement that uploaded project assets are zero. The live release asset list,
+digest-pinned publication record, and this document describe the current state.
 
 The MCPB v0.3 manifest can declare `linux` but has no architecture field. The
-asset name, this document, and the Registry candidate therefore carry the
+asset name, this document, and the publication record therefore carry the
 x86_64 boundary explicitly. Do not infer macOS, Windows, ARM, or multi-arch
 support. The qualified Corretto runtime dynamically uses the GNU/Linux loader,
-GNU libc family, and system `libz.so.1`. The candidate therefore requires a
+GNU libc family, and system `libz.so.1`. The package therefore requires a
 compatible GNU-libc environment and system zlib; it requires no host Java but
 is not claimed for every Linux libc or distribution.
 
@@ -38,7 +47,7 @@ not replace them with a container-only environment.
 The two entry-point launchers are static. The package-local Java executable is
 not static: direct dependency inspection in the admitted environment resolved
 `libz.so.1`, the GNU libc family, and `/lib64/ld-linux-x86-64.so.2` from the
-host. That operating-system ABI is part of the supported candidate boundary,
+host. That operating-system ABI is part of the supported package boundary,
 not an undeclared host-Java dependency.
 
 ## Reproducible local build
@@ -70,12 +79,12 @@ timestamps and modes.
 The official MCPB 2.1.2 CLI is still authoritative for v0.3 manifest
 validation and bundle inspection. Its `pack` command was not byte-deterministic
 in the local two-run qualification, so the repository's small deterministic
-ZIP writer is used for candidate bytes. The result remains readable by the
+ZIP writer is used for the published bytes. The result remains readable by the
 official CLI.
 
-## Required qualification before publication
+## Qualification and publication evidence
 
-For every future asset build:
+The published asset completed these gates:
 
 1. build twice from clean exact-tag inputs and require byte-identical MCPB
    archives;
@@ -86,13 +95,14 @@ For every future asset build:
 5. inspect the packaged Java executable's dynamic dependencies and retain an
    explicit libc/system-library compatibility boundary;
 6. verify no helper process remains and no external project was modified;
-7. update the Registry candidate with the exact archive SHA-256 and validate it
-   with the current `mcp-publisher`; and
-8. publish only under explicit release and Registry authority, then verify the
-   immutable remote asset before submitting the Registry record.
+7. validate the final Registry record and exact archive SHA-256 with current
+   `mcp-publisher`;
+8. upload once to the existing exact `0.1.0-alpha.3` prerelease and anonymously
+   read back byte-identical content; and
+9. publish once to the official Registry, then verify the active exact public
+   record through its anonymous API.
 
-Attaching an asset to the existing `0.1.0-alpha.3` prerelease is the preferred
-future identity because the package contains that exact release. Creating a
-new tag solely for the packaging format would split one runtime version across
-source identities. Either choice remains a release mutation and is outside the
-local candidate workflow.
+The release title/body, tag target, draft/prerelease state, Maven Central
+artifacts, and Coursier channel were not changed. A later package or platform
+requires its own exact build, compatibility qualification, release authority,
+and immutable record rather than widening this bundle's claims.

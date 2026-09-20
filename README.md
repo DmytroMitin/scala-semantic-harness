@@ -31,7 +31,8 @@ distribution READY evidence. The immutable `0.1.0-alpha.3` lightweight tag
 identifies commit `075a60bfb7d7677d7fdfcc2369c9ffe41c8b32a8`, whose two clean
 builds reproduced all 32 public Maven primaries. Its
 [GitHub prerelease](https://github.com/DmytroMitin/scala-semantic-harness/releases/tag/0.1.0-alpha.3)
-has zero uploaded project assets and normal generated source archives. The immutable
+has normal generated source archives plus the exact Linux x86_64 MCPB used by
+the active official Registry record. The immutable
 `0.1.0-alpha.2` tag and prerelease retain the independently qualified supported
 route and source identity for its 32 Central primaries.
 
@@ -383,21 +384,22 @@ qualified command, stable catalog metadata, registry boundaries, and native
 plugin follow-ups are documented in
 [`docs/discoverability.md`](docs/discoverability.md).
 
-## MCP Registry package candidate
+## Official MCP Registry package
 
 The repository includes a deterministic MCPB packaging surface for the exact
-`0.1.0-alpha.3` CLI and MCP server. The Linux x86_64 candidate carries a
+`0.1.0-alpha.3` CLI and MCP server. The published Linux x86_64 package carries a
 package-local Corretto 21 runtime and static entry points, so it does not call
 an undeclared host `java`. It preserves ordinary host access to the target
 Scala workspace and its build tools. Qualification is limited to Linux x86_64
 with a compatible GNU-libc environment and system zlib; it is not a claim for
 every Linux libc or distribution.
 
-The package is a locally validated candidate, not a published release asset or
-MCP Registry listing. Its maintained manifest and Registry record candidate are
-under `packaging/mcpb/semantic-scala/` and `distribution/mcp-registry/`. See
-[`docs/mcpb-package.md`](docs/mcpb-package.md) for the exact-tag build,
-determinism, validation, platform boundary, and publication prerequisites.
+The exact bundle is a public Alpha-3 release asset and its active official MCP
+Registry record is `io.github.DmytroMitin/semantic-scala`. The maintained
+manifest and final record are under `packaging/mcpb/semantic-scala/` and
+`distribution/mcp-registry/`. See
+[`docs/mcpb-package.md`](docs/mcpb-package.md) for the immutable URL and digest,
+exact-tag build, determinism, validation, and platform boundary.
 
 ## Agent Plugin package
 
@@ -433,10 +435,9 @@ benchmark reproducibility beyond its stated small-sample gate.
 
 ## Current limitations
 
-- The MCPB candidate is validated only for Linux x86_64 and is not uploaded or
-  installable from the official MCP Registry. Other operating systems and
-  architectures require separately built and tested assets. The tested bundle
-  requires a compatible GNU-libc environment and system zlib even though it
+- The official MCPB package is validated only for Linux x86_64. Other operating
+  systems and architectures require separately built and tested assets. The
+  tested bundle requires a compatible GNU-libc environment and system zlib even though it
   requires no host Java.
 - A generated self-contained Agent Plugins package has bounded structural,
   official-schema, determinism, and relocated-runtime evidence, but no

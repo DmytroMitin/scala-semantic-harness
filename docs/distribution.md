@@ -26,17 +26,20 @@ linked Presentation Compiler. This does not alter the immutable alpha-2 Maven
 or Coursier bytes, and it does not make live queries dynamically select a
 target compiler.
 
-The Alpha 2 and Alpha 3 GitHub prereleases provide source identity, release notes, and normal
-GitHub-generated source archives with zero uploaded project assets. Maven
-Central remains the immutable channel for the signed implementation files.
+The Alpha 2 GitHub prerelease and the Alpha 3 GitHub prerelease both provide
+source identity, release notes, and normal GitHub-generated source archives.
+Alpha 3 additionally carries one exact Linux x86_64 MCPB asset; Alpha 2 has no
+uploaded project asset. Maven Central remains the immutable channel for the
+signed modular implementation files.
 
 A project-owned single-file Coursier URL channel is available from public
-`main`. A separate Linux x86_64 MCPB package candidate can be built locally
-from exact Alpha 3 and was qualified on compatible GNU libc with system zlib,
-but no MCPB release asset or MCP Registry entry is published. No Coursier
-contrib entry, native binary release, container,
+`main`. A separate exact-Alpha-3 Linux x86_64 MCPB is public on the existing
+prerelease and active in the official MCP Registry as
+`io.github.DmytroMitin/semantic-scala`. It was qualified on compatible GNU libc
+with system zlib and requires no host Java. No Coursier contrib entry,
+general native-binary release, container,
 npm/PyPI wrapper, Agent Plugin runtime distribution, or skill distribution is
-claimed by this support result. The candidate contract is documented in
+claimed by this support result. The package contract is documented in
 [`mcpb-package.md`](mcpb-package.md).
 
 ## Exact implementation graph
