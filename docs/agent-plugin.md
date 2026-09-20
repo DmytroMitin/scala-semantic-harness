@@ -107,12 +107,13 @@ Plugins portable core. The repository's `.agents` and `.claude` skill wrappers
 remain thin client-specific compatibility surfaces and are not copied into the
 package or made canonical.
 
-The installed clients examined during packaging validation exposed native
-skills, MCP, or client-specific plugin formats, but none documented and exposed
-a safe nonpersistent route for loading the Agent Plugins 1.0 root-manifest
-format. Consequently, no live agent-selection screen ran. Structural
-validation and a direct protocol smoke do not establish client adoption or
-cross-client portability.
+OpenAI now documents the Agent Plugins root manifest as its preferred portable
+format, with a Codex compatibility overlay still supported. Claude Code retains
+its distinct native manifest and placeholder conventions. The repository's
+[native candidates](native-plugin-packages.md) transform the exact published
+Alpha-3 MCPB into those current layouts and validate their bundled local
+runtime. No live marketplace installation or public listing ran; structural
+validation and direct protocol smoke still do not establish adoption.
 
 The project source is licensed under Apache-2.0. No supported binary/package
 version or client-installation channel is selected here; generated binary

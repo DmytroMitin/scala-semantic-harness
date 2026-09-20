@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "semantic-scala": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/bin/semantic-scala-mcp",
+      "args": [
+        "--cli",
+        "${CLAUDE_PLUGIN_ROOT}/bin/semantic-scala"
+      ]
+    }
+  }
+}

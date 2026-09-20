@@ -114,6 +114,14 @@ the portable core. Repository `.agents` and `.claude` wrappers remain separate
 compatibility surfaces. Client installation, permissions, and release channels
 are outside this architecture.
 
+Native candidate templates remain packaging adapters, not semantic owners. The
+OpenAI/Codex adapter retains the portable core plus an optional compatibility
+overlay; the Claude Code adapter maps the same canonical skill and exact
+Alpha-3 MCPB runtime to `.claude-plugin/plugin.json`, `.mcp.json`, and
+`${CLAUDE_PLUGIN_ROOT}`. Both generated trees preserve the exact-eight MCP
+server and package-local Java runtime. They do not widen behavior, platform
+support, or publication status.
+
 ## Evidence ownership
 
 Use the narrowest stable owner for each fact:

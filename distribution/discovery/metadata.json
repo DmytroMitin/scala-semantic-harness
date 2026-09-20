@@ -6,6 +6,10 @@
   "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
   "documentation": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
   "license": "Apache-2.0",
+  "author": {
+    "name": "Dmytro Mitin",
+    "url": "https://github.com/DmytroMitin"
+  },
   "categories": [
     "developer-tools",
     "code-analysis",

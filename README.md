@@ -420,6 +420,19 @@ server. See [`docs/agent-plugin.md`](docs/agent-plugin.md) for the package
 contract, validation level, relocation smoke, and current client-support
 limits.
 
+## Native plugin candidates
+
+The repository also contains deterministic OpenAI/Codex and Claude Code source
+templates plus an assembler that transforms the exact published Alpha-3 MCPB
+into native candidates with a package-local Java runtime. Both candidates
+passed native manifest validation, canonical-skill byte checks, two-build
+inventory equality, and a relocated no-host-Java exact-eight runtime smoke.
+They remain local candidates: no marketplace, directory, release asset, or
+external submission was created.
+See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
+build commands, current vendor contracts, public-submission boundary, and
+platform limits.
+
 ## Examples and benchmarks
 
 Projects under `examples/` are external CLI fixtures rather than members of
@@ -437,11 +450,15 @@ benchmark reproducibility beyond its stated small-sample gate.
 
 - The official MCPB package is validated only for Linux x86_64. Other operating
   systems and architectures require separately built and tested assets. The
-  tested bundle requires a compatible GNU-libc environment and system zlib even though it
-  requires no host Java.
+  tested bundle requires a compatible GNU-libc environment and system zlib even
+  though it requires no host Java.
 - A generated self-contained Agent Plugins package has bounded structural,
   official-schema, determinism, and relocated-runtime evidence, but no
   supported release channel or conformant installed-client adoption proof.
+- The OpenAI/Codex and Claude Code native packages are locally validated
+  Linux x86_64 candidates assembled from the exact Alpha-3 MCPB. They are not
+  public listings or supported install channels. OpenAI public MCP submission
+  still requires a separately authorized public HTTPS service.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

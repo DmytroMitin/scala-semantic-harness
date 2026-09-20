@@ -1,0 +1,35 @@
+{
+  "name": "semantic-scala",
+  "version": "0.1.0-alpha.3",
+  "description": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
+  "author": {
+    "name": "Dmytro Mitin",
+    "url": "https://github.com/DmytroMitin"
+  },
+  "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
+  "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "license": "Apache-2.0",
+  "keywords": [
+    "scala",
+    "semanticdb",
+    "compiler",
+    "build-tools",
+    "model-context-protocol",
+    "agent-skill"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "semantic-scala",
+    "shortDescription": "Bounded Scala semantic evidence for coding agents.",
+    "longDescription": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
+    "developerName": "Dmytro Mitin",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use semantic-scala for bounded Scala semantic evidence."
+    ]
+  }
+}

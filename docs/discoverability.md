@@ -45,17 +45,21 @@ it requires no host Java. Official Registry availability does not widen that
 boundary and does not establish indexing by any downstream catalog.
 
 The generated [Agent Plugin package](agent-plugin.md) is useful packaging
-evidence, but it is not itself a listing in a public plugin directory. Current
-native directory routes also have distinct contracts:
+evidence, but it is not itself a listing in a public plugin directory. The
+repository now also carries [locally validated native candidates](native-plugin-packages.md)
+with distinct contracts:
 
-- OpenAI's plugin directory can accept a skill-only plugin, while an MCP plugin
-  requires a stable public HTTPS endpoint rather than this local stdio server.
-- Claude Code expects `.claude-plugin/plugin.json`, root `.mcp.json`, and
-  `${CLAUDE_PLUGIN_ROOT}` paths; the current portable Agent Plugin uses different
-  manifest and variable conventions.
+- OpenAI/Codex accepts the portable Agent Plugins core and an optional
+  `.codex-plugin/plugin.json` compatibility overlay. The local candidate bundles
+  the exact stdio runtime, but public MCP submission requires a stable public
+  HTTPS endpoint rather than this local server.
+- Claude Code's candidate uses `.claude-plugin/plugin.json`, root `.mcp.json`,
+  and `${CLAUDE_PLUGIN_ROOT}` paths around the same exact runtime.
 
-Native wrappers should be generated from the canonical skill and validated in a
-separate packaging change. The client-neutral skill remains authoritative.
+Both are deterministic generated candidates with byte-identical canonical
+skill content and relocated exact-eight smoke evidence. Neither is submitted,
+listed, or a supported install channel. The client-neutral skill remains
+authoritative.
 
 ## Scope of catalog claims
 
