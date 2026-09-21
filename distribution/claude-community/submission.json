@@ -1,15 +1,15 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
-  "observedOn": "2026-09-20",
-  "status": "blocked-by-plugin-distribution-model",
-  "terminalState": "CLAUDE_COMMUNITY_SUBMISSION_BLOCKED_BY_PLUGIN_DISTRIBUTION_MODEL",
+  "observedOn": "2026-09-21",
+  "status": "ready-pending-human-review-and-submit",
+  "terminalState": "CLAUDE_COMMUNITY_SUBMISSION_READY_PENDING_HUMAN_REVIEW_AND_SUBMIT",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
     "version": "0.1.0-alpha.3",
     "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
     "license": "Apache-2.0",
-    "qualifiedSourceCommit": "d8b30b338f54d33fce04f0b4918dc15b250bec6f"
+    "qualifiedSourceCommit": "32c67c6b20e29a4b907623fd4c2aaa5e33d176f9"
   },
   "listing": {
     "shortDescription": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
@@ -32,7 +32,7 @@
     "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
     "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
     "support": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
-    "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/d8b30b338f54d33fce04f0b4918dc15b250bec6f/LICENSE"
+    "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/32c67c6b20e29a4b907623fd4c2aaa5e33d176f9/LICENSE"
   },
   "qualifiedCandidate": {
     "contentSha256": "72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b",
@@ -42,10 +42,16 @@
     "sourceMcpbBytes": 285603142
   },
   "sourceRoute": {
-    "selected": null,
+    "selected": {
+      "source": "github",
+      "repository": "DmytroMitin/semantic-scala-claude-plugin",
+      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
+      "root": "repository-root"
+    },
     "separatePublisherMarketplaceRepositoryRequired": false,
     "communityReviewAcceptedSourceModel": {
-      "observedOn": "2026-09-20",
+      "observedOn": "2026-09-21",
       "externalSourceTypes": [
         "github",
         "url",
@@ -53,7 +59,7 @@
       ],
       "requiresCloneableGitSource": true,
       "requiresFortyCharacterLowercaseCommitSha": true,
-      "qualifiedPublicSourceAvailable": false
+      "qualifiedPublicSourceAvailable": true
     },
     "maintainedGitSubdirectory": {
       "path": "packaging/claude-plugin/semantic-scala",
@@ -63,8 +69,12 @@
     },
     "generatedGitTree": {
       "schemaSupported": true,
-      "currentlyPublished": false,
-      "reason": "The complete 339741892-byte generated tree is intentionally ignored build material and is not present at a public pinned commit."
+      "currentlyPublished": true,
+      "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
+      "root": "repository-root",
+      "sourceOfTruth": "scala-semantic-harness",
+      "anonymousCloneByteVerified": true
     },
     "generatedArchive": {
       "scope": "generic-Claude-marketplace-alternative-not-current-community-review-source",
@@ -87,7 +97,10 @@
     "disposableCurrentClaudeCodeVersion": "2.1.278",
     "strictPluginValidation": "pass",
     "strictDisposableMarketplaceValidation": "pass",
-    "installedClientQualification": "accepted-from-task-249",
+    "communityExternalSourceValidation": "pass",
+    "publicPinnedGitInstall": "pass",
+    "installedClientQualification": "pass-task-251-current-client",
+    "readOnlySemanticEffectSummaryCalls": 1,
     "runtimeRetreatmentRequired": false
   },
   "assets": {

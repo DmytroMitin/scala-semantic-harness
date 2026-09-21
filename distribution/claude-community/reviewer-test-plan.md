@@ -1,12 +1,14 @@
 # Reviewer test plan
 
-This plan is prepared for a future review after an installable public source is
-published and independently validated. It must not be represented as runnable
-from the current public repository path while the distribution blocker remains.
+This plan is prepared for human review of the verified public source. It is not
+evidence of a submitted or accepted `claude-community` listing.
 
-1. Install `semantic-scala` `0.1.0-alpha.3` from the reviewed
-   `claude-community` entry on Linux x86_64 with compatible GNU libc and system
-   zlib.
+1. Install `semantic-scala` `0.1.0-alpha.3` on Linux x86_64 with compatible GNU
+   libc and system zlib from the reviewed `claude-community` entry. Before the
+   listing exists, reviewers can reproduce the source gate with a disposable
+   marketplace `github` source for
+   `DmytroMitin/semantic-scala-claude-plugin`, pinned to commit
+   `c05aac9f38e7755a51f511078ff555a587f97ccf`, using the repository root.
 2. Open a disposable directory containing one Scala file:
 
    ```scala

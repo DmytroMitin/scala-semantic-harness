@@ -1,18 +1,19 @@
 # Claude community submission preparation
 
-Observed on 2026-09-20. This is an owner-review packet, not a submitted or
+Observed on 2026-09-21. This is an owner-review packet, not a submitted or
 published listing.
 
 ## Outcome
 
 ```text
-CLAUDE_COMMUNITY_SUBMISSION_BLOCKED_BY_PLUGIN_DISTRIBUTION_MODEL
+CLAUDE_COMMUNITY_SUBMISSION_READY_PENDING_HUMAN_REVIEW_AND_SUBMIT
 ```
 
-The listing identity and copy are prepared, and the exact accepted plugin still
-passes the current strict validator. The packet is not submission-ready because
-there is no public source that Claude Code can currently install as the complete
-qualified plugin.
+The listing identity and copy are prepared. The exact accepted plugin is now
+published as a byte-verified, commit-pinned public Git source, passes the
+current strict and community external-source validators, and has passed an
+isolated public-source install plus one read-only Claude client semantic call.
+No community submission, draft, terms acceptance, or review request exists yet.
 
 ## Prepared listing
 
@@ -20,6 +21,9 @@ qualified plugin.
 - Version: `0.1.0-alpha.3`
 - Category: `development`
 - Repository: <https://github.com/DmytroMitin/scala-semantic-harness>
+- Public plugin source: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
+- Public source commit: `c05aac9f38e7755a51f511078ff555a587f97ccf`
+- Plugin root: repository root
 - License: Apache-2.0
 - Support: <https://github.com/DmytroMitin/scala-semantic-harness/issues>
 - Platform: Linux x86_64, compatible GNU libc, system zlib, no host Java
@@ -56,40 +60,36 @@ Approved entries are pinned to a source commit in Anthropic's community catalog,
 and the catalog syncs from the review pipeline. A separate publisher-operated
 marketplace repository is not required by the public contract.
 
-## Distribution blocker
+## Verified public distribution source
 
 Claude Code's generic marketplace format supports Git repositories,
 repository subdirectories, npm packages, HTTPS zip archives, and
 command-produced plugin directories. The current `claude-community` review
 pipeline is narrower: its external-source validation clones `github`, `url`,
-or `git-subdir` sources and requires a 40-character lowercase commit SHA. The
-live catalog currently uses the latter two commit-pinned Git forms. No complete
-qualified plugin is available through that required public Git model:
+or `git-subdir` sources and requires a 40-character lowercase commit SHA.
 
-1. `packaging/claude-plugin/semantic-scala/` is a maintained source template,
-   not a complete plugin. It omits the canonical skill and bundled runtime that
-   the deterministic assembler adds.
-2. The complete generated tree is 339,741,892 bytes across 3,730 files and is
-   intentionally ignored build material, not content at a public pinned commit.
-3. Generic Claude marketplace archive support does not provide a current
-   community-review route. Independently, Claude Code rejects plugin archives
-   larger than 256 MiB: a fresh deflate-9 zip measured 285,354,435 bytes,
-   exceeding that limit by 16,918,979 bytes.
-4. The published MCPB is 285,603,142 bytes and is not a Claude plugin archive
-   layout.
-5. No npm plugin package or existing product-owned command source assembles the
-   plugin for users; those generic marketplace source types are not accepted by
-   the current community review pipeline in any case. Inventing a downloader or
-   changing runtime layout would be a separate packaging design and
-   qualification task.
+The selected source is the root of
+<https://github.com/DmytroMitin/semantic-scala-claude-plugin> at commit
+`c05aac9f38e7755a51f511078ff555a587f97ccf`. Its single root tree is exactly the
+accepted generated plugin: content SHA-256
+`72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b`,
+3,730 inventoried files, and 339,741,892 inventoried bytes. An anonymous HTTPS
+clone reproduced the accepted byte-and-mode inventory and passed strict Claude
+validation. Anthropic's current published external-source action then cloned
+and validated the same pinned commit. Claude Code `2.1.278` installed it from a
+disposable marketplace, exposed one skill and one MCP server, and completed
+exactly one read-only `semantic_effect_summary` call successfully.
 
-Do not submit the current repository path as if it were installable. A later
-task must choose and publish an installable source route, then validate that
-public route before human submission.
+The main `scala-semantic-harness` repository remains the source of truth for the
+skill policy, packaging templates, assembler, runtime provenance, issues, and
+future generation. The dedicated repository is generated distribution material
+only. The maintained template subdirectory and oversized archive alternatives
+remain non-selected routes.
 
 ## Human boundary
 
-No login, form draft, terms acceptance, attestation, review request, catalog
-mutation, repository creation, release creation, payment, or final submit was
-performed. The owner must review all post-login fields and legal or policy
-attestations after the technical distribution blocker is resolved.
+No form login, draft, terms acceptance, attestation, review request, catalog
+mutation, release creation, payment, or final submit was performed. The owner
+must review all post-login fields and legal or policy attestations before a
+separately authorized human submission. The public distribution repository and
+its one initial commit are the only publication performed for this source gate.

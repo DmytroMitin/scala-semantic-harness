@@ -105,13 +105,14 @@ execution ledger and does not promise delivery dates.
    local manifest, determinism, and relocated-runtime validation. Codex also
    has bounded disposable installed-client skill and MCP-use proof; Claude now
    has the equivalent proof after an explicit owner login checkpoint. Directory
-   submission remains a separate explicitly authorized human gate. Fresh Claude
-   community preparation also found a distribution blocker: the maintained Git
-   path is a source template rather than the complete generated plugin, so no
-   complete public commit-pinned Git source satisfies the current community
-   review pipeline. An exact deflate-9 candidate archive also exceeds the
-   generic Claude marketplace's current 256 MiB limit. Resolve and requalify a
-   public install source before any submission.
+   submission remains a separate explicitly authorized human gate. The Claude
+   distribution blocker is resolved by the dedicated generated-distribution
+   repository at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`:
+   anonymous byte-and-mode readback, current community external-source
+   validation, isolated install, skill/MCP discovery, and one read-only
+   semantic call passed. Keep this repository as source of truth and require a
+   separate human-authorized task for authentication, terms review, and
+   `claude-community` submission.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3

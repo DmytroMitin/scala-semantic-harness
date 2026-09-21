@@ -221,28 +221,31 @@ attestations.
 
 The future human entry point is the
 [Claude plugin submission form](https://platform.claude.com/plugins/submit).
-The exact candidate passed strict validation with a disposable current Claude
-Code `2.1.278`, but the submission form must not be opened as an action path
-yet. The maintained Git subdirectory omits generated runtime content, and no
-complete candidate exists at a public commit SHA for the current community
-review pipeline. Separately, the exact complete zip is 16,918,979 bytes above
-the generic marketplace's current 256 MiB archive cap. See the
+The exact candidate passed strict validation with Claude Code `2.1.278` and is
+published as generated distribution material at the root of
+[`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin),
+pinned to commit `c05aac9f38e7755a51f511078ff555a587f97ccf`. An anonymous
+HTTPS clone reproduced the accepted byte-and-mode inventory. The current
+community external-source validator cloned and accepted that commit, and a
+disposable Claude Code install exposed one skill and one MCP server before one
+read-only `semantic_effect_summary` call passed. The maintained template and
+assembler in this repository remain the source of truth. See the
 [owner preparation packet](../distribution/claude-community/submission.md).
 
-After a separate task publishes and validates an installable source, the human
-submitter can sign in to Claude Console, review then-current terms and review
-requirements, provide the repository and listing materials, and submit to the
-`claude-community` review lane. The official `claude-plugins-official`
+Under separate authority, the human submitter can sign in to Claude Console,
+review then-current terms and review requirements, provide the repository and
+listing materials, and submit to the `claude-community` review lane. The
+official `claude-plugins-official`
 marketplace remains separately curated and has no general application process.
 Current first-party documentation does not identify a submission fee; verify
 that again before action. After acceptance, verify the pinned commit and public
 catalog entry before claiming installability.
 
-Prepared facts are the strict-valid manifest, local stdio configuration,
-canonical skill, exact runtime provenance, platform boundary, and deterministic
-inventory, listing copy, reviewer plan, and technical data-handling note.
-Marketplace authentication, terms acceptance, review, and any public listing
-remain human-only actions after the distribution blocker is resolved.
+Prepared facts are the strict-valid manifest, public commit-pinned source, local
+stdio configuration, canonical skill, exact runtime provenance, platform
+boundary, deterministic inventory, listing copy, reviewer plan, and technical
+data-handling note. Marketplace authentication, terms acceptance, review, and
+any public listing remain human-only actions.
 
 ## Catalog pause
 

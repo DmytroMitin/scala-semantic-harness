@@ -63,19 +63,21 @@ bundled-MCP registration, and one read-only client-mediated semantic call.
 Claude Code `2.1.220` passed disposable direct and marketplace loading through
 skill discovery and MCP startup, then passed a separately authorized
 disposable installed-client treatment with plugin-local MCP connection and one
-read-only `semantic_effect_summary` call. Neither candidate is publicly
-submitted, listed, or a supported public install channel. The client-neutral
-skill remains authoritative.
+read-only `semantic_effect_summary` call. The exact Claude candidate is now
+also published as generated distribution material at commit
+`c05aac9f38e7755a51f511078ff555a587f97ccf` in the public
+[`semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin)
+repository. Claude Code `2.1.278` passed anonymous-source validation, isolated
+install, skill/MCP discovery, and one read-only semantic call from that pin.
+Neither candidate is submitted or listed in a public marketplace. The
+client-neutral skill remains authoritative.
 
 The current Claude community preparation packet is under
-[`distribution/claude-community/`](../distribution/claude-community/). It is a
-truthful blocked packet, not a submission-ready listing: the repository's
-maintained Claude path is only a source template, and no complete candidate is
-available at a public commit-pinned Git source accepted by the current
-community review pipeline. A fresh exact-candidate deflate-9 zip also exceeds
-Claude Code's generic-marketplace 256 MiB archive limit. A separately authorized
-installable distribution route must be published and validated before community
-submission.
+[`distribution/claude-community/`](../distribution/claude-community/). Its
+technical source gate is ready: the separate generated-distribution repository
+contains the exact candidate at a public commit pin accepted by the current
+community validation model. Human authentication, terms review, attestations,
+review request, and final submission remain separately authorized actions.
 
 ## Scope of catalog claims
 

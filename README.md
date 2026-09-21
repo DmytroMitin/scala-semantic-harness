@@ -431,16 +431,17 @@ Codex CLI `0.154.0` additionally passed a disposable local-marketplace install,
 skill load, bundled-MCP registration, and one read-only semantic call. Claude
 Code `2.1.220` passed a disposable local-marketplace install, packaged-skill
 load, plugin-local MCP connection, and one read-only client-mediated semantic
-call after an explicit owner login checkpoint. No public marketplace,
-directory, release asset, or external submission was created.
-Current Claude community submission preparation found no installable public
-commit-pinned Git source for that exact candidate: the maintained repository
-path is only a template, while the complete generated plugin is not present at
-a public commit. As supplementary generic-marketplace evidence, a fresh
-exact-candidate zip also exceeds Claude Code's 256 MiB archive limit. The owner
-packet is retained under
-[`distribution/claude-community/`](distribution/claude-community/), but public
-submission remains blocked pending a separately authorized distribution route.
+call after an explicit owner login checkpoint. The exact Claude candidate is
+now published as generated distribution material at the root of
+[`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin),
+pinned to commit `c05aac9f38e7755a51f511078ff555a587f97ccf`.
+An anonymous clone reproduced the accepted inventory, the current community
+external-source validator passed, and Claude Code `2.1.278` passed an isolated
+public-source install with one skill, one MCP server, and one read-only semantic
+call. No public marketplace listing or external submission was created. The
+owner packet under
+[`distribution/claude-community/`](distribution/claude-community/) is ready for
+a separately authorized human review and submission step.
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and
 platform limits.

@@ -1,6 +1,6 @@
 {
   "$schema": "semantic-scala.claude-community-asset-inventory.v1",
-  "observedOn": "2026-09-20",
+  "observedOn": "2026-09-21",
   "assets": [
     {
       "kind": "pluginManifest",
@@ -15,7 +15,14 @@
     {
       "kind": "reviewerTestPlan",
       "path": "distribution/claude-community/reviewer-test-plan.md",
-      "status": "prepared-but-blocked-on-public-install-route"
+      "status": "prepared-for-owner-review"
+    },
+    {
+      "kind": "publicPluginSource",
+      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
+      "root": "repository-root",
+      "status": "anonymous-clone-byte-verified-and-install-qualified"
     },
     {
       "kind": "technicalDataHandlingNote",
