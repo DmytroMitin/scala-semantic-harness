@@ -1,22 +1,22 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
   "observedOn": "2026-09-27",
-  "status": "blocked-by-current-directory-package-limits",
-  "terminalState": "CLAUDE_COMMUNITY_SUBMISSION_BLOCKED_BY_CURRENT_DIRECTORY_PACKAGE_LIMITS",
+  "status": "ready-for-public-source-qualification",
+  "terminalState": "CLAUDE_DIRECTORY_THIN_PLUGIN_READY_FOR_PUBLIC_SOURCE_QUALIFICATION",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
     "version": "0.1.0-alpha.3",
     "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
     "license": "Apache-2.0",
-    "qualifiedSourceCommit": "32c67c6b20e29a4b907623fd4c2aaa5e33d176f9"
+    "qualifiedSourceCommit": null
   },
   "listing": {
     "shortDescription": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
     "longDescription": [
       "semantic-scala helps coding agents consult structured Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence instead of relying only on source text.",
       "The Claude Code plugin contains one agent skill and one local stdio MCP server exposing exactly eight bounded tools. It works against local workspaces and can invoke local build or test commands only when the corresponding tool is explicitly selected.",
-      "Version 0.1.0-alpha.3 is an experimental Linux x86_64 package for compatible GNU-libc environments with system zlib. It includes a package-local Java runtime and requires no host Java. It is not a replacement for the Scala compiler, sbt, tests, Metals, or an IDE."
+      "Version 0.1.0-alpha.3 is an experimental Linux x86_64 package for compatible GNU-libc environments with system zlib. The thin plugin requires Python 3.11 or newer and first-start network access to download and verify a fixed immutable runtime; warm starts reuse the owner-only cache and no host Java is required."
     ],
     "category": "development",
     "keywords": [
@@ -35,19 +35,27 @@
     "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/32c67c6b20e29a4b907623fd4c2aaa5e33d176f9/LICENSE"
   },
   "qualifiedCandidate": {
-    "contentSha256": "72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b",
-    "fileCount": 3730,
-    "totalBytes": 339741892,
+    "route": "fixed-immutable-mcpb-bootstrap",
+    "state": "local-not-published",
+    "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
+    "archiveSha256": "738c53b2ceadf5937c9deefc5375e9000a4022bb8342fc675e12671c06e3d213",
+    "fileCount": 6,
+    "totalBytes": 39938,
+    "largestFileBytes": 21188,
+    "archiveBytes": 14697,
     "sourceMcpbSha256": "f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d",
-    "sourceMcpbBytes": 285603142
+    "sourceMcpbBytes": 285603142,
+    "hostPython": ">=3.11",
+    "hostJavaRequired": false
   },
   "sourceRoute": {
     "selected": {
-      "source": "github",
-      "repository": "DmytroMitin/semantic-scala-claude-plugin",
-      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
-      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
-      "root": "repository-root"
+      "source": "generated-local-thin-candidate",
+      "sourceTemplatePath": "packaging/claude-directory-plugin/semantic-scala",
+      "generatedOutput": "fresh ignored output directory selected by the assembler caller",
+      "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
+      "published": false,
+      "nextGate": "separately-authorized-public-source-publication-and-exact-source-requalification"
     },
     "separatePublisherMarketplaceRepositoryRequired": false,
     "currentDeveloperPortalModel": {
@@ -64,26 +72,20 @@
       "maximumGitHubArchiveBytesExclusive": 52428800,
       "maximumUnpackedBytesExclusive": 268435456,
       "maximumIndividualFileBytesExclusive": 5242880,
-      "qualifiedCandidateCompatible": false,
-      "blockingFacts": [
-        "candidate unpacked bytes are 339741892",
-        "candidate contains runtime/lib/modules at 54008260 bytes"
+      "qualifiedCandidateCompatible": true,
+      "blockingFacts": [],
+      "remainingGates": [
+        "publish thin candidate to the distribution repository under separate authority",
+        "requalify exact public branch or commit",
+        "human portal validation and bootstrap security review"
       ]
     },
     "maintainedGitSubdirectory": {
-      "path": "packaging/claude-plugin/semantic-scala",
+      "path": "packaging/claude-directory-plugin/semantic-scala",
       "schemaSupported": true,
       "installable": false,
-      "reason": "The maintained subdirectory is a source template and does not contain the canonical skill or bundled runtime payload."
-    },
-    "generatedGitTree": {
-      "schemaSupported": true,
-      "currentlyPublished": true,
-      "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
-      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
-      "root": "repository-root",
-      "sourceOfTruth": "scala-semantic-harness",
-      "anonymousCloneByteVerified": true
+      "published": false,
+      "reason": "Four-file source template only; the assembler injects the canonical skill and package-manifest.json to form the six-file installable candidate."
     },
     "generatedArchive": {
       "scope": "generic-Claude-marketplace-alternative-not-current-community-review-source",
@@ -99,30 +101,64 @@
       "bytes": 285603142,
       "isClaudePluginArchive": false,
       "withinClaudeArchiveLimit": false
+    },
+    "historicalPublicFullPlugin": {
+      "schemaSupported": true,
+      "currentlyPublished": true,
+      "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
+      "root": "repository-root",
+      "sourceOfTruth": "scala-semantic-harness",
+      "anonymousCloneByteVerified": true
+    },
+    "generatedLocalCandidate": {
+      "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
+      "outputContract": "fresh ignored output directory",
+      "installable": true,
+      "published": false,
+      "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
+      "fileCount": 6
     }
   },
   "validation": {
     "installedClaudeCodeVersion": "2.1.220",
-    "disposableCurrentClaudeCodeVersion": "2.1.278",
-    "strictPluginValidation": "pass",
-    "strictDisposableMarketplaceValidation": "pass",
-    "communityExternalSourceValidation": "pass",
-    "publicPinnedGitInstall": "pass",
-    "installedClientQualification": "pass-task-251-current-client",
-    "readOnlySemanticEffectSummaryCalls": 1,
-    "runtimeRetreatmentRequired": false
+    "disposableCurrentClaudeCodeVersion": "2.1.283",
+    "strictPluginValidation": "pass-thin-candidate",
+    "strictDisposableMarketplaceValidation": "pass-thin-candidate",
+    "communityExternalSourceValidation": "not-run-thin-candidate-not-published",
+    "publicPinnedGitInstall": "not-run-thin-candidate-not-published",
+    "installedClientQualification": "pass-cold-and-warm-before-https-only-redirect-fix",
+    "readOnlySemanticEffectSummaryCalls": 2,
+    "runtimeRetreatmentRequired": false,
+    "bootstrapSecurityTests": "pass",
+    "coldCacheClient": "pass",
+    "warmCacheOfflineFetchProof": "pass",
+    "totalTaskReadOnlySemanticEffectSummaryCalls": 3,
+    "semanticCallAccounting": "qualification uses one cold and one authoritative final warm call; an earlier pre-correction warm call is retained in the side-effect ledger",
+    "postReviewFinalCandidateQualification": "strict-plugin-and-marketplace-pass; 11 focused tests pass; direct warm offline exact-eight semantic smoke pass",
+    "clientRetreatmentAfterSecurityOnlyFix": "not repeated per independent-review recommendation"
   },
   "assets": {
     "icon": "not-required-by-public-contract",
     "screenshots": "not-required-by-public-contract",
-    "authenticatedFormDetails": "not-inspected-because-public-contract-blocked-before-login"
+    "authenticatedFormDetails": "not-inspected-public-source-qualification-required-first"
   },
   "humanOnly": {
-    "authentication": "not-attempted-contract-blocker",
+    "authentication": "not-attempted-public-source-not-yet-qualified",
     "termsAndAttestations": "not-reached",
     "countryOrRegion": "not-reached",
     "paidPlanRequired": true,
     "fee": "no-separate-submission-fee-stated-in-public-documentation",
     "finalSubmit": "not-executed"
+  },
+  "historicalFullCandidate": {
+    "contentSha256": "72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b",
+    "fileCount": 3730,
+    "totalBytes": 339741892,
+    "sourceMcpbSha256": "f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d",
+    "sourceMcpbBytes": 285603142,
+    "sourceRepository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+    "sourceCommit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
+    "directoryCompatibility": false
   }
 }

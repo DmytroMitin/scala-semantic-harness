@@ -233,15 +233,28 @@ read-only `semantic_effect_summary` call passed. The maintained template and
 assembler in this repository remain the source of truth. See the
 [owner preparation packet](../distribution/claude-community/submission.md).
 
+That full candidate remains valid historical marketplace evidence but exceeds
+the current directory's unpacked and individual-file limits. A separate thin
+candidate under `packaging/claude-directory-plugin/` keeps the canonical skill
+and local MCP interface while downloading the immutable Alpha-3 MCPB on first
+start. It requires Python 3.11 or newer, verifies the fixed 285,603,142-byte
+artifact and fixed SHA-256 before safe extraction, and stores an owner-only
+atomic installation in the semantic-scala user cache. It retains no MCPB after
+installation and needs no host Java. The deterministic candidate contains 6
+files and 39,938 unpacked bytes; its largest file is 21,188 bytes and its ZIP is
+14,697 bytes. Claude Code `2.1.283` passed strict validation, cold-cache client
+use, and warm-cache client use with bootstrap-fetch traffic forced to fail.
+See [the thin-plugin contract](claude-directory-thin-plugin.md).
+
 The older Claude Console form is no longer supported. The current portal is
 available to paid Pro, Max, Team, and Enterprise accounts with the documented
 role, checks GitHub push access, follows a branch or tag, validates the plugin,
 asks data-handling questions, and requires four compliance acknowledgements
 before `Submit for review`. Current first-party documentation does not identify
-a separate submission fee. Task 252 stopped before login because this candidate
-exceeds the current unpacked and individual-file limits; no draft or submission
-was created. A smaller or restructured candidate is a separate technical task,
-not an adaptation authorized by this publication packet.
+a separate submission fee. No draft or submission was created. The thin
+candidate fits the published limits but has not been published to the public
+plugin-source repository, qualified from its exact public branch or commit, or
+tested in the portal. Runtime bootstrap review remains a human security gate.
 
 Prepared facts are the strict-valid manifest, public commit-pinned source, local
 stdio configuration, canonical skill, exact runtime provenance, platform

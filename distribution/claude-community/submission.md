@@ -1,25 +1,25 @@
 # Claude community submission preparation
 
 Originally prepared on 2026-09-21 and rechecked against the current first-party
-directory contract on 2026-09-27. This is a blocked owner-review packet, not a
-submitted or published listing.
+directory contract on 2026-09-27. This is an owner-review packet for a locally
+qualified thin candidate, not a submitted or published listing.
 
 ## Outcome
 
 ```text
-CLAUDE_COMMUNITY_SUBMISSION_BLOCKED_BY_CURRENT_DIRECTORY_PACKAGE_LIMITS
+CLAUDE_DIRECTORY_THIN_PLUGIN_READY_FOR_PUBLIC_SOURCE_QUALIFICATION
 ```
 
-The listing identity and copy remain prepared, and the exact accepted plugin is
-still available as a byte-verified public Git source. Anthropic has replaced the
-earlier Console submission flow with the claude.ai directory developer portal.
-Its public guide documents a branch or tag and no exact commit-SHA field; the
-authenticated form was not inspected. Its current validator stops for a GitHub
-archive of 50 MiB or more, an unpacked plugin of 256 MiB or more, or an
-individual file of 5 MiB or more. This candidate is 339,741,892 unpacked bytes
-and contains a 54,008,260-byte runtime image file. Task 252 therefore stopped
-before login. Task 252 created no draft, validation attempt, terms acceptance,
-or review request; preexisting private dashboard state remains unknown.
+The public Git source still contains the accepted historical full plugin. It is
+339,741,892 unpacked bytes and contains a 54,008,260-byte file, so it remains
+blocked by the current 256 MiB unpacked and 5 MiB individual-file limits. A new
+local thin candidate instead contains 6 files, 39,938 unpacked bytes, a
+21,188-byte largest file, and a 14,697-byte ZIP. It passed deterministic build,
+strict Claude validation, focused bootstrap security tests, and real cold/warm
+installed-client treatments. The thin candidate is not yet in the public plugin
+repository and has not been accepted by the directory portal. No draft,
+validation attempt, terms acceptance, or review request was created;
+preexisting private dashboard state remains unknown.
 
 ## Prepared listing
 
@@ -27,12 +27,14 @@ or review request; preexisting private dashboard state remains unknown.
 - Version: `0.1.0-alpha.3`
 - Category: `development`
 - Repository: <https://github.com/DmytroMitin/scala-semantic-harness>
-- Public plugin source: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
-- Public source commit: `c05aac9f38e7755a51f511078ff555a587f97ccf`
+- Historical full-plugin source: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
+- Historical source commit: `c05aac9f38e7755a51f511078ff555a587f97ccf`
+- Thin-plugin source: local candidate, not yet published
 - Plugin root: repository root
 - License: Apache-2.0
 - Support: <https://github.com/DmytroMitin/scala-semantic-harness/issues>
-- Platform: Linux x86_64, compatible GNU libc, system zlib, no host Java
+- Host: Python 3.11 or newer; first-start network access; no host Java
+- Runtime: Linux x86_64, compatible GNU libc, and system zlib
 
 Short description:
 
@@ -44,7 +46,7 @@ MCP server, the exact platform boundary, and Alpha-3 status without claiming an
 IDE replacement, autonomous correctness, broad platform support, or guaranteed
 build success.
 
-## Current public route and blocker
+## Current public route and remaining gate
 
 Anthropic's current route is the directory developer portal at
 <https://claude.ai/directory/manage>. Anyone on a paid Pro, Max, Team, or
@@ -55,9 +57,10 @@ GitHub repository, optional plugin path, and optional tracked branch or tag,
 then portal validation, data-handling questions, four compliance
 acknowledgements, and `Submit for review`.
 
-The final action remains a review request rather than immediate publication,
-but this exact candidate cannot reach that action under the current published
-validator limits. The current public documentation states no separate
+The final action remains a review request rather than immediate publication.
+The thin candidate fits the published hard limits, but its runtime bootstrap
+may receive human security review. Public-source publication and qualification
+must precede any portal use. The public documentation states no separate
 submission fee, although a paid Claude plan is required.
 
 Public sources checked:
@@ -100,11 +103,23 @@ future generation. The dedicated repository is generated distribution material
 only. The maintained template subdirectory and oversized archive alternatives
 remain non-selected routes.
 
+## Locally qualified thin candidate
+
+The thin candidate uses Python 3.11 or newer to download the immutable Alpha-3
+MCPB on first MCP start. Its URL, expected 285,603,142-byte size, and SHA-256
+`f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d`
+are fixed. The bootstrap verifies them before safe extraction and atomic
+owner-only cache installation. Warm starts reuse the cache without a fetch, and
+the downloaded MCPB is not retained. No host Java is required. Claude Code
+`2.1.283` connected the exact-eight server and completed one read-only
+`semantic_effect_summary` call in both cold and warm client sessions. This is
+local technical evidence only; the exact public source remains unqualified.
+
 ## Human boundary
 
 No form login, GitHub connection, draft, portal validation, terms acceptance,
 attestation, review request, catalog mutation, release creation, payment, or
-final submit was performed. A separate technical task would be required to
-produce and qualify a plugin that satisfies the current directory limits; this
-packet is not authority to redesign or republish the candidate. The public
-distribution repository and its one initial commit remain unchanged.
+final submit was performed. This packet is not authority to publish or submit
+the thin candidate. The public distribution repository and its one initial
+commit remain unchanged. A later explicit task must publish the thin candidate
+and requalify the exact public branch or commit before portal work resumes.

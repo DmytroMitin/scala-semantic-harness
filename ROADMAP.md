@@ -107,16 +107,21 @@ execution ledger and does not promise delivery dates.
    has bounded disposable installed-client skill and MCP-use proof; Claude now
    has the equivalent proof after an explicit owner login checkpoint. Directory
    submission remains a separate explicitly authorized human gate. The Claude
-   distribution blocker is resolved by the dedicated generated-distribution
+   historical full candidate is preserved in the dedicated generated-distribution
    repository at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`:
    anonymous byte-and-mode readback, current community external-source
    validation, isolated install, skill/MCP discovery, and one read-only
-   semantic call passed. A Task-252 recheck found that the current directory
+   semantic call passed. A 2026-09-27 recheck found that the current directory
    portal follows a branch or tag and enforces 50 MiB archive, 256 MiB unpacked,
    and 5 MiB per-file limits; the qualified candidate exceeds the latter two.
-   Submission stopped before authentication. Keep this repository as source of
-   truth and require a separate technical task before any later human-authorized
-   directory submission attempt.
+   The repository now provides a deterministic 6-file, 39,938-byte thin alternative
+   with a Python 3.11 fixed-URL, fixed-size, fixed-digest bootstrap and
+   owner-only atomic cache. Claude Code `2.1.283` passed strict validation and
+   isolated cold/warm installed-client use with one read-only semantic call per
+   session. The thin candidate is ready only for a separately authorized
+   public-source publication and exact public-source requalification; the
+   existing distribution repository remains unchanged. Submission still
+   requires a later explicit human gate after that qualification.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3

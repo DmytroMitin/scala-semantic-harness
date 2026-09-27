@@ -3,26 +3,43 @@
   "observedOn": "2026-09-27",
   "assets": [
     {
-      "kind": "pluginManifest",
-      "path": "packaging/claude-plugin/semantic-scala/.claude-plugin/plugin.json",
+      "kind": "thinPluginManifest",
+      "path": "packaging/claude-directory-plugin/semantic-scala/.claude-plugin/plugin.json",
       "status": "prepared-and-current-validator-pass"
     },
     {
       "kind": "listingCopy",
       "path": "distribution/claude-community/submission.json",
-      "status": "prepared-but-current-directory-contract-blocked"
+      "status": "prepared-for-public-source-qualification"
     },
     {
       "kind": "reviewerTestPlan",
       "path": "distribution/claude-community/reviewer-test-plan.md",
-      "status": "prepared-for-owner-review"
+      "status": "prepared-for-thin-candidate-owner-review"
     },
     {
-      "kind": "publicPluginSource",
+      "kind": "thinPluginSourceTemplate",
+      "path": "packaging/claude-directory-plugin/semantic-scala",
+      "status": "four-file-source-template-not-installable-by-itself"
+    },
+    {
+      "kind": "generatedLocalThinCandidate",
+      "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
+      "fileCount": 6,
+      "totalBytes": 39938,
+      "largestFileBytes": 21188,
+      "archiveBytes": 14697,
+      "status": "retained-client-qualified-plus-post-review-strict-and-direct-warm-qualified-not-published",
+      "sourceTemplatePath": "packaging/claude-directory-plugin/semantic-scala",
+      "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
+      "outputContract": "fresh ignored output directory"
+    },
+    {
+      "kind": "historicalFullPluginSource",
       "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
       "root": "repository-root",
-      "status": "anonymous-clone-byte-verified-and-install-qualified"
+      "status": "anonymous-clone-byte-verified-and-install-qualified-but-current-directory-size-blocked"
     },
     {
       "kind": "technicalDataHandlingNote",
@@ -32,17 +49,17 @@
     {
       "kind": "currentDirectoryContract",
       "url": "https://claude.com/docs/plugins/pre-submission-checklist",
-      "status": "candidate-blocked-by-unpacked-and-individual-file-limits"
+      "status": "thin-candidate-hard-limits-pass-bootstrap-human-review-unresolved"
     },
     {
       "kind": "icon",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not-inspected-contract-blocked-before-login"
+      "postLoginRequirement": "not-inspected-public-source-qualification-required-first"
     },
     {
       "kind": "screenshots",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not-inspected-contract-blocked-before-login"
+      "postLoginRequirement": "not-inspected-public-source-qualification-required-first"
     }
   ],
   "thirdPartyBrandAssetsIncluded": false

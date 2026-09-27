@@ -74,16 +74,20 @@ client-neutral skill remains authoritative.
 
 The Claude community packet is under
 [`distribution/claude-community/`](../distribution/claude-community/). The
-separate generated-distribution repository still contains the exact candidate
-at the qualified public commit, but the submission contract changed on the
-current directory developer portal. Its public guide documents a branch or tag
-and no exact commit field; the authenticated form was not inspected. Validation
-stops at 50 MiB GitHub archive, 256 MiB unpacked, or 5 MiB per-file limits. The
-qualified candidate is 339,741,892 unpacked bytes and contains a 54,008,260-byte
-file, so Task 252 stopped before authentication and created no draft or review
-request. Preexisting private dashboard state remains unknown. Any smaller or otherwise
-restructured candidate requires a separate technical design and qualification
-task.
+separate generated-distribution repository still contains the historical full
+candidate at the qualified public commit. It exceeds the current directory's
+50 MiB GitHub archive, 256 MiB unpacked, and 5 MiB per-file gates.
+
+The repository now also has a locally qualified thin candidate: 6 files,
+39,938 unpacked bytes, 21,188-byte largest file, and a 14,697-byte ZIP. Its
+Python 3.11 bootstrap fetches only the fixed Alpha-3 MCPB, verifies the exact
+size and SHA-256, safely installs it in an owner-only cache, and reuses that
+cache offline. Claude Code `2.1.283` passed cold and warm installed-client
+treatments with one read-only semantic call each. The thin candidate has not
+been published to the generated-distribution repository or qualified from an
+exact public source, and the portal has not reviewed the bootstrap model. No
+draft or review request was created; preexisting private dashboard state
+remains unknown.
 
 ## Scope of catalog claims
 
