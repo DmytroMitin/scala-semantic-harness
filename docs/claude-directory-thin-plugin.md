@@ -64,11 +64,15 @@ than 10,000 entries, archive smaller than 50 MiB, unpacked content smaller than
 review-hold heuristics of 512 files and 256 KiB for a non-image/font file.
 
 This establishes public-source technical readiness only. Published evaluator
-guidance can place local launcher/download chains on a human-review hold, and no
-claim is made that the developer portal will accept it. Portal authentication,
-data-handling answers, attestations, submission, review, and listing all require
-separate authorization and evidence. The historical full self-contained plugin
-remains preserved at parent commit `c05aac9f38e7755a51f511078ff555a587f97ccf`.
+guidance can place local launcher/download chains on a human-review hold. The
+authenticated portal resolved `main` to `fc3a6c8`, passed seven checks with one
+missing-icon warning, and saved one exact draft. The owner-approved factual
+data-handling answers are recorded in the submission packet, but the draft is
+blocked before submission because the qualified source exposes no applicable
+privacy-policy link for the mandatory compliance acknowledgement. No
+acknowledgement, contact email, review request, or public listing was created.
+The historical full self-contained plugin remains preserved at parent commit
+`c05aac9f38e7755a51f511078ff555a587f97ccf`.
 
 Build and validate locally with:
 

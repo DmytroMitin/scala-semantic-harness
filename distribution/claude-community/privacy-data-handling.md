@@ -7,6 +7,13 @@ data-handling information. The reviewed plugin source is the repository root of
 immutably qualified at commit
 `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`.
 
+The authenticated directory portal validated that exact source on
+2026-09-27, but its mandatory compliance step requires an owner acknowledgement
+that the plugin's privacy policy accurately describes its data handling. This
+technical note cannot support that legal acknowledgement: the source exposes no
+privacy-policy link, and Task 255 did not authorize creating or publishing one.
+The exact portal draft therefore remains unsubmitted.
+
 ## Local plugin behavior
 
 `semantic-scala` is a local Claude Code plugin containing one agent skill and a

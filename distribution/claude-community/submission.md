@@ -1,13 +1,15 @@
 # Claude community submission preparation
 
-Originally prepared on 2026-09-21 and rechecked against the current first-party
-directory contract on 2026-09-27. This is an owner-review packet for a
-public-source-qualified thin candidate, not a submitted or published listing.
+Originally prepared on 2026-09-21, rechecked against the first-party directory
+contract on 2026-09-27, and exercised in the authenticated portal on
+2026-09-27--28. This is an owner-review packet for a public-source-qualified
+thin candidate with one saved portal draft, not a submitted or published
+listing.
 
 ## Outcome
 
 ```text
-CLAUDE_DIRECTORY_PUBLIC_SOURCE_READY_FOR_HUMAN_PORTAL_REVIEW
+CLAUDE_DIRECTORY_SUBMISSION_BLOCKED_ON_OWNER_ACKNOWLEDGEMENT
 ```
 
 The public distribution repository now has the accepted six-file thin wrapper
@@ -19,9 +21,16 @@ actual GitHub source archive is 16,983 bytes and passes every documented hard
 limit with large headroom. Current strict source/marketplace validation and real
 public-source cold/warm installed-client treatments passed. Published evaluator
 guidance can hold local launcher/download chains for human review, so this is a
-validation pass with a review hold, not directory acceptance. No portal login,
-draft, authenticated validation, terms acceptance, or review request occurred;
-preexisting private dashboard state remains unknown.
+validation pass with an expected future human-review gate, not directory
+acceptance. The authenticated
+portal resolved `main` to `fc3a6c8`, passed all seven source checks with one
+missing-icon warning, and saved one exact draft. Submission stopped at the
+compliance step: the portal requires an acknowledgement that the plugin's
+privacy policy accurately describes its data handling, but the qualified source
+provides no privacy-policy link and the prepared technical note explicitly says
+it is not a legal privacy policy. All four acknowledgements remained unchecked,
+no contact email was entered, and no review request or public listing was
+created.
 
 ## Prepared listing
 
@@ -63,11 +72,16 @@ then portal validation, data-handling questions, four compliance
 acknowledgements, and `Submit for review`.
 
 The final action remains a review request rather than immediate publication.
-The thin candidate fits the published hard limits, but its runtime bootstrap
-is expected to receive human security review. Public-source publication and
-qualification are complete; owner-assisted portal validation and submission
-remain separate work. The public documentation states no separate submission
-fee, although a paid Claude plan is required.
+The thin candidate fits the published hard limits, and authenticated source
+validation passed, but its runtime bootstrap is expected to receive human
+security review. The current Directory Policy requires a clear privacy-policy
+link for software that collects user data or connects to a remote service. The
+fixed GitHub runtime download makes that legal/policy gate relevant, while the
+qualified source contains only a technical data-handling note that disclaims
+being a legal privacy policy. A separately authorized source-publication task
+must resolve and qualify that link before the existing draft can truthfully
+continue. The public documentation states no separate submission fee, although
+a paid Claude plan is required.
 
 Public sources checked:
 
@@ -130,9 +144,14 @@ This discrepancy is retained in the evidence and side-effect ledger.
 
 ## Human boundary
 
-No form login, GitHub connection, draft, authenticated portal validation, terms
-acceptance, attestation, review request, catalog mutation, release creation,
-payment, or final submit was performed. The one authorized distribution `main`
-update is complete; this packet is not authority to submit the candidate. A
-later explicit owner-assisted task must perform any portal validation or
-submission.
+An existing authenticated Pro session was used without retaining credentials,
+cookies, MFA data, or the account contact value. The initial dashboard contained
+zero submissions. Exactly one validation attempt resolved `main` to the
+qualified commit and passed. The owner approved the four factual data-handling
+answers (`No`, `No`, `Not retained`, `No`), which the portal saved in one
+exact draft. No compliance acknowledgement was approved or checked, no contact
+email was entered, and the final review page was not reached. `Submit for
+review` was not clicked. The resulting dashboard contains one `semantic-scala`
+draft and no pending-review or public listing. Resume that exact draft only
+after a separate authorized task publishes and qualifies an applicable
+privacy-policy link; do not create a duplicate.

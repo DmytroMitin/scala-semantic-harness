@@ -88,8 +88,10 @@ cache offline. The public tree was anonymously byte-verified at commit
 archive and unpacked tree pass the documented hard limits. Claude Code
 `2.1.283` passed exact-pin and `main` installation plus final public-source
 cold/warm treatments. Published evaluator guidance can hold the bootstrap for
-human review; the portal has not reviewed it. No login, draft, or review request
-was created; preexisting private dashboard state remains unknown.
+human review. The authenticated portal validated the exact `main` commit and
+saved one draft, but the mandatory privacy-policy acknowledgement lacks a
+supporting policy link in the qualified source. No acknowledgement, review
+request, or public listing was created.
 
 ## Scope of catalog claims
 

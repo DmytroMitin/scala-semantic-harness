@@ -1,8 +1,8 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
-  "observedOn": "2026-09-27",
-  "status": "public-source-qualified-ready-for-owner-assisted-portal-review",
-  "terminalState": "CLAUDE_DIRECTORY_PUBLIC_SOURCE_READY_FOR_HUMAN_PORTAL_REVIEW",
+  "observedOn": "2026-09-28",
+  "status": "portal-validation-passed-draft-blocked-missing-privacy-policy",
+  "terminalState": "CLAUDE_DIRECTORY_SUBMISSION_BLOCKED_ON_OWNER_ACKNOWLEDGEMENT",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
@@ -32,7 +32,8 @@
     "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
     "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
     "support": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
-    "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/32c67c6b20e29a4b907623fd4c2aaa5e33d176f9/LICENSE"
+    "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/32c67c6b20e29a4b907623fd4c2aaa5e33d176f9/LICENSE",
+    "privacyPolicy": null
   },
   "qualifiedCandidate": {
     "route": "fixed-immutable-mcpb-bootstrap",
@@ -55,7 +56,7 @@
       "generatedOutput": "fresh ignored output directory selected by the assembler caller",
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
       "published": true,
-      "nextGate": "owner-assisted-current-directory-portal-validation-and-submission",
+      "nextGate": "publish-and-qualify-an-applicable-privacy-policy-before-resuming-the-existing-draft",
       "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "branch": "main",
       "qualifiedCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
@@ -78,10 +79,15 @@
       "maximumUnpackedBytesExclusive": 268435456,
       "maximumIndividualFileBytesExclusive": 5242880,
       "qualifiedCandidateCompatible": true,
-      "blockingFacts": [],
+      "blockingFacts": [
+        "The live compliance step requires the owner to attest that the plugin's privacy policy accurately describes its data handling.",
+        "The qualified source exposes no privacy-policy link, and privacy-data-handling.md explicitly states that it is a technical note rather than a legal privacy policy.",
+        "Task 255 forbids source or distribution mutation, so the acknowledgement was left unchecked and the review request was not created."
+      ],
       "remainingGates": [
-        "human portal validation and bootstrap security review",
-        "owner answers, acknowledgements, and submit-for-review action"
+        "separately authorize, publish, and qualify an applicable privacy policy link",
+        "resume the existing exact draft without creating a duplicate",
+        "owner approval of all current acknowledgements and the final submit-for-review action"
       ],
       "reviewHoldFacts": [
         "The published evaluator guidance says unreadable local MCP command chains may be held for manual review.",
@@ -158,21 +164,22 @@
     },
     "successfulReadOnlySemanticEffectSummaryCalls": 2,
     "semanticEffectSummaryToolInvocations": 3,
-    "directorySourceValidation": "pass-with-review-hold",
+    "directorySourceValidation": "pass-with-expected-future-human-review-gate",
+    "authenticatedDirectoryPortalValidation": "passed-main-at-fc3a6c8-with-one-missing-icon-warning-and-one-local-mcp-surface-note",
     "task253FinalCandidateBoundary": "strict-plugin-and-marketplace-pass; 11 focused tests pass; direct warm offline exact-eight semantic smoke pass"
   },
   "assets": {
     "icon": "not-required-by-public-contract",
     "screenshots": "not-required-by-public-contract",
-    "authenticatedFormDetails": "not-inspected-task-stopped-before-directory-login"
+    "authenticatedFormDetails": "inspected-through-compliance; exact draft saved; review-and-submit step not reached"
   },
   "humanOnly": {
-    "authentication": "not-attempted-task-stopped-before-directory-login",
-    "termsAndAttestations": "not-reached",
+    "authentication": "existing authenticated Pro session used; no credential or MFA material retained",
+    "termsAndAttestations": "reached; all four left unchecked because the required privacy-policy attestation lacked a supporting policy link",
     "countryOrRegion": "not-reached",
     "paidPlanRequired": true,
     "fee": "no-separate-submission-fee-stated-in-public-documentation",
-    "finalSubmit": "not-executed"
+    "finalSubmit": "not-executed; exact draft remains saved in the portal"
   },
   "historicalFullCandidate": {
     "contentSha256": "72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b",

@@ -59,8 +59,12 @@ contains the six-file thin wrapper qualified at
 source archive, 39,938 unpacked bytes, 21,188-byte largest file, and ten total
 archive entries pass every documented hard limit. Exact-pin and `main` source
 validation plus final public-source cold/warm Claude Code use passed. Published
-evaluator guidance can hold the launcher/download chain for human review; no
-portal login, validation, submission, or acceptance has occurred.
+evaluator guidance can hold the launcher/download chain for human review. The
+authenticated portal resolved `main` to the qualified commit and passed seven
+checks with one missing-icon warning. One draft remains blocked before
+submission because the qualified source has no privacy-policy link supporting
+the mandatory compliance acknowledgement; no review request or acceptance has
+occurred.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
@@ -250,17 +254,19 @@ available to paid Pro, Max, Team, and Enterprise accounts with the documented
 role, checks GitHub push access, follows a branch or tag, validates the plugin,
 asks data-handling questions, and requires four compliance acknowledgements
 before `Submit for review`. Current first-party documentation does not identify
-a separate submission fee. No login, draft, authenticated portal validation,
-or submission was created. The thin candidate fits the published limits, is
-published on public `main`, and is qualified from exact commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`; it has not been tested or accepted
-in the portal. Runtime bootstrap review remains a human security gate.
+a separate submission fee. Authenticated validation passed for public `main` at
+exact commit `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`, and one exact draft was
+saved. The compliance step requires a truthful privacy-policy acknowledgement,
+but the qualified source exposes no applicable policy link. All acknowledgements
+remain unchecked; no contact email, review request, or public listing was
+created. Runtime bootstrap review remains a later human security gate.
 
 Prepared facts are the strict-valid manifest, public commit-pinned source, local
 stdio configuration, canonical skill, exact runtime provenance, platform
 boundary, deterministic inventory, listing copy, reviewer plan, and technical
-data-handling note. Marketplace authentication, terms acceptance, review, and
-any public listing remain human-only actions.
+data-handling note. A separate authorized source-publication task must add and
+qualify an applicable privacy-policy link before the existing draft resumes.
+Terms acceptance, review, and any public listing remain human-only actions.
 
 ## Catalog pause
 

@@ -441,12 +441,15 @@ GitHub archive passes the current hard limits. Claude Code `2.1.283` passed
 strict exact-pin/default-branch validation and final public-source cold/warm
 client use. No public directory listing or submission was created. Anthropic's
 current directory guide documents a repository plus optional path and branch or
-tag, not an exact-commit portal field; the authenticated form was not inspected.
+tag, not an exact-commit portal field. The authenticated portal resolved `main`
+to the qualified commit and passed seven source checks with one missing-icon
+warning.
 The owner packet under
 [`distribution/claude-community/`](distribution/claude-community/) records the
-immutable qualification commit and expected human review hold. No login, draft,
-or review request occurred; preexisting private dashboard state remains
-unknown.
+immutable qualification commit and expected human review hold. One exact draft
+was saved, but submission stopped before compliance acknowledgements because no
+applicable privacy-policy link exists in the qualified source. No contact email,
+review request, or public listing was created.
 
 The repository now also contains a separate directory-compatible thin Claude
 candidate. It retains the canonical skill and local exact-eight MCP interface,
@@ -460,7 +463,8 @@ final public-source cold/warm installed-client qualification. The cold session
 retains one pre-semantic invalid-path rejection followed by one successful
 read-only call; the warm session made one successful read-only call. This is
 public-source technical readiness with a human-review hold, not directory
-acceptance. See
+acceptance. The next gate is a separately authorized privacy-policy publication
+and source qualification before resuming the existing portal draft. See
 [`docs/claude-directory-thin-plugin.md`](docs/claude-directory-thin-plugin.md).
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and

@@ -124,8 +124,11 @@ execution ledger and does not promise delivery dates.
    remains at its parent commit. Anonymous byte readback, the actual 16,983-byte
    GitHub archive, exact-pin/default-branch validation, and final public-source
    cold/warm client use passed. Current evaluator guidance can hold the
-   launcher/download model for human review. Submission remains a later explicit
-   owner-assisted portal gate; no portal action has occurred.
+   launcher/download model for human review. One authenticated portal validation
+   resolved `main` to the qualified commit and passed all seven checks with one
+   missing-icon warning. The exact draft is blocked before submission because
+   the mandatory privacy-policy acknowledgement has no supporting policy link;
+   no acknowledgement, review request, or public listing was created.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
