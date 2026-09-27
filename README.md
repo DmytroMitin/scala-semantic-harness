@@ -431,22 +431,22 @@ Codex CLI `0.154.0` additionally passed a disposable local-marketplace install,
 skill load, bundled-MCP registration, and one read-only semantic call. Claude
 Code `2.1.220` passed a disposable local-marketplace install, packaged-skill
 load, plugin-local MCP connection, and one read-only client-mediated semantic
-call after an explicit owner login checkpoint. The exact Claude candidate is
-now published as generated distribution material at the root of
-[`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin),
-pinned to commit `c05aac9f38e7755a51f511078ff555a587f97ccf`.
-An anonymous clone reproduced the accepted inventory, the current community
-external-source validator passed, and Claude Code `2.1.278` passed an isolated
-public-source install with one skill, one MCP server, and one read-only semantic
-call. No public marketplace listing or external submission was created. A fresh
-A 2026-09-27 check found that Anthropic's current directory guide documents a
-branch or tag and no exact-commit field; the authenticated form was not
-inspected. Its package limits are below this candidate's 339,741,892 unpacked
-bytes and 54,008,260-byte largest file. The
-owner packet under
+call after an explicit owner login checkpoint. The historical full Claude candidate remains preserved at commit
+`c05aac9f38e7755a51f511078ff555a587f97ccf` in
+[`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin).
+The repository's current `main` instead contains the directory-compatible thin
+wrapper, qualified at commit `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`.
+An anonymous clone reproduced its six-file identity, and its 16,983-byte public
+GitHub archive passes the current hard limits. Claude Code `2.1.283` passed
+strict exact-pin/default-branch validation and final public-source cold/warm
+client use. No public directory listing or submission was created. Anthropic's
+current directory guide documents a repository plus optional path and branch or
+tag, not an exact-commit portal field; the authenticated form was not inspected.
+The owner packet under
 [`distribution/claude-community/`](distribution/claude-community/) records the
-blocked pre-login result. That check created no draft or review request;
-preexisting private dashboard state remains unknown.
+immutable qualification commit and expected human review hold. No login, draft,
+or review request occurred; preexisting private dashboard state remains
+unknown.
 
 The repository now also contains a separate directory-compatible thin Claude
 candidate. It retains the canonical skill and local exact-eight MCP interface,
@@ -455,11 +455,12 @@ the fixed Alpha-3 MCPB on first start, verifies its exact byte count and
 SHA-256 before safe extraction, and atomically installs it in an owner-only
 semantic-scala cache. Warm starts reuse that verified cache and require no
 network fetch. The deterministic 6-file candidate is 39,938 unpacked bytes,
-its largest file is 21,188 bytes, and its ZIP is 14,697 bytes. Claude Code
-`2.1.283` passed strict validation and isolated cold/warm installed-client
-qualification with one read-only semantic call per session. This is local
-technical readiness for later public-source qualification, not publication or
-directory acceptance. See
+its largest file is 21,188 bytes, and its ZIP is 14,697 bytes. Claude Code `2.1.283` passed strict validation and
+final public-source cold/warm installed-client qualification. The cold session
+retains one pre-semantic invalid-path rejection followed by one successful
+read-only call; the warm session made one successful read-only call. This is
+public-source technical readiness with a human-review hold, not directory
+acceptance. See
 [`docs/claude-directory-thin-plugin.md`](docs/claude-directory-thin-plugin.md).
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and
@@ -497,12 +498,12 @@ benchmark reproducibility beyond its stated small-sample gate.
   archive of 50 MiB or more, an unpacked plugin of 256 MiB or more, or an
   individual file of 5 MiB or more. The candidate is 339,741,892 unpacked bytes
   and contains a 54,008,260-byte runtime image file, so that historical full
-  candidate is not eligible. A separately generated 39,938-byte thin candidate
-  fits those limits and passed local cold/warm client qualification, but it is
-  not yet published to the public plugin-source repository or qualified from
-  an exact public branch/commit. Its first start requires network access and
-  Python 3.11 or newer to fetch and verify the fixed Alpha-3 MCPB. Human portal
-  acceptance and review remain untested.
+  candidate is not eligible. The separately generated 39,938-byte thin candidate
+  fits those limits and is now published on public `main`, byte-qualified at
+  commit `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`, and cold/warm client
+  qualified. Its first start requires network access and Python 3.11 or newer to
+  fetch and verify the fixed Alpha-3 MCPB. Human portal acceptance and review
+  remain untested.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

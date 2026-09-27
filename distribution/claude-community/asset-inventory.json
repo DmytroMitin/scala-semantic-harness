@@ -10,12 +10,12 @@
     {
       "kind": "listingCopy",
       "path": "distribution/claude-community/submission.json",
-      "status": "prepared-for-public-source-qualification"
+      "status": "normalized-to-qualified-public-source-ready-for-owner-assisted-portal-review"
     },
     {
       "kind": "reviewerTestPlan",
       "path": "distribution/claude-community/reviewer-test-plan.md",
-      "status": "prepared-for-thin-candidate-owner-review"
+      "status": "prepared-for-qualified-public-source-owner-review"
     },
     {
       "kind": "thinPluginSourceTemplate",
@@ -29,17 +29,28 @@
       "totalBytes": 39938,
       "largestFileBytes": 21188,
       "archiveBytes": 14697,
-      "status": "retained-client-qualified-plus-post-review-strict-and-direct-warm-qualified-not-published",
+      "status": "published-and-public-source-qualified-from-cold-and-warm-client-treatments",
       "sourceTemplatePath": "packaging/claude-directory-plugin/semantic-scala",
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
       "outputContract": "fresh ignored output directory"
+    },
+    {
+      "kind": "qualifiedPublicThinPluginSource",
+      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "branch": "main",
+      "commit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
+      "tree": "da2ce788648462dd461a8f7b09c8e33159df1f54",
+      "root": "repository-root",
+      "githubArchiveBytes": 16983,
+      "githubArchiveSha256": "6fcc25d296a36d43ca9a45229ec55c581a76032f0bf296b605deb378f98e0587",
+      "status": "byte-verified-hard-limits-pass-review-hold"
     },
     {
       "kind": "historicalFullPluginSource",
       "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
       "root": "repository-root",
-      "status": "anonymous-clone-byte-verified-and-install-qualified-but-current-directory-size-blocked"
+      "status": "preserved-at-parent-history; historical-tree-size-blocked"
     },
     {
       "kind": "technicalDataHandlingNote",
@@ -54,12 +65,12 @@
     {
       "kind": "icon",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not-inspected-public-source-qualification-required-first"
+      "postLoginRequirement": "not-inspected-task-stopped-before-directory-login"
     },
     {
       "kind": "screenshots",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not-inspected-public-source-qualification-required-first"
+      "postLoginRequirement": "not-inspected-task-stopped-before-directory-login"
     }
   ],
   "thirdPartyBrandAssetsIncluded": false

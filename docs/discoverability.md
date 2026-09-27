@@ -74,20 +74,22 @@ client-neutral skill remains authoritative.
 
 The Claude community packet is under
 [`distribution/claude-community/`](../distribution/claude-community/). The
-separate generated-distribution repository still contains the historical full
-candidate at the qualified public commit. It exceeds the current directory's
-50 MiB GitHub archive, 256 MiB unpacked, and 5 MiB per-file gates.
+separate generated-distribution repository preserves the historical full
+candidate at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`. That historical
+tree exceeds the current directory's 50 MiB GitHub archive, 256 MiB unpacked,
+and 5 MiB per-file gates.
 
-The repository now also has a locally qualified thin candidate: 6 files,
-39,938 unpacked bytes, 21,188-byte largest file, and a 14,697-byte ZIP. Its
-Python 3.11 bootstrap fetches only the fixed Alpha-3 MCPB, verifies the exact
+Public `main` now contains the qualified thin candidate: 6 files, 39,938
+unpacked bytes, 21,188-byte largest file, and a 14,697-byte deterministic ZIP.
+Its Python 3.11 bootstrap fetches only the fixed Alpha-3 MCPB, verifies the exact
 size and SHA-256, safely installs it in an owner-only cache, and reuses that
-cache offline. Claude Code `2.1.283` passed cold and warm installed-client
-treatments with one read-only semantic call each. The thin candidate has not
-been published to the generated-distribution repository or qualified from an
-exact public source, and the portal has not reviewed the bootstrap model. No
-draft or review request was created; preexisting private dashboard state
-remains unknown.
+cache offline. The public tree was anonymously byte-verified at commit
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. Its 16,983-byte GitHub source
+archive and unpacked tree pass the documented hard limits. Claude Code
+`2.1.283` passed exact-pin and `main` installation plus final public-source
+cold/warm treatments. Published evaluator guidance can hold the bootstrap for
+human review; the portal has not reviewed it. No login, draft, or review request
+was created; preexisting private dashboard state remains unknown.
 
 ## Scope of catalog claims
 

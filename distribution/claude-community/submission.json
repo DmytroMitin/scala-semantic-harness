@@ -1,15 +1,15 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
   "observedOn": "2026-09-27",
-  "status": "ready-for-public-source-qualification",
-  "terminalState": "CLAUDE_DIRECTORY_THIN_PLUGIN_READY_FOR_PUBLIC_SOURCE_QUALIFICATION",
+  "status": "public-source-qualified-ready-for-owner-assisted-portal-review",
+  "terminalState": "CLAUDE_DIRECTORY_PUBLIC_SOURCE_READY_FOR_HUMAN_PORTAL_REVIEW",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
     "version": "0.1.0-alpha.3",
-    "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+    "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
     "license": "Apache-2.0",
-    "qualifiedSourceCommit": null
+    "qualifiedSourceCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11"
   },
   "listing": {
     "shortDescription": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
@@ -29,14 +29,14 @@
     ]
   },
   "publicUrls": {
-    "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+    "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
     "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
     "support": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
     "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/32c67c6b20e29a4b907623fd4c2aaa5e33d176f9/LICENSE"
   },
   "qualifiedCandidate": {
     "route": "fixed-immutable-mcpb-bootstrap",
-    "state": "local-not-published",
+    "state": "published-and-public-source-qualified",
     "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
     "archiveSha256": "738c53b2ceadf5937c9deefc5375e9000a4022bb8342fc675e12671c06e3d213",
     "fileCount": 6,
@@ -50,12 +50,17 @@
   },
   "sourceRoute": {
     "selected": {
-      "source": "generated-local-thin-candidate",
+      "source": "public-github-repository-root",
       "sourceTemplatePath": "packaging/claude-directory-plugin/semantic-scala",
       "generatedOutput": "fresh ignored output directory selected by the assembler caller",
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
-      "published": false,
-      "nextGate": "separately-authorized-public-source-publication-and-exact-source-requalification"
+      "published": true,
+      "nextGate": "owner-assisted-current-directory-portal-validation-and-submission",
+      "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "branch": "main",
+      "qualifiedCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
+      "qualifiedTree": "da2ce788648462dd461a8f7b09c8e33159df1f54",
+      "pluginRoot": "repository-root"
     },
     "separatePublisherMarketplaceRepositoryRequired": false,
     "currentDeveloperPortalModel": {
@@ -75,10 +80,14 @@
       "qualifiedCandidateCompatible": true,
       "blockingFacts": [],
       "remainingGates": [
-        "publish thin candidate to the distribution repository under separate authority",
-        "requalify exact public branch or commit",
-        "human portal validation and bootstrap security review"
-      ]
+        "human portal validation and bootstrap security review",
+        "owner answers, acknowledgements, and submit-for-review action"
+      ],
+      "reviewHoldFacts": [
+        "The published evaluator guidance says unreadable local MCP command chains may be held for manual review.",
+        "The Python launcher downloads and executes an immutable digest-pinned runtime, so human supply-chain review remains expected even though hard limits and strict validation pass."
+      ],
+      "maximumEntriesExclusive": 10000
     },
     "maintainedGitSubdirectory": {
       "path": "packaging/claude-directory-plugin/semantic-scala",
@@ -109,15 +118,19 @@
       "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
       "root": "repository-root",
       "sourceOfTruth": "scala-semantic-harness",
-      "anonymousCloneByteVerified": true
+      "anonymousCloneByteVerified": true,
+      "status": "preserved-as-parent-history; current-main-is-thin-wrapper"
     },
     "generatedLocalCandidate": {
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
       "outputContract": "fresh ignored output directory",
       "installable": true,
-      "published": false,
+      "published": true,
       "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
-      "fileCount": 6
+      "fileCount": 6,
+      "publicRepository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "publicBranch": "main",
+      "qualifiedCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11"
     }
   },
   "validation": {
@@ -125,26 +138,36 @@
     "disposableCurrentClaudeCodeVersion": "2.1.283",
     "strictPluginValidation": "pass-thin-candidate",
     "strictDisposableMarketplaceValidation": "pass-thin-candidate",
-    "communityExternalSourceValidation": "not-run-thin-candidate-not-published",
-    "publicPinnedGitInstall": "not-run-thin-candidate-not-published",
-    "installedClientQualification": "pass-cold-and-warm-before-https-only-redirect-fix",
-    "readOnlySemanticEffectSummaryCalls": 2,
+    "communityExternalSourceValidation": "legacy-community-action-not-applicable-to-current-directory-portal; current-strict-source-and-marketplace-validation-pass",
+    "publicPinnedGitInstall": "pass-exact-commit-and-main-resolved-to-fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
+    "installedClientQualification": "pass-final-public-source-cold-and-warm",
     "runtimeRetreatmentRequired": false,
     "bootstrapSecurityTests": "pass",
-    "coldCacheClient": "pass",
-    "warmCacheOfflineFetchProof": "pass",
-    "totalTaskReadOnlySemanticEffectSummaryCalls": 3,
-    "semanticCallAccounting": "qualification uses one cold and one authoritative final warm call; an earlier pre-correction warm call is retained in the side-effect ledger",
-    "postReviewFinalCandidateQualification": "strict-plugin-and-marketplace-pass; 11 focused tests pass; direct warm offline exact-eight semantic smoke pass",
-    "clientRetreatmentAfterSecurityOnlyFix": "not repeated per independent-review recommendation"
+    "coldCacheClient": "pass-one-successful-semantic-execution-after-one-pre-semantic-invalid-relative-path-rejection",
+    "warmCacheOfflineFetchProof": "pass-one-successful-semantic-execution-cache-marker-unchanged-dead-github-proxy",
+    "semanticCallAccounting": "cold session issued two tool invocations: the first was rejected before semantic execution because the client supplied an absolute file path, then one corrected read-only semantic call succeeded; warm session issued exactly one read-only semantic call and succeeded",
+    "publicGithubArchive": {
+      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/fc3a6c8e2ce74923141b9a5b740513bbee04ac11.zip",
+      "bytes": 16983,
+      "sha256": "6fcc25d296a36d43ca9a45229ec55c581a76032f0bf296b605deb378f98e0587",
+      "entriesIncludingDirectories": 10,
+      "fileCount": 6,
+      "unpackedPluginBytes": 39938,
+      "largestFileBytes": 21188,
+      "hardLimits": "pass-with-large-headroom"
+    },
+    "successfulReadOnlySemanticEffectSummaryCalls": 2,
+    "semanticEffectSummaryToolInvocations": 3,
+    "directorySourceValidation": "pass-with-review-hold",
+    "task253FinalCandidateBoundary": "strict-plugin-and-marketplace-pass; 11 focused tests pass; direct warm offline exact-eight semantic smoke pass"
   },
   "assets": {
     "icon": "not-required-by-public-contract",
     "screenshots": "not-required-by-public-contract",
-    "authenticatedFormDetails": "not-inspected-public-source-qualification-required-first"
+    "authenticatedFormDetails": "not-inspected-task-stopped-before-directory-login"
   },
   "humanOnly": {
-    "authentication": "not-attempted-public-source-not-yet-qualified",
+    "authentication": "not-attempted-task-stopped-before-directory-login",
     "termsAndAttestations": "not-reached",
     "countryOrRegion": "not-reached",
     "paidPlanRequired": true,

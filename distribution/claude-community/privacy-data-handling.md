@@ -2,7 +2,10 @@
 
 This is a factual technical note, not a legal privacy policy or approved terms.
 It is prepared in case the post-login Claude community submission flow asks for
-data-handling information.
+data-handling information. The reviewed plugin source is the repository root of
+<https://github.com/DmytroMitin/semantic-scala-claude-plugin> on `main`,
+immutably qualified at commit
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`.
 
 ## Local plugin behavior
 

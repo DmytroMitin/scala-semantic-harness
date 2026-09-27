@@ -1,10 +1,12 @@
 # Reviewer test plan
 
-This plan is prepared for later human review of the thin candidate after it is
-published and requalified from an exact public source. It is not evidence of a
-submitted or accepted directory listing.
+This plan is prepared for human review of the thin candidate published at
+`DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. It is not evidence of a submitted
+or accepted directory listing.
 
-1. Confirm the reviewed public branch, tag, or commit contains the deterministic
+1. Confirm public `main` still resolves to the qualified commit, or record any
+   newer reviewed commit, and that the reviewed tree contains the deterministic
    thin candidate: 6 files, 39,938 unpacked bytes, a 21,188-byte largest file,
    and content SHA-256
    `ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f`.
@@ -41,4 +43,8 @@ The reviewer need not run compilation or tests for this read-only acceptance
 case. Build-backed tools can execute project build or test code and should be
 used only with explicit approval in a disposable project. The reviewer should
 also scrutinize the fixed-download/execute bootstrap as a supply-chain boundary;
-passing package-size validation alone is not directory acceptance.
+passing package-size validation alone is not directory acceptance. The Task-254
+cold proof retained one client input rejection before semantic execution; the
+corrected cold call and the single warm call both succeeded. A portal reviewer
+should evaluate the published source itself and need not reproduce that client
+orchestration error.

@@ -118,10 +118,14 @@ execution ledger and does not promise delivery dates.
    with a Python 3.11 fixed-URL, fixed-size, fixed-digest bootstrap and
    owner-only atomic cache. Claude Code `2.1.283` passed strict validation and
    isolated cold/warm installed-client use with one read-only semantic call per
-   session. The thin candidate is ready only for a separately authorized
-   public-source publication and exact public-source requalification; the
-   existing distribution repository remains unchanged. Submission still
-   requires a later explicit human gate after that qualification.
+   session. The exact thin wrapper is now published on the dedicated
+   repository's `main` at commit
+   `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`; the historical full tree
+   remains at its parent commit. Anonymous byte readback, the actual 16,983-byte
+   GitHub archive, exact-pin/default-branch validation, and final public-source
+   cold/warm client use passed. Current evaluator guidance can hold the
+   launcher/download model for human review. Submission remains a later explicit
+   owner-assisted portal gate; no portal action has occurred.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3

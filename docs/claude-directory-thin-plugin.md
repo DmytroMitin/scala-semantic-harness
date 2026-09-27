@@ -1,8 +1,9 @@
 # Claude directory thin plugin
 
 The repository includes a deterministic thin Claude Code plugin candidate for
-`semantic-scala` `0.1.0-alpha.3`. It is a local qualification candidate, not a
-published distribution source or a directory listing.
+`semantic-scala` `0.1.0-alpha.3`. The exact six-file wrapper is published at the
+root of `DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. It is not a directory listing.
 
 ## Package contract
 
@@ -46,26 +47,28 @@ cache directory forces a new verified download on the next start.
 
 Two deterministic builds were identical. Claude Code `2.1.283` passed strict
 plugin and disposable-marketplace validation. A real cold installed-client
-treatment downloaded and verified the fixed MCPB, connected the exact-eight
-MCP server, and completed one read-only `semantic_effect_summary` call. A
-second client session reused the same cache while GitHub-bound fetch traffic
-was forced to fail; it connected in under one second and completed the same
-read-only call without changing the cache marker or fixture. After independent
-review, an HTTPS-only redirect guard was added; the final candidate again
-passed strict validation, focused security tests, and a no-network direct warm
-exact-eight smoke. The large download and client treatments were not repeated.
+treatment from the final public source downloaded
+and verified the fixed MCPB once and connected the plugin-local exact-eight MCP
+server. Its first tool invocation used an absolute `file` value and was rejected
+before semantic execution; one corrected read-only `semantic_effect_summary`
+call then succeeded with `Fixture.value: Option[Int]`. A second client session
+reused the unchanged cache while GitHub-bound fetch traffic was forced to fail;
+the plugin server connected in 697 ms and exactly one read-only call succeeded
+without changing the cache marker or fixture. No MCPB or partial download was
+retained. Strict validation also passed for both exact-commit and `main` source
+fixtures.
 
 The candidate is far below the current documented directory limits: fewer
 than 10,000 entries, archive smaller than 50 MiB, unpacked content smaller than
 256 MiB, and every file smaller than 5 MiB. It also stays below the current
 review-hold heuristics of 512 files and 256 KiB for a non-image/font file.
 
-This establishes local technical readiness only. A bootstrap that downloads
-and executes a pinned runtime can receive extra human security scrutiny, and
-no claim is made that the developer portal will accept it. Publication to the
-public plugin-source repository, qualification of the exact public branch or
-commit, portal authentication, data-handling answers, attestations, submission,
-review, and listing all require separate authorization and evidence.
+This establishes public-source technical readiness only. Published evaluator
+guidance can place local launcher/download chains on a human-review hold, and no
+claim is made that the developer portal will accept it. Portal authentication,
+data-handling answers, attestations, submission, review, and listing all require
+separate authorization and evidence. The historical full self-contained plugin
+remains preserved at parent commit `c05aac9f38e7755a51f511078ff555a587f97ccf`.
 
 Build and validate locally with:
 
