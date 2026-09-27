@@ -53,14 +53,15 @@ Claude Code uses `.claude-plugin/plugin.json`, root `.mcp.json`,
 `skills/<name>/SKILL.md`, and `${CLAUDE_PLUGIN_ROOT}` for package-local paths.
 The candidate follows that layout and bundles the local stdio server directly.
 Claude Code's generic marketplace format can use Git, npm, HTTPS archive, and
-command-produced sources. The current public community review pipeline is
-narrower: it validates cloneable `github`, `url`, or `git-subdir` sources pinned
-to a 40-character lowercase commit SHA. The maintained template is not a complete
-installable plugin, and the complete generated candidate is absent from any
-public pinned commit. As supplementary evidence, a fresh deflate-9 zip of the
-exact candidate measured 285,354,435 bytes, above the generic marketplace's
-256 MiB archive limit. No currently published source therefore installs the
-qualified candidate through the community catalog.
+command-produced sources. The exact generated candidate is published at the
+root of a dedicated public repository and passed the earlier community
+external-source validation model. Anthropic's current directory developer
+portal instead follows a GitHub branch or tag and applies portal-specific
+limits: under 50 MiB as GitHub archives the repository, under 256 MiB unpacked,
+and under 5 MiB for each file. The exact candidate is 339,741,892 unpacked
+bytes and includes a 54,008,260-byte runtime image file, so it is not eligible
+for the current portal without a separately authorized redesign and
+requalification.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
@@ -219,8 +220,8 @@ attestations.
 
 ### Claude community marketplace
 
-The future human entry point is the
-[Claude plugin submission form](https://platform.claude.com/plugins/submit).
+The current human entry point is the
+[Claude directory developer portal](https://claude.ai/directory/manage).
 The exact candidate passed strict validation with Claude Code `2.1.278` and is
 published as generated distribution material at the root of
 [`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin),
@@ -232,14 +233,15 @@ read-only `semantic_effect_summary` call passed. The maintained template and
 assembler in this repository remain the source of truth. See the
 [owner preparation packet](../distribution/claude-community/submission.md).
 
-Under separate authority, the human submitter can sign in to Claude Console,
-review then-current terms and review requirements, provide the repository and
-listing materials, and submit to the `claude-community` review lane. The
-official `claude-plugins-official`
-marketplace remains separately curated and has no general application process.
-Current first-party documentation does not identify a submission fee; verify
-that again before action. After acceptance, verify the pinned commit and public
-catalog entry before claiming installability.
+The older Claude Console form is no longer supported. The current portal is
+available to paid Pro, Max, Team, and Enterprise accounts with the documented
+role, checks GitHub push access, follows a branch or tag, validates the plugin,
+asks data-handling questions, and requires four compliance acknowledgements
+before `Submit for review`. Current first-party documentation does not identify
+a separate submission fee. Task 252 stopped before login because this candidate
+exceeds the current unpacked and individual-file limits; no draft or submission
+was created. A smaller or restructured candidate is a separate technical task,
+not an adaptation authorized by this publication packet.
 
 Prepared facts are the strict-valid manifest, public commit-pinned source, local
 stdio configuration, canonical skill, exact runtime provenance, platform

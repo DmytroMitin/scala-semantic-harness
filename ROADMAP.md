@@ -33,8 +33,9 @@ execution ledger and does not promise delivery dates.
   plugin boundaries.
 - Deterministic locally validated OpenAI/Codex and Claude Code native plugin
   candidates assembled from the exact published Alpha-3 MCPB. Both have
-  bounded disposable installed-client skill and MCP-use qualification. No
-  external submission or public install-channel claim exists.
+  bounded disposable installed-client skill and MCP-use qualification. The
+  exact Claude candidate has a qualified public Git source, but no directory
+  submission or public install-channel claim exists.
 - Agent-first alpha-2 installation, MCP, and immutable-skill recipes with a
   client qualification matrix and explicit CLI/MCP surface asymmetry.
 - Examples, CI, benchmark fixtures, and methodology.
@@ -110,9 +111,12 @@ execution ledger and does not promise delivery dates.
    repository at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`:
    anonymous byte-and-mode readback, current community external-source
    validation, isolated install, skill/MCP discovery, and one read-only
-   semantic call passed. Keep this repository as source of truth and require a
-   separate human-authorized task for authentication, terms review, and
-   `claude-community` submission.
+   semantic call passed. A Task-252 recheck found that the current directory
+   portal follows a branch or tag and enforces 50 MiB archive, 256 MiB unpacked,
+   and 5 MiB per-file limits; the qualified candidate exceeds the latter two.
+   Submission stopped before authentication. Keep this repository as source of
+   truth and require a separate technical task before any later human-authorized
+   directory submission attempt.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3

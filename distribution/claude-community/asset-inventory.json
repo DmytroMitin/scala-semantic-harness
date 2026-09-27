@@ -1,6 +1,6 @@
 {
   "$schema": "semantic-scala.claude-community-asset-inventory.v1",
-  "observedOn": "2026-09-21",
+  "observedOn": "2026-09-27",
   "assets": [
     {
       "kind": "pluginManifest",
@@ -10,7 +10,7 @@
     {
       "kind": "listingCopy",
       "path": "distribution/claude-community/submission.json",
-      "status": "prepared-for-owner-review"
+      "status": "prepared-but-current-directory-contract-blocked"
     },
     {
       "kind": "reviewerTestPlan",
@@ -30,14 +30,19 @@
       "status": "prepared-not-legal-policy"
     },
     {
+      "kind": "currentDirectoryContract",
+      "url": "https://claude.com/docs/plugins/pre-submission-checklist",
+      "status": "candidate-blocked-by-unpacked-and-individual-file-limits"
+    },
+    {
       "kind": "icon",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "unknown"
+      "postLoginRequirement": "not-inspected-contract-blocked-before-login"
     },
     {
       "kind": "screenshots",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "unknown"
+      "postLoginRequirement": "not-inspected-contract-blocked-before-login"
     }
   ],
   "thirdPartyBrandAssetsIncluded": false

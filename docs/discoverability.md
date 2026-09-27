@@ -72,12 +72,18 @@ install, skill/MCP discovery, and one read-only semantic call from that pin.
 Neither candidate is submitted or listed in a public marketplace. The
 client-neutral skill remains authoritative.
 
-The current Claude community preparation packet is under
-[`distribution/claude-community/`](../distribution/claude-community/). Its
-technical source gate is ready: the separate generated-distribution repository
-contains the exact candidate at a public commit pin accepted by the current
-community validation model. Human authentication, terms review, attestations,
-review request, and final submission remain separately authorized actions.
+The Claude community packet is under
+[`distribution/claude-community/`](../distribution/claude-community/). The
+separate generated-distribution repository still contains the exact candidate
+at the qualified public commit, but the submission contract changed on the
+current directory developer portal. Its public guide documents a branch or tag
+and no exact commit field; the authenticated form was not inspected. Validation
+stops at 50 MiB GitHub archive, 256 MiB unpacked, or 5 MiB per-file limits. The
+qualified candidate is 339,741,892 unpacked bytes and contains a 54,008,260-byte
+file, so Task 252 stopped before authentication and created no draft or review
+request. Preexisting private dashboard state remains unknown. Any smaller or otherwise
+restructured candidate requires a separate technical design and qualification
+task.
 
 ## Scope of catalog claims
 

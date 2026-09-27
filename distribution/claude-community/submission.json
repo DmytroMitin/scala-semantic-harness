@@ -1,8 +1,8 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
-  "observedOn": "2026-09-21",
-  "status": "ready-pending-human-review-and-submit",
-  "terminalState": "CLAUDE_COMMUNITY_SUBMISSION_READY_PENDING_HUMAN_REVIEW_AND_SUBMIT",
+  "observedOn": "2026-09-27",
+  "status": "blocked-by-current-directory-package-limits",
+  "terminalState": "CLAUDE_COMMUNITY_SUBMISSION_BLOCKED_BY_CURRENT_DIRECTORY_PACKAGE_LIMITS",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
@@ -50,16 +50,25 @@
       "root": "repository-root"
     },
     "separatePublisherMarketplaceRepositoryRequired": false,
-    "communityReviewAcceptedSourceModel": {
-      "observedOn": "2026-09-21",
-      "externalSourceTypes": [
-        "github",
-        "url",
-        "git-subdir"
+    "currentDeveloperPortalModel": {
+      "observedOn": "2026-09-27",
+      "entrypoint": "https://claude.ai/directory/manage",
+      "legacyConsoleSubmissionSupported": false,
+      "sourceFields": [
+        "github-repository",
+        "optional-plugin-path",
+        "optional-tracked-branch-or-tag"
       ],
-      "requiresCloneableGitSource": true,
-      "requiresFortyCharacterLowercaseCommitSha": true,
-      "qualifiedPublicSourceAvailable": true
+      "exactCommitFieldDocumented": false,
+      "authenticatedExactCommitFieldChecked": false,
+      "maximumGitHubArchiveBytesExclusive": 52428800,
+      "maximumUnpackedBytesExclusive": 268435456,
+      "maximumIndividualFileBytesExclusive": 5242880,
+      "qualifiedCandidateCompatible": false,
+      "blockingFacts": [
+        "candidate unpacked bytes are 339741892",
+        "candidate contains runtime/lib/modules at 54008260 bytes"
+      ]
     },
     "maintainedGitSubdirectory": {
       "path": "packaging/claude-plugin/semantic-scala",
@@ -106,14 +115,14 @@
   "assets": {
     "icon": "not-required-by-public-contract",
     "screenshots": "not-required-by-public-contract",
-    "hiddenFormRequirements": "unknown-until-login"
+    "authenticatedFormDetails": "not-inspected-because-public-contract-blocked-before-login"
   },
   "humanOnly": {
-    "authentication": "required",
-    "termsAndAttestations": "unknown-until-login-and-owner-review",
-    "countryOrRegion": "unknown-until-login",
-    "draftSaving": "not-publicly-documented",
-    "fee": "no-fee-stated-in-public-documentation",
-    "finalSubmit": "not-authorized"
+    "authentication": "not-attempted-contract-blocker",
+    "termsAndAttestations": "not-reached",
+    "countryOrRegion": "not-reached",
+    "paidPlanRequired": true,
+    "fee": "no-separate-submission-fee-stated-in-public-documentation",
+    "finalSubmit": "not-executed"
   }
 }

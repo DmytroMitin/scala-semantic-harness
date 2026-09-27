@@ -438,10 +438,15 @@ pinned to commit `c05aac9f38e7755a51f511078ff555a587f97ccf`.
 An anonymous clone reproduced the accepted inventory, the current community
 external-source validator passed, and Claude Code `2.1.278` passed an isolated
 public-source install with one skill, one MCP server, and one read-only semantic
-call. No public marketplace listing or external submission was created. The
+call. No public marketplace listing or external submission was created. A fresh
+Task-252 check found that Anthropic's current directory guide documents a
+branch or tag and no exact-commit field; the authenticated form was not
+inspected. Its package limits are below this candidate's 339,741,892 unpacked
+bytes and 54,008,260-byte largest file. The
 owner packet under
-[`distribution/claude-community/`](distribution/claude-community/) is ready for
-a separately authorized human review and submission step.
+[`distribution/claude-community/`](distribution/claude-community/) records the
+blocked pre-login result. Task 252 created no draft or review request;
+preexisting private dashboard state remains unknown.
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and
 platform limits.
@@ -473,10 +478,12 @@ benchmark reproducibility beyond its stated small-sample gate.
   bounded disposable installed-client skill and MCP-use qualification. They
   are not public listings or supported public install channels. OpenAI public
   MCP submission still requires a separately authorized public HTTPS service.
-  Claude community submission is additionally blocked because the exact
-  generated plugin is not present at a public, commit-pinned Git source accepted
-  by the current community review pipeline. Its fresh deflate-9 archive also
-  exceeds Claude Code's generic-marketplace 256 MiB archive limit.
+  The exact Claude candidate is present at a qualified public Git commit, but
+  current directory submission follows a branch or tag and rejects a GitHub
+  archive of 50 MiB or more, an unpacked plugin of 256 MiB or more, or an
+  individual file of 5 MiB or more. The candidate is 339,741,892 unpacked bytes
+  and contains a 54,008,260-byte runtime image file, so it is not eligible for
+  the current portal without separately authorized redesign and requalification.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.
