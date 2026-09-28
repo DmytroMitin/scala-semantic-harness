@@ -1,0 +1,20 @@
+{
+  "$schema": "semantic-scala.openai-skills-only-assets.v1",
+  "observedOn": "2026-09-28",
+  "assets": [],
+  "screenshots": [],
+  "logo": {
+    "path": null,
+    "projectOwnedCandidateFound": false,
+    "status": "human-design-required",
+    "requiredField": "interface.logo",
+    "reason": "No suitable project-owned logo exists. Current final-directory validation requires a readable square PNG, JPG, JPEG, WebP, or SVG no larger than 5 MiB; raster dimensions must be 48x48 through 4096x4096, and SVG must declare square numeric dimensions of at least 48. A low-quality or third-party-branded placeholder was not created."
+  },
+  "composerIcon": {
+    "path": null,
+    "projectOwnedCandidateFound": false,
+    "status": "human-design-required",
+    "requiredField": "interface.composerIcon",
+    "reason": "No suitable project-owned composer icon exists. It has the same supported formats, square geometry, size, and dimension rules as the logo. One compliant original square asset may be considered for both manifest fields, subject to final visual and portal review."
+  }
+}

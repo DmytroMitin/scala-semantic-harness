@@ -457,6 +457,25 @@ only`, `No`, `Not retained`, and `No`; all four compliance acknowledgements
 were owner-approved. The private contact value is not retained in this
 repository.
 
+A separate OpenAI skills-only candidate now lives under
+[`packaging/openai-skills-plugin/`](packaging/openai-skills-plugin/) without
+reusing or changing the local-MCP candidate. It packages one narrow read-only
+`effect-summary` workflow, an exact canonical-policy reference, and a
+standard-library-only Python helper. The helper fetches and verifies the fixed
+Alpha-3 runtime on first approved use, then invokes `bin/semantic-scala`
+directly; it contains no MCP configuration and starts no MCP process. Codex CLI
+`0.157.1` passed disposable marketplace installation, installed-skill loading,
+packaged-helper invocation, and interpretation of `Fixture.value: Option[Int]`.
+Cold acquisition and warm cache-only reuse passed with unchanged fixture bytes.
+This is local technical qualification, not an OpenAI submission or public
+listing. Current OpenAI guidance requires partner contact before submitting
+the local-execution/local-file/offline workflow; production-ready original logo
+and composer-icon assets also remain human prerequisites. The prepared
+owner-approved privacy amendment covers the OpenAI/Codex path, first-use
+download, and separate cache; the public URL will reflect it after separately
+authorized publication. See
+[`docs/openai-skills-only-plugin.md`](docs/openai-skills-only-plugin.md).
+
 The repository now also contains a separate directory-compatible thin Claude
 candidate. It retains the canonical skill and local exact-eight MCP interface,
 but replaces the bundled runtime with a Python 3.11 bootstrap that downloads
@@ -514,7 +533,14 @@ benchmark reproducibility beyond its stated small-sample gate.
   commit `05d4f0de35a02916504bf29156bc42270cf77a23`; the unchanged runtime remains
   cold/warm client qualified. Its first start requires network access and Python 3.11 or newer to
   fetch and verify the fixed Alpha-3 MCPB. Human portal acceptance and review
-  remain untested.
+  remain distinct from local qualification.
+- The separate seven-file OpenAI skills-only candidate is locally validated on
+  Codex CLI `0.157.1` for one direct-CLI `effect-summary` workflow with no MCP
+  dependency. It is not submitted. OpenAI partner review, production logo and
+  composer-icon assets, verified publisher identity, country selection, and
+  policy attestations remain prerequisites. The OpenAI-specific privacy
+  amendment is approved in the prepared product diff and awaits repository
+  publication.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

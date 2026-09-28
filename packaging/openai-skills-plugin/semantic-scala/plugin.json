@@ -1,0 +1,36 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "semantic-scala",
+  "version": "0.1.0-alpha.3",
+  "description": "Read-only declared Scala effect-wrapper evidence for local Codex workspaces.",
+  "author": {
+    "name": "Dmytro Mitin",
+    "url": "https://github.com/DmytroMitin"
+  },
+  "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
+  "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "license": "Apache-2.0",
+  "keywords": [
+    "scala",
+    "effects",
+    "compiler",
+    "agent-skill"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "semantic-scala",
+        "shortDescription": "Scala effect type evidence",
+        "longDescription": "Inspect declared effect-like return types in a local Scala source file with the exact semantic-scala Alpha-3 CLI. This skills-only package is scoped to Codex environments with a local Linux x86_64 workspace and Python 3.11 or later. It does not use MCP or run builds.",
+        "developerName": "Dmytro Mitin",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Inspect declared Scala effect wrappers"
+        ],
+        "defaultPrompt": [
+          "Inspect the declared effect wrapper for a Scala method in the current workspace."
+        ]
+      }
+    }
+  }
+}

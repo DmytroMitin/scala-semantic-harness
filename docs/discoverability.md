@@ -100,6 +100,22 @@ the earlier `fc3a6c8` detection event; no duplicate submission or corrective
 portal action was attempted. The owner-approved [privacy policy](../PRIVACY.md)
 remains public and exposed from the qualified source.
 
+The independent OpenAI skills-only candidate is maintained under
+[`packaging/openai-skills-plugin/`](../packaging/openai-skills-plugin/). It is
+not the local-MCP native candidate and contains no MCP configuration. Its
+package-contained helper exposes one read-only direct-CLI `effect-summary`
+workflow, obtains the exact hash-pinned Alpha-3 runtime on first use, and reuses
+the verified cache afterward. Clean cold, warm closed-proxy, and disposable
+Codex CLI 0.157.1 installed-client proofs passed with unchanged fixture bytes
+and no MCP process. This establishes local Codex technical value, not a public
+listing or universal ChatGPT support. Before any OpenAI Platform draft, obtain
+the product-specific determination required for local execution/file/offline
+use and prepare original production logo and composer-icon assets. Verified
+identity, Apps Management write access, availability selection, and policy
+attestations remain human gates. The OpenAI-specific privacy amendment is
+owner-approved in the prepared product diff and awaits repository publication. See
+[`openai-skills-only-plugin.md`](openai-skills-only-plugin.md).
+
 ## Scope of catalog claims
 
 Catalog indexes and submission rules change independently of this repository.

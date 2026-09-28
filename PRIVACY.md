@@ -6,11 +6,11 @@ Effective date: 28 September 2026
 
 This Privacy Policy describes how the `semantic-scala` open-source project,
 including its command-line tools, local Model Context Protocol (MCP) server,
-agent skill, Claude Code plugin, and first-start bootstrap, handles information.
-It applies to the project software maintained at
-<https://github.com/DmytroMitin/scala-semantic-harness>. It does not replace the
-privacy policies of Claude, GitHub, build tools, or other software and services
-you choose to use with semantic-scala.
+agent skill, Claude Code plugin, OpenAI skills-only plugin, and first-start
+bootstraps, handles information. It applies to the project software maintained
+at <https://github.com/DmytroMitin/scala-semantic-harness>. It does not replace
+the privacy policies of Claude, ChatGPT, Codex, Anthropic, OpenAI, GitHub, build
+tools, or other software and services you choose to use with semantic-scala.
 
 ## 2. Operator and support
 
@@ -41,18 +41,18 @@ information. semantic-scala is not designed to identify or collect that
 information as a separate purpose, but it may process it locally when it is
 present in the inputs selected by the user or calling client. Users should not
 select workspaces or artifacts containing information they do not intend the
-local tool and their Claude client to process.
+local tool and their selected AI client to process.
 
 ## 4. First-start GitHub download
 
-The thin Claude Code plugin requires network access on first start. Its
-bootstrap downloads one fixed public Alpha-3 MCPB runtime from this project's
-GitHub Release:
+The thin Claude Code plugin and OpenAI skills-only plugin require network
+access on first semantic use. Their bootstraps download one fixed public
+Alpha-3 MCPB runtime from this project's GitHub Release:
 
 <https://github.com/DmytroMitin/scala-semantic-harness/releases/download/0.1.0-alpha.3/semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb>
 
 The request contains a fixed semantic-scala user-agent string and ordinary
-HTTPS request metadata. The bootstrap does not deliberately add workspace
+HTTPS request metadata. The bootstraps do not deliberately add workspace
 files, source code, tool inputs, semantic results, environment values, or
 secrets to that request. GitHub and network intermediaries may receive request
 metadata such as an IP address, timestamps, headers, and proxy information.
@@ -66,20 +66,28 @@ cache and do not make this download request.
 ## 5. No semantic-scala backend, telemetry, cookies, or account
 
 The project does not operate a remote semantic-scala backend. The local CLI,
-MCP server, skill, and bootstrap do not provide project-operated analytics or
+MCP server, skill, and bootstraps do not provide project-operated analytics or
 telemetry, do not set cookies, and do not require a semantic-scala account. The
 CLI and MCP server return results and diagnostics over local process streams;
 semantic-scala does not create its own persistent application log. A host
 application, terminal, operating system, proxy, build tool, or other service
 may separately retain activity under its own settings and policies.
 
-## 6. Claude and Anthropic
+## 6. Claude, ChatGPT, Codex, Anthropic, and OpenAI
 
 When semantic-scala is used through Claude or Claude Code, the Claude product
 may send conversation content, tool inputs, and tool results to Anthropic.
 That processing is controlled by the user's Claude product, account,
 organization, and settings, not by a semantic-scala-operated service. See
 [Anthropic's Privacy Policy](https://www.anthropic.com/legal/privacy) and the
+terms and settings applicable to the user's account.
+
+When semantic-scala is used through ChatGPT or Codex, the OpenAI product may
+send conversation content, selected workspace content, command inputs,
+command outputs, and semantic results to OpenAI. That processing is controlled
+by the user's OpenAI product, account, organization, and settings, not by a
+semantic-scala-operated service. See
+[OpenAI's Privacy Policy](https://openai.com/policies/privacy-policy/) and the
 terms and settings applicable to the user's account.
 
 ## 7. Build tools and other third parties
@@ -91,19 +99,22 @@ write their normal outputs, caches, logs, or temporary files. Their exact data
 handling depends on the target project and the user's configuration.
 
 semantic-scala does not control third-party build tools, dependency
-repositories, proxies, operating systems, Claude clients, or other integrations.
+repositories, proxies, operating systems, AI clients, or other integrations.
 Users are responsible for reviewing the configuration, permissions, and
 privacy terms of those third parties before invoking them.
 
 ## 8. Local storage, retention, and removal
 
-The first-start bootstrap stores the verified runtime below
+The Claude Code first-start bootstrap stores the verified runtime below
 `$XDG_CACHE_HOME/semantic-scala/runtime/0.1.0-alpha.3/<sha256>` when
 `XDG_CACHE_HOME` is an absolute path, or below
-`~/.cache/semantic-scala/runtime/0.1.0-alpha.3/<sha256>` otherwise. Its marker
-contains runtime provenance and inventory facts, not workspace source,
-credentials, environment values, or tool results. The downloaded MCPB and
-incomplete installation directories are removed after success or failure.
+`~/.cache/semantic-scala/runtime/0.1.0-alpha.3/<sha256>` otherwise. The OpenAI
+skills-only helper stores its verified direct-CLI runtime below
+`$XDG_CACHE_HOME/semantic-scala/openai-skills-runtime/0.1.0-alpha.3/<sha256>`,
+or below the corresponding path under `~/.cache`. Their markers contain
+runtime provenance and inventory facts, not workspace source, credentials,
+environment values, or tool results. Downloaded MCPB files and incomplete
+installation directories are removed after success or failure.
 
 Explicit semantic-scala classpath-cache modes may store bounded project,
 classpath, digest, timestamp, size, count, kind, and validation metadata below
@@ -116,9 +127,10 @@ classpath JAR bytes below the selected workspace's
 may retain additional data in their own locations.
 
 Local data remains until the user or the relevant build or host tool removes
-it. Uninstalling the plugin does not automatically remove runtime or build
+it. Uninstalling a plugin does not automatically remove runtime or build
 caches. While no semantic-scala process is running, users can remove the
-applicable versioned `semantic-scala/runtime` directory, optional
+applicable versioned `semantic-scala/runtime` or
+`semantic-scala/openai-skills-runtime` directory, optional
 `semantic-scala/sbt-classpath` directories, and workspace
 `target/semantic-scala` outputs. The next operation may recreate needed data or
 download the verified runtime again.
@@ -131,6 +143,8 @@ may nevertheless be disclosed to:
 
 - Anthropic when a Claude client transmits prompts, tool inputs, or tool
   results;
+- OpenAI when a ChatGPT or Codex client transmits prompts, selected workspace
+  content, command inputs, command outputs, or semantic results;
 - GitHub and network intermediaries for the fixed first-start runtime request;
 - build tools, dependency repositories, proxies, or other services configured
   or invoked by the user; and
@@ -143,9 +157,9 @@ policy.
 
 ## 10. Security controls
 
-The thin bootstrap uses HTTPS, accepts only HTTPS redirects, pins the expected
-runtime byte count and SHA-256 digest, verifies the package manifest and file
-inventory, rejects unsafe archive entries, and installs through owner-only
+The thin bootstraps use HTTPS, accept only HTTPS redirects, pin the expected
+runtime byte count and SHA-256 digest, verify the package manifest and file
+inventory, reject unsafe archive entries, and install through owner-only
 temporary directories and an atomic rename where the platform supports those
 permissions. The runtime URL cannot be changed through an environment
 variable. semantic-scala also validates bounded inputs and reports the side

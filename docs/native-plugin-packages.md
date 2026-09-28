@@ -211,19 +211,40 @@ Management write permission, use a verified developer or business identity,
 review current policy attestations and terms, and choose the countries where
 support and legal terms are ready. The current local-MCP candidate must not be
 uploaded as a `With MCP` submission: that lane requires a separately
-authorized, deployed, production HTTPS endpoint, domain verification, accurate
-tool annotations, privacy/terms/support URLs, five positive tests, and three
-negative tests. The alternative `Skills only` lane would require a separately
-assembled final skill bundle and the same listing/test materials. The current
-first-party documentation does not identify a submission fee; verify that
-again before any human action. Submission starts review and remains reversible
-as a draft; approval still requires a separate owner choice to publish.
+authorized, deployed, production HTTPS endpoint and the applicable remote-MCP
+review materials.
 
-Prepared facts are the name, descriptions, author, repository, license,
-category/tags, canonical skill, platform boundary, and validated local runtime.
-Not prepared are a logo, public privacy/terms/support pages, a remote endpoint,
-tool annotations, portal test cases, country selection, or policy
-attestations.
+The independent `Skills only` candidate is maintained under
+[`packaging/openai-skills-plugin/`](../packaging/openai-skills-plugin/). It is a
+seven-file package with no MCP configuration. Its allowlisted helper downloads
+and verifies the immutable Alpha-3 MCPB on first use, safely caches the verified
+runtime, executes only its direct CLI entry point, and exposes one read-only
+`effect-summary` workflow. A
+clean cold environment, warm cache-only reuse, and a disposable Codex CLI
+marketplace installation all returned structured semantic evidence without
+changing the fixture or starting an MCP process. The package and owner packet
+are locally prepared but have not been uploaded or submitted.
+
+Current first-party guidance requires product-specific OpenAI contact before
+submission when a plugin's core value depends on local execution, arbitrary
+local-file access, or offline operation. That determination remains a human
+prerequisite for this candidate. The prepared owner-approved privacy amendment
+covers the OpenAI/Codex path, first-use download, and separate cache; the public
+URL will reflect it after separately authorized repository publication. The
+package remains held on original production logo and composer-icon assets.
+Verified identity, Apps Management write access, country selection, and policy
+attestations are portal-only prerequisites. Current submission-error guidance
+marks website, support, privacy, and terms URLs optional for a skills-only ZIP,
+so Apache-2.0 remains the software license and no separate terms document is
+being represented as a current skills-only requirement. The current
+first-party documentation does not identify a submission fee; verify that
+again before any human action. Submission begins review; approval and
+publication remain separate owner decisions.
+
+See [`openai-skills-only-plugin.md`](openai-skills-only-plugin.md) and the
+[prepared submission packet](../distribution/openai-skills-only/submission.md)
+for the exact supported surface, listing claims, tests, and remaining human
+prerequisites.
 
 ### Claude community marketplace
 

@@ -1,0 +1,72 @@
+{
+  "$schema": "semantic-scala.openai-skills-only-submission-preparation.v1",
+  "observedOn": "2026-09-28",
+  "submissionType": "skills-only",
+  "pluginName": "semantic-scala",
+  "displayName": "semantic-scala",
+  "version": "0.1.0-alpha.3",
+  "shortDescription": "Scala effect type evidence",
+  "longDescription": "Inspect declared effect-like return types in a local Scala source file with the exact semantic-scala Alpha-3 CLI. The package provides one read-only Codex workflow, downloads a fixed hash-pinned Linux x86_64 runtime on first approved use, and then reuses an owner-only cache. It does not use MCP or run project builds. Ordinary Chat is not a supported execution surface for this version.",
+  "developerIdentity": {
+    "status": "verified-individual-or-business-required",
+    "value": null
+  },
+  "developerName": "Dmytro Mitin",
+  "category": "Developer Tools",
+  "capabilities": [
+    "Inspect declared Scala effect wrappers"
+  ],
+  "website": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "supportUrl": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
+  "privacy": {
+    "url": "https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md",
+    "status": "owner-approved-pending-repository-publication"
+  },
+  "terms": {
+    "url": null,
+    "requiredForSkillsOnlyZip": false,
+    "status": "not-required-by-current-skills-only-zip-contract"
+  },
+  "logo": {
+    "path": null,
+    "status": "human-design-required"
+  },
+  "composerIcon": {
+    "path": null,
+    "status": "human-design-required"
+  },
+  "starterPrompts": [
+    "Inspect the declared effect wrapper for Fixture.value in Fixture.scala.",
+    "Does Repo.lookup declare optional absence with Option? Check src/main/scala/example/Repo.scala.",
+    "Decide whether semantic evidence is needed for this Scala documentation-only edit."
+  ],
+  "reviewTests": {
+    "positive": [
+      "direct-effect-summary",
+      "indirect-option-uncertainty",
+      "multiple-declarations",
+      "warm-cache-reuse",
+      "correct-no-tool-restraint"
+    ],
+    "negative": [
+      "prose-only-no-run",
+      "unsupported-build-diagnostics",
+      "unsafe-path-or-build-refusal"
+    ]
+  },
+  "availability": {
+    "countriesAndRegions": null,
+    "status": "human-selection-required"
+  },
+  "releaseNotes": "Initial skills-only Alpha-3 candidate with one read-only declared-effect workflow and no MCP server.",
+  "mcpServers": [],
+  "partnerReview": {
+    "requiredBeforeSubmission": true,
+    "reason": "Core value depends on local execution, local file access, and warm offline operation."
+  },
+  "policyAttestations": {
+    "status": "human-review-and-acceptance-required"
+  },
+  "portalActions": 0,
+  "submissionStatus": "not-created"
+}

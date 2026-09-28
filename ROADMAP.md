@@ -37,6 +37,14 @@ execution ledger and does not promise delivery dates.
   exact Claude candidate has a qualified public Git source and one directory
   review submission, but no public directory listing or install-channel claim
   exists.
+- A separate deterministic seven-file OpenAI skills-only candidate now has
+  clean cold direct-CLI, warm cache-only, and Codex CLI 0.157.1 installed-skill
+  proof for read-only `effect-summary`, with no MCP configuration or process.
+  It remains unsubmitted and held on OpenAI product-specific review for local
+  execution/file access/offline use, logo and composer-icon assets, verified
+  identity, availability, and attestations. Its OpenAI-specific privacy
+  amendment is owner-approved in the prepared product diff and awaits
+  repository publication.
 - Agent-first alpha-2 installation, MCP, and immutable-skill recipes with a
   client qualification matrix and explicit CLI/MCP surface asymmetry.
 - Examples, CI, benchmark fixtures, and methodology.
@@ -135,6 +143,14 @@ execution ledger and does not promise delivery dates.
    identifies `05d4f0d` as the version now in review. Follow-up must monitor the
    existing submission and must not create a duplicate. The owner-approved privacy policy remains public and
    exposed from the qualified source.
+   Keep the independent OpenAI skills-only candidate limited to its qualified
+   direct-CLI effect-summary workflow. Before any Platform draft, obtain the
+   current OpenAI partner/product-specific determination for local execution,
+   local file access, and warm offline use; complete the original production
+   logo and composer-icon assets; then revalidate current portal requirements.
+   The OpenAI-specific privacy amendment is owner-approved locally and awaits
+   separately authorized repository publication. Do not convert the local-MCP
+   package into a public `With MCP` submission.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3
@@ -385,6 +401,10 @@ privacy qualification. These tiers do not authorize release actions.
 - Preserve the locally validated native OpenAI/Codex and Claude Code candidate
   transforms and both bounded installed-client qualifications. Keep public
   marketplace submission, review, and publication as separate gates.
+- Preserve the independent OpenAI skills-only source, deterministic generator,
+  exact canonical-policy reference, no-MCP truthfulness, allowlisted helper,
+  cold/warm proof, and installed-client qualification. Keep the documented
+  partner, privacy, logo, identity, availability, and attestation holds literal.
 - Keep the public Maven/Coursier route independently reproducible without
   turning the application into a promised embeddable library API.
 - Preserve clean-environment CLI and generic stdio MCP validation; skill
