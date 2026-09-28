@@ -114,21 +114,22 @@ execution ledger and does not promise delivery dates.
    semantic call passed. A 2026-09-27 recheck found that the current directory
    portal follows a branch or tag and enforces 50 MiB archive, 256 MiB unpacked,
    and 5 MiB per-file limits; the qualified candidate exceeds the latter two.
-   The repository now provides a deterministic 6-file, 39,938-byte thin alternative
+   The repository now provides a deterministic 6-file, 40,205-byte thin alternative
    with a Python 3.11 fixed-URL, fixed-size, fixed-digest bootstrap and
    owner-only atomic cache. Claude Code `2.1.283` passed strict validation and
    isolated cold/warm installed-client use with one read-only semantic call per
    session. The exact thin wrapper is now published on the dedicated
    repository's `main` at commit
-   `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`; the historical full tree
-   remains at its parent commit. Anonymous byte readback, the actual 16,983-byte
-   GitHub archive, exact-pin/default-branch validation, and final public-source
-   cold/warm client use passed. Current evaluator guidance can hold the
+   `05d4f0de35a02916504bf29156bc42270cf77a23`; the previously qualified thin
+   source remains at its parent commit. Anonymous byte readback, the actual
+   17,129-byte GitHub archive, and strict plugin/marketplace validation passed;
+   runtime evidence remains inherited because bootstrap bytes are unchanged.
+   Current evaluator guidance can hold the
    launcher/download model for human review. One authenticated portal validation
-   resolved `main` to the qualified commit and passed all seven checks with one
-   missing-icon warning. The exact draft is blocked before submission because
-   the mandatory privacy-policy acknowledgement has no supporting policy link;
-   no acknowledgement, review request, or public listing was created.
+   resolved `main` to `fc3a6c8` and passed all seven checks with one missing-icon
+   warning. The owner-approved privacy policy is now public and exposed from the
+   qualified source. The exact draft remains unsubmitted; no acknowledgement,
+   review request, or public listing was created.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3

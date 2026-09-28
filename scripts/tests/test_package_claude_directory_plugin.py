@@ -360,6 +360,20 @@ class ThinPluginContractTest(unittest.TestCase):
             },
         )
 
+    def test_candidate_exposes_the_public_privacy_policy(self) -> None:
+        plugin = self.base / "plugin"
+        PACKAGER.assemble(plugin)
+        readme = (plugin / "README.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md",
+            readme,
+        )
+        manifest = json.loads(
+            (plugin / ".claude-plugin/plugin.json").read_text(encoding="utf-8")
+        )
+        self.assertNotIn("privacyPolicy", manifest)
+        self.assertNotIn("privacyPolicyUrl", manifest)
+
 
 if __name__ == "__main__":
     unittest.main()

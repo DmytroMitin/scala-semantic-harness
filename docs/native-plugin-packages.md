@@ -55,16 +55,17 @@ The historical self-contained candidate remains at distribution commit
 `c05aac9f38e7755a51f511078ff555a587f97ccf`; its 339,741,892 unpacked bytes and
 54,008,260-byte runtime image exceed current portal limits. Public `main` now
 contains the six-file thin wrapper qualified at
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. Its actual 16,983-byte GitHub
-source archive, 39,938 unpacked bytes, 21,188-byte largest file, and ten total
+`05d4f0de35a02916504bf29156bc42270cf77a23`. Its actual 17,129-byte GitHub
+source archive, 40,205 unpacked bytes, 21,188-byte largest file, and eleven total
 archive entries pass every documented hard limit. Exact-pin and `main` source
-validation plus final public-source cold/warm Claude Code use passed. Published
+validation passed. The bootstrap and runtime bytes are unchanged, so the prior
+public-source cold/warm Claude Code evidence remains applicable. Published
 evaluator guidance can hold the launcher/download chain for human review. The
-authenticated portal resolved `main` to the qualified commit and passed seven
-checks with one missing-icon warning. One draft remains blocked before
-submission because the qualified source has no privacy-policy link supporting
-the mandatory compliance acknowledgement; no review request or acceptance has
-occurred.
+authenticated portal previously resolved `main` to `fc3a6c8` and passed seven
+checks with one missing-icon warning. The owner-approved
+[privacy policy](../PRIVACY.md) is now public and linked from the plugin README;
+the exact draft remains unsubmitted and ready for later revalidation and owner
+acknowledgement review.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
@@ -232,7 +233,7 @@ Code `2.1.278` and remains preserved at commit
 Its earlier anonymous clone, external-source validation, isolated installation,
 and one read-only semantic call remain historical evidence. Public `main` now
 contains the thin directory-compatible wrapper, qualified at commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. The maintained template and
+`05d4f0de35a02916504bf29156bc42270cf77a23`. The maintained template and
 assembler in this repository remain the source of truth. See the
 [owner preparation packet](../distribution/claude-community/submission.md).
 
@@ -244,9 +245,10 @@ start. It requires Python 3.11 or newer, verifies the fixed 285,603,142-byte
 artifact and fixed SHA-256 before safe extraction, and stores an owner-only
 atomic installation in the semantic-scala user cache. It retains no MCPB after
 installation and needs no host Java. The deterministic candidate contains 6
-files and 39,938 unpacked bytes; its largest file is 21,188 bytes and its ZIP is
-14,697 bytes. Claude Code `2.1.283` passed strict validation, cold-cache client
-use, and warm-cache client use with bootstrap-fetch traffic forced to fail.
+files and 40,205 unpacked bytes; its largest file is 21,188 bytes and its ZIP is
+14,843 bytes. Claude Code `2.1.283` passed strict validation for the privacy-link
+change. Earlier cold-cache and warm/offline client evidence remains applicable
+because bootstrap and runtime bytes are unchanged.
 See [the thin-plugin contract](claude-directory-thin-plugin.md).
 
 The older Claude Console form is no longer supported. The current portal is
@@ -254,19 +256,20 @@ available to paid Pro, Max, Team, and Enterprise accounts with the documented
 role, checks GitHub push access, follows a branch or tag, validates the plugin,
 asks data-handling questions, and requires four compliance acknowledgements
 before `Submit for review`. Current first-party documentation does not identify
-a separate submission fee. Authenticated validation passed for public `main` at
-exact commit `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`, and one exact draft was
-saved. The compliance step requires a truthful privacy-policy acknowledgement,
-but the qualified source exposes no applicable policy link. All acknowledgements
-remain unchecked; no contact email, review request, or public listing was
-created. Runtime bootstrap review remains a later human security gate.
+a separate submission fee. Authenticated validation previously passed for
+public `main` at exact commit
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`, and one exact draft was saved. The
+current qualified source exposes the owner-approved privacy policy through its
+README. All acknowledgements remain unchecked; no contact email, review request,
+or public listing was created. Runtime bootstrap review remains a later human
+security gate.
 
 Prepared facts are the strict-valid manifest, public commit-pinned source, local
 stdio configuration, canonical skill, exact runtime provenance, platform
-boundary, deterministic inventory, listing copy, reviewer plan, and technical
-data-handling note. A separate authorized source-publication task must add and
-qualify an applicable privacy-policy link before the existing draft resumes.
-Terms acceptance, review, and any public listing remain human-only actions.
+boundary, deterministic inventory, listing copy, reviewer plan, technical
+data-handling note, and public privacy-policy link. The existing draft may be
+resumed and revalidated only in a separately authorized task. Terms acceptance,
+review, and any public listing remain human-only actions.
 
 ## Catalog pause
 

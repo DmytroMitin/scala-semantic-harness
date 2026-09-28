@@ -79,19 +79,21 @@ candidate at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`. That historical
 tree exceeds the current directory's 50 MiB GitHub archive, 256 MiB unpacked,
 and 5 MiB per-file gates.
 
-Public `main` now contains the qualified thin candidate: 6 files, 39,938
-unpacked bytes, 21,188-byte largest file, and a 14,697-byte deterministic ZIP.
+Public `main` now contains the qualified thin candidate: 6 files, 40,205
+unpacked bytes, 21,188-byte largest file, and a 14,843-byte deterministic ZIP.
 Its Python 3.11 bootstrap fetches only the fixed Alpha-3 MCPB, verifies the exact
 size and SHA-256, safely installs it in an owner-only cache, and reuses that
 cache offline. The public tree was anonymously byte-verified at commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. Its 16,983-byte GitHub source
+`05d4f0de35a02916504bf29156bc42270cf77a23`. Its 17,129-byte GitHub source
 archive and unpacked tree pass the documented hard limits. Claude Code
-`2.1.283` passed exact-pin and `main` installation plus final public-source
-cold/warm treatments. Published evaluator guidance can hold the bootstrap for
-human review. The authenticated portal validated the exact `main` commit and
-saved one draft, but the mandatory privacy-policy acknowledgement lacks a
-supporting policy link in the qualified source. No acknowledgement, review
-request, or public listing was created.
+`2.1.283` passed strict plugin and marketplace validation for the README-only
+privacy-link change. The earlier exact-pin/default-branch cold/warm treatment
+remains applicable because bootstrap and runtime bytes are unchanged. Published
+evaluator guidance can hold the bootstrap for human review. The authenticated
+portal previously validated `main` at `fc3a6c8` and saved one draft. The
+owner-approved [privacy policy](../PRIVACY.md) is now public and exposed from
+the qualified source. No acknowledgement, review request, or public listing
+was created.
 
 ## Scope of catalog claims
 

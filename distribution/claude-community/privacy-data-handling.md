@@ -1,18 +1,19 @@
-# Technical data-handling note for owner review
+# Technical data-handling companion to the privacy policy
 
-This is a factual technical note, not a legal privacy policy or approved terms.
-It is prepared in case the post-login Claude community submission flow asks for
-data-handling information. The reviewed plugin source is the repository root of
+This factual implementation note supplements the owner-approved public
+[semantic-scala Privacy Policy](../../PRIVACY.md). The current plugin source is
+the repository root of
 <https://github.com/DmytroMitin/semantic-scala-claude-plugin> on `main`,
 immutably qualified at commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`.
+`05d4f0de35a02916504bf29156bc42270cf77a23`.
 
-The authenticated directory portal validated that exact source on
-2026-09-27, but its mandatory compliance step requires an owner acknowledgement
-that the plugin's privacy policy accurately describes its data handling. This
-technical note cannot support that legal acknowledgement: the source exposes no
-privacy-policy link, and Task 255 did not authorize creating or publishing one.
-The exact portal draft therefore remains unsubmitted.
+The authenticated directory portal previously validated `main` at
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11` on 2026-09-27. Task 256 published
+the privacy policy and exposed its stable URL from the plugin README without
+changing runtime behavior. It did not log into the portal, modify the existing
+draft, check an acknowledgement, or submit a review request. The exact draft
+therefore remains unsubmitted and ready for a later revalidation and owner
+acknowledgement review.
 
 ## Local plugin behavior
 

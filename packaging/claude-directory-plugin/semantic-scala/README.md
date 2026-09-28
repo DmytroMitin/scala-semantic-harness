@@ -31,3 +31,10 @@ and system zlib. Semantic tools operate on paths supplied to them; build-backed
 tools can run project build, plugin, or test code and write normal outputs or
 caches. Review the canonical skill's approval and evidence boundaries before
 using those tools.
+
+## Privacy
+
+Read the public
+[semantic-scala Privacy Policy](https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md)
+for the local processing, first-start GitHub request, Claude boundary, storage,
+retention, sharing, removal, and contact details.

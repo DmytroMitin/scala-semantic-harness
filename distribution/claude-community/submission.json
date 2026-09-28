@@ -1,15 +1,15 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
   "observedOn": "2026-09-28",
-  "status": "portal-validation-passed-draft-blocked-missing-privacy-policy",
-  "terminalState": "CLAUDE_DIRECTORY_SUBMISSION_BLOCKED_ON_OWNER_ACKNOWLEDGEMENT",
+  "status": "privacy-policy-published-ready-to-resume-existing-draft",
+  "terminalState": "CLAUDE_DIRECTORY_EXISTING_DRAFT_READY_FOR_PRIVACY_ACKNOWLEDGEMENT_REVIEW",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
     "version": "0.1.0-alpha.3",
     "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
     "license": "Apache-2.0",
-    "qualifiedSourceCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11"
+    "qualifiedSourceCommit": "05d4f0de35a02916504bf29156bc42270cf77a23"
   },
   "listing": {
     "shortDescription": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
@@ -33,17 +33,17 @@
     "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
     "support": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
     "license": "https://github.com/DmytroMitin/scala-semantic-harness/blob/32c67c6b20e29a4b907623fd4c2aaa5e33d176f9/LICENSE",
-    "privacyPolicy": null
+    "privacyPolicyUrl": "https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md"
   },
   "qualifiedCandidate": {
     "route": "fixed-immutable-mcpb-bootstrap",
     "state": "published-and-public-source-qualified",
-    "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
-    "archiveSha256": "738c53b2ceadf5937c9deefc5375e9000a4022bb8342fc675e12671c06e3d213",
+    "contentSha256": "6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473",
+    "archiveSha256": "fc47c04c0b77c42fb6fc2f0fe8f8ad5a1fb3734dc8599dec3d2997b8b79c12a5",
     "fileCount": 6,
-    "totalBytes": 39938,
+    "totalBytes": 40205,
     "largestFileBytes": 21188,
-    "archiveBytes": 14697,
+    "archiveBytes": 14843,
     "sourceMcpbSha256": "f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d",
     "sourceMcpbBytes": 285603142,
     "hostPython": ">=3.11",
@@ -56,11 +56,11 @@
       "generatedOutput": "fresh ignored output directory selected by the assembler caller",
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
       "published": true,
-      "nextGate": "publish-and-qualify-an-applicable-privacy-policy-before-resuming-the-existing-draft",
+      "nextGate": "resume-and-revalidate-the-existing-draft-with-owner-reviewed-current-acknowledgements",
       "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "branch": "main",
-      "qualifiedCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
-      "qualifiedTree": "da2ce788648462dd461a8f7b09c8e33159df1f54",
+      "qualifiedCommit": "05d4f0de35a02916504bf29156bc42270cf77a23",
+      "qualifiedTree": "dbf80cd445d2ad626d082efd4f129e3b9b637c04",
       "pluginRoot": "repository-root"
     },
     "separatePublisherMarketplaceRepositoryRequired": false,
@@ -79,15 +79,11 @@
       "maximumUnpackedBytesExclusive": 268435456,
       "maximumIndividualFileBytesExclusive": 5242880,
       "qualifiedCandidateCompatible": true,
-      "blockingFacts": [
-        "The live compliance step requires the owner to attest that the plugin's privacy policy accurately describes its data handling.",
-        "The qualified source exposes no privacy-policy link, and privacy-data-handling.md explicitly states that it is a technical note rather than a legal privacy policy.",
-        "Task 255 forbids source or distribution mutation, so the acknowledgement was left unchecked and the review request was not created."
-      ],
+      "blockingFacts": [],
       "remainingGates": [
-        "separately authorize, publish, and qualify an applicable privacy policy link",
         "resume the existing exact draft without creating a duplicate",
-        "owner approval of all current acknowledgements and the final submit-for-review action"
+        "revalidate the changed public main source",
+        "owner approval of every current acknowledgement and a separate final submit-for-review confirmation"
       ],
       "reviewHoldFacts": [
         "The published evaluator guidance says unreadable local MCP command chains may be held for manual review.",
@@ -132,41 +128,41 @@
       "outputContract": "fresh ignored output directory",
       "installable": true,
       "published": true,
-      "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
+      "contentSha256": "6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473",
       "fileCount": 6,
       "publicRepository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "publicBranch": "main",
-      "qualifiedCommit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11"
+      "qualifiedCommit": "05d4f0de35a02916504bf29156bc42270cf77a23"
     }
   },
   "validation": {
     "installedClaudeCodeVersion": "2.1.220",
     "disposableCurrentClaudeCodeVersion": "2.1.283",
-    "strictPluginValidation": "pass-thin-candidate",
-    "strictDisposableMarketplaceValidation": "pass-thin-candidate",
+    "strictPluginValidation": "pass-privacy-link-candidate-claude-code-2.1.283",
+    "strictDisposableMarketplaceValidation": "pass-privacy-link-candidate-claude-code-2.1.283",
     "communityExternalSourceValidation": "legacy-community-action-not-applicable-to-current-directory-portal; current-strict-source-and-marketplace-validation-pass",
-    "publicPinnedGitInstall": "pass-exact-commit-and-main-resolved-to-fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
-    "installedClientQualification": "pass-final-public-source-cold-and-warm",
+    "publicPinnedGitInstall": "strict-source-validation-pass-at-05d4f0de35a02916504bf29156bc42270cf77a23; installed-client-retreatment-not-required-for-documentation-only-change",
+    "installedClientQualification": "inherited-from-fc3a6c8e2ce74923141b9a5b740513bbee04ac11; runtime-and-bootstrap-bytes-unchanged",
     "runtimeRetreatmentRequired": false,
-    "bootstrapSecurityTests": "pass",
+    "bootstrapSecurityTests": "inherited-pass; focused-packaging-suite-pass-with-bootstrap-bytes-unchanged",
     "coldCacheClient": "pass-one-successful-semantic-execution-after-one-pre-semantic-invalid-relative-path-rejection",
     "warmCacheOfflineFetchProof": "pass-one-successful-semantic-execution-cache-marker-unchanged-dead-github-proxy",
     "semanticCallAccounting": "cold session issued two tool invocations: the first was rejected before semantic execution because the client supplied an absolute file path, then one corrected read-only semantic call succeeded; warm session issued exactly one read-only semantic call and succeeded",
     "publicGithubArchive": {
-      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/fc3a6c8e2ce74923141b9a5b740513bbee04ac11.zip",
-      "bytes": 16983,
-      "sha256": "6fcc25d296a36d43ca9a45229ec55c581a76032f0bf296b605deb378f98e0587",
-      "entriesIncludingDirectories": 10,
+      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/05d4f0de35a02916504bf29156bc42270cf77a23.zip",
+      "bytes": 17129,
+      "sha256": "1b7bb42255518d64066eb8c49995795640774e7217425462122eedad896ae403",
+      "entriesIncludingDirectories": 11,
       "fileCount": 6,
-      "unpackedPluginBytes": 39938,
+      "unpackedPluginBytes": 40205,
       "largestFileBytes": 21188,
       "hardLimits": "pass-with-large-headroom"
     },
     "successfulReadOnlySemanticEffectSummaryCalls": 2,
     "semanticEffectSummaryToolInvocations": 3,
-    "directorySourceValidation": "pass-with-expected-future-human-review-gate",
+    "directorySourceValidation": "privacy-link-public-source-pass-with-expected-future-human-review-gate",
     "authenticatedDirectoryPortalValidation": "passed-main-at-fc3a6c8-with-one-missing-icon-warning-and-one-local-mcp-surface-note",
-    "task253FinalCandidateBoundary": "strict-plugin-and-marketplace-pass; 11 focused tests pass; direct warm offline exact-eight semantic smoke pass"
+    "task253FinalCandidateBoundary": "runtime qualification retained; Task256 documentation-only requalification has 12 focused tests and strict plugin/marketplace passes"
   },
   "assets": {
     "icon": "not-required-by-public-contract",
@@ -175,7 +171,7 @@
   },
   "humanOnly": {
     "authentication": "existing authenticated Pro session used; no credential or MFA material retained",
-    "termsAndAttestations": "reached; all four left unchecked because the required privacy-policy attestation lacked a supporting policy link",
+    "termsAndAttestations": "Task 255 reached the compliance page and left all four unchecked; Task 256 published the supporting policy link without logging in or changing the draft",
     "countryOrRegion": "not-reached",
     "paidPlanRequired": true,
     "fee": "no-separate-submission-fee-stated-in-public-documentation",

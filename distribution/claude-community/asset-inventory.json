@@ -1,6 +1,6 @@
 {
   "$schema": "semantic-scala.claude-community-asset-inventory.v1",
-  "observedOn": "2026-09-27",
+  "observedOn": "2026-09-28",
   "assets": [
     {
       "kind": "thinPluginManifest",
@@ -10,7 +10,13 @@
     {
       "kind": "listingCopy",
       "path": "distribution/claude-community/submission.json",
-      "status": "normalized-to-qualified-public-source-ready-for-owner-assisted-portal-review"
+      "status": "privacy-policy-published-ready-to-resume-existing-draft"
+    },
+    {
+      "kind": "privacyPolicy",
+      "path": "PRIVACY.md",
+      "url": "https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md",
+      "status": "owner-approved-public-policy"
     },
     {
       "kind": "reviewerTestPlan",
@@ -24,12 +30,12 @@
     },
     {
       "kind": "generatedLocalThinCandidate",
-      "contentSha256": "ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f",
+      "contentSha256": "6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473",
       "fileCount": 6,
-      "totalBytes": 39938,
+      "totalBytes": 40205,
       "largestFileBytes": 21188,
-      "archiveBytes": 14697,
-      "status": "published-and-public-source-qualified-from-cold-and-warm-client-treatments",
+      "archiveBytes": 14843,
+      "status": "privacy-link-published-and-qualified; runtime-treatment-inherited-from-unchanged-bootstrap",
       "sourceTemplatePath": "packaging/claude-directory-plugin/semantic-scala",
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
       "outputContract": "fresh ignored output directory"
@@ -38,12 +44,12 @@
       "kind": "qualifiedPublicThinPluginSource",
       "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "branch": "main",
-      "commit": "fc3a6c8e2ce74923141b9a5b740513bbee04ac11",
-      "tree": "da2ce788648462dd461a8f7b09c8e33159df1f54",
+      "commit": "05d4f0de35a02916504bf29156bc42270cf77a23",
+      "tree": "dbf80cd445d2ad626d082efd4f129e3b9b637c04",
       "root": "repository-root",
-      "githubArchiveBytes": 16983,
-      "githubArchiveSha256": "6fcc25d296a36d43ca9a45229ec55c581a76032f0bf296b605deb378f98e0587",
-      "status": "byte-verified-hard-limits-pass-review-hold"
+      "githubArchiveBytes": 17129,
+      "githubArchiveSha256": "1b7bb42255518d64066eb8c49995795640774e7217425462122eedad896ae403",
+      "status": "privacy-link-public-byte-verified-hard-limits-pass-review-hold"
     },
     {
       "kind": "historicalFullPluginSource",
@@ -55,7 +61,7 @@
     {
       "kind": "technicalDataHandlingNote",
       "path": "distribution/claude-community/privacy-data-handling.md",
-      "status": "prepared-not-legal-policy"
+      "status": "factual-companion-to-owner-approved-public-policy"
     },
     {
       "kind": "currentDirectoryContract",

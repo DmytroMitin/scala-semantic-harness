@@ -2,35 +2,40 @@
 
 Originally prepared on 2026-09-21, rechecked against the first-party directory
 contract on 2026-09-27, and exercised in the authenticated portal on
-2026-09-27--28. This is an owner-review packet for a public-source-qualified
-thin candidate with one saved portal draft, not a submitted or published
-listing.
+2026-09-27--28. The privacy-policy source and link were published and
+requalified on 2026-09-28. This is an owner-review packet for a
+public-source-qualified thin candidate with one saved portal draft, not a
+submitted or published listing.
 
 ## Outcome
 
 ```text
-CLAUDE_DIRECTORY_SUBMISSION_BLOCKED_ON_OWNER_ACKNOWLEDGEMENT
+SEMANTIC_SCALA_PRIVACY_POLICY_OWNER_APPROVED
+SEMANTIC_SCALA_PRIVACY_POLICY_PUBLIC
+CLAUDE_DIRECTORY_PLUGIN_PRIVACY_LINK_PUBLIC_AND_VERIFIED
+CLAUDE_DIRECTORY_EXISTING_DRAFT_READY_FOR_PRIVACY_ACKNOWLEDGEMENT_REVIEW
 ```
 
 The public distribution repository now has the accepted six-file thin wrapper
-on `main` at commit `fc3a6c8e2ce74923141b9a5b740513bbee04ac11` and tree
-`da2ce788648462dd461a8f7b09c8e33159df1f54`. The historical full plugin remains
-available at its parent commit, `c05aac9f38e7755a51f511078ff555a587f97ccf`.
-An anonymous clone reproduced the accepted 39,938-byte content exactly. The
-actual GitHub source archive is 16,983 bytes and passes every documented hard
-limit with large headroom. Current strict source/marketplace validation and real
-public-source cold/warm installed-client treatments passed. Published evaluator
-guidance can hold local launcher/download chains for human review, so this is a
-validation pass with an expected future human-review gate, not directory
-acceptance. The authenticated
-portal resolved `main` to `fc3a6c8`, passed all seven source checks with one
-missing-icon warning, and saved one exact draft. Submission stopped at the
-compliance step: the portal requires an acknowledgement that the plugin's
-privacy policy accurately describes its data handling, but the qualified source
-provides no privacy-policy link and the prepared technical note explicitly says
-it is not a legal privacy policy. All four acknowledgements remained unchecked,
-no contact email was entered, and no review request or public listing was
-created.
+on `main` at commit `05d4f0de35a02916504bf29156bc42270cf77a23` and tree
+`dbf80cd445d2ad626d082efd4f129e3b9b637c04`. Its parent is the previously
+qualified thin source, `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`; the
+historical full plugin remains available at
+`c05aac9f38e7755a51f511078ff555a587f97ccf`. An anonymous clone reproduced the
+accepted 40,205-byte content exactly. The actual GitHub source archive is
+17,129 bytes and passes every documented hard limit with large headroom.
+Claude Code `2.1.283` strict plugin and disposable-marketplace validation
+passed. Runtime and bootstrap bytes are unchanged, so the prior public-source
+cold/warm installed-client evidence remains applicable and was not repeated.
+
+The owner approved the exact public
+[semantic-scala Privacy Policy](../../PRIVACY.md), and the plugin README now
+exposes its stable public URL. The saved answers `No`, `No`, `Not retained`,
+`No` remain factually consistent with the policy. The authenticated portal had
+previously resolved `main` to `fc3a6c8`, passed all seven source checks with one
+missing-icon warning, and saved one exact draft. Task 256 did not log into the
+portal or change that draft: all four acknowledgements remain unchecked, no
+contact email was entered, and no review request or public listing was created.
 
 ## Prepared listing
 
@@ -40,13 +45,14 @@ created.
 - Repository: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
 - Portal branch value: `main` (or the repository default branch where the form
   omits an explicit branch)
-- Immutable qualification commit: `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`
+- Immutable qualification commit: `05d4f0de35a02916504bf29156bc42270cf77a23`
 - Historical full-plugin source: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
 - Historical source commit: `c05aac9f38e7755a51f511078ff555a587f97ccf`
 - Thin-plugin source: public repository `main`, qualified at the commit above
 - Plugin root: repository root
 - License: Apache-2.0
 - Support: <https://github.com/DmytroMitin/scala-semantic-harness/issues>
+- Privacy policy: <https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md>
 - Host: Python 3.11 or newer; first-start network access; no host Java
 - Runtime: Linux x86_64, compatible GNU libc, and system zlib
 
@@ -76,12 +82,13 @@ The thin candidate fits the published hard limits, and authenticated source
 validation passed, but its runtime bootstrap is expected to receive human
 security review. The current Directory Policy requires a clear privacy-policy
 link for software that collects user data or connects to a remote service. The
-fixed GitHub runtime download makes that legal/policy gate relevant, while the
-qualified source contains only a technical data-handling note that disclaims
-being a legal privacy policy. A separately authorized source-publication task
-must resolve and qualify that link before the existing draft can truthfully
-continue. The public documentation states no separate submission fee, although
-a paid Claude plan is required.
+owner-approved policy now documents the fixed GitHub runtime download, local
+processing and retention, Claude boundary, third parties, sharing, security,
+removal, and support. The generated README exposes the stable link because the
+current plugin manifest schema has no privacy-policy field. The existing draft
+may now be resumed and revalidated in a separately authorized task. The public
+documentation states no separate submission fee, although a paid Claude plan
+is required.
 
 Public sources checked:
 
@@ -102,22 +109,24 @@ developer portal now owns submission, review, version tracking, and publication.
 The selected portal value is
 <https://github.com/DmytroMitin/semantic-scala-claude-plugin> with branch
 `main` and plugin root at the repository root. The immutable qualification
-record is commit `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`, tree
-`da2ce788648462dd461a8f7b09c8e33159df1f54`, and parent
-`c05aac9f38e7755a51f511078ff555a587f97ccf`. Its current tracked tree contains
+record is commit `05d4f0de35a02916504bf29156bc42270cf77a23`, tree
+`dbf80cd445d2ad626d082efd4f129e3b9b637c04`, and parent
+`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. Its current tracked tree contains
 exactly the accepted six files, content SHA-256
-`ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f`,
-and 39,938 bytes. An anonymous clone reproduced the byte and mode inventory and
-passed current strict Claude validation.
+`6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473`,
+and 40,205 bytes. An anonymous clone reproduced the byte and mode inventory and
+passed current strict Claude validation. The only parent-to-child content
+changes are the README privacy section and its deterministic package inventory;
+the bootstrap, skill, MCP configuration, and plugin manifest are unchanged.
 
 The actual GitHub archive for the qualified commit is available at
-<https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/fc3a6c8e2ce74923141b9a5b740513bbee04ac11.zip>.
-It measured 16,983 bytes with SHA-256
-`6fcc25d296a36d43ca9a45229ec55c581a76032f0bf296b605deb378f98e0587`.
-Safe extraction produced ten total entries including directories, six files,
-39,938 plugin bytes, and a 21,188-byte largest file. Both an exact-commit source
-fixture and a portal-like `main` fixture resolved to this tree and passed
-current strict marketplace validation.
+<https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/05d4f0de35a02916504bf29156bc42270cf77a23.zip>.
+It measured 17,129 bytes with SHA-256
+`1b7bb42255518d64066eb8c49995795640774e7217425462122eedad896ae403`.
+Safe inspection found eleven total entries including directories, six files,
+40,205 plugin bytes, and a 21,188-byte largest file. Exact-commit and
+portal-like `main` fixtures resolved to this tree and passed current strict
+marketplace validation.
 
 The historical full self-contained plugin remains available at the parent
 commit. That tree retains its earlier anonymous/source/client evidence but is
@@ -146,12 +155,13 @@ This discrepancy is retained in the evidence and side-effect ledger.
 
 An existing authenticated Pro session was used without retaining credentials,
 cookies, MFA data, or the account contact value. The initial dashboard contained
-zero submissions. Exactly one validation attempt resolved `main` to the
-qualified commit and passed. The owner approved the four factual data-handling
+zero submissions. Exactly one Task-255 validation attempt resolved `main` to
+`fc3a6c8` and passed. The owner approved the four factual data-handling
 answers (`No`, `No`, `Not retained`, `No`), which the portal saved in one
-exact draft. No compliance acknowledgement was approved or checked, no contact
-email was entered, and the final review page was not reached. `Submit for
-review` was not clicked. The resulting dashboard contains one `semantic-scala`
-draft and no pending-review or public listing. Resume that exact draft only
-after a separate authorized task publishes and qualifies an applicable
-privacy-policy link; do not create a duplicate.
+exact draft. The owner later approved the exact policy text for publication;
+that approval did not authorize or perform a portal acknowledgement. No
+compliance acknowledgement was checked, no contact email was entered, and the
+final review page was not reached. `Submit for review` was not clicked. The
+resulting dashboard still contains one `semantic-scala` draft and no
+pending-review or public listing. Resume that exact draft in a separately
+authorized task, revalidate the changed `main`, and do not create a duplicate.

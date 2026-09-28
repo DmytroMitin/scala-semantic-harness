@@ -3,16 +3,16 @@
 The repository includes a deterministic thin Claude Code plugin candidate for
 `semantic-scala` `0.1.0-alpha.3`. The exact six-file wrapper is published at the
 root of `DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. It is not a directory listing.
+`05d4f0de35a02916504bf29156bc42270cf77a23`. It is not a directory listing.
 
 ## Package contract
 
 The candidate contains the canonical `semantic-scala` skill, a Claude plugin
 manifest, a package-relative local MCP configuration, and a Python bootstrap.
 It contains no Java runtime or semantic-scala application JARs. The generated
-package has 6 files, 39,938 unpacked bytes, a largest file of 21,188 bytes, and
-a 14,697-byte ZIP archive. Its content SHA-256 is
-`ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f`.
+package has 6 files, 40,205 unpacked bytes, a largest file of 21,188 bytes, and
+a 14,843-byte ZIP archive. Its content SHA-256 is
+`6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473`.
 
 The host must provide Python 3.11 or newer. No host Java is required after the
 bootstrap has installed the verified runtime. The downloaded runtime remains
@@ -65,12 +65,15 @@ review-hold heuristics of 512 files and 256 KiB for a non-image/font file.
 
 This establishes public-source technical readiness only. Published evaluator
 guidance can place local launcher/download chains on a human-review hold. The
-authenticated portal resolved `main` to `fc3a6c8`, passed seven checks with one
-missing-icon warning, and saved one exact draft. The owner-approved factual
-data-handling answers are recorded in the submission packet, but the draft is
-blocked before submission because the qualified source exposes no applicable
-privacy-policy link for the mandatory compliance acknowledgement. No
-acknowledgement, contact email, review request, or public listing was created.
+authenticated portal previously resolved `main` to `fc3a6c8`, passed seven
+checks with one missing-icon warning, and saved one exact draft. The owner later
+approved the public [semantic-scala Privacy Policy](../PRIVACY.md), and current
+public `main` exposes its stable URL in the plugin README. Claude Code `2.1.283`
+strict plugin and marketplace validation passed for the changed source; runtime
+and bootstrap bytes are unchanged, so the expensive client treatment was not
+repeated. No portal acknowledgement, contact email, review request, or public
+listing was created. The existing draft is ready for a later revalidation and
+owner acknowledgement review.
 The historical full self-contained plugin remains preserved at parent commit
 `c05aac9f38e7755a51f511078ff555a587f97ccf`.
 
