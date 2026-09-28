@@ -3,9 +3,9 @@
 Originally prepared on 2026-09-21, rechecked against the first-party directory
 contract on 2026-09-27, and exercised in the authenticated portal on
 2026-09-27--28. The privacy-policy source and link were published and
-requalified on 2026-09-28. This is an owner-review packet for a
-public-source-qualified thin candidate with one saved portal draft, not a
-submitted or published listing.
+requalified on 2026-09-28. The exact draft was then submitted once for review
+and is In review under a content-policy hold. This is an owner-review packet for a public-source-qualified
+thin candidate and its review request, not a published listing.
 
 ## Outcome
 
@@ -13,7 +13,14 @@ submitted or published listing.
 SEMANTIC_SCALA_PRIVACY_POLICY_OWNER_APPROVED
 SEMANTIC_SCALA_PRIVACY_POLICY_PUBLIC
 CLAUDE_DIRECTORY_PLUGIN_PRIVACY_LINK_PUBLIC_AND_VERIFIED
-CLAUDE_DIRECTORY_EXISTING_DRAFT_READY_FOR_PRIVACY_ACKNOWLEDGEMENT_REVIEW
+CLAUDE_DIRECTORY_EXISTING_DRAFT_RESUMED
+CLAUDE_DIRECTORY_PERSONAL_DATA_ANSWER_CORRECTED
+CLAUDE_DIRECTORY_PRIVACY_ACKNOWLEDGEMENT_OWNER_APPROVED
+CLAUDE_DIRECTORY_COMPLIANCE_ACKNOWLEDGEMENTS_OWNER_APPROVED
+CLAUDE_DIRECTORY_SUBMISSION_CREATED_ONCE
+CLAUDE_DIRECTORY_SUBMISSION_CREATED_WITH_REVIEW_HOLD
+CLAUDE_DIRECTORY_SUBMISSION_PENDING_REVIEW
+CLAUDE_DIRECTORY_HUMAN_SUBMISSION_COMPLETE
 ```
 
 The public distribution repository now has the accepted six-file thin wrapper
@@ -30,12 +37,15 @@ cold/warm installed-client evidence remains applicable and was not repeated.
 
 The owner approved the exact public
 [semantic-scala Privacy Policy](../../PRIVACY.md), and the plugin README now
-exposes its stable public URL. The saved answers `No`, `No`, `Not retained`,
-`No` remain factually consistent with the policy. The authenticated portal had
-previously resolved `main` to `fc3a6c8`, passed all seven source checks with one
-missing-icon warning, and saved one exact draft. Task 256 did not log into the
-portal or change that draft: all four acknowledgements remain unchecked, no
-contact email was entered, and no review request or public listing was created.
+exposes its stable public URL. The live answers were saved as `Reads only`,
+`No`, `Not retained`, and `No`. The authenticated portal revalidated `main` at
+`05d4f0d`, passed all seven source checks with one missing-icon warning, and
+submitted the exact draft once after fresh owner approval of all four
+acknowledgements and the final action. The security scan completed and sent qualified version `05d4f0d` to
+content-policy review because shipped code could not be cleared automatically.
+The status is In review and no public listing exists. Versions history retains
+the earlier `fc3a6c8` detection event; no duplicate retry or corrective portal
+action was attempted.
 
 ## Prepared listing
 
@@ -85,10 +95,11 @@ link for software that collects user data or connects to a remote service. The
 owner-approved policy now documents the fixed GitHub runtime download, local
 processing and retention, Claude boundary, third parties, sharing, security,
 removal, and support. The generated README exposes the stable link because the
-current plugin manifest schema has no privacy-policy field. The existing draft
-may now be resumed and revalidated in a separately authorized task. The public
-documentation states no separate submission fee, although a paid Claude plan
-is required.
+current plugin manifest schema has no privacy-policy field. One submission is now In review after the security scan flagged shipped code
+that it could not automatically read. The portal states that an Anthropic reviewer must approve it
+before the first version can be published; the plugin page will identify
+whether the owner or reviewer publishes. The public documentation states no
+separate submission fee, although a paid Claude plan is required.
 
 Public sources checked:
 
@@ -154,14 +165,11 @@ This discrepancy is retained in the evidence and side-effect ledger.
 ## Human boundary
 
 An existing authenticated Pro session was used without retaining credentials,
-cookies, MFA data, or the account contact value. The initial dashboard contained
-zero submissions. Exactly one Task-255 validation attempt resolved `main` to
-`fc3a6c8` and passed. The owner approved the four factual data-handling
-answers (`No`, `No`, `Not retained`, `No`), which the portal saved in one
-exact draft. The owner later approved the exact policy text for publication;
-that approval did not authorize or perform a portal acknowledgement. No
-compliance acknowledgement was checked, no contact email was entered, and the
-final review page was not reached. `Submit for review` was not clicked. The
-resulting dashboard still contains one `semantic-scala` draft and no
-pending-review or public listing. Resume that exact draft in a separately
-authorized task, revalidate the changed `main`, and do not create a duplicate.
+cookies, MFA data, or the owner-supplied contact value. The exact existing
+draft was resumed and revalidated once at `05d4f0d`. The owner approved the
+answers (`Reads only`, `No`, `Not retained`, `No`), each of the four live
+acknowledgements, and a separate final submit checkpoint. `Submit for review`
+was clicked exactly once. The security scan completed and the qualified `05d4f0d` version is In review
+under a content-policy hold. Versions history retains the earlier `fc3a6c8`
+detection event. No duplicate submission, `Check for new commits`, or other
+corrective portal action was attempted. No public listing is verified.

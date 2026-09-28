@@ -34,8 +34,9 @@ execution ledger and does not promise delivery dates.
 - Deterministic locally validated OpenAI/Codex and Claude Code native plugin
   candidates assembled from the exact published Alpha-3 MCPB. Both have
   bounded disposable installed-client skill and MCP-use qualification. The
-  exact Claude candidate has a qualified public Git source, but no directory
-  submission or public install-channel claim exists.
+  exact Claude candidate has a qualified public Git source and one directory
+  review submission, but no public directory listing or install-channel claim
+  exists.
 - Agent-first alpha-2 installation, MCP, and immutable-skill recipes with a
   client qualification matrix and explicit CLI/MCP surface asymmetry.
 - Examples, CI, benchmark fixtures, and methodology.
@@ -125,11 +126,15 @@ execution ledger and does not promise delivery dates.
    17,129-byte GitHub archive, and strict plugin/marketplace validation passed;
    runtime evidence remains inherited because bootstrap bytes are unchanged.
    Current evaluator guidance can hold the
-   launcher/download model for human review. One authenticated portal validation
-   resolved `main` to `fc3a6c8` and passed all seven checks with one missing-icon
-   warning. The owner-approved privacy policy is now public and exposed from the
-   qualified source. The exact draft remains unsubmitted; no acknowledgement,
-   review request, or public listing was created.
+   launcher/download model for human review. The owner corrected the
+   personal-data answer to `Reads only`, approved all four current
+   acknowledgements, and submitted the exact draft once on 2026-09-28. The portal completed its security scan and placed the qualified `05d4f0d`
+   version In review under a content-policy hold because shipped code could not
+   be cleared automatically; no public listing is verified. Versions history
+   retains the earlier `fc3a6c8` detection event, while the scheduled check
+   identifies `05d4f0d` as the version now in review. Follow-up must monitor the
+   existing submission and must not create a duplicate. The owner-approved privacy policy remains public and
+   exposed from the qualified source.
 6. Maintain the agent-first alpha-2 onboarding recipes and exact per-client
    qualification statuses without claiming MCP/CLI command-count parity.
 7. Preserve the maintained real-project matrices and the narrow alpha-3

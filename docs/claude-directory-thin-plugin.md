@@ -3,7 +3,8 @@
 The repository includes a deterministic thin Claude Code plugin candidate for
 `semantic-scala` `0.1.0-alpha.3`. The exact six-file wrapper is published at the
 root of `DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
-`05d4f0de35a02916504bf29156bc42270cf77a23`. It is not a directory listing.
+`05d4f0de35a02916504bf29156bc42270cf77a23`. It has been submitted for
+directory review, but it is not a verified public directory listing.
 
 ## Package contract
 
@@ -64,16 +65,17 @@ than 10,000 entries, archive smaller than 50 MiB, unpacked content smaller than
 review-hold heuristics of 512 files and 256 KiB for a non-image/font file.
 
 This establishes public-source technical readiness only. Published evaluator
-guidance can place local launcher/download chains on a human-review hold. The
-authenticated portal previously resolved `main` to `fc3a6c8`, passed seven
-checks with one missing-icon warning, and saved one exact draft. The owner later
-approved the public [semantic-scala Privacy Policy](../PRIVACY.md), and current
-public `main` exposes its stable URL in the plugin README. Claude Code `2.1.283`
-strict plugin and marketplace validation passed for the changed source; runtime
-and bootstrap bytes are unchanged, so the expensive client treatment was not
-repeated. No portal acknowledgement, contact email, review request, or public
-listing was created. The existing draft is ready for a later revalidation and
-owner acknowledgement review.
+guidance can place local launcher/download chains on a human-review hold. On
+2026-09-28 the existing exact draft was revalidated successfully at `main @
+05d4f0d`, with seven checks and one missing-icon warning. The owner corrected
+the personal-data answer to `Reads only`, approved all four compliance
+acknowledgements, supplied the private contact field, and authorized exactly
+one `Submit for review` action. The security scan completed and sent qualified version `05d4f0d` to
+content-policy review because shipped code could not be cleared automatically.
+The status is In review and no public listing exists. Versions history retains
+the earlier `fc3a6c8` detection event; no duplicate submission or corrective
+portal action was attempted. The public [semantic-scala Privacy Policy](../PRIVACY.md)
+remains exposed from `main`, and the private contact value is not retained here.
 The historical full self-contained plugin remains preserved at parent commit
 `c05aac9f38e7755a51f511078ff555a587f97ccf`.
 

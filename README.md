@@ -440,18 +440,22 @@ An anonymous clone reproduced its six-file identity, and its 17,129-byte public
 GitHub archive passes the current hard limits. Claude Code `2.1.283` passed
 strict plugin and marketplace validation; prior public-source cold/warm client
 evidence remains applicable because runtime and bootstrap bytes are unchanged.
-No public directory listing or submission was created. Anthropic's
-current directory guide documents a repository plus optional path and branch or
-tag, not an exact-commit portal field. The authenticated portal previously
-resolved `main` to `fc3a6c8` and passed seven source checks with one missing-icon
-warning.
+The existing draft was submitted for Claude Directory review exactly once on
+2026-09-28. Its security scan completed and sent the qualified `05d4f0d`
+version to content-policy review because the scan could not automatically read
+shipped executable, bytecode, WebAssembly, or packed code. The current status
+is In review, and no public listing is verified. Versions history retains an
+earlier `fc3a6c8` detection event, but a scheduled check added `05d4f0d` as the
+version now in review. No duplicate submission, update check, or corrective
+portal action was attempted.
 The owner packet under
 [`distribution/claude-community/`](distribution/claude-community/) records the
-immutable qualification commit and expected human review hold. One exact draft
-was saved. The owner-approved [semantic-scala Privacy Policy](PRIVACY.md) is now
-public and exposed from the qualified plugin README. The saved factual answers
-remain consistent, but no compliance acknowledgement, contact email, review
-request, or public listing was created.
+immutable qualification commit and expected human review hold. The
+owner-approved [semantic-scala Privacy Policy](PRIVACY.md) is public and
+exposed from the qualified plugin README. The submitted answers are `Reads
+only`, `No`, `Not retained`, and `No`; all four compliance acknowledgements
+were owner-approved. The private contact value is not retained in this
+repository.
 
 The repository now also contains a separate directory-compatible thin Claude
 candidate. It retains the canonical skill and local exact-eight MCP interface,
@@ -464,10 +468,10 @@ its largest file is 21,188 bytes, and its ZIP is 14,843 bytes. Claude Code
 `2.1.283` passed strict validation for the privacy-link source. The cold session
 retains one pre-semantic invalid-path rejection followed by one successful
 read-only call; the warm session made one successful read-only call. This is
-public-source technical readiness with a human-review hold, not directory
-acceptance. The next gate is a separately authorized resumption and
-revalidation of the existing portal draft, with owner review of every current
-acknowledgement. See
+public-source technical readiness and a submitted review request, not directory
+acceptance. The next gate is monitoring the existing content-policy review and handling
+reviewer feedback without a duplicate submission; publication, if approved, remains a
+separate portal state/action. See
 [`docs/claude-directory-thin-plugin.md`](docs/claude-directory-thin-plugin.md).
 See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
 build commands, current vendor contracts, public-submission boundary, and

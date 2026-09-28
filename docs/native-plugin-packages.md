@@ -61,11 +61,14 @@ archive entries pass every documented hard limit. Exact-pin and `main` source
 validation passed. The bootstrap and runtime bytes are unchanged, so the prior
 public-source cold/warm Claude Code evidence remains applicable. Published
 evaluator guidance can hold the launcher/download chain for human review. The
-authenticated portal previously resolved `main` to `fc3a6c8` and passed seven
-checks with one missing-icon warning. The owner-approved
-[privacy policy](../PRIVACY.md) is now public and linked from the plugin README;
-the exact draft remains unsubmitted and ready for later revalidation and owner
-acknowledgement review.
+authenticated portal revalidated `main` to `05d4f0d` and passed seven checks
+with one missing-icon warning. The owner-approved
+[privacy policy](../PRIVACY.md) is public and linked from the plugin README.
+The exact draft was submitted once on 2026-09-28. The security scan completed
+and sent qualified version `05d4f0d` to content-policy review because shipped
+code could not be cleared automatically. The status is In review, with no
+public listing. Versions history retains the earlier `fc3a6c8` detection event;
+follow-up must use the existing submission without creating a duplicate.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
@@ -256,20 +259,20 @@ available to paid Pro, Max, Team, and Enterprise accounts with the documented
 role, checks GitHub push access, follows a branch or tag, validates the plugin,
 asks data-handling questions, and requires four compliance acknowledgements
 before `Submit for review`. Current first-party documentation does not identify
-a separate submission fee. Authenticated validation previously passed for
-public `main` at exact commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`, and one exact draft was saved. The
-current qualified source exposes the owner-approved privacy policy through its
-README. All acknowledgements remain unchecked; no contact email, review request,
-or public listing was created. Runtime bootstrap review remains a later human
-security gate.
+a separate submission fee. Authenticated revalidation passed for public `main`
+at exact commit `05d4f0de35a02916504bf29156bc42270cf77a23`. The current
+qualified source exposes the owner-approved privacy policy through its README.
+The owner approved all four acknowledgements, entered the private contact
+field, and authorized exactly one review submission. The security scan completed and the qualified `05d4f0d` version is In review
+under a content-policy hold because shipped code could not be cleared
+automatically. No public listing exists. Versions history retains the earlier
+`fc3a6c8` detection event; runtime bootstrap remains a human review gate.
 
 Prepared facts are the strict-valid manifest, public commit-pinned source, local
 stdio configuration, canonical skill, exact runtime provenance, platform
 boundary, deterministic inventory, listing copy, reviewer plan, technical
-data-handling note, and public privacy-policy link. The existing draft may be
-resumed and revalidated only in a separately authorized task. Terms acceptance,
-review, and any public listing remain human-only actions.
+data-handling note, and public privacy-policy link. Review-status monitoring must
+not create a duplicate submission. Any later publication remains separate.
 
 ## Catalog pause
 

@@ -69,8 +69,9 @@ also published as generated distribution material at commit
 [`semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin)
 repository. Claude Code `2.1.278` passed anonymous-source validation, isolated
 install, skill/MCP discovery, and one read-only semantic call from that pin.
-Neither candidate is submitted or listed in a public marketplace. The
-client-neutral skill remains authoritative.
+The Claude thin candidate has one submission In review under a content-policy
+hold, but no public directory listing is verified. The client-neutral skill remains
+authoritative.
 
 The Claude community packet is under
 [`distribution/claude-community/`](../distribution/claude-community/). The
@@ -90,10 +91,14 @@ archive and unpacked tree pass the documented hard limits. Claude Code
 privacy-link change. The earlier exact-pin/default-branch cold/warm treatment
 remains applicable because bootstrap and runtime bytes are unchanged. Published
 evaluator guidance can hold the bootstrap for human review. The authenticated
-portal previously validated `main` at `fc3a6c8` and saved one draft. The
-owner-approved [privacy policy](../PRIVACY.md) is now public and exposed from
-the qualified source. No acknowledgement, review request, or public listing
-was created.
+portal revalidated `main` at `05d4f0d`, corrected the personal-data answer to
+`Reads only`, recorded four owner-approved acknowledgements, and created one
+review submission on 2026-09-28. The security scan completed and sent qualified version `05d4f0d` to
+content-policy review because shipped code could not be cleared automatically.
+The status is In review and no public listing exists. Versions history retains
+the earlier `fc3a6c8` detection event; no duplicate submission or corrective
+portal action was attempted. The owner-approved [privacy policy](../PRIVACY.md)
+remains public and exposed from the qualified source.
 
 ## Scope of catalog claims
 

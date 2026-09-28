@@ -2,14 +2,17 @@
 
 This plan is prepared for human review of the thin candidate published at
 `DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. It is not evidence of a submitted
-or accepted directory listing.
+`05d4f0de35a02916504bf29156bc42270cf77a23`. One review submission is In review,
+but this plan is not evidence of an accepted or public directory listing. The
+portal security scan sent qualified version `05d4f0d` to content-policy review
+because shipped code could not be cleared automatically. Versions history also
+retains the earlier `fc3a6c8` detection event.
 
 1. Confirm public `main` still resolves to the qualified commit, or record any
    newer reviewed commit, and that the reviewed tree contains the deterministic
-   thin candidate: 6 files, 39,938 unpacked bytes, a 21,188-byte largest file,
+   thin candidate: 6 files, 40,205 unpacked bytes, a 21,188-byte largest file,
    and content SHA-256
-   `ab0d5feaed7b4b9e6313e61116b5b3fc86d2cc5bc114b127a6290de5e29e8b8f`.
+   `6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473`.
 2. On Linux x86_64 with compatible GNU libc, system zlib, Python 3.11 or newer,
    and no host Java requirement, install `semantic-scala` `0.1.0-alpha.3` from
    that exact reviewed source into a disposable Claude configuration.

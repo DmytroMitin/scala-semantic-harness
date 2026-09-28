@@ -7,13 +7,15 @@ the repository root of
 immutably qualified at commit
 `05d4f0de35a02916504bf29156bc42270cf77a23`.
 
-The authenticated directory portal previously validated `main` at
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11` on 2026-09-27. Task 256 published
-the privacy policy and exposed its stable URL from the plugin README without
-changing runtime behavior. It did not log into the portal, modify the existing
-draft, check an acknowledgement, or submit a review request. The exact draft
-therefore remains unsubmitted and ready for a later revalidation and owner
-acknowledgement review.
+On 2026-09-28 the authenticated portal revalidated the existing exact draft at
+`main @ 05d4f0d`, passed seven checks with one missing-icon warning, and saved
+the owner-approved answers `Reads only`, `No`, `Not retained`, and `No`. The
+owner approved all four compliance acknowledgements and exactly one review
+submission was created. The security scan completed and sent the qualified
+`05d4f0d` version to content-policy review because shipped code could not be
+cleared automatically. The status is In review and no public listing exists.
+Versions history retains an earlier `fc3a6c8` detection event; no duplicate
+submission or corrective portal action was attempted. The private contact value is not retained in this repository.
 
 ## Local plugin behavior
 

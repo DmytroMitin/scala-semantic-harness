@@ -1,8 +1,8 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
   "observedOn": "2026-09-28",
-  "status": "privacy-policy-published-ready-to-resume-existing-draft",
-  "terminalState": "CLAUDE_DIRECTORY_EXISTING_DRAFT_READY_FOR_PRIVACY_ACKNOWLEDGEMENT_REVIEW",
+  "status": "submitted-once-in-review-content-policy-hold",
+  "terminalState": "CLAUDE_DIRECTORY_SUBMISSION_CREATED_WITH_REVIEW_HOLD",
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",
@@ -56,7 +56,7 @@
       "generatedOutput": "fresh ignored output directory selected by the assembler caller",
       "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
       "published": true,
-      "nextGate": "resume-and-revalidate-the-existing-draft-with-owner-reviewed-current-acknowledgements",
+      "nextGate": "monitor-existing-in-review-submission-and-handle-reviewer-feedback-without-duplicate-submission",
       "repository": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
       "branch": "main",
       "qualifiedCommit": "05d4f0de35a02916504bf29156bc42270cf77a23",
@@ -65,7 +65,7 @@
     },
     "separatePublisherMarketplaceRepositoryRequired": false,
     "currentDeveloperPortalModel": {
-      "observedOn": "2026-09-27",
+      "observedOn": "2026-09-28",
       "entrypoint": "https://claude.ai/directory/manage",
       "legacyConsoleSubmissionSupported": false,
       "sourceFields": [
@@ -81,9 +81,9 @@
       "qualifiedCandidateCompatible": true,
       "blockingFacts": [],
       "remainingGates": [
-        "resume the existing exact draft without creating a duplicate",
-        "revalidate the changed public main source",
-        "owner approval of every current acknowledgement and a separate final submit-for-review confirmation"
+        "monitor the existing in-review submission without creating a duplicate",
+        "handle the content-policy review hold for unreadable shipped code without mutating source in Task 257",
+        "if approved, follow the plugin page's separate first-version publication instruction"
       ],
       "reviewHoldFacts": [
         "The published evaluator guidance says unreadable local MCP command chains may be held for manual review.",
@@ -160,22 +160,22 @@
     },
     "successfulReadOnlySemanticEffectSummaryCalls": 2,
     "semanticEffectSummaryToolInvocations": 3,
-    "directorySourceValidation": "privacy-link-public-source-pass-with-expected-future-human-review-gate",
-    "authenticatedDirectoryPortalValidation": "passed-main-at-fc3a6c8-with-one-missing-icon-warning-and-one-local-mcp-surface-note",
+    "directorySourceValidation": "portal-revalidation-pass-main-at-05d4f0d-with-one-missing-icon-warning",
+    "authenticatedDirectoryPortalValidation": "passed-main-at-05d4f0d; one-submit-created; security-scan-done; qualified-05d4f0d-version-in-content-policy-review; earlier-fc3a6c8-detection-retained-in-history",
     "task253FinalCandidateBoundary": "runtime qualification retained; Task256 documentation-only requalification has 12 focused tests and strict plugin/marketplace passes"
   },
   "assets": {
     "icon": "not-required-by-public-contract",
     "screenshots": "not-required-by-public-contract",
-    "authenticatedFormDetails": "inspected-through-compliance; exact draft saved; review-and-submit step not reached"
+    "authenticatedFormDetails": "exact draft resumed; reads-only-no-not-retained-no; four owner-approved acknowledgements; submitted once; qualified-05d4f0d-version-in-review; no public listing"
   },
   "humanOnly": {
     "authentication": "existing authenticated Pro session used; no credential or MFA material retained",
-    "termsAndAttestations": "Task 255 reached the compliance page and left all four unchecked; Task 256 published the supporting policy link without logging in or changing the draft",
+    "termsAndAttestations": "all four current acknowledgements explicitly owner-approved and checked in Task 257",
     "countryOrRegion": "not-reached",
     "paidPlanRequired": true,
     "fee": "no-separate-submission-fee-stated-in-public-documentation",
-    "finalSubmit": "not-executed; exact draft remains saved in the portal"
+    "finalSubmit": "executed exactly once after separate owner confirmation; security scan completed; qualified 05d4f0d version is in content-policy review; earlier fc3a6c8 detection retained in history; no duplicate retry"
   },
   "historicalFullCandidate": {
     "contentSha256": "72230630cb739d71e0003cb50728bb928dfa786c5184454c41bcb4aa3015419b",

@@ -10,7 +10,7 @@
     {
       "kind": "listingCopy",
       "path": "distribution/claude-community/submission.json",
-      "status": "privacy-policy-published-ready-to-resume-existing-draft"
+      "status": "submitted-once-in-review-content-policy-hold"
     },
     {
       "kind": "privacyPolicy",
@@ -71,12 +71,12 @@
     {
       "kind": "icon",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not-inspected-task-stopped-before-directory-login"
+      "postLoginRequirement": "portal warning confirms no icon; GitHub avatar used"
     },
     {
       "kind": "screenshots",
       "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not-inspected-task-stopped-before-directory-login"
+      "postLoginRequirement": "not required by current portal form"
     }
   ],
   "thirdPartyBrandAssetsIncluded": false
