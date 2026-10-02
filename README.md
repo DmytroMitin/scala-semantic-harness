@@ -469,11 +469,11 @@ packaged-helper invocation, and interpretation of `Fixture.value: Option[Int]`.
 Cold acquisition and warm cache-only reuse passed with unchanged fixture bytes.
 This is local technical qualification, not an OpenAI submission or public
 listing. Current OpenAI guidance requires partner contact before submitting
-the local-execution/local-file/offline workflow; production-ready original logo
-and composer-icon assets also remain human prerequisites. The prepared
-owner-approved privacy amendment covers the OpenAI/Codex path, first-use
-download, and separate cache; the public URL will reflect it after separately
-authorized publication. See
+the local-execution/local-file/offline workflow. The inspected first-party
+material exposes no generic actionable contact route, so eligibility remains
+unknown and no Platform draft was created. One original square SVG is
+owner-approved and wired to both branding fields. The public privacy policy
+covers the OpenAI/Codex path, first-use download, and separate cache. See
 [`docs/openai-skills-only-plugin.md`](docs/openai-skills-only-plugin.md).
 
 The repository now also contains a separate directory-compatible thin Claude
@@ -534,13 +534,13 @@ benchmark reproducibility beyond its stated small-sample gate.
   cold/warm client qualified. Its first start requires network access and Python 3.11 or newer to
   fetch and verify the fixed Alpha-3 MCPB. Human portal acceptance and review
   remain distinct from local qualification.
-- The separate seven-file OpenAI skills-only candidate is locally validated on
+- The separate eight-file OpenAI skills-only candidate is locally validated on
   Codex CLI `0.157.1` for one direct-CLI `effect-summary` workflow with no MCP
-  dependency. It is not submitted. OpenAI partner review, production logo and
-  composer-icon assets, verified publisher identity, country selection, and
-  policy attestations remain prerequisites. The OpenAI-specific privacy
-  amendment is approved in the prepared product diff and awaits repository
-  publication.
+  dependency. It is not submitted. OpenAI product-specific review has no
+  discoverable official generic contact route, so eligibility remains unknown.
+  The shared logo/composer SVG is owner-approved and locally validated.
+  Verified publisher identity, Apps Management write access, country
+  selection, and policy attestations remain prerequisites; privacy is public.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

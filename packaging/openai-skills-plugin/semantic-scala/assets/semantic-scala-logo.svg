@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">semantic-scala geometric mark</title>
+  <desc id="description">Abstract code brackets surrounding a connected semantic graph.</desc>
+  <defs>
+    <linearGradient id="background" x1="72" y1="48" x2="440" y2="464" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#172554"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="left-bracket" x1="132" y1="128" x2="216" y2="384" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+    <linearGradient id="right-bracket" x1="296" y1="128" x2="380" y2="384" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C4B5FD"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#background)"/>
+  <rect x="18" y="18" width="476" height="476" rx="96" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="4"/>
+  <path d="M206 128 132 256l74 128" fill="none" stroke="url(#left-bracket)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m306 128 74 128-74 128" fill="none" stroke="url(#right-bracket)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="none" stroke="#6EE7B7" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m256 194-42 102h84L256 194Z"/>
+    <path d="M214 296h84" stroke="#FFFFFF" stroke-opacity="0.72"/>
+  </g>
+  <g fill="#F8FAFC" stroke="#34D399" stroke-width="10">
+    <circle cx="256" cy="194" r="22"/>
+    <circle cx="214" cy="296" r="22"/>
+    <circle cx="298" cy="296" r="22"/>
+  </g>
+  <circle cx="256" cy="256" r="12" fill="#F8FAFC"/>
+</svg>

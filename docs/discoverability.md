@@ -110,10 +110,12 @@ Codex CLI 0.157.1 installed-client proofs passed with unchanged fixture bytes
 and no MCP process. This establishes local Codex technical value, not a public
 listing or universal ChatGPT support. Before any OpenAI Platform draft, obtain
 the product-specific determination required for local execution/file/offline
-use and prepare original production logo and composer-icon assets. Verified
+use. Current first-party guidance names the owner's OpenAI partner but exposes
+no generic actionable contact route, so the result remains Class E /
+`NO_CONTACT_ROUTE`, not eligibility. One original shared 512-by-512 SVG is
+owner-approved and locally validated for both logo fields. Verified
 identity, Apps Management write access, availability selection, and policy
-attestations remain human gates. The OpenAI-specific privacy amendment is
-owner-approved in the prepared product diff and awaits repository publication. See
+attestations remain human gates. The OpenAI-specific privacy policy is public. See
 [`openai-skills-only-plugin.md`](openai-skills-only-plugin.md).
 
 ## Scope of catalog claims

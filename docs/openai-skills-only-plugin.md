@@ -28,6 +28,7 @@ semantic-scala/
 ├── plugin.json
 ├── .codex-plugin/plugin.json
 ├── README.md
+├── assets/semantic-scala-logo.svg
 ├── package-manifest.json
 └── skills/semantic-scala/
     ├── SKILL.md
@@ -54,7 +55,14 @@ python3 scripts/package-openai-skills-plugin.py pack \
 The generator copies the canonical
 [`skills/semantic-scala/SKILL.md`](../skills/semantic-scala/SKILL.md) byte for
 byte into `references/semantic-scala-policy.md`, validates the two manifests,
-rejects forbidden MCP files, and writes a deterministic ZIP.
+rejects forbidden MCP files, validates both branding paths and square SVG
+geometry, and writes a deterministic ZIP.
+
+Two clean branded builds produced the same eight-file identity: 48,632 total
+bytes, content SHA-256
+`3fdbd92882f309be0e88ead655336178a19ef3b4fac2574b17ce7e890a3fca1d`,
+and an 18,241-byte ZIP with SHA-256
+`27d41bab62df0f5050266305456a976c40f3a3b6a08ea5e2adc8e58349782b9c`.
 
 ## Direct CLI bootstrap
 
@@ -105,19 +113,21 @@ not imply universal execution support.
 ## Submission boundary
 
 The candidate is locally validated and unsubmitted. Current first-party OpenAI
-guidance says to contact OpenAI before submission when the core experience
+guidance says to contact the owner's OpenAI partner before submission when the core experience
 requires local execution, local-file access, offline operation, hardware or
 application access, or inbound messages. semantic-scala's useful workflow uses
 the first three, so that product-specific determination is mandatory before a
-Platform draft.
+Platform draft under this preparation's stricter boundary. The inspected
+first-party documentation exposes no generic form, support category, or
+self-service field for obtaining that determination. Route discovery therefore
+ended at Class E / `NO_CONTACT_ROUTE`; this does not establish eligibility.
 
-The owner-approved policy amendment in the prepared product diff covers the
-OpenAI/Codex client path, first-use GitHub download, and separate local cache.
-The GitHub privacy URL will reflect it only after separately authorized
-repository publication. The remaining human prerequisites are:
+The published privacy policy covers the OpenAI/Codex client path, first-use
+GitHub download, and separate local cache. The owner approved an original
+project-owned 512-by-512 SVG after local 48-, 128-, and 512-pixel inspection.
+Both branding fields resolve to that packaged asset. The remaining human
+prerequisites are:
 
-- original production-quality `interface.logo` and `interface.composerIcon`
-  assets;
 - a verified individual or business developer identity;
 - Apps Management write access in the owning Platform organization;
 - country or region selections and current policy attestations; and
@@ -129,12 +139,13 @@ no separate terms document is currently asserted as a skills-only requirement.
 Final-directory validation requires both branding fields to reference readable
 square PNG, JPG, JPEG, WebP, or SVG files no larger than 5 MiB. Raster images
 must be from 48×48 through 4,096×4,096 pixels; SVG dimensions must be square,
-numeric, and at least 48. One original compliant square asset may be considered
-for both fields, subject to final visual and portal review.
+numeric, and at least 48. The approved shared asset is validated locally for
+both fields; any later portal rendering remains part of the separately
+authorized draft task.
 The prepared metadata, three starter prompts, five positive tests, and three
 negative tests live under
 [`distribution/openai-skills-only/`](../distribution/openai-skills-only/).
 
-No OpenAI portal login, draft, upload, attestation, identity-verification,
+No authenticated OpenAI portal action, draft, upload, attestation, identity-verification,
 review submission, publication, payment, or remote service occurred during
 this preparation.

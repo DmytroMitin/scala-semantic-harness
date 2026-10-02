@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import xml.etree.ElementTree as ElementTree
 import zipfile
 
 
@@ -50,6 +51,7 @@ class OpenAiSkillsPackageTest(unittest.TestCase):
             {
                 ".codex-plugin/plugin.json",
                 "README.md",
+                "assets/semantic-scala-logo.svg",
                 "package-manifest.json",
                 "plugin.json",
                 "skills/semantic-scala/SKILL.md",
@@ -57,7 +59,7 @@ class OpenAiSkillsPackageTest(unittest.TestCase):
                 "skills/semantic-scala/scripts/semantic_scala_cli.py",
             },
         )
-        self.assertEqual(manifest["fileCount"], 7)
+        self.assertEqual(manifest["fileCount"], 8)
         self.assertEqual(
             (plugin / "skills/semantic-scala/references/semantic-scala-policy.md").read_bytes(),
             CANONICAL_POLICY.read_bytes(),
@@ -96,6 +98,31 @@ class OpenAiSkillsPackageTest(unittest.TestCase):
         self.assertNotIn("semantic-scala-mcp", skill)
         self.assertFalse((plugin / "skills/semantic-scala/agents/openai.yaml").exists())
 
+    def test_approved_branding_is_square_and_wired_to_both_interfaces(self) -> None:
+        packager = load_packager()
+        plugin = self.base / "semantic-scala"
+        packager.assemble(plugin)
+        portable = json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))
+        compatibility = json.loads(
+            (plugin / ".codex-plugin/plugin.json").read_text(encoding="utf-8")
+        )
+        interfaces = [
+            portable["extensions"]["com.openai"]["interface"],
+            compatibility["interface"],
+        ]
+        for interface in interfaces:
+            self.assertEqual(
+                interface.get("logo"), "./assets/semantic-scala-logo.svg"
+            )
+            self.assertEqual(
+                interface.get("composerIcon"), "./assets/semantic-scala-logo.svg"
+            )
+        asset = plugin / "assets/semantic-scala-logo.svg"
+        root = ElementTree.parse(asset).getroot()
+        self.assertEqual(root.attrib["width"], "512")
+        self.assertEqual(root.attrib["height"], "512")
+        self.assertEqual(root.attrib["viewBox"], "0 0 512 512")
+
     def test_package_and_archive_generation_are_deterministic(self) -> None:
         packager = load_packager()
         first = self.base / "first"
@@ -126,6 +153,45 @@ class OpenAiSkillsPackageTest(unittest.TestCase):
         with self.assertRaisesRegex(packager.PackagingError, "MCP"):
             packager.validate(plugin)
 
+    def test_validation_rejects_invalid_branding_paths_and_geometry(self) -> None:
+        packager = load_packager()
+        missing = self.base / "missing"
+        packager.assemble(missing)
+        portable_path = missing / "plugin.json"
+        portable = json.loads(portable_path.read_text(encoding="utf-8"))
+        portable["extensions"]["com.openai"]["interface"]["logo"] = (
+            "./assets/missing.svg"
+        )
+        portable_path.write_text(
+            json.dumps(portable, indent=2) + "\n", encoding="utf-8"
+        )
+        (missing / "package-manifest.json").write_text(
+            json.dumps(packager.expected_manifest(missing), indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(packager.PackagingError, "asset path"):
+            packager.validate(missing)
+
+        nonsquare = self.base / "nonsquare"
+        packager.assemble(nonsquare)
+        asset = nonsquare / "assets/semantic-scala-logo.svg"
+        asset.write_text(
+            asset.read_text(encoding="utf-8").replace(
+                'width="512" height="512"', 'width="640" height="512"'
+            ),
+            encoding="utf-8",
+        )
+        (nonsquare / "package-manifest.json").write_text(
+            json.dumps(
+                packager.expected_manifest(nonsquare), indent=2, sort_keys=True
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(packager.PackagingError, "square"):
+            packager.validate(nonsquare)
+
     def test_submission_packet_matches_the_validated_narrow_scope(self) -> None:
         self.assertTrue(SUBMISSION.is_file(), "submission packet is not implemented")
         packet = json.loads(SUBMISSION.read_text(encoding="utf-8"))
@@ -146,12 +212,24 @@ class OpenAiSkillsPackageTest(unittest.TestCase):
         self.assertEqual(packet["terms"]["requiredForSkillsOnlyZip"], False)
         self.assertEqual(
             packet["privacy"]["status"],
-            "owner-approved-pending-repository-publication",
+            "public-current",
         )
-        self.assertEqual(packet["logo"]["status"], "human-design-required")
         self.assertEqual(
-            packet["composerIcon"]["status"], "human-design-required"
+            packet["logo"],
+            {
+                "path": "./assets/semantic-scala-logo.svg",
+                "status": "owner-approved",
+            },
         )
+        self.assertEqual(
+            packet["composerIcon"],
+            {
+                "path": "./assets/semantic-scala-logo.svg",
+                "status": "owner-approved",
+            },
+        )
+        self.assertEqual(packet["partnerReview"]["routeClass"], "E")
+        self.assertEqual(packet["partnerReview"]["result"], "NO_CONTACT_ROUTE")
         self.assertEqual(packet["portalActions"], 0)
 
         cases = REVIEW_CASES.read_text(encoding="utf-8")

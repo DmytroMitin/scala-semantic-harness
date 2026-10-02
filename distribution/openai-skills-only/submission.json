@@ -1,6 +1,6 @@
 {
   "$schema": "semantic-scala.openai-skills-only-submission-preparation.v1",
-  "observedOn": "2026-09-28",
+  "observedOn": "2026-10-02",
   "submissionType": "skills-only",
   "pluginName": "semantic-scala",
   "displayName": "semantic-scala",
@@ -20,7 +20,7 @@
   "supportUrl": "https://github.com/DmytroMitin/scala-semantic-harness/issues",
   "privacy": {
     "url": "https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md",
-    "status": "owner-approved-pending-repository-publication"
+    "status": "public-current"
   },
   "terms": {
     "url": null,
@@ -28,12 +28,12 @@
     "status": "not-required-by-current-skills-only-zip-contract"
   },
   "logo": {
-    "path": null,
-    "status": "human-design-required"
+    "path": "./assets/semantic-scala-logo.svg",
+    "status": "owner-approved"
   },
   "composerIcon": {
-    "path": null,
-    "status": "human-design-required"
+    "path": "./assets/semantic-scala-logo.svg",
+    "status": "owner-approved"
   },
   "starterPrompts": [
     "Inspect the declared effect wrapper for Fixture.value in Fixture.scala.",
@@ -62,7 +62,9 @@
   "mcpServers": [],
   "partnerReview": {
     "requiredBeforeSubmission": true,
-    "reason": "Core value depends on local execution, local file access, and warm offline operation."
+    "reason": "Core value depends on local execution, local file access, and warm offline operation.",
+    "result": "NO_CONTACT_ROUTE",
+    "routeClass": "E"
   },
   "policyAttestations": {
     "status": "human-review-and-acceptance-required"

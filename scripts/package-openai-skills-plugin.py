@@ -13,6 +13,7 @@ import stat
 import sys
 import tempfile
 from typing import Any
+import xml.etree.ElementTree as ElementTree
 import zipfile
 
 
@@ -23,6 +24,7 @@ MANIFEST_SCHEMA = "semantic-scala.openai-skills-only-package.v1"
 TEMPLATE_FILES = (
     ".codex-plugin/plugin.json",
     "README.md",
+    "assets/semantic-scala-logo.svg",
     "plugin.json",
     "skills/semantic-scala/SKILL.md",
     "skills/semantic-scala/scripts/semantic_scala_cli.py",
@@ -48,6 +50,8 @@ STRONG_CREDENTIALS = (
         r"\s*[:=]\s*['\"]?[A-Za-z0-9+/_.-]{12,}"
     ),
 )
+SUPPORTED_IMAGE_SUFFIXES = {".jpeg", ".jpg", ".png", ".svg", ".webp"}
+NUMERIC_SVG_DIMENSION = re.compile(r"(?:0|[1-9][0-9]*)(?:\.[0-9]+)?")
 
 
 class PackagingError(Exception):
@@ -177,6 +181,50 @@ def _interface(manifest: dict[str, Any], *, portable: bool) -> dict[str, Any]:
     return manifest.get("interface", {})
 
 
+def _numeric_svg_dimension(value: object, label: str) -> float:
+    if not isinstance(value, str) or NUMERIC_SVG_DIMENSION.fullmatch(value) is None:
+        raise PackagingError(f"SVG {label} must be a numeric dimension")
+    return float(value)
+
+
+def validate_image_asset(root: Path, value: object, field: str) -> None:
+    if not isinstance(value, str) or not value.startswith("./"):
+        raise PackagingError(f"{field} asset path must start with ./")
+    relative = Path(value[2:])
+    if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+        raise PackagingError(f"{field} asset path must remain inside the plugin")
+    asset = root / relative
+    if asset.is_symlink() or not asset.is_file():
+        raise PackagingError(f"{field} asset path does not identify a regular file")
+    if asset.suffix.lower() not in SUPPORTED_IMAGE_SUFFIXES:
+        raise PackagingError(f"{field} asset format is not supported")
+    if asset.stat().st_size > FILE_LIMIT:
+        raise PackagingError(f"{field} asset exceeds the per-file limit")
+    if asset.suffix.lower() != ".svg":
+        return
+    try:
+        svg = ElementTree.parse(asset).getroot()
+    except (ElementTree.ParseError, OSError) as error:
+        raise PackagingError(f"{field} SVG is invalid: {error}") from error
+    width_value = svg.attrib.get("width")
+    height_value = svg.attrib.get("height")
+    if width_value is not None or height_value is not None:
+        width = _numeric_svg_dimension(width_value, "width")
+        height = _numeric_svg_dimension(height_value, "height")
+    else:
+        view_box = svg.attrib.get("viewBox", "").split()
+        if len(view_box) != 4:
+            raise PackagingError(f"{field} SVG must provide a square numeric viewBox")
+        try:
+            _, _, width, height = (float(item) for item in view_box)
+        except ValueError as error:
+            raise PackagingError(
+                f"{field} SVG must provide a square numeric viewBox"
+            ) from error
+    if width != height or width < 48:
+        raise PackagingError(f"{field} SVG must be square and at least 48 by 48")
+
+
 def validate(root: Path) -> dict[str, Any]:
     validate_tree(root)
     scan_text(root)
@@ -207,6 +255,8 @@ def validate(root: Path) -> dict[str, Any]:
             raise PackagingError("short description exceeds final submission limit")
         if interface.get("capabilities") != ["Inspect declared Scala effect wrappers"]:
             raise PackagingError("capability list exceeds the reviewed helper scope")
+        validate_image_asset(root, interface.get("logo"), "logo")
+        validate_image_asset(root, interface.get("composerIcon"), "composerIcon")
     skill = (root / "skills/semantic-scala/SKILL.md").read_text(encoding="utf-8")
     if "scripts/semantic_scala_cli.py" not in skill or "references/semantic-scala-policy.md" not in skill:
         raise PackagingError("skill does not reference its helper and canonical policy")

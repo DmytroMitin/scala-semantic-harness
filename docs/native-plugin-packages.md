@@ -216,7 +216,7 @@ review materials.
 
 The independent `Skills only` candidate is maintained under
 [`packaging/openai-skills-plugin/`](../packaging/openai-skills-plugin/). It is a
-seven-file package with no MCP configuration. Its allowlisted helper downloads
+deterministic eight-file package with no MCP configuration. Its allowlisted helper downloads
 and verifies the immutable Alpha-3 MCPB on first use, safely caches the verified
 runtime, executes only its direct CLI entry point, and exposes one read-only
 `effect-summary` workflow. A
@@ -228,10 +228,11 @@ are locally prepared but have not been uploaded or submitted.
 Current first-party guidance requires product-specific OpenAI contact before
 submission when a plugin's core value depends on local execution, arbitrary
 local-file access, or offline operation. That determination remains a human
-prerequisite for this candidate. The prepared owner-approved privacy amendment
-covers the OpenAI/Codex path, first-use download, and separate cache; the public
-URL will reflect it after separately authorized repository publication. The
-package remains held on original production logo and composer-icon assets.
+prerequisite for this candidate. The guidance identifies the owner's OpenAI
+partner but no generic actionable route was discoverable, so the current result
+is Class E / `NO_CONTACT_ROUTE`, not eligibility. The public privacy policy
+covers the OpenAI/Codex path, first-use download, and separate cache. One
+original square SVG is owner-approved and wired to both logo fields.
 Verified identity, Apps Management write access, country selection, and policy
 attestations are portal-only prerequisites. Current submission-error guidance
 marks website, support, privacy, and terms URLs optional for a skills-only ZIP,

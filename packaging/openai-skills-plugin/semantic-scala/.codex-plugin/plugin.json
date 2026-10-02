@@ -25,8 +25,10 @@
     "capabilities": [
       "Inspect declared Scala effect wrappers"
     ],
+    "composerIcon": "./assets/semantic-scala-logo.svg",
     "defaultPrompt": [
       "Inspect the declared effect wrapper for a Scala method in the current workspace."
-    ]
+    ],
+    "logo": "./assets/semantic-scala-logo.svg"
   }
 }

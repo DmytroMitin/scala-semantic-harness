@@ -1,6 +1,6 @@
 # Surface compatibility
 
-Observed from current first-party documentation on 28 September 2026 and local
+Observed from current first-party documentation on 2 October 2026 and local
 Codex CLI 0.157.1 qualification.
 
 | Surface | Skill loading | Local workspace and scripts | First-use GitHub fetch | Result |
@@ -15,3 +15,6 @@ guidance says to contact an OpenAI partner before submission when core value
 requires local execution, arbitrary local file access, hardware/application
 access, offline operation, or inbound messages. This candidate requires that
 contact for local execution, local Scala-file access, and warm offline reuse.
+The inspected documentation exposes no generic product-review form or support
+category for that contact. Route discovery therefore ended at Class E /
+`NO_CONTACT_ROUTE`; this is not an eligibility determination.
