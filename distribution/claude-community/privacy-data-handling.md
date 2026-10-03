@@ -1,5 +1,10 @@
 # Technical data-handling companion to the privacy policy
 
+> **Current update (3 October 2026):** the thin implementation described below
+> is reviewer-rejected for Directory use. The local embedded-MCPB candidate
+> performs no runtime download and creates no separate runtime cache, but its
+> GitHub archive and MCPB exceed current public Directory size limits.
+
 This factual implementation note supplements the owner-approved public
 [semantic-scala Privacy Policy](../../PRIVACY.md). The current plugin source is
 the repository root of
@@ -13,7 +18,7 @@ the owner-approved answers `Reads only`, `No`, `Not retained`, and `No`. The
 owner approved all four compliance acknowledgements and exactly one review
 submission was created. The security scan completed and sent the qualified
 `05d4f0d` version to content-policy review because shipped code could not be
-cleared automatically. The status is In review and no public listing exists.
+cleared automatically. At that time the status was In review; it was later superseded by Needs changes and no public listing exists.
 Versions history retains an earlier `fc3a6c8` detection event; no duplicate
 submission or corrective portal action was attempted. The private contact value is not retained in this repository.
 

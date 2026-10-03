@@ -49,26 +49,25 @@ service; neither exists here.
 - [OpenAI package documentation](https://developers.openai.com/plugins/build/plugins)
 - [OpenAI submission documentation](https://developers.openai.com/plugins/deploy/submission)
 
-Claude Code uses `.claude-plugin/plugin.json`, root `.mcp.json`,
-`skills/<name>/SKILL.md`, and `${CLAUDE_PLUGIN_ROOT}` for package-local paths.
-The historical self-contained candidate remains at distribution commit
-`c05aac9f38e7755a51f511078ff555a587f97ccf`; its 339,741,892 unpacked bytes and
-54,008,260-byte runtime image exceed current portal limits. Public `main` now
-contains the six-file thin wrapper qualified at
-`05d4f0de35a02916504bf29156bc42270cf77a23`. Its actual 17,129-byte GitHub
-source archive, 40,205 unpacked bytes, 21,188-byte largest file, and eleven total
-archive entries pass every documented hard limit. Exact-pin and `main` source
-validation passed. The bootstrap and runtime bytes are unchanged, so the prior
-public-source cold/warm Claude Code evidence remains applicable. Published
-evaluator guidance can hold the launcher/download chain for human review. The
-authenticated portal revalidated `main` to `05d4f0d` and passed seven checks
-with one missing-icon warning. The owner-approved
-[privacy policy](../PRIVACY.md) is public and linked from the plugin README.
-The exact draft was submitted once on 2026-09-28. The security scan completed
-and sent qualified version `05d4f0d` to content-policy review because shipped
-code could not be cleared automatically. The status is In review, with no
-public listing. Versions history retains the earlier `fc3a6c8` detection event;
-follow-up must use the existing submission without creating a duplicate.
+Claude supports a package-relative MCPB directly from
+.claude-plugin/plugin.json. The historical self-contained candidate remains at
+distribution commit c05aac9f38e7755a51f511078ff555a587f97ccf. Public main now
+contains the six-file thin wrapper at
+05d4f0de35a02916504bf29156bc42270cf77a23, but the Directory reviewer rejected
+its post-install GitHub Release download. Its prior validation remains
+historical evidence only.
+
+The local no-download candidate embeds a 145,197,017-byte MCPB directly in
+the plugin. The MCPB expands to 181,937,037 bytes across 1,952 files; the
+six-file ZIP is 144,399,347 bytes and expands to 145,233,144 bytes. Official
+MCPB validation, Claude plugin validation, three byte-identical builds, the
+full exact-eight suite, and one isolated client semantic call pass. The
+candidate fits the separate 200 MB claude.ai upload contract but fails the
+public Directory GitHub-source limits of under 50 MiB per archive and under
+5 MiB per plugin file. The owner-approved
+[privacy policy](../PRIVACY.md) distinguishes this no-download candidate from
+the rejected thin source. The existing submission remains in Needs changes;
+no source update, upload, resubmit, or listing mutation occurred.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
@@ -251,50 +250,47 @@ prerequisites.
 
 The current human entry point is the
 [Claude directory developer portal](https://claude.ai/directory/manage).
-The historical self-contained candidate passed strict validation with Claude
-Code `2.1.278` and remains preserved at commit
-`c05aac9f38e7755a51f511078ff555a587f97ccf` in
-[`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin).
-Its earlier anonymous clone, external-source validation, isolated installation,
-and one read-only semantic call remain historical evidence. Public `main` now
-contains the thin directory-compatible wrapper, qualified at commit
-`05d4f0de35a02916504bf29156bc42270cf77a23`. The maintained template and
-assembler in this repository remain the source of truth. See the
-[owner preparation packet](../distribution/claude-community/submission.md).
+The historical self-contained candidate remains at distribution commit
+c05aac9f38e7755a51f511078ff555a587f97ccf. Public main contains the thin
+wrapper at 05d4f0de35a02916504bf29156bc42270cf77a23. The existing submission
+was made once and is now in Needs changes: the reviewer rejected downloading
+and executing the MCP server from a GitHub Release after installation, even
+when its size and SHA-256 are fixed. The thin source remains useful historical
+evidence but must not be resubmitted unchanged. See
+[the thin-plugin contract](claude-directory-thin-plugin.md).
 
-That full candidate remains valid historical marketplace evidence but exceeds
-the current directory's unpacked and individual-file limits. A separate thin
-candidate under `packaging/claude-directory-plugin/` keeps the canonical skill
-and local MCP interface while downloading the immutable Alpha-3 MCPB on first
-start. It requires Python 3.11 or newer, verifies the fixed 285,603,142-byte
-artifact and fixed SHA-256 before safe extraction, and stores an owner-only
-atomic installation in the semantic-scala user cache. It retains no MCPB after
-installation and needs no host Java. The deterministic candidate contains 6
-files and 40,205 unpacked bytes; its largest file is 21,188 bytes and its ZIP is
-14,843 bytes. Claude Code `2.1.283` passed strict validation for the privacy-link
-change. Earlier cold-cache and warm/offline client evidence remains applicable
-because bootstrap and runtime bytes are unchanged.
-See [the thin-plugin contract](claude-directory-thin-plugin.md).
+The locally qualified no-download candidate is maintained under
+packaging/claude-embedded-plugin/semantic-scala. Its plugin manifest points
+mcpServers directly to ./semantic-scala.mcpb. The complete server, dependency
+JARs, static launchers, and reduced package-local Corretto 21 runtime are
+inside the plugin. It has no bootstrap, updater, runtime URL, or first-use
+download.
 
-The older Claude Console form is no longer supported. The current portal is
-available to paid Pro, Max, Team, and Enterprise accounts with the documented
-role, checks GitHub push access, follows a branch or tag, validates the plugin,
-asks data-handling questions, and requires four compliance acknowledgements
-before `Submit for review`. Current first-party documentation does not identify
-a separate submission fee. Authenticated revalidation passed for public `main`
-at exact commit `05d4f0de35a02916504bf29156bc42270cf77a23`. The current
-qualified source exposes the owner-approved privacy policy through its README.
-The owner approved all four acknowledgements, entered the private contact
-field, and authorized exactly one review submission. The security scan completed and the qualified `05d4f0d` version is In review
-under a content-policy hold because shipped code could not be cleared
-automatically. No public listing exists. Versions history retains the earlier
-`fc3a6c8` detection event; runtime bootstrap remains a human review gate.
+First-party Claude sources rechecked on 3 October 2026 distinguish two
+contracts. The claude.ai organization upload API accepts nested MCPB files and
+allows request body and expanded upload up to 200 MB. Public Directory plugin
+submission instead ingests a GitHub repository and stops validation when the
+GitHub archive is not under 50 MiB or any plugin file is not under 5 MiB.
+Package-relative MCPB syntax remains valid but is held for reviewer inspection;
+standalone MCPB Directory submissions are deprecated.
 
-Prepared facts are the strict-valid manifest, public commit-pinned source, local
-stdio configuration, canonical skill, exact runtime provenance, platform
-boundary, deterministic inventory, listing copy, reviewer plan, technical
-data-handling note, and public privacy-policy link. Review-status monitoring must
-not create a duplicate submission. Any later publication remains separate.
+The deterministic compact MCPB is 145,197,017 bytes, expands to 181,937,037
+bytes across 1,952 files, and has SHA-256
+6c1c698eaa73b78b9d005cbba4fccffd2e357e721e7f64fbeccdb13bb723d4ed.
+The six-file ZIP is 144,399,347 bytes, expands to 145,233,144 bytes, and has
+SHA-256
+9004bfa94a3e60618430092bd253ac6354aa64290c3ebad41c2a8f3a6999f2d6.
+Official MCPB validation, installed Claude plugin validation, three
+byte-identical builds, the full exact-eight matrix, and one isolated
+installed-client effect-summary call pass. The public Directory route is
+blocked by both the archive and per-file limits.
+
+The runtime remains 0.1.0-alpha.3 and the prepared plugin identity remains
+0.1.0-alpha.3.1 as local engineering evidence. The distribution repository,
+portal version, submission, and listing remain unchanged. Do not publish or
+resubmit this candidate without a materially different architecture or an
+explicit reviewer-approved source mechanism. See
+[the embedded-plugin contract](claude-directory-embedded-plugin.md).
 
 ## Catalog pause
 

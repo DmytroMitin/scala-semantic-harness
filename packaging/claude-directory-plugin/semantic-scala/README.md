@@ -1,5 +1,10 @@
 # semantic-scala thin Claude directory candidate
 
+> Reviewer-rejected for Claude Directory publication: this historical thin
+> source downloads and executes the MCP server after installation. Do not
+> publish or resubmit it unchanged. Use the separately maintained embedded-MCPB
+> replacement for future Directory source.
+
 This experimental Linux x86_64 plugin contains the canonical semantic-scala
 skill and a readable Python bootstrap for the local exact-eight-tool MCP
 server. It is a locally qualified candidate, not a public directory listing or

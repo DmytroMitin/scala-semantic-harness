@@ -1,8 +1,15 @@
 {
   "$schema": "semantic-scala.claude-community-submission-preparation.v1",
   "observedOn": "2026-09-28",
-  "status": "submitted-once-in-review-content-policy-hold",
+  "status": "submitted-once-needs-changes-thin-download-rejected",
   "terminalState": "CLAUDE_DIRECTORY_SUBMISSION_CREATED_WITH_REVIEW_HOLD",
+  "task263Outcome": {
+    "candidate": "embedded-mcpb-local-only",
+    "directoryStatus": "blocked-by-50MiB-archive-and-5MiB-file-limits",
+    "published": false,
+    "uploaded": false,
+    "resubmitted": false
+  },
   "identity": {
     "name": "semantic-scala",
     "displayName": "semantic-scala",

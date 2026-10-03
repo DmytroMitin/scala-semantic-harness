@@ -1,5 +1,13 @@
 # Claude directory thin plugin
 
+> **Reviewer-rejected for Claude Directory publication.** The existing
+> submission is in Needs changes because this plugin downloads and executes
+> server code after installation. Retain this page only as historical evidence;
+> do not resubmit the thin architecture unchanged. The locally qualified,
+> no-download alternative is documented in
+> [claude-directory-embedded-plugin.md](claude-directory-embedded-plugin.md),
+> but it is also blocked by current Directory size limits.
+
 The repository includes a deterministic thin Claude Code plugin candidate for
 `semantic-scala` `0.1.0-alpha.3`. The exact six-file wrapper is published at the
 root of `DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
@@ -72,7 +80,7 @@ the personal-data answer to `Reads only`, approved all four compliance
 acknowledgements, supplied the private contact field, and authorized exactly
 one `Submit for review` action. The security scan completed and sent qualified version `05d4f0d` to
 content-policy review because shipped code could not be cleared automatically.
-The status is In review and no public listing exists. Versions history retains
+That historical In review status was later superseded by Needs changes; no public listing exists. Versions history retains
 the earlier `fc3a6c8` detection event; no duplicate submission or corrective
 portal action was attempted. The public [semantic-scala Privacy Policy](../PRIVACY.md)
 remains exposed from `main`, and the private contact value is not retained here.

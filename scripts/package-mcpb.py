@@ -43,6 +43,17 @@ RUNTIME_NOTICES = [
     "README.md",
     "THIRD_PARTY_README",
 ]
+RUNTIME_MODULES = [
+    "java.base",
+    "java.compiler",
+    "java.desktop",
+    "java.management",
+    "java.scripting",
+    "java.sql",
+    "jdk.crypto.ec",
+    "jdk.unsupported",
+    "jdk.zipfs",
+]
 
 
 class PackageFailure(Exception):
@@ -164,15 +175,44 @@ def run_checked(command: list[str]) -> None:
         ) from error
 
 
-def copy_stage(stage: Path, target: Path, contract: dict[str, object]) -> None:
+def classpath_entry_digest(path: Path) -> str:
+    if path.is_file():
+        return sha256(path)
+    if not path.is_dir():
+        raise PackageFailure(f"unsupported classpath entry: {path}")
+    digest = hashlib.sha256()
+    for child in sorted(path.rglob("*"), key=lambda item: item.relative_to(path).as_posix()):
+        if child.is_dir():
+            continue
+        if child.is_symlink() or not child.is_file():
+            raise PackageFailure(f"unsupported classpath entry content: {child}")
+        digest.update(child.relative_to(path).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(bytes.fromhex(sha256(child)))
+    return digest.hexdigest()
+
+
+def copy_stage(stage: Path, target: Path, shared: Path, contract: dict[str, object]) -> None:
     library = stage / "lib"
     if not library.is_dir():
         raise PackageFailure(f"stage library directory is missing: {library}")
-    shutil.copytree(library, target / "lib", symlinks=False)
     entries = contract["classpath"]
     assert isinstance(entries, list)
+    packaged_entries: list[str] = []
+    for relative in entries:
+        assert isinstance(relative, str)
+        source = stage / relative
+        digest = classpath_entry_digest(source)
+        suffix = source.suffix if source.is_file() and source.suffix else ".classes"
+        destination = shared / f"{digest}{suffix}"
+        if not destination.exists():
+            if source.is_dir():
+                shutil.copytree(source, destination, symlinks=False)
+            else:
+                shutil.copyfile(source, destination)
+        packaged_entries.append(destination.relative_to(shared.parents[1]).as_posix())
     (target / "classpath.txt").write_text(
-        "".join(f"{target.relative_to(target.parents[1]).as_posix()}/{entry}\n" for entry in entries),
+        "".join(f"{entry}\n" for entry in packaged_entries),
         encoding="utf-8",
     )
 
@@ -230,15 +270,16 @@ def assemble(cli_stage: Path, mcp_stage: Path, jdk_home: Path, output: Path) -> 
     (output / "bin").mkdir()
     (output / "app/cli").mkdir(parents=True)
     (output / "app/mcp").mkdir(parents=True)
+    (output / "app/shared").mkdir(parents=True)
     (output / "LICENSES/corretto-21").mkdir(parents=True)
-    copy_stage(cli_stage, output / "app/cli", cli_contract)
-    copy_stage(mcp_stage, output / "app/mcp", mcp_contract)
+    copy_stage(cli_stage, output / "app/cli", output / "app/shared", cli_contract)
+    copy_stage(mcp_stage, output / "app/mcp", output / "app/shared", mcp_contract)
 
     run_checked(
         [
             str(jlink),
             "--add-modules",
-            "ALL-MODULE-PATH",
+            ",".join(RUNTIME_MODULES),
             "--strip-debug",
             "--no-header-files",
             "--no-man-pages",

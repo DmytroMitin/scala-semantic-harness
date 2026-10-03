@@ -64,6 +64,29 @@ class PackageMcpbTest(unittest.TestCase):
         )
         return stage
 
+    def _fake_jdk(self) -> Path:
+        jdk = self.base / "jdk"
+        (jdk / "bin").mkdir(parents=True)
+        java = jdk / "bin/java"
+        java.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+        java.chmod(0o755)
+        jlink = jdk / "bin/jlink"
+        jlink.write_text(
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            'printf "%s\\n" "$@" > "$(dirname "$0")/../jlink-args.txt"\n'
+            "output=\n"
+            "while (($#)); do\n"
+            "  if [[ $1 == --output ]]; then output=$2; shift 2; else shift; fi\n"
+            "done\n"
+            'mkdir -p "$output/bin"\n'
+            'cp "$(dirname "$0")/java" "$output/bin/java"\n',
+            encoding="utf-8",
+        )
+        jlink.chmod(0o755)
+        (jdk / "LICENSE").write_text("jdk license\n", encoding="utf-8")
+        return jdk
+
     def _package_root(self) -> Path:
         package = self.base / "package"
         (package / "bin").mkdir(parents=True)
@@ -122,6 +145,48 @@ class PackageMcpbTest(unittest.TestCase):
         self.assertEqual(validated["platforms"], ["linux"])
         self.assertEqual(validated["toolNames"], TOOLS)
         self.assertEqual(validated["serverType"], "binary")
+
+    def test_assemble_deduplicates_shared_classpath_entries_and_bounds_runtime_modules(self) -> None:
+        cli = self._stage("semantic-scala", "semantic.harness.cli.Main")
+        mcp = self._stage("semantic-scala-mcp", "semantic.harness.mcp.Main")
+        (mcp / "lib/1-dependency.jar").rename(mcp / "lib/2-renumbered-dependency.jar")
+        mcp_launcher = mcp / "bin/semantic-scala-mcp"
+        mcp_launcher.write_text(
+            mcp_launcher.read_text(encoding="utf-8").replace("lib/1-dependency.jar", "lib/2-renumbered-dependency.jar"),
+            encoding="utf-8",
+        )
+        (cli / "lib/classes-0/example.class").write_bytes(b"cli")
+        (mcp / "lib/classes-0/example.class").write_bytes(b"mcp")
+        jdk = self._fake_jdk()
+        package = self.base / "compact-package"
+
+        self._run(
+            "assemble",
+            "--cli-stage",
+            str(cli),
+            "--mcp-stage",
+            str(mcp),
+            "--jdk-home",
+            str(jdk),
+            "--output",
+            str(package),
+        )
+
+        cli_entries = (package / "app/cli/classpath.txt").read_text(encoding="utf-8").splitlines()
+        mcp_entries = (package / "app/mcp/classpath.txt").read_text(encoding="utf-8").splitlines()
+        self.assertTrue(all(entry.startswith("app/shared/") for entry in cli_entries + mcp_entries))
+        self.assertNotEqual(cli_entries[0], mcp_entries[0])
+        self.assertEqual(cli_entries[1], mcp_entries[1])
+        self.assertEqual(len(list((package / "app/shared").iterdir())), 3)
+        self.assertFalse((package / "app/cli/lib").exists())
+        self.assertFalse((package / "app/mcp/lib").exists())
+
+        jlink_args = (jdk / "jlink-args.txt").read_text(encoding="utf-8").splitlines()
+        self.assertNotIn("ALL-MODULE-PATH", jlink_args)
+        modules = jlink_args[jlink_args.index("--add-modules") + 1].split(",")
+        self.assertIn("java.base", modules)
+        self.assertIn("java.compiler", modules)
+        self.assertIn("jdk.zipfs", modules)
 
     def test_validate_rejects_group_writable_payload_file(self) -> None:
         package = self._package_root()

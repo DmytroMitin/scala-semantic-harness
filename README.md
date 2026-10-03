@@ -432,22 +432,34 @@ skill load, bundled-MCP registration, and one read-only semantic call. Claude
 Code `2.1.220` passed a disposable local-marketplace install, packaged-skill
 load, plugin-local MCP connection, and one read-only client-mediated semantic
 call after an explicit owner login checkpoint. The historical full Claude candidate remains preserved at commit
-`c05aac9f38e7755a51f511078ff555a587f97ccf` in
-[`DmytroMitin/semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin).
-The repository's current `main` instead contains the directory-compatible thin
-wrapper, qualified at commit `05d4f0de35a02916504bf29156bc42270cf77a23`.
-An anonymous clone reproduced its six-file identity, and its 17,129-byte public
-GitHub archive passes the current hard limits. Claude Code `2.1.283` passed
-strict plugin and marketplace validation; prior public-source cold/warm client
-evidence remains applicable because runtime and bootstrap bytes are unchanged.
-The existing draft was submitted for Claude Directory review exactly once on
-2026-09-28. Its security scan completed and sent the qualified `05d4f0d`
-version to content-policy review because the scan could not automatically read
-shipped executable, bytecode, WebAssembly, or packed code. The current status
-is In review, and no public listing is verified. Versions history retains an
-earlier `fc3a6c8` detection event, but a scheduled check added `05d4f0d` as the
-version now in review. No duplicate submission, update check, or corrective
-portal action was attempted.
+c05aac9f38e7755a51f511078ff555a587f97ccf in
+[DmytroMitin/semantic-scala-claude-plugin](https://github.com/DmytroMitin/semantic-scala-claude-plugin).
+That distribution repository's current main contains the thin wrapper at
+05d4f0de35a02916504bf29156bc42270cf77a23. The existing draft was submitted
+once on 28 September 2026. Its current status is Needs changes: the reviewer
+does not allow a Directory plugin to download and execute server code from a
+GitHub Release after installation, even when checksum-pinned.
+
+The locally qualified no-download candidate is maintained under
+[packaging/claude-embedded-plugin/](packaging/claude-embedded-plugin/) and
+embeds a compact local MCPB directly in the plugin. It has no post-install
+executable fetch or updater. The runtime remains Alpha-3 while the prepared
+plugin distribution version is 0.1.0-alpha.3.1. The deterministic MCPB is
+145,197,017 bytes, expands to 181,937,037 bytes across 1,952 files, and has
+SHA-256
+6c1c698eaa73b78b9d005cbba4fccffd2e357e721e7f64fbeccdb13bb723d4ed.
+The six-file ZIP is 144,399,347 bytes, expands to 145,233,144 bytes, and has
+SHA-256
+9004bfa94a3e60618430092bd253ac6354aa64290c3ebad41c2a8f3a6999f2d6.
+Official MCPB and Claude plugin validation, three byte-identical builds, the
+full exact-eight compatibility suite, and one isolated installed-client
+semantic call pass. The candidate is nevertheless blocked for the public
+Directory: the current
+[pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist)
+requires the GitHub archive to be under 50 MiB and every plugin file under
+5 MiB. The distribution repository, portal version, submission, and public
+listing remain unchanged.
+
 The owner packet under
 [`distribution/claude-community/`](distribution/claude-community/) records the
 immutable qualification commit and expected human review hold. The
@@ -476,25 +488,14 @@ owner-approved and wired to both branding fields. The public privacy policy
 covers the OpenAI/Codex path, first-use download, and separate cache. See
 [`docs/openai-skills-only-plugin.md`](docs/openai-skills-only-plugin.md).
 
-The repository now also contains a separate directory-compatible thin Claude
-candidate. It retains the canonical skill and local exact-eight MCP interface,
-but replaces the bundled runtime with a Python 3.11 bootstrap that downloads
-the fixed Alpha-3 MCPB on first start, verifies its exact byte count and
-SHA-256 before safe extraction, and atomically installs it in an owner-only
-semantic-scala cache. Warm starts reuse that verified cache and require no
-network fetch. The deterministic 6-file candidate is 40,205 unpacked bytes,
-its largest file is 21,188 bytes, and its ZIP is 14,843 bytes. Claude Code
-`2.1.283` passed strict validation for the privacy-link source. The cold session
-retains one pre-semantic invalid-path rejection followed by one successful
-read-only call; the warm session made one successful read-only call. This is
-public-source technical readiness and a submitted review request, not directory
-acceptance. The next gate is monitoring the existing content-policy review and handling
-reviewer feedback without a duplicate submission; publication, if approved, remains a
-separate portal state/action. See
-[`docs/claude-directory-thin-plugin.md`](docs/claude-directory-thin-plugin.md).
-See [`docs/native-plugin-packages.md`](docs/native-plugin-packages.md) for the
-build commands, current vendor contracts, public-submission boundary, and
-platform limits.
+The earlier thin candidate remains documented as reviewer-rejected historical
+evidence in
+[docs/claude-directory-thin-plugin.md](docs/claude-directory-thin-plugin.md).
+It must not be resubmitted unchanged. See
+[docs/claude-directory-embedded-plugin.md](docs/claude-directory-embedded-plugin.md)
+for the locally qualified, no-download package, exact identities, current
+Claude limits, and the resulting public-Directory blocker. Do not publish this
+candidate as a Directory source without resolving that blocker.
 
 ## Examples and benchmarks
 
@@ -523,17 +524,16 @@ benchmark reproducibility beyond its stated small-sample gate.
   bounded disposable installed-client skill and MCP-use qualification. They
   are not public listings or supported public install channels. OpenAI public
   MCP submission still requires a separately authorized public HTTPS service.
-  The exact Claude candidate is present at a qualified public Git commit, but
-  current directory submission follows a branch or tag and rejects a GitHub
-  archive of 50 MiB or more, an unpacked plugin of 256 MiB or more, or an
-  individual file of 5 MiB or more. The candidate is 339,741,892 unpacked bytes
-  and contains a 54,008,260-byte runtime image file, so that historical full
-  candidate is not eligible. The separately generated 40,205-byte thin candidate
-  fits those limits and is now published on public `main`, byte-qualified at
-  commit `05d4f0de35a02916504bf29156bc42270cf77a23`; the unchanged runtime remains
-  cold/warm client qualified. Its first start requires network access and Python 3.11 or newer to
-  fetch and verify the fixed Alpha-3 MCPB. Human portal acceptance and review
-  remain distinct from local qualification.
+  The Claude thin source at
+  05d4f0de35a02916504bf29156bc42270cf77a23 is reviewer-rejected because it
+  downloads executable server bytes after installation. The embedded MCPB
+  removes that download, preserves package-local Java, and passes the full
+  exact-eight compatibility suite plus one isolated client semantic call.
+  It fits the separate 200 MB claude.ai upload rules, but not the public
+  Directory checklist: its 144,399,347-byte GitHub archive exceeds 50 MiB and
+  its 145,197,017-byte MCPB exceeds the 5 MiB per-file limit. The Directory
+  plugin route is therefore blocked pending a different architecture or an
+  explicit reviewer-approved mechanism.
 - The separate eight-file OpenAI skills-only candidate is locally validated on
   Codex CLI `0.157.1` for one direct-CLI `effect-summary` workflow with no MCP
   dependency. It is not submitted. OpenAI product-specific review has no

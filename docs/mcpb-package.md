@@ -69,12 +69,19 @@ python3 scripts/package-mcpb.py pack \
   --output target/mcpb/semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb
 ```
 
-The assembler verifies the staged main classes and ordered classpaths, rejects
-symlinks, materializes only `jlink`'s package-internal legal-notice links,
-normalizes modes, and records a payload inventory. It uses
-`jlink --add-modules ALL-MODULE-PATH` rather than claiming an unproved minimal
-module closure. The deterministic packer sorts paths and normalizes ZIP
-timestamps and modes.
+The exact-tag assembler verifies the staged main classes and ordered
+classpaths, rejects symlinks, materializes only jlink's package-internal legal
+notice links, normalizes modes, and records a payload inventory. The immutable
+published artifact used jlink --add-modules ALL-MODULE-PATH; reproducing that
+release must continue to use the tagged source above.
+
+Current main additionally supports the smaller unpublished Claude reviewer
+candidate. It stores identical CLI/MCP classpath entries once by content
+digest and uses the jdeps-derived module set plus EC cryptography and ZIP
+filesystem support. That candidate has separate full exact-eight compatibility
+evidence and must not be confused with the immutable published MCPB. See
+[claude-directory-embedded-plugin.md](claude-directory-embedded-plugin.md).
+The deterministic packer sorts paths and normalizes ZIP timestamps and modes.
 
 The official MCPB 2.1.2 CLI is still authoritative for v0.3 manifest
 validation and bundle inspection. Its `pack` command was not byte-deterministic

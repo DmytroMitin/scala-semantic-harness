@@ -10,7 +10,7 @@
     {
       "kind": "listingCopy",
       "path": "distribution/claude-community/submission.json",
-      "status": "submitted-once-in-review-content-policy-hold"
+      "status": "submitted-once-needs-changes-thin-download-rejected"
     },
     {
       "kind": "privacyPolicy",
@@ -21,7 +21,7 @@
     {
       "kind": "reviewerTestPlan",
       "path": "distribution/claude-community/reviewer-test-plan.md",
-      "status": "prepared-for-qualified-public-source-owner-review"
+      "status": "superseded-thin-plan-embedded-candidate-size-blocked"
     },
     {
       "kind": "thinPluginSourceTemplate",
@@ -66,7 +66,7 @@
     {
       "kind": "currentDirectoryContract",
       "url": "https://claude.com/docs/plugins/pre-submission-checklist",
-      "status": "thin-candidate-hard-limits-pass-bootstrap-human-review-unresolved"
+      "status": "thin-source-reviewer-rejected; embedded-candidate-directory-size-blocked"
     },
     {
       "kind": "icon",

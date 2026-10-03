@@ -1,8 +1,13 @@
 # Reviewer test plan
 
+> **Superseded:** do not use this thin-plugin plan for resubmission. The
+> reviewer rejected its post-install executable download. The locally
+> qualified embedded-MCPB candidate also must not be published: it exceeds
+> the current 50 MiB GitHub-archive and 5 MiB per-file Directory limits.
+
 This plan is prepared for human review of the thin candidate published at
 `DmytroMitin/semantic-scala-claude-plugin:main` and qualified at commit
-`05d4f0de35a02916504bf29156bc42270cf77a23`. One review submission is In review,
+`05d4f0de35a02916504bf29156bc42270cf77a23`. One review submission later entered In review and is now in Needs changes,
 but this plan is not evidence of an accepted or public directory listing. The
 portal security scan sent qualified version `05d4f0d` to content-policy review
 because shipped code could not be cleared automatically. Versions history also

@@ -69,36 +69,27 @@ also published as generated distribution material at commit
 [`semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin)
 repository. Claude Code `2.1.278` passed anonymous-source validation, isolated
 install, skill/MCP discovery, and one read-only semantic call from that pin.
-The Claude thin candidate has one submission In review under a content-policy
-hold, but no public directory listing is verified. The client-neutral skill remains
-authoritative.
+The Claude thin candidate has one submission in Needs changes. The reviewer
+rejected its post-install GitHub Release download, so it is historical evidence
+only and must not be resubmitted unchanged. No public directory listing is
+verified. The client-neutral skill remains authoritative.
 
 The Claude community packet is under
-[`distribution/claude-community/`](../distribution/claude-community/). The
-separate generated-distribution repository preserves the historical full
-candidate at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`. That historical
-tree exceeds the current directory's 50 MiB GitHub archive, 256 MiB unpacked,
-and 5 MiB per-file gates.
+[distribution/claude-community/](../distribution/claude-community/). The
+generated-distribution repository preserves the historical full candidate at
+c05aac9f38e7755a51f511078ff555a587f97ccf and the rejected thin candidate at
+05d4f0de35a02916504bf29156bc42270cf77a23.
 
-Public `main` now contains the qualified thin candidate: 6 files, 40,205
-unpacked bytes, 21,188-byte largest file, and a 14,843-byte deterministic ZIP.
-Its Python 3.11 bootstrap fetches only the fixed Alpha-3 MCPB, verifies the exact
-size and SHA-256, safely installs it in an owner-only cache, and reuses that
-cache offline. The public tree was anonymously byte-verified at commit
-`05d4f0de35a02916504bf29156bc42270cf77a23`. Its 17,129-byte GitHub source
-archive and unpacked tree pass the documented hard limits. Claude Code
-`2.1.283` passed strict plugin and marketplace validation for the README-only
-privacy-link change. The earlier exact-pin/default-branch cold/warm treatment
-remains applicable because bootstrap and runtime bytes are unchanged. Published
-evaluator guidance can hold the bootstrap for human review. The authenticated
-portal revalidated `main` at `05d4f0d`, corrected the personal-data answer to
-`Reads only`, recorded four owner-approved acknowledgements, and created one
-review submission on 2026-09-28. The security scan completed and sent qualified version `05d4f0d` to
-content-policy review because shipped code could not be cleared automatically.
-The status is In review and no public listing exists. Versions history retains
-the earlier `fc3a6c8` detection event; no duplicate submission or corrective
-portal action was attempted. The owner-approved [privacy policy](../PRIVACY.md)
-remains public and exposed from the qualified source.
+The product-repository no-download candidate embeds a compact local MCPB in
+the plugin and has no runtime bootstrap, updater, or executable download. The
+MCPB is 145,197,017 bytes and 181,937,037 expanded bytes across 1,952 files;
+the six-file ZIP is 144,399,347 bytes and 145,233,144 expanded bytes. Official
+MCPB and Claude plugin validation, three byte-identical builds, the full
+exact-eight suite, and one isolated installed-client semantic call pass.
+Public Directory publication is blocked because the current GitHub-source
+checklist requires an archive under 50 MiB and every plugin file under 5 MiB.
+The distribution repository and live submission are unchanged. See
+[claude-directory-embedded-plugin.md](claude-directory-embedded-plugin.md).
 
 The independent OpenAI skills-only candidate is maintained under
 [`packaging/openai-skills-plugin/`](../packaging/openai-skills-plugin/). It is

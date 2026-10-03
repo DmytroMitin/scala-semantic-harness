@@ -32,11 +32,12 @@ execution ledger and does not promise delivery dates.
   plus checked-in stable discovery metadata with explicit catalog and native
   plugin boundaries.
 - Deterministic locally validated OpenAI/Codex and Claude Code native plugin
-  candidates assembled from the exact published Alpha-3 MCPB. Both have
-  bounded disposable installed-client skill and MCP-use qualification. The
-  exact Claude candidate has a qualified public Git source and one directory
-  review submission, but no public directory listing or install-channel claim
-  exists.
+  candidates. The submitted Claude thin source is in Needs changes because it
+  downloads executable server code after installation. A no-download embedded
+  MCPB candidate passes manifests, deterministic packaging, the full
+  exact-eight compatibility suite, and an isolated client semantic call, but
+  the public Directory route is blocked by its 50 MiB repository and 5 MiB
+  per-file limits. No public listing or supported install-channel claim exists.
 - A separate deterministic eight-file OpenAI skills-only candidate now has
   clean cold direct-CLI, warm cache-only, and Codex CLI 0.157.1 installed-skill
   proof for read-only `effect-summary`, with no MCP configuration or process.
@@ -111,38 +112,31 @@ execution ledger and does not promise delivery dates.
    Preserve the published exact-Alpha-3 Linux x86_64 MCPB, exact anonymously
    verified digest-pinned release asset, and active exact official Registry
    record. Require separate authority and equivalent verification for any later
-   publication. Native OpenAI/Codex and Claude Code plugin candidates now have
-   local manifest, determinism, and relocated-runtime validation. Codex also
-   has bounded disposable installed-client skill and MCP-use proof; Claude now
-   has the equivalent proof after an explicit owner login checkpoint. Directory
-   submission remains a separate explicitly authorized human gate. The Claude
-   historical full candidate is preserved in the dedicated generated-distribution
-   repository at commit `c05aac9f38e7755a51f511078ff555a587f97ccf`:
-   anonymous byte-and-mode readback, current community external-source
-   validation, isolated install, skill/MCP discovery, and one read-only
-   semantic call passed. A 2026-09-27 recheck found that the current directory
-   portal follows a branch or tag and enforces 50 MiB archive, 256 MiB unpacked,
-   and 5 MiB per-file limits; the qualified candidate exceeds the latter two.
-   The repository now provides a deterministic 6-file, 40,205-byte thin alternative
-   with a Python 3.11 fixed-URL, fixed-size, fixed-digest bootstrap and
-   owner-only atomic cache. Claude Code `2.1.283` passed strict validation and
-   isolated cold/warm installed-client use with one read-only semantic call per
-   session. The exact thin wrapper is now published on the dedicated
-   repository's `main` at commit
-   `05d4f0de35a02916504bf29156bc42270cf77a23`; the previously qualified thin
-   source remains at its parent commit. Anonymous byte readback, the actual
-   17,129-byte GitHub archive, and strict plugin/marketplace validation passed;
-   runtime evidence remains inherited because bootstrap bytes are unchanged.
-   Current evaluator guidance can hold the
-   launcher/download model for human review. The owner corrected the
-   personal-data answer to `Reads only`, approved all four current
-   acknowledgements, and submitted the exact draft once on 2026-09-28. The portal completed its security scan and placed the qualified `05d4f0d`
-   version In review under a content-policy hold because shipped code could not
-   be cleared automatically; no public listing is verified. Versions history
-   retains the earlier `fc3a6c8` detection event, while the scheduled check
-   identifies `05d4f0d` as the version now in review. Follow-up must monitor the
-   existing submission and must not create a duplicate. The owner-approved privacy policy remains public and
-   exposed from the qualified source.
+   publication. Native OpenAI/Codex and Claude Code plugin candidates retain
+   local manifest, determinism, relocated-runtime, and historical installed-
+   client evidence. The Claude Directory reviewer has now rejected the thin
+   first-run-download architecture at distribution commit
+   05d4f0de35a02916504bf29156bc42270cf77a23: checksum pinning does not place
+   executable server bytes inside the reviewed submission.
+
+   The locally qualified no-download candidate is plugin distribution version
+   0.1.0-alpha.3.1 containing a compact MCPB while preserving runtime identity
+   0.1.0-alpha.3. Content-digest classpath deduplication and a bounded Corretto
+   21 image reduce the MCPB to 145,197,017 archive bytes and 181,937,037
+   expanded bytes across 1,952 files. The outer six-file ZIP is 144,399,347
+   bytes and 145,233,144 expanded bytes. Official MCPB validation, Claude
+   plugin validation, three byte-identical builds, the full exact-eight matrix,
+   and one isolated installed-client effect-summary call pass.
+
+   The package is not ready for public Directory source publication. The
+   current Directory checklist requires the GitHub archive to be under 50 MiB
+   and every plugin file under 5 MiB; both the outer archive and embedded MCPB
+   exceed those limits. Preserve the historical full candidate at
+   c05aac9f38e7755a51f511078ff555a587f97ccf and the rejected thin candidate at
+   05d4f0de35a02916504bf29156bc42270cf77a23 as evidence only. Do not resubmit
+   either candidate. A later architecture decision must select a materially
+   smaller local package or remote HTTPS MCP; publication and resubmission
+   remain blocked.
    Keep the independent OpenAI skills-only candidate limited to its qualified
    direct-CLI effect-summary workflow. Before any Platform draft, obtain the
    current OpenAI partner/product-specific determination for local execution,

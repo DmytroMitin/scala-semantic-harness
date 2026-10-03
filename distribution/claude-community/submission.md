@@ -1,10 +1,17 @@
 # Claude community submission preparation
 
+> **Current update (3 October 2026):** the submitted thin source is in Needs
+> changes because its post-install executable download was rejected. The
+> locally qualified embedded-MCPB candidate removes that download but exceeds
+> the public Directory limits of under 50 MiB per GitHub archive and under
+> 5 MiB per plugin file. Neither candidate is a current resubmission plan;
+> nothing was published, uploaded, or resubmitted.
+
 Originally prepared on 2026-09-21, rechecked against the first-party directory
 contract on 2026-09-27, and exercised in the authenticated portal on
 2026-09-27--28. The privacy-policy source and link were published and
 requalified on 2026-09-28. The exact draft was then submitted once for review
-and is In review under a content-policy hold. This is an owner-review packet for a public-source-qualified
+and later entered In review under a content-policy hold. This is an owner-review packet for a public-source-qualified
 thin candidate and its review request, not a published listing.
 
 ## Outcome
@@ -43,7 +50,7 @@ exposes its stable public URL. The live answers were saved as `Reads only`,
 submitted the exact draft once after fresh owner approval of all four
 acknowledgements and the final action. The security scan completed and sent qualified version `05d4f0d` to
 content-policy review because shipped code could not be cleared automatically.
-The status is In review and no public listing exists. Versions history retains
+At that time the status was In review; it was later superseded by Needs changes and no public listing exists. Versions history retains
 the earlier `fc3a6c8` detection event; no duplicate retry or corrective portal
 action was attempted.
 
@@ -95,7 +102,7 @@ link for software that collects user data or connects to a remote service. The
 owner-approved policy now documents the fixed GitHub runtime download, local
 processing and retention, Claude boundary, third parties, sharing, security,
 removal, and support. The generated README exposes the stable link because the
-current plugin manifest schema has no privacy-policy field. One submission is now In review after the security scan flagged shipped code
+current plugin manifest schema has no privacy-policy field. One submission was then In review after the security scan flagged shipped code
 that it could not automatically read. The portal states that an Anthropic reviewer must approve it
 before the first version can be published; the plugin page will identify
 whether the owner or reviewer publishes. The public documentation states no
@@ -169,7 +176,7 @@ cookies, MFA data, or the owner-supplied contact value. The exact existing
 draft was resumed and revalidated once at `05d4f0d`. The owner approved the
 answers (`Reads only`, `No`, `Not retained`, `No`), each of the four live
 acknowledgements, and a separate final submit checkpoint. `Submit for review`
-was clicked exactly once. The security scan completed and the qualified `05d4f0d` version is In review
+was clicked exactly once. The security scan completed and the qualified `05d4f0d` version was then In review
 under a content-policy hold. Versions history retains the earlier `fc3a6c8`
 detection event. No duplicate submission, `Check for new commits`, or other
 corrective portal action was attempted. No public listing is verified.

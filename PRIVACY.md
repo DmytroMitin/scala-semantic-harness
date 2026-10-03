@@ -1,6 +1,6 @@
 # semantic-scala Privacy Policy
 
-Effective date: 28 September 2026
+Effective date: 3 October 2026
 
 ## 1. Scope
 
@@ -45,22 +45,26 @@ local tool and their selected AI client to process.
 
 ## 4. First-start GitHub download
 
-The thin Claude Code plugin and OpenAI skills-only plugin require network
-access on first semantic use. Their bootstraps download one fixed public
-Alpha-3 MCPB runtime from this project's GitHub Release:
+The reviewer-rejected thin Claude Code plugin and the OpenAI skills-only plugin
+require network access on first semantic use. Their bootstraps download one
+fixed public Alpha-3 MCPB runtime from this project's GitHub Release:
 
 <https://github.com/DmytroMitin/scala-semantic-harness/releases/download/0.1.0-alpha.3/semantic-scala-0.1.0-alpha.3-linux-x86_64.mcpb>
 
-The request contains a fixed semantic-scala user-agent string and ordinary
-HTTPS request metadata. The bootstraps do not deliberately add workspace
-files, source code, tool inputs, semantic results, environment values, or
-secrets to that request. GitHub and network intermediaries may receive request
-metadata such as an IP address, timestamps, headers, and proxy information.
-Python's networking can honor user- or system-configured proxies, which may
-affect routing and authentication. GitHub handles information under the
+The locally qualified embedded Claude candidate does not make this request.
+It embeds the complete MCPB and package-local Java runtime inside the reviewed
+plugin and has no runtime downloader or updater.
+
+When a thin or OpenAI bootstrap is used, the request contains a fixed
+semantic-scala user-agent string and ordinary HTTPS request metadata. The
+bootstrap does not deliberately add workspace files, source code, tool inputs,
+semantic results, environment values, or secrets. GitHub and network
+intermediaries may receive request metadata such as an IP address, timestamps,
+headers, and proxy information. Python networking can honor configured proxies.
+GitHub handles information under the
 [GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 
-After a valid runtime has been installed, normal warm starts reuse the local
+After a valid thin runtime has been installed, warm starts reuse the local
 cache and do not make this download request.
 
 ## 5. No semantic-scala backend, telemetry, cookies, or account
@@ -105,13 +109,15 @@ privacy terms of those third parties before invoking them.
 
 ## 8. Local storage, retention, and removal
 
-The Claude Code first-start bootstrap stores the verified runtime below
-`$XDG_CACHE_HOME/semantic-scala/runtime/0.1.0-alpha.3/<sha256>` when
-`XDG_CACHE_HOME` is an absolute path, or below
-`~/.cache/semantic-scala/runtime/0.1.0-alpha.3/<sha256>` otherwise. The OpenAI
-skills-only helper stores its verified direct-CLI runtime below
-`$XDG_CACHE_HOME/semantic-scala/openai-skills-runtime/0.1.0-alpha.3/<sha256>`,
-or below the corresponding path under `~/.cache`. Their markers contain
+The reviewer-rejected thin Claude bootstrap stores its verified runtime below
+XDG_CACHE_HOME/semantic-scala/runtime/0.1.0-alpha.3/<sha256> when
+XDG_CACHE_HOME is absolute, or below the corresponding path under the user's
+.cache directory. The locally qualified embedded Claude candidate does not create this
+runtime cache: its runtime remains inside the installed plugin.
+
+The OpenAI skills-only helper stores its verified direct-CLI runtime below
+XDG_CACHE_HOME/semantic-scala/openai-skills-runtime/0.1.0-alpha.3/<sha256>,
+or below the corresponding user cache path. Thin-helper markers contain
 runtime provenance and inventory facts, not workspace source, credentials,
 environment values, or tool results. Downloaded MCPB files and incomplete
 installation directories are removed after success or failure.
@@ -127,13 +133,14 @@ classpath JAR bytes below the selected workspace's
 may retain additional data in their own locations.
 
 Local data remains until the user or the relevant build or host tool removes
-it. Uninstalling a plugin does not automatically remove runtime or build
-caches. While no semantic-scala process is running, users can remove the
-applicable versioned `semantic-scala/runtime` or
-`semantic-scala/openai-skills-runtime` directory, optional
-`semantic-scala/sbt-classpath` directories, and workspace
-`target/semantic-scala` outputs. The next operation may recreate needed data or
-download the verified runtime again.
+it. Uninstalling the embedded Claude plugin removes its packaged runtime with
+the plugin, but does not remove ordinary build caches. Uninstalling a thin or
+OpenAI helper does not automatically remove its separately cached runtime.
+While no semantic-scala process is running, users can remove the applicable
+versioned semantic-scala/runtime or semantic-scala/openai-skills-runtime
+directory, optional semantic-scala/sbt-classpath directories, and workspace
+target/semantic-scala outputs. A later thin or OpenAI operation may recreate
+needed data or download its verified runtime again.
 
 ## 9. Sharing and disclosure
 
@@ -145,7 +152,7 @@ may nevertheless be disclosed to:
   results;
 - OpenAI when a ChatGPT or Codex client transmits prompts, selected workspace
   content, command inputs, command outputs, or semantic results;
-- GitHub and network intermediaries for the fixed first-start runtime request;
+- GitHub and network intermediaries when a thin or OpenAI first-start runtime request is used;
 - build tools, dependency repositories, proxies, or other services configured
   or invoked by the user; and
 - other people when the user chooses to share logs, reports, issues, or other
@@ -157,15 +164,17 @@ policy.
 
 ## 10. Security controls
 
-The thin bootstraps use HTTPS, accept only HTTPS redirects, pin the expected
-runtime byte count and SHA-256 digest, verify the package manifest and file
-inventory, reject unsafe archive entries, and install through owner-only
-temporary directories and an atomic rename where the platform supports those
-permissions. The runtime URL cannot be changed through an environment
-variable. semantic-scala also validates bounded inputs and reports the side
-effects and uncertainty of semantic operations. These controls reduce risk but
-do not guarantee that local systems, third-party services, or user-selected
-projects are secure.
+The reviewer-rejected thin Claude bootstrap and the OpenAI skills-only
+bootstrap use HTTPS, accept only HTTPS redirects, pin the expected runtime byte
+count and SHA-256 digest, verify the package manifest and file inventory,
+reject unsafe archive entries, and install through owner-only temporary
+directories and an atomic rename where supported. The locally qualified embedded Claude
+candidate instead packages the runtime inside the reviewed plugin, validates
+the nested MCPB and archive boundaries during assembly, and has no executable
+download or updater. semantic-scala also validates bounded inputs and reports
+the side effects and uncertainty of semantic operations. These controls reduce
+risk but do not guarantee that local systems, third-party services, or
+user-selected projects are secure.
 
 ## 11. Children
 
