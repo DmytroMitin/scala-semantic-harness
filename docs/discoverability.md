@@ -91,6 +91,18 @@ checklist requires an archive under 50 MiB and every plugin file under 5 MiB.
 The distribution repository and live submission are unchanged. See
 [claude-directory-embedded-plugin.md](claude-directory-embedded-plugin.md).
 
+The product also maintains a tiny, contained Claude Directory skills-only
+candidate under
+[`packaging/claude-directory-skills-only-plugin/`](../packaging/claude-directory-skills-only-plugin/).
+It has no declared or bundled runtime and instead teaches Claude Code to use an
+independently installed `semantic-scala` CLI through ordinary shell
+permissions. First-party policy supports this package shape, and its local
+manifest, deterministic archive, contained-reach, and prerequisite-matrix
+checks pass. Client qualification is incomplete because the isolated current
+Claude session reached expired OAuth before model/tool execution; no public
+listing or source-update claim follows. See
+[`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
+
 The independent OpenAI skills-only candidate is maintained under
 [`packaging/openai-skills-plugin/`](../packaging/openai-skills-plugin/). It is
 not the local-MCP native candidate and contains no MCP configuration. Its

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "semantic-scala",
+  "displayName": "semantic-scala",
+  "version": "0.1.0-alpha.3",
+  "description": "Skills-only guidance for bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence through an independently installed semantic-scala CLI.",
+  "author": {
+    "name": "Dmytro Mitin",
+    "url": "https://github.com/DmytroMitin"
+  },
+  "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#claude-directory-skills-only-plugin",
+  "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "license": "Apache-2.0",
+  "keywords": [
+    "scala",
+    "semanticdb",
+    "compiler",
+    "build-tools",
+    "agent-skill",
+    "cli"
+  ]
+}

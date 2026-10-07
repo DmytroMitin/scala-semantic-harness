@@ -6,8 +6,9 @@ Effective date: 3 October 2026
 
 This Privacy Policy describes how the `semantic-scala` open-source project,
 including its command-line tools, local Model Context Protocol (MCP) server,
-agent skill, Claude Code plugin, OpenAI skills-only plugin, and first-start
-bootstraps, handles information. It applies to the project software maintained
+agent skill, Claude Code plugins (including the skills-only Directory
+candidate), OpenAI skills-only plugin, and first-start bootstraps, handles
+information. It applies to the project software maintained
 at <https://github.com/DmytroMitin/scala-semantic-harness>. It does not replace
 the privacy policies of Claude, ChatGPT, Codex, Anthropic, OpenAI, GitHub, build
 tools, or other software and services you choose to use with semantic-scala.
@@ -54,6 +55,13 @@ fixed public Alpha-3 MCPB runtime from this project's GitHub Release:
 The locally qualified embedded Claude candidate does not make this request.
 It embeds the complete MCPB and package-local Java runtime inside the reviewed
 plugin and has no runtime downloader or updater.
+
+The Claude Directory skills-only candidate also does not make this request. It
+contains instructions and policy only, declares no runtime or remote service,
+and does not install, update, download, or automatically execute
+`semantic-scala`. When a user permits Claude Code to invoke an independently
+installed CLI, the local CLI, build-tool, and Claude data boundaries described
+in this policy apply normally.
 
 When a thin or OpenAI bootstrap is used, the request contains a fixed
 semantic-scala user-agent string and ordinary HTTPS request metadata. The

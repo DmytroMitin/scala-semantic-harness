@@ -128,7 +128,19 @@ Desktop shares the configuration contract but was not separately exercised.
 
 ### Claude Code
 
-Claude Code supports a project `.mcp.json` according to its
+For a public skills-only workflow, install only the `semantic-scala` CLI from
+the Coursier channel and load the maintained candidate under
+`packaging/claude-directory-skills-only-plugin/semantic-scala`. That plugin
+declares no MCP server. Its skill selects the existing CLI through Claude
+Code's ordinary shell permission flow, never installs it automatically, and
+never substitutes `semantic-scala-mcp` when the CLI is absent. This candidate
+has structural and direct-CLI qualification, but its current isolated client
+semantic/no-tool qualification is blocked by expired OAuth, so it is not yet a
+supported public Directory listing. See
+[`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
+
+For the separate manual/full local MCP workflow, Claude Code supports a project
+`.mcp.json` according to its
 [MCP guide](https://code.claude.com/docs/en/mcp):
 
 ```json

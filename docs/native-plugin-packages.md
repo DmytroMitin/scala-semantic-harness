@@ -292,6 +292,27 @@ resubmit this candidate without a materially different architecture or an
 explicit reviewer-approved source mechanism. See
 [the embedded-plugin contract](claude-directory-embedded-plugin.md).
 
+### Claude Directory skills-only CLI candidate
+
+The independently maintained candidate at
+`packaging/claude-directory-skills-only-plugin/semantic-scala` removes the
+public plugin runtime entirely. It declares no MCP server or CLI component and
+contains no executable, hook, LSP, installer, updater, script, or
+`allowed-tools`. Its skill uses an independently installed `semantic-scala`
+through Claude Code's ordinary shell permission path and refuses MCP fallback
+or automatic installation when that CLI is absent.
+
+Current first-party guidance explicitly permits a plugin containing only skills
+and permits skills to teach Claude to use an existing public CLI. The package
+therefore classifies as contained under current reach rules and clears the
+Directory size/file/entry limits. Strict Claude validation and deterministic
+packaging pass. The current isolated Claude client discovered the plugin skill
+and reported zero MCP servers, but expired OAuth blocked the model turn; direct
+CLI corroboration is not a substitute for that client proof. Keep the candidate
+unpublished until the effect-summary, build-backed, and no-tool client cases
+complete. See
+[`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
+
 ## Catalog pause
 
 The official MCP Registry record was published at

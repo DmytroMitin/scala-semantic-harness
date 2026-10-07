@@ -460,6 +460,21 @@ requires the GitHub archive to be under 50 MiB and every plugin file under
 5 MiB. The distribution repository, portal version, submission, and public
 listing remain unchanged.
 
+A separate contained Claude Directory candidate is maintained under
+[`packaging/claude-directory-skills-only-plugin/`](packaging/claude-directory-skills-only-plugin/).
+It contains only metadata, one small execution skill, a byte-identical copy of
+the canonical policy, documentation, license, and deterministic inventory. It
+declares no MCP/CLI runtime, hook, LSP, executable, installer, updater, or
+`allowed-tools`; Claude Code uses an independently installed `semantic-scala`
+through its ordinary shell permission path. The six-file source is 41,315
+bytes and its deterministic ZIP is 16,329 bytes. Strict plugin validation,
+contained-package checks, and the direct CLI prerequisite matrix pass. An
+isolated Claude Code `2.1.220` session discovered the skill with zero MCP
+servers, but the existing OAuth session expired before model/tool execution,
+so client semantic value and no-tool restraint remain unqualified and no
+public source/submission changed. See
+[`docs/claude-directory-skills-only-plugin.md`](docs/claude-directory-skills-only-plugin.md).
+
 The owner packet under
 [`distribution/claude-community/`](distribution/claude-community/) records the
 immutable qualification commit and expected human review hold. The

@@ -1,0 +1,54 @@
+{
+  "$schema": "semantic-scala.claude-directory-skills-only-package.v1",
+  "archiveEntryCount": 6,
+  "automaticNetworkDuringPluginUse": false,
+  "bundlesCli": false,
+  "cliPrerequisite": {
+    "command": "semantic-scala",
+    "installation": "independent",
+    "requiredVersion": "0.1.0-alpha.3"
+  },
+  "contentSha256": "5bff4c3981ab8f592d72be64563cf96b79ce46fa8389a079ccfdce0949bf2061",
+  "fileCount": 6,
+  "files": [
+    {
+      "bytes": 787,
+      "mode": "0644",
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "8479b029362b9d9c04418c4de2f6bdd9d667c617180a0c8edd459f2b782310cd"
+    },
+    {
+      "bytes": 11358,
+      "mode": "0644",
+      "path": "LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "bytes": 3328,
+      "mode": "0644",
+      "path": "README.md",
+      "sha256": "22a199e645af11ca0ec3638f9f51fbbbf8fb17019946a6b430953d4d2cf027c5"
+    },
+    {
+      "bytes": 3037,
+      "mode": "0644",
+      "path": "skills/semantic-scala/SKILL.md",
+      "sha256": "2d3dc8b72527382e53c7a1f495f1fc246a4800db661c7bf3277802fd47f9ba77"
+    },
+    {
+      "bytes": 21188,
+      "mode": "0644",
+      "path": "skills/semantic-scala/references/semantic-scala-policy.md",
+      "sha256": "b33972a2705d17e7c072617952316d0e0d8d8cfb7b88b95be0274d1a35dcde8e"
+    }
+  ],
+  "filesystemEntryCount": 10,
+  "inventoryExcludesManifest": true,
+  "largestFileBytes": 21188,
+  "networkDuringPluginInstall": false,
+  "route": "skills-only-external-cli",
+  "runtimeDeclarations": [],
+  "skillsOnly": true,
+  "totalBytes": 41315,
+  "version": "0.1.0-alpha.3"
+}

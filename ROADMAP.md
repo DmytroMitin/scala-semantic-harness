@@ -38,6 +38,14 @@ execution ledger and does not promise delivery dates.
   exact-eight compatibility suite, and an isolated client semantic call, but
   the public Directory route is blocked by its 50 MiB repository and 5 MiB
   per-file limits. No public listing or supported install-channel claim exists.
+- A separate six-file Claude Directory skills-only candidate now follows the
+  current first-party public-CLI skill pattern. It is contained, deterministic,
+  under all Directory package limits, and requires only an independently
+  installed `semantic-scala` CLI; it declares no runtime or pre-approved tools.
+  Direct exact-Alpha-3 CLI and prerequisite-matrix checks pass. The isolated
+  current Claude client discovered the skill with zero MCP servers, but expired
+  OAuth blocked the required semantic, build-backed, and no-tool model cases,
+  so source-update and resubmission readiness are not yet claimed.
 - A separate deterministic eight-file OpenAI skills-only candidate now has
   clean cold direct-CLI, warm cache-only, and Codex CLI 0.157.1 installed-skill
   proof for read-only `effect-summary`, with no MCP configuration or process.
@@ -137,6 +145,13 @@ execution ledger and does not promise delivery dates.
    either candidate. A later architecture decision must select a materially
    smaller local package or remote HTTPS MCP; publication and resubmission
    remain blocked.
+   Preserve the contained Claude skills-only candidate as the selected public
+   Directory architecture, distinct from the local/full MCP distribution. Do
+   not update the public source or existing Needs changes submission until a
+   current authenticated Claude Code run completes effect-summary,
+   build-backed, and negative no-tool qualification. If that succeeds, prepare
+   one new version of the existing `semantic-scala` product rather than a
+   duplicate listing, subject to owner confirmation of the portal mapping.
    Keep the independent OpenAI skills-only candidate limited to its qualified
    direct-CLI effect-summary workflow. Before any Platform draft, obtain the
    current OpenAI partner/product-specific determination for local execution,
@@ -401,6 +416,11 @@ privacy qualification. These tiers do not authorize release actions.
   no-contact-route product-review block plus identity, Apps Management,
   availability, and attestation holds literal. Preserve the approved shared
   square SVG and public privacy-policy consistency.
+- Preserve the Claude Directory skills-only source, deterministic validator,
+  exact canonical-policy reference, contained reach, no-runtime/no-MCP truth,
+  independent CLI prerequisite matrix, surface disclosures, and literal
+  authentication-blocked client status. Keep public source update and
+  resubmission as later owner-controlled actions.
 - Keep the public Maven/Coursier route independently reproducible without
   turning the application into a promised embeddable library API.
 - Preserve clean-environment CLI and generic stdio MCP validation; skill
