@@ -1,16 +1,43 @@
 {
   "$schema": "semantic-scala.claude-community-asset-inventory.v1",
-  "observedOn": "2026-09-28",
+  "observedOn": "2026-10-09",
   "assets": [
     {
-      "kind": "thinPluginManifest",
-      "path": "packaging/claude-directory-plugin/semantic-scala/.claude-plugin/plugin.json",
-      "status": "prepared-and-current-validator-pass"
+      "kind": "skillsOnlySourceTemplate",
+      "path": "packaging/claude-directory-skills-only-plugin/semantic-scala",
+      "version": "0.1.0-alpha.3.2",
+      "cliPrerequisite": "0.1.0-alpha.3",
+      "status": "maintained-and-qualified"
     },
     {
-      "kind": "listingCopy",
-      "path": "distribution/claude-community/submission.json",
-      "status": "submitted-once-needs-changes-thin-download-rejected"
+      "kind": "publicSkillsOnlyPluginSource",
+      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
+      "branch": "main",
+      "commit": "f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1",
+      "tree": "62d8689c830dbf6460115c76fbd1a2df48fb775b",
+      "root": "repository-root",
+      "contentSha256": "141362f7893bb555f770cde0091737695d7045052363ecf8ec836bd5edd9d40b",
+      "fileCount": 6,
+      "totalBytes": 41500,
+      "largestFileBytes": 21188,
+      "githubArchiveBytes": 18708,
+      "githubArchiveSha256": "6c507aa64ae6effe63552c62838685156f24919e62c6aaacfc3a703fcdfa30a5",
+      "status": "public-anonymous-readback-and-hard-limits-pass"
+    },
+    {
+      "kind": "existingDirectorySubmission",
+      "submissionId": "82a31369-158c-4fce-826a-752c4b7efe5b",
+      "status": "needs-changes-portal-stale-at-05d4f0d-no-resubmission"
+    },
+    {
+      "kind": "historicalRejectedThinSource",
+      "commit": "05d4f0de35a02916504bf29156bc42270cf77a23",
+      "status": "preserved-in-history-not-current-source-not-for-resubmission"
+    },
+    {
+      "kind": "historicalFullPluginSource",
+      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
+      "status": "preserved-in-history-size-blocked"
     },
     {
       "kind": "privacyPolicy",
@@ -21,62 +48,20 @@
     {
       "kind": "reviewerTestPlan",
       "path": "distribution/claude-community/reviewer-test-plan.md",
-      "status": "superseded-thin-plan-embedded-candidate-size-blocked"
-    },
-    {
-      "kind": "thinPluginSourceTemplate",
-      "path": "packaging/claude-directory-plugin/semantic-scala",
-      "status": "four-file-source-template-not-installable-by-itself"
-    },
-    {
-      "kind": "generatedLocalThinCandidate",
-      "contentSha256": "6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473",
-      "fileCount": 6,
-      "totalBytes": 40205,
-      "largestFileBytes": 21188,
-      "archiveBytes": 14843,
-      "status": "privacy-link-published-and-qualified; runtime-treatment-inherited-from-unchanged-bootstrap",
-      "sourceTemplatePath": "packaging/claude-directory-plugin/semantic-scala",
-      "generationCommand": "python3 scripts/package-claude-directory-plugin.py assemble --output <fresh-output>",
-      "outputContract": "fresh ignored output directory"
-    },
-    {
-      "kind": "qualifiedPublicThinPluginSource",
-      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
-      "branch": "main",
-      "commit": "05d4f0de35a02916504bf29156bc42270cf77a23",
-      "tree": "dbf80cd445d2ad626d082efd4f129e3b9b637c04",
-      "root": "repository-root",
-      "githubArchiveBytes": 17129,
-      "githubArchiveSha256": "1b7bb42255518d64066eb8c49995795640774e7217425462122eedad896ae403",
-      "status": "privacy-link-public-byte-verified-hard-limits-pass-review-hold"
-    },
-    {
-      "kind": "historicalFullPluginSource",
-      "url": "https://github.com/DmytroMitin/semantic-scala-claude-plugin",
-      "commit": "c05aac9f38e7755a51f511078ff555a587f97ccf",
-      "root": "repository-root",
-      "status": "preserved-at-parent-history; historical-tree-size-blocked"
+      "status": "skills-only-source-plan-prepared-not-submitted"
     },
     {
       "kind": "technicalDataHandlingNote",
       "path": "distribution/claude-community/privacy-data-handling.md",
-      "status": "factual-companion-to-owner-approved-public-policy"
-    },
-    {
-      "kind": "currentDirectoryContract",
-      "url": "https://claude.com/docs/plugins/pre-submission-checklist",
-      "status": "thin-source-reviewer-rejected; embedded-candidate-directory-size-blocked"
+      "status": "skills-only-factual-companion"
     },
     {
       "kind": "icon",
-      "status": "not-required-by-public-contract",
-      "postLoginRequirement": "portal warning confirms no icon; GitHub avatar used"
+      "status": "not-included-current-portal-warning-only"
     },
     {
       "kind": "screenshots",
-      "status": "not-required-by-public-contract",
-      "postLoginRequirement": "not required by current portal form"
+      "status": "not-required-by-current-portal-contract"
     }
   ],
   "thirdPartyBrandAssetsIncluded": false

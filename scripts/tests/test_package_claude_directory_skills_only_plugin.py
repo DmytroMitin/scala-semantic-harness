@@ -76,7 +76,7 @@ class ClaudeDirectorySkillsOnlyPackageTest(unittest.TestCase):
             (SOURCE / ".claude-plugin/plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual(plugin["name"], "semantic-scala")
-        self.assertEqual(plugin["version"], "0.1.0-alpha.3")
+        self.assertEqual(plugin["version"], "0.1.0-alpha.3.2")
         encoded = json.dumps(plugin, sort_keys=True)
         for forbidden in ["mcpServers", "hooks", "lspServers", "commands", "agents"]:
             self.assertNotIn(forbidden, encoded)
@@ -103,6 +103,19 @@ class ClaudeDirectorySkillsOnlyPackageTest(unittest.TestCase):
             "point-evidence",
         ]:
             self.assertIn(f"`semantic-scala {command}", skill)
+
+    def test_plugin_distribution_version_is_independent_from_cli_version(self) -> None:
+        packager = load_packager()
+        manifest = packager.validate(SOURCE)
+        plugin = json.loads(
+            (SOURCE / ".claude-plugin/plugin.json").read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(plugin["version"], "0.1.0-alpha.3.2")
+        self.assertEqual(manifest["version"], "0.1.0-alpha.3.2")
+        self.assertEqual(
+            manifest["cliPrerequisite"]["requiredVersion"], "0.1.0-alpha.3"
+        )
 
     def test_assemble_and_archive_are_deterministic(self) -> None:
         packager = load_packager()

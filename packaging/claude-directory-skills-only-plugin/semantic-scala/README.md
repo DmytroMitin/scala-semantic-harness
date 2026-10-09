@@ -8,6 +8,10 @@ download or execute anything during plugin installation.
 
 ## Prerequisite
 
+This plugin distribution is version `0.1.0-alpha.3.2`. That packaging version
+does not denote a new semantic-scala runtime release: the required CLI remains
+exact `0.1.0-alpha.3`.
+
 Install `semantic-scala` separately before using this plugin. The documented
 Coursier channel remains the primary public CLI distribution route:
 

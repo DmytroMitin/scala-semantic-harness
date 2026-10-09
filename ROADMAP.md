@@ -42,10 +42,11 @@ execution ledger and does not promise delivery dates.
   current first-party public-CLI skill pattern. It is contained, deterministic,
   under all Directory package limits, and requires only an independently
   installed `semantic-scala` CLI; it declares no runtime or pre-approved tools.
-  Direct exact-Alpha-3 CLI and prerequisite-matrix checks pass. The isolated
-  current Claude client discovered the skill with zero MCP servers, but expired
-  OAuth blocked the required semantic, build-backed, and no-tool model cases,
-  so source-update and resubmission readiness are not yet claimed.
+  Direct exact-Alpha-3 CLI, prerequisite-matrix, strict plugin, and authenticated
+  installed-client behavioral checks pass. Version `0.1.0-alpha.3.2` is public
+  at distribution commit `f28fe7a6`; the existing submission remains `Needs
+  changes` and stale at `05d4f0d` because a rejected submission cannot refresh
+  source without resubmission. No listing or resubmission is claimed.
 - A separate deterministic eight-file OpenAI skills-only candidate now has
   clean cold direct-CLI, warm cache-only, and Codex CLI 0.157.1 installed-skill
   proof for read-only `effect-summary`, with no MCP configuration or process.
@@ -146,12 +147,13 @@ execution ledger and does not promise delivery dates.
    smaller local package or remote HTTPS MCP; publication and resubmission
    remain blocked.
    Preserve the contained Claude skills-only candidate as the selected public
-   Directory architecture, distinct from the local/full MCP distribution. Do
-   not update the public source or existing Needs changes submission until a
-   current authenticated Claude Code run completes effect-summary,
-   build-backed, and negative no-tool qualification. If that succeeds, prepare
-   one new version of the existing `semantic-scala` product rather than a
-   duplicate listing, subject to owner confirmation of the portal mapping.
+   Directory architecture, distinct from the local/full MCP distribution.
+   Version `0.1.0-alpha.3.2` and public commit `f28fe7a6` retain the successful
+   authenticated effect-summary, build-backed, missing-CLI, no-tool, and
+   surface qualification. Keep the existing submission rather than creating a
+   duplicate. Its next action is explicitly owner-controlled resubmission; the
+   portal still resolves `05d4f0d`, so no portal validation or readiness claim
+   follows from source publication alone.
    Keep the independent OpenAI skills-only candidate limited to its qualified
    direct-CLI effect-summary workflow. Before any Platform draft, obtain the
    current OpenAI partner/product-specific determination for local execution,
@@ -418,9 +420,10 @@ privacy qualification. These tiers do not authorize release actions.
   square SVG and public privacy-policy consistency.
 - Preserve the Claude Directory skills-only source, deterministic validator,
   exact canonical-policy reference, contained reach, no-runtime/no-MCP truth,
-  independent CLI prerequisite matrix, surface disclosures, and literal
-  authentication-blocked client status. Keep public source update and
-  resubmission as later owner-controlled actions.
+  independent CLI prerequisite matrix, surface disclosures, authenticated
+  behavioral qualification, and public-source identity. Keep portal source
+  refresh, validation, and resubmission as owner-controlled actions while the
+  existing rejected submission remains stale.
 - Keep the public Maven/Coursier route independently reproducible without
   turning the application into a promised embeddable library API.
 - Preserve clean-environment CLI and generic stdio MCP validation; skill

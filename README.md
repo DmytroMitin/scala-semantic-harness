@@ -431,14 +431,16 @@ Codex CLI `0.154.0` additionally passed a disposable local-marketplace install,
 skill load, bundled-MCP registration, and one read-only semantic call. Claude
 Code `2.1.220` passed a disposable local-marketplace install, packaged-skill
 load, plugin-local MCP connection, and one read-only client-mediated semantic
-call after an explicit owner login checkpoint. The historical full Claude candidate remains preserved at commit
+call after an explicit owner login checkpoint. The historical full Claude
+candidate remains preserved at commit
 c05aac9f38e7755a51f511078ff555a587f97ccf in
-[DmytroMitin/semantic-scala-claude-plugin](https://github.com/DmytroMitin/semantic-scala-claude-plugin).
-That distribution repository's current main contains the thin wrapper at
+[DmytroMitin/semantic-scala-claude-plugin](https://github.com/DmytroMitin/semantic-scala-claude-plugin),
+and the rejected thin wrapper remains at
 05d4f0de35a02916504bf29156bc42270cf77a23. The existing draft was submitted
 once on 28 September 2026. Its current status is Needs changes: the reviewer
 does not allow a Directory plugin to download and execute server code from a
-GitHub Release after installation, even when checksum-pinned.
+GitHub Release after installation, even when checksum-pinned. Public `main` now
+contains the skills-only source described below.
 
 The locally qualified no-download candidate is maintained under
 [packaging/claude-embedded-plugin/](packaging/claude-embedded-plugin/) and
@@ -466,13 +468,17 @@ It contains only metadata, one small execution skill, a byte-identical copy of
 the canonical policy, documentation, license, and deterministic inventory. It
 declares no MCP/CLI runtime, hook, LSP, executable, installer, updater, or
 `allowed-tools`; Claude Code uses an independently installed `semantic-scala`
-through its ordinary shell permission path. The six-file source is 41,315
-bytes and its deterministic ZIP is 16,329 bytes. Strict plugin validation,
-contained-package checks, and the direct CLI prerequisite matrix pass. An
-isolated Claude Code `2.1.220` session discovered the skill with zero MCP
-servers, but the existing OAuth session expired before model/tool execution,
-so client semantic value and no-tool restraint remain unqualified and no
-public source/submission changed. See
+through its ordinary shell permission path. Plugin distribution version
+`0.1.0-alpha.3.2` keeps exact CLI prerequisite `0.1.0-alpha.3`. The six-file
+source is 41,500 bytes and its deterministic ZIP is 16,392 bytes. Strict plugin
+validation, contained-package checks, the direct CLI prerequisite matrix, and
+authenticated installed-client effect-summary, build-backed, missing-CLI,
+no-tool, and surface cases pass. The exact source is public at distribution
+commit `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1`; its 18,708-byte GitHub archive
+passes every current hard limit. The existing submission remains `Needs
+changes` and still resolves rejected commit `05d4f0d` because the portal offers
+no source refresh without resubmission. No resubmission or listing occurred.
+See
 [`docs/claude-directory-skills-only-plugin.md`](docs/claude-directory-skills-only-plugin.md).
 
 The owner packet under

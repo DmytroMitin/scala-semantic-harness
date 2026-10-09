@@ -1,182 +1,115 @@
-# Claude community submission preparation
+# Claude Directory source and submission packet
 
-> **Current update (3 October 2026):** the submitted thin source is in Needs
-> changes because its post-install executable download was rejected. The
-> locally qualified embedded-MCPB candidate removes that download but exceeds
-> the public Directory limits of under 50 MiB per GitHub archive and under
-> 5 MiB per plugin file. Neither candidate is a current resubmission plan;
-> nothing was published, uploaded, or resubmitted.
+This packet describes the current six-file `semantic-scala` skills-only source
+and the existing Claude Directory submission. It is not evidence of a public
+Directory listing or an executed resubmission.
 
-Originally prepared on 2026-09-21, rechecked against the first-party directory
-contract on 2026-09-27, and exercised in the authenticated portal on
-2026-09-27--28. The privacy-policy source and link were published and
-requalified on 2026-09-28. The exact draft was then submitted once for review
-and later entered In review under a content-policy hold. This is an owner-review packet for a public-source-qualified
-thin candidate and its review request, not a published listing.
+## Current outcome
 
-## Outcome
+- Plugin distribution: `0.1.0-alpha.3.2`.
+- Independently installed CLI prerequisite: exact `0.1.0-alpha.3`.
+- Public source commit: `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1`.
+- Public source tree: `62d8689c830dbf6460115c76fbd1a2df48fb775b`.
+- Existing submission: `82a31369-158c-4fce-826a-752c4b7efe5b`.
+- Submission status: `Needs changes`.
+- Portal-resolved source: rejected thin commit `05d4f0d`.
+- Resubmissions, new submissions, and listings created in this update: zero.
 
-```text
-SEMANTIC_SCALA_PRIVACY_POLICY_OWNER_APPROVED
-SEMANTIC_SCALA_PRIVACY_POLICY_PUBLIC
-CLAUDE_DIRECTORY_PLUGIN_PRIVACY_LINK_PUBLIC_AND_VERIFIED
-CLAUDE_DIRECTORY_EXISTING_DRAFT_RESUMED
-CLAUDE_DIRECTORY_PERSONAL_DATA_ANSWER_CORRECTED
-CLAUDE_DIRECTORY_PRIVACY_ACKNOWLEDGEMENT_OWNER_APPROVED
-CLAUDE_DIRECTORY_COMPLIANCE_ACKNOWLEDGEMENTS_OWNER_APPROVED
-CLAUDE_DIRECTORY_SUBMISSION_CREATED_ONCE
-CLAUDE_DIRECTORY_SUBMISSION_CREATED_WITH_REVIEW_HOLD
-CLAUDE_DIRECTORY_SUBMISSION_PENDING_REVIEW
-CLAUDE_DIRECTORY_HUMAN_SUBMISSION_COMPLETE
-```
+The public source update is qualified. The portal update is blocked: Settings
+states that rejected submissions are not scanned through scheduled checks or
+push webhooks and exposes no source refresh except `Resubmit for review`. That
+representational action was deliberately not taken.
 
-The public distribution repository now has the accepted six-file thin wrapper
-on `main` at commit `05d4f0de35a02916504bf29156bc42270cf77a23` and tree
-`dbf80cd445d2ad626d082efd4f129e3b9b637c04`. Its parent is the previously
-qualified thin source, `fc3a6c8e2ce74923141b9a5b740513bbee04ac11`; the
-historical full plugin remains available at
-`c05aac9f38e7755a51f511078ff555a587f97ccf`. An anonymous clone reproduced the
-accepted 40,205-byte content exactly. The actual GitHub source archive is
-17,129 bytes and passes every documented hard limit with large headroom.
-Claude Code `2.1.283` strict plugin and disposable-marketplace validation
-passed. Runtime and bootstrap bytes are unchanged, so the prior public-source
-cold/warm installed-client evidence remains applicable and was not repeated.
+## Package contract
 
-The owner approved the exact public
-[semantic-scala Privacy Policy](../../PRIVACY.md), and the plugin README now
-exposes its stable public URL. The live answers were saved as `Reads only`,
-`No`, `Not retained`, and `No`. The authenticated portal revalidated `main` at
-`05d4f0d`, passed all seven source checks with one missing-icon warning, and
-submitted the exact draft once after fresh owner approval of all four
-acknowledgements and the final action. The security scan completed and sent qualified version `05d4f0d` to
-content-policy review because shipped code could not be cleared automatically.
-At that time the status was In review; it was later superseded by Needs changes and no public listing exists. Versions history retains
-the earlier `fc3a6c8` detection event; no duplicate retry or corrective portal
-action was attempted.
+The package contains plugin metadata, one skill, the canonical semantic-scala
+policy reference, a README, Apache-2.0 license, and deterministic manifest. It
+contains no MCP server, CLI runtime, executable, hook, LSP server, installer,
+updater, bootstrap, runtime download, or `allowed-tools` declaration.
 
-## Prepared listing
+Claude Code may invoke an independently installed `semantic-scala` command
+through its ordinary shell permission flow. The skill never installs the CLI,
+never substitutes `semantic-scala-mcp`, and refuses to fabricate evidence when
+the prerequisite is absent.
 
-- Name and display name: `semantic-scala`
-- Version: `0.1.0-alpha.3`
-- Category: `development`
-- Repository: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
-- Portal branch value: `main` (or the repository default branch where the form
-  omits an explicit branch)
-- Immutable qualification commit: `05d4f0de35a02916504bf29156bc42270cf77a23`
-- Historical full-plugin source: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
-- Historical source commit: `c05aac9f38e7755a51f511078ff555a587f97ccf`
-- Thin-plugin source: public repository `main`, qualified at the commit above
-- Plugin root: repository root
-- License: Apache-2.0
-- Support: <https://github.com/DmytroMitin/scala-semantic-harness/issues>
-- Privacy policy: <https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md>
-- Host: Python 3.11 or newer; first-start network access; no host Java
-- Runtime: Linux x86_64, compatible GNU libc, and system zlib
+Build-backed CLI commands may load a project build, resolve dependencies,
+execute project/plugin/test code, and write normal outputs or caches. Installing
+the skill grants no permission for those effects.
+
+## Verified candidate
+
+- Files: 6.
+- Files plus directories: 10.
+- Unpacked bytes: 41,500.
+- Largest file: 21,188 bytes.
+- Content SHA-256:
+  `141362f7893bb555f770cde0091737695d7045052363ecf8ec836bd5edd9d40b`.
+- Deterministic ZIP: 16,392 bytes.
+- Deterministic ZIP SHA-256:
+  `9488c0283393bdaf1c2b704d37c8f7f8021ea98c80db2ce4d76412c879c5d1af`.
+
+Claude Code `2.1.220` strict plugin validation passes. Two deterministic builds
+are byte-identical. The focused packaging tests and contained-reach checks pass.
+Authenticated installed-client effect-summary, build-backed, missing-CLI,
+no-tool, and surface-boundary cases pass.
+
+## Verified public source
+
+The source is the repository root of
+<https://github.com/DmytroMitin/semantic-scala-claude-plugin> on `main`.
+Anonymous HTTPS readback reproduced the candidate bytes and tree exactly.
+
+The actual GitHub archive is:
+
+<https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1.zip>
+
+It measured 18,708 bytes with SHA-256
+`6c507aa64ae6effe63552c62838685156f24919e62c6aaacfc3a703fcdfa30a5`.
+It contains eleven entries including directories, six regular non-executable
+files, 41,500 unpacked bytes, and a 21,188-byte largest file. It has no links,
+runtime, download, bootstrap, or MCP declaration and passes current Directory
+archive, unpacked-size, entry-count, and per-file limits.
+
+History is preserved. The rejected thin source remains reachable at
+`05d4f0de35a02916504bf29156bc42270cf77a23`, and the historical full package
+remains reachable at `c05aac9f38e7755a51f511078ff555a587f97ccf`.
+
+## Prepared listing copy
+
+Name and display name: `semantic-scala`
 
 Short description:
 
-> Bounded Scala compiler, build, test, type, effect, symbol, reconciliation,
-> and SemanticDB evidence for coding agents.
+> Skills-only guidance for bounded Scala compiler, build, test, type, effect,
+> symbol, reconciliation, and SemanticDB evidence through an independently
+> installed semantic-scala CLI.
 
-The longer copy in `submission.json` describes one agent skill, one local stdio
-MCP server, the exact platform boundary, and Alpha-3 status without claiming an
-IDE replacement, autonomous correctness, broad platform support, or guaranteed
-build success.
+Long description:
 
-## Current public route and remaining gate
+> semantic-scala helps coding agents consult structured Scala compiler, build,
+> test, type, effect, symbol, reconciliation, and SemanticDB evidence instead of
+> relying only on source text. This package contains one skill and no MCP server
+> or runtime. Claude Code can invoke an independently installed exact
+> semantic-scala `0.1.0-alpha.3` CLI only through its ordinary shell permission
+> flow. Plugin installation performs no automatic CLI download.
 
-Anthropic's current route is the directory developer portal at
-<https://claude.ai/directory/manage>. Anyone on a paid Pro, Max, Team, or
-Enterprise plan can submit with the documented role. Team requires an Owner;
-Enterprise permits an Owner or a member granted the custom Directory role. The
-older Claude Console form is no longer supported. A plugin submission uses a
-GitHub repository, optional plugin path, and optional tracked branch or tag,
-then portal validation, data-handling questions, four compliance
-acknowledgements, and `Submit for review`.
+Repository: <https://github.com/DmytroMitin/semantic-scala-claude-plugin>
 
-The final action remains a review request rather than immediate publication.
-The thin candidate fits the published hard limits, and authenticated source
-validation passed, but its runtime bootstrap is expected to receive human
-security review. The current Directory Policy requires a clear privacy-policy
-link for software that collects user data or connects to a remote service. The
-owner-approved policy now documents the fixed GitHub runtime download, local
-processing and retention, Claude boundary, third parties, sharing, security,
-removal, and support. The generated README exposes the stable link because the
-current plugin manifest schema has no privacy-policy field. One submission was then In review after the security scan flagged shipped code
-that it could not automatically read. The portal states that an Anthropic reviewer must approve it
-before the first version can be published; the plugin page will identify
-whether the owner or reviewer publishes. The public documentation states no
-separate submission fee, although a paid Claude plan is required.
+Support: <https://github.com/DmytroMitin/scala-semantic-harness/issues>
 
-Public sources checked:
+Privacy: <https://github.com/DmytroMitin/scala-semantic-harness/blob/main/PRIVACY.md>
 
-- <https://code.claude.com/docs/en/plugins>
-- <https://code.claude.com/docs/en/plugins-reference>
-- <https://code.claude.com/docs/en/plugin-marketplaces>
-- <https://claude.com/docs/directory/publish>
-- <https://claude.com/docs/plugins/submit>
-- <https://claude.com/docs/plugins/pre-submission-checklist>
-- <https://github.com/anthropics/claude-plugins-community>
-- <https://github.com/anthropics/claude-plugins-community/blob/main/.github/actions/validate-plugins/README.md>
+License: Apache-2.0
 
-The public community catalog remains a reviewed distribution surface, but the
-developer portal now owns submission, review, version tracking, and publication.
+## Existing submission boundary
 
-## Verified public distribution source
+The existing submission maps to the same repository, repository-root plugin
+path, and default branch. The portal still shows only
+`v0.1.0-alpha.3 · 05d4f0d`, failed with reviewer-requested changes. Settings
+states that it is not scanning new commits and instructs the owner to select
+`Resubmit for review` to check the latest commit.
 
-The selected portal value is
-<https://github.com/DmytroMitin/semantic-scala-claude-plugin> with branch
-`main` and plugin root at the repository root. The immutable qualification
-record is commit `05d4f0de35a02916504bf29156bc42270cf77a23`, tree
-`dbf80cd445d2ad626d082efd4f129e3b9b637c04`, and parent
-`fc3a6c8e2ce74923141b9a5b740513bbee04ac11`. Its current tracked tree contains
-exactly the accepted six files, content SHA-256
-`6496b2e82e1aa2bb698e3effade8e35f120899046381778f32b39c9032e84473`,
-and 40,205 bytes. An anonymous clone reproduced the byte and mode inventory and
-passed current strict Claude validation. The only parent-to-child content
-changes are the README privacy section and its deterministic package inventory;
-the bootstrap, skill, MCP configuration, and plugin manifest are unchanged.
-
-The actual GitHub archive for the qualified commit is available at
-<https://github.com/DmytroMitin/semantic-scala-claude-plugin/archive/05d4f0de35a02916504bf29156bc42270cf77a23.zip>.
-It measured 17,129 bytes with SHA-256
-`1b7bb42255518d64066eb8c49995795640774e7217425462122eedad896ae403`.
-Safe inspection found eleven total entries including directories, six files,
-40,205 plugin bytes, and a 21,188-byte largest file. Exact-commit and
-portal-like `main` fixtures resolved to this tree and passed current strict
-marketplace validation.
-
-The historical full self-contained plugin remains available at the parent
-commit. That tree retains its earlier anonymous/source/client evidence but is
-not the current portal source because it exceeds the unpacked and per-file hard
-limits. The main `scala-semantic-harness` repository remains authoritative for
-the skill policy, templates, assembler, runtime provenance, issues, and future
-generation; the dedicated repository is generated distribution material only.
-
-## Qualified public thin source
-
-The thin candidate uses Python 3.11 or newer to download the immutable Alpha-3
-MCPB on first MCP start. Its URL, expected 285,603,142-byte size, and SHA-256
-`f5e5dbeb8ebfb8d0495dd3201bce7319ac72e19f6110ecec354843a1f978583d`
-are fixed. The bootstrap verifies them before safe extraction and atomic
-owner-only cache installation. Warm starts reuse the cache without a fetch, and
-the downloaded MCPB is not retained. No host Java is required. Claude Code
-`2.1.283` connected the exact-eight server and completed one read-only
-`semantic_effect_summary` call in both cold and warm client sessions. This is
-public-source qualification evidence, not a directory acceptance claim. During
-the cold session the client's first tool invocation used an invalid absolute
-file value and was rejected before semantic execution; one corrected read-only
-call then succeeded. The warm session made exactly one read-only semantic call.
-This discrepancy is retained in the evidence and side-effect ledger.
-
-## Human boundary
-
-An existing authenticated Pro session was used without retaining credentials,
-cookies, MFA data, or the owner-supplied contact value. The exact existing
-draft was resumed and revalidated once at `05d4f0d`. The owner approved the
-answers (`Reads only`, `No`, `Not retained`, `No`), each of the four live
-acknowledgements, and a separate final submit checkpoint. `Submit for review`
-was clicked exactly once. The security scan completed and the qualified `05d4f0d` version was then In review
-under a content-policy hold. Versions history retains the earlier `fc3a6c8`
-detection event. No duplicate submission, `Check for new commits`, or other
-corrective portal action was attempted. No public listing is verified.
+No duplicate submission is appropriate. A later owner-authorized resubmission
+must use the existing submission and must first verify that the portal resolves
+`f28fe7a6` and `0.1.0-alpha.3.2`. Source publication alone does not establish
+that portal validation has occurred.

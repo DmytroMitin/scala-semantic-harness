@@ -78,7 +78,9 @@ The Claude community packet is under
 [distribution/claude-community/](../distribution/claude-community/). The
 generated-distribution repository preserves the historical full candidate at
 c05aac9f38e7755a51f511078ff555a587f97ccf and the rejected thin candidate at
-05d4f0de35a02916504bf29156bc42270cf77a23.
+05d4f0de35a02916504bf29156bc42270cf77a23. Public `main` now contains the
+qualified six-file skills-only source at
+f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1.
 
 The product-repository no-download candidate embeds a compact local MCPB in
 the plugin and has no runtime bootstrap, updater, or executable download. The
@@ -98,9 +100,12 @@ It has no declared or bundled runtime and instead teaches Claude Code to use an
 independently installed `semantic-scala` CLI through ordinary shell
 permissions. First-party policy supports this package shape, and its local
 manifest, deterministic archive, contained-reach, and prerequisite-matrix
-checks pass. Client qualification is incomplete because the isolated current
-Claude session reached expired OAuth before model/tool execution; no public
-listing or source-update claim follows. See
+checks pass. Its authenticated installed-client effect-summary, build-backed,
+missing-CLI, no-tool, and surface cases pass. Version `0.1.0-alpha.3.2` is now
+public source for the existing submission, while the CLI prerequisite remains
+exact `0.1.0-alpha.3`. The Directory portal remains on rejected commit
+`05d4f0d` because it offers no source refresh without resubmission; no
+resubmission or public listing occurred. See
 [`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
 
 The independent OpenAI skills-only candidate is maintained under

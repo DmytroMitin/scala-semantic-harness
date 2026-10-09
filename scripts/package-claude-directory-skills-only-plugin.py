@@ -21,6 +21,8 @@ SOURCE = ROOT / "packaging/claude-directory-skills-only-plugin/semantic-scala"
 CANONICAL_POLICY = ROOT / "skills/semantic-scala/SKILL.md"
 ROOT_LICENSE = ROOT / "LICENSE"
 MANIFEST_SCHEMA = "semantic-scala.claude-directory-skills-only-package.v1"
+PLUGIN_VERSION = "0.1.0-alpha.3.2"
+CLI_VERSION = "0.1.0-alpha.3"
 PACKAGE_FILES = frozenset(
     {
         ".claude-plugin/plugin.json",
@@ -108,7 +110,7 @@ def expected_manifest(root: Path) -> dict[str, Any]:
     encoded = json.dumps(files, sort_keys=True, separators=(",", ":")).encode()
     manifest: dict[str, Any] = {
         "$schema": MANIFEST_SCHEMA,
-        "version": "0.1.0-alpha.3",
+        "version": PLUGIN_VERSION,
         "route": "skills-only-external-cli",
         "skillsOnly": True,
         "bundlesCli": False,
@@ -116,7 +118,7 @@ def expected_manifest(root: Path) -> dict[str, Any]:
         "cliPrerequisite": {
             "command": "semantic-scala",
             "installation": "independent",
-            "requiredVersion": "0.1.0-alpha.3",
+            "requiredVersion": CLI_VERSION,
         },
         "networkDuringPluginInstall": False,
         "automaticNetworkDuringPluginUse": False,
@@ -227,8 +229,8 @@ def validate(root: Path) -> dict[str, Any]:
         raise PackagingError("canonical semantic-scala policy reference drifted")
 
     plugin = load_json(root / ".claude-plugin/plugin.json")
-    if plugin.get("name") != "semantic-scala" or plugin.get("version") != "0.1.0-alpha.3":
-        raise PackagingError("plugin identity differs from exact Alpha-3")
+    if plugin.get("name") != "semantic-scala" or plugin.get("version") != PLUGIN_VERSION:
+        raise PackagingError(f"plugin identity differs from exact {PLUGIN_VERSION}")
     forbidden = _walk_keys(plugin) & FORBIDDEN_PLUGIN_KEYS
     if forbidden:
         raise PackagingError(f"contained plugin manifest declares runtime components: {sorted(forbidden)}")

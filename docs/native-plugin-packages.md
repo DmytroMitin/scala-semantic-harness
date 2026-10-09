@@ -306,11 +306,16 @@ Current first-party guidance explicitly permits a plugin containing only skills
 and permits skills to teach Claude to use an existing public CLI. The package
 therefore classifies as contained under current reach rules and clears the
 Directory size/file/entry limits. Strict Claude validation and deterministic
-packaging pass. The current isolated Claude client discovered the plugin skill
-and reported zero MCP servers, but expired OAuth blocked the model turn; direct
-CLI corroboration is not a substitute for that client proof. Keep the candidate
-unpublished until the effect-summary, build-backed, and no-tool client cases
-complete. See
+packaging pass. Authenticated installed-client effect-summary, build-backed,
+missing-CLI, no-tool, and surface cases also pass. Distribution version
+`0.1.0-alpha.3.2` is public on the dedicated repository's `main` at
+`f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1`; the external CLI prerequisite
+remains `0.1.0-alpha.3`. The actual GitHub archive passes all current hard
+limits and contains no runtime, download, bootstrap, or MCP declaration. The
+existing Directory submission still resolves `05d4f0d`: the portal exposes no
+non-resubmitting source refresh for a rejected submission, so validation and
+resubmission remain blocked without changing the source qualification result.
+See
 [`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
 
 ## Catalog pause

@@ -8,14 +8,14 @@
     "installation": "independent",
     "requiredVersion": "0.1.0-alpha.3"
   },
-  "contentSha256": "5bff4c3981ab8f592d72be64563cf96b79ce46fa8389a079ccfdce0949bf2061",
+  "contentSha256": "141362f7893bb555f770cde0091737695d7045052363ecf8ec836bd5edd9d40b",
   "fileCount": 6,
   "files": [
     {
-      "bytes": 787,
+      "bytes": 789,
       "mode": "0644",
       "path": ".claude-plugin/plugin.json",
-      "sha256": "8479b029362b9d9c04418c4de2f6bdd9d667c617180a0c8edd459f2b782310cd"
+      "sha256": "f00c85857287fa4e53c132a3bcc0eaefc07adf2ef9931422e7181085e8ccc15d"
     },
     {
       "bytes": 11358,
@@ -24,10 +24,10 @@
       "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
     },
     {
-      "bytes": 3328,
+      "bytes": 3509,
       "mode": "0644",
       "path": "README.md",
-      "sha256": "22a199e645af11ca0ec3638f9f51fbbbf8fb17019946a6b430953d4d2cf027c5"
+      "sha256": "4cb8792f5b8b4bf083655cae8676142baa2c14e18060eff5bc70db5eab353c02"
     },
     {
       "bytes": 3037,
@@ -49,6 +49,6 @@
   "route": "skills-only-external-cli",
   "runtimeDeclarations": [],
   "skillsOnly": true,
-  "totalBytes": 41315,
-  "version": "0.1.0-alpha.3"
+  "totalBytes": 41500,
+  "version": "0.1.0-alpha.3.2"
 }
