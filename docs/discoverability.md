@@ -4,8 +4,8 @@ semantic-scala has one canonical agent skill and one exact-eight-tool stdio MCP
 server. Stable catalog-facing facts are checked in at
 [`distribution/discovery/metadata.json`](../distribution/discovery/metadata.json).
 That file is reusable input and does not by itself claim external acceptance.
-The exact official MCP Registry publication described below is the one verified
-catalog exception.
+External statuses below are dated observations, not promises of continued
+indexing or review outcomes.
 
 ## Install the current canonical skill
 
@@ -27,6 +27,27 @@ The current supported runtime remains exact `0.1.0-alpha.3`. Install the
 `semantic-scala` and `semantic-scala-mcp` applications through the documented
 [Coursier channel](distribution.md), then configure `semantic-scala-mcp` as a
 local stdio server. Skill installation does not change the eight-tool registry.
+
+## Current distribution status
+
+Public pages were checked on 12 October 2026. The Claude row instead uses the
+last accepted private-portal observation from 9 October; that portal was not
+reopened for this documentation task.
+
+| Surface | Artifact type | Status | Last observed | Evidence and limits |
+| --- | --- | --- | --- | --- |
+| [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.DmytroMitin%2Fsemantic-scala/versions/0.1.0-alpha.3) | MCP server | `LIVE` | 2026-10-12 public API | Exact `0.1.0-alpha.3` Linux x86_64 MCPB record is active and uses local stdio. |
+| [MCPServers.org](https://mcpservers.org/servers/dmytromitin/scala-semantic-harness) | MCP server | `LIVE_LISTED` | 2026-10-12 public page | Correct GitHub source, Development category, local stdio, and eight bounded tools. This third-party listing is not protocol certification. |
+| [Glama](https://glama.ai/mcp/servers/DmytroMitin/scala-semantic-harness) | MCP server | `SUBMITTED_PENDING_REVIEW` | 2026-10-10 accepted receipt; 2026-10-12 public route | One submission is confirmed by the retained redacted email; the direct public route still reports no listing. Do not resubmit. |
+| [SkillsMP](https://skillsmp.com/creators/dmytromitin/scala-semantic-harness/skills-semantic-scala) | Agent skill | `LIVE_LISTED` | 2026-10-12 public page | Canonical full policy is live. Search also exposes three noncanonical same-name wrapper/package copies. |
+| [skills.sh](https://skills.sh/dmytromitin/scala-semantic-harness/semantic-scala) | Agent skill | `NOT_FOUND` | 2026-10-12 public pages | The exact detail and repository pages return 404; the authenticated API was not verified. No artificial install traffic was generated. |
+| [MCPMarket](https://mcpmarket.com/tools/skills) | Agent skill | `SUBMITTED_PENDING_REVIEW` | 2026-10-11 receipt; 2026-10-12 public check | One free-queue submission succeeded; no public listing is visible yet. This is distinct from an MCP Server listing. |
+| Claude public Directory | Skills-only plugin | `IN_REVIEW` | 2026-10-09 accepted private portal | Version `0.1.0-alpha.3.2` at `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1` passed portal checks and was waiting for an Anthropic reviewer. It is not public and bundles no runtime. |
+| OpenAI/Codex | Native plugins | `UNSUBMITTED` | 2026-10-12 local source/docs | The full local skill/CLI/eight-tool stdio MCP package and the separate skills-only `effect-summary` package are locally tested variants, not public listings. |
+
+The generated Agent Plugins standard package is structural and portability
+evidence only; it is not a vendor-directory listing. Catalog absence from a
+bounded public check does not prove permanent absence.
 
 ## Registry and plugin status
 
@@ -69,10 +90,11 @@ also published as generated distribution material at commit
 [`semantic-scala-claude-plugin`](https://github.com/DmytroMitin/semantic-scala-claude-plugin)
 repository. Claude Code `2.1.278` passed anonymous-source validation, isolated
 install, skill/MCP discovery, and one read-only semantic call from that pin.
-The Claude thin candidate has one submission in Needs changes. The reviewer
-rejected its post-install GitHub Release download, so it is historical evidence
-only and must not be resubmitted unchanged. No public directory listing is
-verified. The client-neutral skill remains authoritative.
+The Claude thin candidate `Needs changes` rejection is historical evidence:
+the reviewer rejected its post-install GitHub Release download, and that source
+must not be resubmitted unchanged. The existing submission now uses the
+skills-only source described below. No public directory listing is verified.
+The client-neutral skill remains authoritative.
 
 The Claude community packet is under
 [distribution/claude-community/](../distribution/claude-community/). The
@@ -88,9 +110,10 @@ MCPB is 145,197,017 bytes and 181,937,037 expanded bytes across 1,952 files;
 the six-file ZIP is 144,399,347 bytes and 145,233,144 expanded bytes. Official
 MCPB and Claude plugin validation, three byte-identical builds, the full
 exact-eight suite, and one isolated installed-client semantic call pass.
-Public Directory publication is blocked because the current GitHub-source
-checklist requires an archive under 50 MiB and every plugin file under 5 MiB.
-The distribution repository and live submission are unchanged. See
+Public Directory publication of this embedded-runtime package is blocked because
+the current GitHub-source checklist requires an archive under 50 MiB and every
+plugin file under 5 MiB. It was not substituted into the existing submission;
+that submission instead uses the separate skills-only source. See
 [claude-directory-embedded-plugin.md](claude-directory-embedded-plugin.md).
 
 The product also maintains a tiny, contained Claude Directory skills-only
@@ -103,9 +126,12 @@ manifest, deterministic archive, contained-reach, and prerequisite-matrix
 checks pass. Its authenticated installed-client effect-summary, build-backed,
 missing-CLI, no-tool, and surface cases pass. Version `0.1.0-alpha.3.2` is now
 public source for the existing submission, while the CLI prerequisite remains
-exact `0.1.0-alpha.3`. The Directory portal remains on rejected commit
-`05d4f0d` because it offers no source refresh without resubmission; no
-resubmission or public listing occurred. See
+exact `0.1.0-alpha.3`. On 9 October 2026 the owner resubmitted the existing
+submission once. The portal resolved commit
+`f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1`, passed validation,
+directory policy, and security scanning with only a non-blocking no-icon
+warning, and entered `In review`, waiting for an Anthropic reviewer. The private
+portal was not reopened for this update, and no public listing is verified. See
 [`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
 
 The independent OpenAI skills-only candidate is maintained under

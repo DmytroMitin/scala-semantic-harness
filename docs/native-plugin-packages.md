@@ -66,8 +66,15 @@ candidate fits the separate 200 MB claude.ai upload contract but fails the
 public Directory GitHub-source limits of under 50 MiB per archive and under
 5 MiB per plugin file. The owner-approved
 [privacy policy](../PRIVACY.md) distinguishes this no-download candidate from
-the rejected thin source. The existing submission remains in Needs changes;
-no source update, upload, resubmit, or listing mutation occurred.
+the rejected thin source. This embedded-runtime package has not replaced the
+existing submission and remains blocked by those upload limits. A separate
+six-file skills-only source at distribution commit
+`f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1` was resubmitted once on 9 October
+2026; the portal resolved version `0.1.0-alpha.3.2`, passed validation,
+directory policy, and security scanning with a non-blocking no-icon warning,
+and was last observed `In review`, waiting for an Anthropic reviewer. It
+bundles no runtime, requires independently installed exact CLI
+`0.1.0-alpha.3`, and is not a public listing.
 
 - [Claude Code plugin documentation](https://code.claude.com/docs/en/plugins)
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
@@ -251,12 +258,13 @@ prerequisites.
 The current human entry point is the
 [Claude directory developer portal](https://claude.ai/directory/manage).
 The historical self-contained candidate remains at distribution commit
-c05aac9f38e7755a51f511078ff555a587f97ccf. Public main contains the thin
-wrapper at 05d4f0de35a02916504bf29156bc42270cf77a23. The existing submission
-was made once and is now in Needs changes: the reviewer rejected downloading
+c05aac9f38e7755a51f511078ff555a587f97ccf. The thin wrapper at
+05d4f0de35a02916504bf29156bc42270cf77a23 was the source rejected in the
+submission's historical `Needs changes` state: the reviewer rejected downloading
 and executing the MCP server from a GitHub Release after installation, even
-when its size and SHA-256 are fixed. The thin source remains useful historical
-evidence but must not be resubmitted unchanged. See
+when its size and SHA-256 were fixed. The thin source remains useful historical
+evidence but must not be resubmitted unchanged; the existing submission now
+uses the skills-only source described below. See
 [the thin-plugin contract](claude-directory-thin-plugin.md).
 
 The locally qualified no-download candidate is maintained under
@@ -286,10 +294,11 @@ installed-client effect-summary call pass. The public Directory route is
 blocked by both the archive and per-file limits.
 
 The runtime remains 0.1.0-alpha.3 and the prepared plugin identity remains
-0.1.0-alpha.3.1 as local engineering evidence. The distribution repository,
-portal version, submission, and listing remain unchanged. Do not publish or
-resubmit this candidate without a materially different architecture or an
-explicit reviewer-approved source mechanism. See
+0.1.0-alpha.3.1 as local engineering evidence. This embedded package was not
+substituted into the existing submission; that submission now uses the separate
+skills-only source. Do not publish or submit the embedded candidate without a
+materially different architecture or an explicit reviewer-approved source
+mechanism. See
 [the embedded-plugin contract](claude-directory-embedded-plugin.md).
 
 ### Claude Directory skills-only CLI candidate
@@ -311,18 +320,20 @@ missing-CLI, no-tool, and surface cases also pass. Distribution version
 `0.1.0-alpha.3.2` is public on the dedicated repository's `main` at
 `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1`; the external CLI prerequisite
 remains `0.1.0-alpha.3`. The actual GitHub archive passes all current hard
-limits and contains no runtime, download, bootstrap, or MCP declaration. The
-existing Directory submission still resolves `05d4f0d`: the portal exposes no
-non-resubmitting source refresh for a rejected submission, so validation and
-resubmission remain blocked without changing the source qualification result.
-See
+limits and contains no runtime, download, bootstrap, or MCP declaration.
+
+On 9 October 2026 the owner resubmitted the existing Directory submission once.
+The portal resolved this exact source and version, passed validation, directory
+policy, and security scanning with only a non-blocking no-icon warning, and was
+last observed `In review`, waiting for an Anthropic reviewer. The private portal
+was not reopened for this documentation update, and no public listing is
+verified. See
 [`claude-directory-skills-only-plugin.md`](claude-directory-skills-only-plugin.md).
 
-## Catalog pause
+## Historical catalog pause
 
 The official MCP Registry record was published at
-`2026-09-20T00:55:40.636118Z`. Do not infer missing downstream syndication or
-make a secondary manual submission before the planned 24-to-48-hour observation
-window, from `2026-09-21T00:55:40.636118Z` through
-`2026-09-22T00:55:40.636118Z`. Native plugin publication is independent of
-that pause and still requires explicit authority.
+`2026-09-20T00:55:40.636118Z`. Its initial 24-to-48-hour downstream-observation
+window ended on 22 September 2026 and no longer constrains current work. Any
+future native-plugin publication remains independent and requires explicit
+authority.

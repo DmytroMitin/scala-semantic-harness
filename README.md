@@ -60,6 +60,21 @@ Alpha-3 project and target-JDK selectors are explicitly excluded from the
 alpha-2 packaged contract. The qualified mutable `main` channel selects Alpha 3;
 Alpha 2 remains reproducible through its immutable tag-pinned channel.
 
+### Discoverability and directories
+
+The exact `0.1.0-alpha.3` local stdio MCP server is published in the official
+MCP Registry and is also listed as an MCP Server on
+[MCPServers.org](https://mcpservers.org/servers/dmytromitin/scala-semantic-harness).
+The latter is a third-party directory listing, not protocol certification.
+
+[![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/dmytromitin/scala-semantic-harness)
+
+The canonical guidance-only agent skill is
+[live on SkillsMP](https://skillsmp.com/creators/dmytromitin/scala-semantic-harness/skills-semantic-scala).
+Install the runtime separately through Coursier; `npx skills add` installs only
+the skill guidance. Current live, pending, and unsubmitted directory states are
+tracked in [`docs/discoverability.md`](docs/discoverability.md).
+
 ## What is included
 
 - structured compile, test, and diagnostic reports;
@@ -436,11 +451,11 @@ candidate remains preserved at commit
 c05aac9f38e7755a51f511078ff555a587f97ccf in
 [DmytroMitin/semantic-scala-claude-plugin](https://github.com/DmytroMitin/semantic-scala-claude-plugin),
 and the rejected thin wrapper remains at
-05d4f0de35a02916504bf29156bc42270cf77a23. The existing draft was submitted
-once on 28 September 2026. Its current status is Needs changes: the reviewer
-does not allow a Directory plugin to download and execute server code from a
-GitHub Release after installation, even when checksum-pinned. Public `main` now
-contains the skills-only source described below.
+05d4f0de35a02916504bf29156bc42270cf77a23. The source submitted on 28 September
+2026 was rejected because the reviewer does not allow a Directory plugin to
+download and execute server code from a GitHub Release after installation,
+even when checksum-pinned. Public `main` now contains the skills-only source
+described below.
 
 The locally qualified no-download candidate is maintained under
 [packaging/claude-embedded-plugin/](packaging/claude-embedded-plugin/) and
@@ -459,8 +474,9 @@ semantic call pass. The candidate is nevertheless blocked for the public
 Directory: the current
 [pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist)
 requires the GitHub archive to be under 50 MiB and every plugin file under
-5 MiB. The distribution repository, portal version, submission, and public
-listing remain unchanged.
+5 MiB. This embedded package was not substituted into the existing submission;
+that submission now uses the separate skills-only source described below. No
+public listing is verified.
 
 A separate contained Claude Directory candidate is maintained under
 [`packaging/claude-directory-skills-only-plugin/`](packaging/claude-directory-skills-only-plugin/).
@@ -475,10 +491,11 @@ validation, contained-package checks, the direct CLI prerequisite matrix, and
 authenticated installed-client effect-summary, build-backed, missing-CLI,
 no-tool, and surface cases pass. The exact source is public at distribution
 commit `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1`; its 18,708-byte GitHub archive
-passes every current hard limit. The existing submission remains `Needs
-changes` and still resolves rejected commit `05d4f0d` because the portal offers
-no source refresh without resubmission. No resubmission or listing occurred.
-See
+passes every current hard limit. On 9 October 2026 the owner resubmitted the
+existing submission once. The portal resolved this six-file source and version
+`0.1.0-alpha.3.2`, passed validation, directory policy, and security scanning
+with only a non-blocking no-icon warning, and entered `In review`, waiting for
+an Anthropic reviewer. This is not approval or a public listing. See
 [`docs/claude-directory-skills-only-plugin.md`](docs/claude-directory-skills-only-plugin.md).
 
 The owner packet under
@@ -553,8 +570,9 @@ benchmark reproducibility beyond its stated small-sample gate.
   It fits the separate 200 MB claude.ai upload rules, but not the public
   Directory checklist: its 144,399,347-byte GitHub archive exceeds 50 MiB and
   its 145,197,017-byte MCPB exceeds the 5 MiB per-file limit. The Directory
-  plugin route is therefore blocked pending a different architecture or an
-  explicit reviewer-approved mechanism.
+  route for this embedded-runtime package is therefore blocked pending a
+  different architecture or an explicit reviewer-approved mechanism. The
+  separate six-file skills-only package is in review and bundles no runtime.
 - The separate eight-file OpenAI skills-only candidate is locally validated on
   Codex CLI `0.157.1` for one direct-CLI `effect-summary` workflow with no MCP
   dependency. It is not submitted. OpenAI product-specific review has no

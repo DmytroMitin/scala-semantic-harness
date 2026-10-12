@@ -105,9 +105,13 @@ The skills-only package preserves the same `semantic-scala` name, purpose, and
 version family while removing the rejected runtime download/MCP architecture.
 It is public as a new source version for existing submission
 `82a31369-158c-4fce-826a-752c4b7efe5b`; no duplicate listing was created.
-The submission remains `Needs changes`. The portal still resolves rejected
-commit `05d4f0de35a02916504bf29156bc42270cf77a23` and states that rejected
-submissions are not scanned until `Resubmit for review`. No non-resubmitting
-source-refresh control is available, so portal validation and resubmission are
-blocked on stale source. No resubmission, new submission, listing, or
-publication occurred.
+The earlier `Needs changes` state and commit
+`05d4f0de35a02916504bf29156bc42270cf77a23` remain historical rejection
+evidence. On 9 October 2026 the owner selected `Resubmit for review` exactly
+once on the existing submission. The portal subsequently resolved commit
+`f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1` and plugin version
+`0.1.0-alpha.3.2`; validation, directory policy, and security scanning passed
+with only the non-blocking no-icon warning. The last accepted portal observation
+was `In review`, waiting for an Anthropic reviewer. No duplicate submission or
+public listing was created, and these checks do not establish Anthropic
+approval.
