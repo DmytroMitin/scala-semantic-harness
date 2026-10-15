@@ -11,6 +11,15 @@ and one read-only client-mediated semantic call after an explicit owner login
 checkpoint. Neither candidate has been publicly submitted, listed, or
 published as a release asset.
 
+A separate generated lightweight Codex marketplace now lives under
+`distribution/codex-plugin/semantic-scala` with its catalog at
+`.agents/plugins/marketplace.json`. Unlike the full candidate described below,
+it bundles no runtime. It registers the exact user-installed
+`semantic-scala-mcp` command, copies the canonical skill byte-for-byte, and
+pins its prerequisite to the immutable `0.1.0-alpha.3` Coursier channel.
+It is prepublication source: the eventual Git install command must use the
+reviewed published product commit, which does not yet exist.
+
 Both candidates contain:
 
 - [`skills/semantic-scala/SKILL.md`](../skills/semantic-scala/SKILL.md), copied
@@ -81,6 +90,23 @@ bundles no runtime, requires independently installed exact CLI
 - [Claude Code marketplace documentation](https://code.claude.com/docs/en/plugin-marketplaces)
 
 ## Build and validate
+
+Generate or verify the lightweight Codex source with:
+
+```bash
+python3 -m unittest scripts.tests.test_package_codex_plugin
+python3 scripts/package-codex-plugin.py generate
+python3 scripts/package-codex-plugin.py check
+```
+
+The check fails on schema/identity drift, a noncanonical skill copy,
+unexpected files, runtime payloads, machine-private paths, credentials, or
+stale checked-in output. Its provenance names the clean pre-change source
+baseline and generator hash; it deliberately does not claim that the generated
+file contains the hash of the future commit that will contain it.
+
+The remaining commands in this section build the distinct full bundled
+candidate.
 
 Retain or download the exact MCPB above, then use fresh output paths:
 

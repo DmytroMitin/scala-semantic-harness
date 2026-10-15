@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "author": {
+    "name": "Dmytro Mitin",
+    "url": "https://github.com/DmytroMitin"
+  },
+  "description": "Bounded Scala compiler, build, test, type, effect, symbol, reconciliation, and SemanticDB evidence for coding agents.",
+  "homepage": "https://github.com/DmytroMitin/scala-semantic-harness#agent-quick-start",
+  "keywords": [
+    "scala",
+    "semanticdb",
+    "compiler",
+    "build-tools",
+    "model-context-protocol",
+    "agent-skill"
+  ],
+  "license": "Apache-2.0",
+  "name": "semantic-scala",
+  "repository": "https://github.com/DmytroMitin/scala-semantic-harness",
+  "version": "0.1.0-alpha.3"
+}

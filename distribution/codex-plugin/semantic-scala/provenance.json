@@ -1,0 +1,35 @@
+{
+  "$schema": "semantic-scala.codex-plugin-provenance.v1",
+  "canonicalSkill": {
+    "path": "skills/semantic-scala/SKILL.md",
+    "sha256": "b33972a2705d17e7c072617952316d0e0d8d8cfb7b88b95be0274d1a35dcde8e"
+  },
+  "generator": {
+    "format": "semantic-scala.codex-plugin.v1",
+    "path": "scripts/package-codex-plugin.py",
+    "sha256": "8e9706fefc303ed3d15dec8b0d5e19f04df0ee7fdf85c942d4fc1dc8811c6099"
+  },
+  "mcpToolContract": {
+    "count": 8,
+    "orderedNames": [
+      "semantic_compile",
+      "semantic_errors",
+      "semantic_test",
+      "semantic_effect_summary",
+      "semantic_symbol_at",
+      "semantic_symbols",
+      "semantic_reconcile_symbol",
+      "semantic_point_evidence"
+    ],
+    "source": "modules/mcp-server/src/main/scala/semantic/harness/mcp/SemanticScalaMcpServer.scala"
+  },
+  "pluginVersion": "0.1.0-alpha.3",
+  "runtimeCoursierChannel": "https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.3/distribution/coursier/channel.json",
+  "runtimeVersion": "0.1.0-alpha.3",
+  "source": {
+    "identityKind": "pre-change-generator-baseline",
+    "note": "This is the clean source baseline used to add the generator, not the future publication commit that will contain this generated file.",
+    "preChangeBaselineCommit": "5fdcdb11c4c3612bd56e94f49d953cde40718faa",
+    "repository": "https://github.com/DmytroMitin/scala-semantic-harness"
+  }
+}

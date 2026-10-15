@@ -43,7 +43,7 @@ reopened for this documentation task.
 | [skills.sh](https://skills.sh/dmytromitin/scala-semantic-harness/semantic-scala) | Agent skill | `NOT_FOUND` | 2026-10-12 public pages | The exact detail and repository pages return 404; the authenticated API was not verified. No artificial install traffic was generated. |
 | [MCPMarket](https://mcpmarket.com/tools/skills) | Agent skill | `SUBMITTED_PENDING_REVIEW` | 2026-10-11 receipt; 2026-10-12 public check | One free-queue submission succeeded; no public listing is visible yet. This is distinct from an MCP Server listing. |
 | Claude public Directory | Skills-only plugin | `IN_REVIEW` | 2026-10-09 accepted private portal | Version `0.1.0-alpha.3.2` at `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1` passed portal checks and was waiting for an Anthropic reviewer. It is not public and bundles no runtime. |
-| OpenAI/Codex | Native plugins | `UNSUBMITTED` | 2026-10-12 local source/docs | The full local skill/CLI/eight-tool stdio MCP package and the separate skills-only `effect-summary` package are locally tested variants, not public listings. |
+| OpenAI/Codex | Native plugins | `LOCAL_MARKETPLACE_PREPUBLICATION` | 2026-10-15 local source/docs | A generated lightweight Git marketplace registers the separately installed exact Alpha-3 stdio MCP application and canonical skill; the full bundled and separate skills-only variants remain distinct. No reviewed public marketplace commit or universal listing exists. |
 
 The generated Agent Plugins standard package is structural and portability
 evidence only; it is not a vendor-directory listing. Catalog absence from a

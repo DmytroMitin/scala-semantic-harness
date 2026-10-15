@@ -50,6 +50,54 @@ The recommended combinations are:
 4. **Manual CLI** is the troubleshooting and automation fallback, not the
    primary interactive experience.
 
+### Lightweight Codex marketplace (prepublication)
+
+The generated marketplace at `.agents/plugins/marketplace.json` packages the
+canonical skill and registers the separately installed exact Alpha-3
+`semantic-scala-mcp` application. It contains no Java runtime, server JAR,
+installer, updater, or hidden download.
+
+For this route, use the immutable Alpha-3 channel rather than mutable `main`:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.3/distribution/coursier/channel.json \
+  semantic-scala semantic-scala-mcp
+semantic-scala version
+```
+
+The version must be `0.1.0-alpha.3`, and `semantic-scala-mcp` must be visible
+on the `PATH` inherited by Codex. **PREPUBLICATION:** the marketplace has not
+yet been published at a reviewed product commit. After that separately
+authorized publication, replace the placeholder with the immutable full
+commit SHA:
+
+```bash
+codex plugin marketplace add DmytroMitin/scala-semantic-harness \
+  --ref <IMMUTABLE_REVIEWED_PRODUCT_COMMIT>
+codex plugin add semantic-scala@scala-semantic-harness
+codex plugin list
+codex mcp list
+```
+
+In a trusted Scala workspace, first call only `semantic_effect_summary` for
+one known source file and confirm structured evidence. `semantic_compile`,
+`semantic_errors`, and `semantic_test` may execute project build, plugin, or
+test code, resolve dependencies, and write outputs or caches. Installing or
+registering the plugin is not permission to run an untrusted build.
+
+Remove the installed plugin and marketplace separately:
+
+```bash
+codex plugin remove semantic-scala@scala-semantic-harness
+codex plugin marketplace remove scala-semantic-harness
+```
+
+This does not uninstall the independently installed Coursier applications or
+delete their caches. Desktop GUI PATH inheritance is unproved, and this route
+does not claim ChatGPT cloud use, a universal Plugins Directory listing, or
+qualified macOS, Windows, ARM, musl, or Desktop execution.
+
 ## 2. Install the skill
 
 For the current canonical repository skill, run from the target project root:

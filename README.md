@@ -53,6 +53,16 @@ the curated exact-eight MCP projection, and/or the immutable alpha-2 agent
 skill. Copying this repository's thin skill wrappers into another project is
 not supported; install the canonical skill from the `0.1.0-alpha.2` tag.
 
+The source tree also contains a generated lightweight Codex marketplace that
+packages the canonical skill and registers the separately installed
+`semantic-scala-mcp` command. It contains no bundled runtime or hidden
+downloader. **PREPUBLICATION:** no reviewed public Task 278 commit exists yet,
+so the Git install command intentionally retains an
+`<IMMUTABLE_REVIEWED_PRODUCT_COMMIT>` placeholder. See
+[`docs/agent-onboarding.md`](docs/agent-onboarding.md#lightweight-codex-marketplace-prepublication)
+for the exact immutable-channel prerequisites, install, safe first query, and
+separate rollback commands.
+
 [`docs/agent-onboarding.md`](docs/agent-onboarding.md) gives copy-ready Codex,
 Claude Code, Cursor, and VS Code/Copilot recipes, exact local qualification
 statuses, skill installation, the CLI/MCP surface matrix, and troubleshooting.

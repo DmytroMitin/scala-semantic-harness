@@ -1,0 +1,20 @@
+{
+  "interface": {
+    "displayName": "scala-semantic-harness"
+  },
+  "name": "scala-semantic-harness",
+  "plugins": [
+    {
+      "category": "Developer Tools",
+      "name": "semantic-scala",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./distribution/codex-plugin/semantic-scala",
+        "source": "local"
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "semantic-scala": {
+      "args": [],
+      "command": "semantic-scala-mcp",
+      "type": "stdio"
+    }
+  }
+}
