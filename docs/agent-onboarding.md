@@ -50,7 +50,7 @@ The recommended combinations are:
 4. **Manual CLI** is the troubleshooting and automation fallback, not the
    primary interactive experience.
 
-### Lightweight Codex marketplace (prepublication)
+### Lightweight Codex marketplace
 
 The generated marketplace at `.agents/plugins/marketplace.json` packages the
 canonical skill and registers the separately installed exact Alpha-3
@@ -67,18 +67,23 @@ semantic-scala version
 ```
 
 The version must be `0.1.0-alpha.3`, and `semantic-scala-mcp` must be visible
-on the `PATH` inherited by Codex. **PREPUBLICATION:** the marketplace has not
-yet been published at a reviewed product commit. After that separately
-authorized publication, replace the placeholder with the immutable full
-commit SHA:
+on the ordinary `PATH` inherited by Codex. Add the public Git marketplace at
+the immutable Task 278 product commit, which is a separate pin from the
+Alpha-3 runtime tag above:
 
 ```bash
 codex plugin marketplace add DmytroMitin/scala-semantic-harness \
-  --ref <IMMUTABLE_REVIEWED_PRODUCT_COMMIT>
+  --ref 7577f9e429505926eab8728626836ea1cd7ec083
 codex plugin add semantic-scala@scala-semantic-harness
 codex plugin list
 codex mcp list
 ```
+
+An anonymous public-source fetch, isolated Codex CLI `0.162.1` installation,
+exact-eight registration, and one ordinary-PATH client-mediated
+`semantic_effect_summary` passed on Linux on 16 October 2026. This qualifies
+the tested CLI route only. Desktop GUI PATH inheritance and execution, macOS,
+Windows, ARM, and musl remain untested.
 
 In a trusted Scala workspace, first call only `semantic_effect_summary` for
 one known source file and confirm structured evidence. `semantic_compile`,

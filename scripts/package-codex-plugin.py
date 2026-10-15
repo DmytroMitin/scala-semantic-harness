@@ -196,13 +196,13 @@ yet qualified.
 
 ## Install from the Git marketplace
 
-PREPUBLICATION: this marketplace is not yet available from a reviewed public
-commit. After the reviewed product commit is published, replace the placeholder
-below with that immutable full commit SHA:
+The lightweight marketplace is published in the public product repository at
+the immutable Task 278 source commit below. This Codex source pin is separate
+from the Alpha-3 runtime tag used above:
 
 ```bash
 codex plugin marketplace add DmytroMitin/scala-semantic-harness \\
-  --ref <IMMUTABLE_REVIEWED_PRODUCT_COMMIT>
+  --ref 7577f9e429505926eab8728626836ea1cd7ec083
 codex plugin add semantic-scala@scala-semantic-harness
 codex plugin list
 codex mcp list

@@ -8,8 +8,8 @@ local Codex marketplace installation has now passed real-client skill and MCP
 adoption. Claude Code has now passed the equivalent disposable
 local-marketplace installation, skill discovery, plugin-local MCP connection,
 and one read-only client-mediated semantic call after an explicit owner login
-checkpoint. Neither candidate has been publicly submitted, listed, or
-published as a release asset.
+checkpoint. Neither bulky full candidate has been publicly submitted, listed,
+or published as a release asset.
 
 A separate generated lightweight Codex marketplace now lives under
 `distribution/codex-plugin/semantic-scala` with its catalog at
@@ -17,10 +17,34 @@ A separate generated lightweight Codex marketplace now lives under
 it bundles no runtime. It registers the exact user-installed
 `semantic-scala-mcp` command, copies the canonical skill byte-for-byte, and
 pins its prerequisite to the immutable `0.1.0-alpha.3` Coursier channel.
-It is prepublication source: the eventual Git install command must use the
-reviewed published product commit, which does not yet exist.
+The lightweight marketplace is public at the immutable Task 278 product commit
+and was installed from anonymous public source with Codex CLI `0.162.1` on
+16 October 2026. Install JDK 21 and Coursier, then install the exact runtime
+applications from the immutable release tag:
 
-Both candidates contain:
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.3/distribution/coursier/channel.json \
+  semantic-scala semantic-scala-mcp
+semantic-scala version
+```
+
+The version command must report `0.1.0-alpha.3`. Separately add the Codex
+source at its immutable product commit:
+
+```bash
+codex plugin marketplace add DmytroMitin/scala-semantic-harness \
+  --ref 7577f9e429505926eab8728626836ea1cd7ec083
+codex plugin add semantic-scala@scala-semantic-harness
+```
+
+Its source-commit pin is separate from the exact Alpha-3 runtime tag. Codex must
+inherit an ordinary `PATH` containing `semantic-scala-mcp`. The plugin has no
+hidden runtime downloader. Compilation and test tools may execute trusted
+project code, resolve dependencies, and write project outputs or caches, so
+they require separate approval.
+
+Both bulky candidates contain:
 
 - [`skills/semantic-scala/SKILL.md`](../skills/semantic-scala/SKILL.md), copied
   byte-for-byte;
@@ -255,14 +279,17 @@ runtime, executes only its direct CLI entry point, and exposes one read-only
 clean cold environment, warm cache-only reuse, and a disposable Codex CLI
 marketplace installation all returned structured semantic evidence without
 changing the fixture or starting an MCP process. The package and owner packet
-are locally prepared but have not been uploaded or submitted.
+were uploaded once as a validation-only Platform draft/package version on
+12 October 2026. The draft is unpublished and remains `Needs attention`; its
+one imported skill passed the automated check, but the portal reported that it
+was not accepting more skills-only submissions. It was not submitted for
+review or published.
 
 Current first-party guidance requires product-specific OpenAI contact before
 submission when a plugin's core value depends on local execution, arbitrary
-local-file access, or offline operation. That determination remains a human
-prerequisite for this candidate. The guidance identifies the owner's OpenAI
-partner but no generic actionable route was discoverable, so the current result
-is Class E / `NO_CONTACT_ROUTE`, not eligibility. The public privacy policy
+local-file access, or offline operation. That determination and the current
+skills-only intake pause both remain blockers before review submission. The
+public privacy policy
 covers the OpenAI/Codex path, first-use download, and separate cache. One
 original square SVG is owner-approved and wired to both logo fields.
 Verified identity, Apps Management write access, country selection, and policy

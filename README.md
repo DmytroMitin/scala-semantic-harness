@@ -56,12 +56,28 @@ not supported; install the canonical skill from the `0.1.0-alpha.2` tag.
 The source tree also contains a generated lightweight Codex marketplace that
 packages the canonical skill and registers the separately installed
 `semantic-scala-mcp` command. It contains no bundled runtime or hidden
-downloader. **PREPUBLICATION:** no reviewed public Task 278 commit exists yet,
-so the Git install command intentionally retains an
-`<IMMUTABLE_REVIEWED_PRODUCT_COMMIT>` placeholder. See
-[`docs/agent-onboarding.md`](docs/agent-onboarding.md#lightweight-codex-marketplace-prepublication)
-for the exact immutable-channel prerequisites, install, safe first query, and
-separate rollback commands.
+downloader. Install its exact Alpha-3 runtime prerequisite from the immutable
+release tag, then add the public marketplace at the independently immutable
+Task 278 source commit:
+
+```bash
+cs install --default-channels=false \
+  --channel https://raw.githubusercontent.com/DmytroMitin/scala-semantic-harness/0.1.0-alpha.3/distribution/coursier/channel.json \
+  semantic-scala semantic-scala-mcp
+semantic-scala version
+codex plugin marketplace add DmytroMitin/scala-semantic-harness \
+  --ref 7577f9e429505926eab8728626836ea1cd7ec083
+codex plugin add semantic-scala@scala-semantic-harness
+```
+
+The version command must report `0.1.0-alpha.3`, and Codex must inherit an
+ordinary `PATH` containing `semantic-scala-mcp`. An anonymous public-source
+fetch, isolated Codex CLI `0.162.1` install, exact-eight registration, and one
+read-only client-mediated semantic query passed on Linux on 16 October 2026.
+Desktop GUI PATH inheritance and execution remain unqualified. See
+[`docs/agent-onboarding.md`](docs/agent-onboarding.md#lightweight-codex-marketplace)
+for the safe first query, build-side-effect boundary, and separate rollback
+commands.
 
 [`docs/agent-onboarding.md`](docs/agent-onboarding.md) gives copy-ready Codex,
 Claude Code, Cursor, and VS Code/Copilot recipes, exact local qualification
@@ -527,11 +543,13 @@ directly; it contains no MCP configuration and starts no MCP process. Codex CLI
 `0.157.1` passed disposable marketplace installation, installed-skill loading,
 packaged-helper invocation, and interpretation of `Fixture.value: Option[Int]`.
 Cold acquisition and warm cache-only reuse passed with unchanged fixture bytes.
-This is local technical qualification, not an OpenAI submission or public
-listing. Current OpenAI guidance requires partner contact before submitting
-the local-execution/local-file/offline workflow. The inspected first-party
-material exposes no generic actionable contact route, so eligibility remains
-unknown and no Platform draft was created. One original square SVG is
+This is local technical qualification, not an OpenAI public listing. One
+validation-only Platform draft and one package version were created on
+12 October 2026; the draft remains unpublished, `Needs attention`, and blocked
+because the live portal said it was not accepting more skills-only submissions.
+The imported skill's automated check passed, but that does not clear the intake
+block or establish local-execution eligibility. Product-specific contact is
+still required before any review submission. One original square SVG is
 owner-approved and wired to both branding fields. The public privacy policy
 covers the OpenAI/Codex path, first-use download, and separate cache. See
 [`docs/openai-skills-only-plugin.md`](docs/openai-skills-only-plugin.md).
@@ -585,11 +603,12 @@ benchmark reproducibility beyond its stated small-sample gate.
   separate six-file skills-only package is in review and bundles no runtime.
 - The separate eight-file OpenAI skills-only candidate is locally validated on
   Codex CLI `0.157.1` for one direct-CLI `effect-summary` workflow with no MCP
-  dependency. It is not submitted. OpenAI product-specific review has no
-  discoverable official generic contact route, so eligibility remains unknown.
-  The shared logo/composer SVG is owner-approved and locally validated.
-  Verified publisher identity, Apps Management write access, country
-  selection, and policy attestations remain prerequisites; privacy is public.
+  dependency. One validation-only draft/package version exists; it is
+  unpublished, `Needs attention`, not submitted for review, and blocked by the
+  portal's current skills-only intake pause. Product-specific contact remains
+  required for its local-execution workflow before any review submission. The
+  shared logo/composer SVG is owner-approved and locally validated. Normal
+  submission gates remain prerequisites; privacy is public.
 - The MCP surface remains the documented eight-tool stdio adapter.
 - Source-paired `semanticdb-for-source`, `point-evidence`, and
   `reconcile-symbol` requests now report snapshot-consistent content freshness.

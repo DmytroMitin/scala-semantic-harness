@@ -7,7 +7,7 @@
   "generator": {
     "format": "semantic-scala.codex-plugin.v1",
     "path": "scripts/package-codex-plugin.py",
-    "sha256": "8e9706fefc303ed3d15dec8b0d5e19f04df0ee7fdf85c942d4fc1dc8811c6099"
+    "sha256": "2263272769196111a918e7544beb3ee3e28ded6623b284cd228256ab2ee21f52"
   },
   "mcpToolContract": {
     "count": 8,

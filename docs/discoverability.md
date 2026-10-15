@@ -30,20 +30,21 @@ local stdio server. Skill installation does not change the eight-tool registry.
 
 ## Current distribution status
 
-Public pages were checked on 12 October 2026. The Claude row instead uses the
-last accepted private-portal observation from 9 October; that portal was not
-reopened for this documentation task.
+Public pages were checked through 16 October 2026. The Claude row instead uses
+the last accepted private-portal observation from 9 October; that portal was
+not reopened for this documentation task.
 
 | Surface | Artifact type | Status | Last observed | Evidence and limits |
 | --- | --- | --- | --- | --- |
 | [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.DmytroMitin%2Fsemantic-scala/versions/0.1.0-alpha.3) | MCP server | `LIVE` | 2026-10-12 public API | Exact `0.1.0-alpha.3` Linux x86_64 MCPB record is active and uses local stdio. |
 | [MCPServers.org](https://mcpservers.org/servers/dmytromitin/scala-semantic-harness) | MCP server | `LIVE_LISTED` | 2026-10-12 public page | Correct GitHub source, Development category, local stdio, and eight bounded tools. This third-party listing is not protocol certification. |
-| [Glama](https://glama.ai/mcp/servers/DmytroMitin/scala-semantic-harness) | MCP server | `SUBMITTED_PENDING_REVIEW` | 2026-10-10 accepted receipt; 2026-10-12 public route | One submission is confirmed by the retained redacted email; the direct public route still reports no listing. Do not resubmit. |
+| [Glama](https://glama.ai/mcp/servers/DmytroMitin/scala-semantic-harness) | MCP server | `APPROVED_LISTED` | 2026-10-15 owner-provided email; 2026-10-16 public profile | The email reports `APPROVED` / `LISTED`, and the direct public profile is independently visible. Search indexing, completed automated checks, score, certification, and claim ownership were not verified; Glama's methodology makes broader distribution dependent on reproducible build inspection. |
 | [SkillsMP](https://skillsmp.com/creators/dmytromitin/scala-semantic-harness/skills-semantic-scala) | Agent skill | `LIVE_LISTED` | 2026-10-12 public page | Canonical full policy is live. Search also exposes three noncanonical same-name wrapper/package copies. |
 | [skills.sh](https://skills.sh/dmytromitin/scala-semantic-harness/semantic-scala) | Agent skill | `NOT_FOUND` | 2026-10-12 public pages | The exact detail and repository pages return 404; the authenticated API was not verified. No artificial install traffic was generated. |
 | [MCPMarket](https://mcpmarket.com/tools/skills) | Agent skill | `SUBMITTED_PENDING_REVIEW` | 2026-10-11 receipt; 2026-10-12 public check | One free-queue submission succeeded; no public listing is visible yet. This is distinct from an MCP Server listing. |
 | Claude public Directory | Skills-only plugin | `IN_REVIEW` | 2026-10-09 accepted private portal | Version `0.1.0-alpha.3.2` at `f28fe7a61ff449c9775d554d5bc9a11e2a9cfda1` passed portal checks and was waiting for an Anthropic reviewer. It is not public and bundles no runtime. |
-| OpenAI/Codex | Native plugins | `LOCAL_MARKETPLACE_PREPUBLICATION` | 2026-10-15 local source/docs | A generated lightweight Git marketplace registers the separately installed exact Alpha-3 stdio MCP application and canonical skill; the full bundled and separate skills-only variants remain distinct. No reviewed public marketplace commit or universal listing exists. |
+| Codex Git marketplace | Local full-capability plugin | `PUBLIC_SOURCE_INSTALL_VERIFIED` | 2026-10-16 anonymous source and isolated Codex CLI | Immutable product source `7577f9e429505926eab8728626836ea1cd7ec083` installed with Codex CLI `0.162.1`, registered the separately installed exact Alpha-3 stdio MCP application and canonical skill, exposed exactly eight tools, and completed one read-only client-mediated semantic query. This is not a universal Directory listing or Desktop qualification. |
+| OpenAI universal Directory | Skills-only plugin | `DRAFT_NEEDS_ATTENTION_BLOCKED_POLICY` | 2026-10-12 authenticated draft | One validation-only draft/package version exists and is unpublished. The one imported skill passed its automated check, but the portal reported that skills-only submissions were not being accepted; no review submission or publication occurred. This is distinct from the Git marketplace and bulky local package. |
 
 The generated Agent Plugins standard package is structural and portability
 evidence only; it is not a vendor-directory listing. Catalog absence from a
@@ -142,14 +143,14 @@ workflow, obtains the exact hash-pinned Alpha-3 runtime on first use, and reuses
 the verified cache afterward. Clean cold, warm closed-proxy, and disposable
 Codex CLI 0.157.1 installed-client proofs passed with unchanged fixture bytes
 and no MCP process. This establishes local Codex technical value, not a public
-listing or universal ChatGPT support. Before any OpenAI Platform draft, obtain
-the product-specific determination required for local execution/file/offline
-use. Current first-party guidance names the owner's OpenAI partner but exposes
-no generic actionable contact route, so the result remains Class E /
-`NO_CONTACT_ROUTE`, not eligibility. One original shared 512-by-512 SVG is
-owner-approved and locally validated for both logo fields. Verified
-identity, Apps Management write access, availability selection, and policy
-attestations remain human gates. The OpenAI-specific privacy policy is public. See
+listing or universal ChatGPT support. One validation-only Platform
+draft/package version now exists, remains unpublished and `Needs attention`,
+and is blocked by the portal's current skills-only intake pause. The imported
+skill check passed, but no review submission or publication occurred.
+Product-specific contact for local execution/file/offline use and the normal
+submission gates still apply. One original shared 512-by-512 SVG is
+owner-approved and locally validated for both logo fields. The OpenAI-specific
+privacy policy is public. See
 [`openai-skills-only-plugin.md`](openai-skills-only-plugin.md).
 
 ## Scope of catalog claims

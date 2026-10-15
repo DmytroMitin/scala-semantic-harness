@@ -115,6 +115,13 @@ class PackageCodexPluginTest(unittest.TestCase):
             (plugin_root / "skills/semantic-scala/SKILL.md").read_bytes(),
             CANONICAL_SKILL.read_bytes(),
         )
+        readme = (plugin_root / "README.md").read_text()
+        self.assertNotIn("PREPUBLICATION", readme)
+        self.assertNotIn("<IMMUTABLE_REVIEWED_PRODUCT_COMMIT>", readme)
+        self.assertIn(
+            "--ref 7577f9e429505926eab8728626836ea1cd7ec083",
+            readme,
+        )
         provenance = json.loads((plugin_root / "provenance.json").read_text())
         self.assertEqual(provenance["runtimeVersion"], "0.1.0-alpha.3")
         self.assertEqual(
